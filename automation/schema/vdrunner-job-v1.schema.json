@@ -1,0 +1,48 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/AnyBuzzin/van-design-system/automation/schema/vdrunner-job-v1.schema.json",
+  "title": "VanDesign Fusion runner job (vandesign.runner.job/1)",
+  "description": "Documentation of the job contract. Enforcement is automation/vdrunner/schema.py (stdlib, strict: unknown keys rejected, no coercion).",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema", "job_id", "command", "args"],
+  "properties": {
+    "schema": {"const": "vandesign.runner.job/1"},
+    "job_id": {"type": "string", "pattern": "^[A-Za-z0-9][A-Za-z0-9_.-]{2,79}$"},
+    "command": {"enum": ["ping", "inspect_design", "measure", "set_parameter", "restore_parameter", "audit_cuts", "run_test_batch"]},
+    "target": {
+      "type": "object", "additionalProperties": false, "required": ["design_id"],
+      "description": "Required for every command except ping/inspect_design. design_id is the Fusion DataFile.id (cloud lineage id), never the title.",
+      "properties": {"design_id": {"type": "string", "minLength": 1, "maxLength": 300}, "document_name": {"type": "string"}}
+    },
+    "timeout_s": {"type": "integer", "minimum": 5, "maximum": 3600},
+    "created_utc": {"type": "string"},
+    "note": {"type": "string"},
+    "args": {"type": "object", "description": "Per-command arguments; see $defs."}
+  },
+  "$defs": {
+    "expect": {
+      "type": "object", "additionalProperties": false,
+      "properties": {
+        "verdict": {"enum": ["PASS", "FAIL"]}, "pass_count": {"type": "integer"}, "total": {"type": "integer"},
+        "fail_ids": {"type": "array", "items": {"type": "string"}},
+        "params_mm": {"type": "object", "additionalProperties": {"type": "number"}},
+        "tol_mm": {"type": "number", "exclusiveMinimum": 0, "maximum": 1},
+        "counts": {"type": "object", "additionalProperties": {"type": "integer"}},
+        "design_spec_hash": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+        "features_passed": {"type": "integer"}, "stable_counts": {"type": "boolean"}
+      }
+    },
+    "measure": {"type": "object", "additionalProperties": false, "properties": {"label": {"type": "string"}, "expect": {"$ref": "#/$defs/expect"}}},
+    "audit_cuts": {"$ref": "#/$defs/measure"},
+    "set_parameter": {"type": "object", "additionalProperties": false, "required": ["name", "value", "unit"],
+      "properties": {"name": {"type": "string", "pattern": "^Cab_[A-Za-z0-9_]{1,40}$"}, "value": {"type": "number", "exclusiveMinimum": 0},
+                     "unit": {"const": "mm"}, "label": {"type": "string"}}},
+    "restore_parameter": {"type": "object", "additionalProperties": false, "required": ["name"],
+      "properties": {"name": {"type": "string", "pattern": "^Cab_[A-Za-z0-9_]{1,40}$"}, "expect": {"$ref": "#/$defs/expect"}, "label": {"type": "string"}}},
+    "run_test_batch": {"type": "object", "additionalProperties": false, "required": ["steps"],
+      "properties": {"label": {"type": "string"}, "stable_counts": {"type": "boolean", "default": true},
+        "steps": {"type": "array", "minItems": 1, "maxItems": 60, "items": {"type": "object", "additionalProperties": false, "required": ["command"],
+          "properties": {"command": {"enum": ["inspect_design", "measure", "set_parameter", "restore_parameter", "audit_cuts"]}, "args": {"type": "object"}}}}}}
+  }
+}
