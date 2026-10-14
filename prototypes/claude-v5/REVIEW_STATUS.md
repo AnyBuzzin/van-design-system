@@ -1,6 +1,6 @@
 # Claude V5 source import review
 
-**2026-10-14** — Full 35-file source imported from the uploaded `vandesign_v5.zip` on `feature/v5-fusion-adapter`.
+> **LATEST UPDATE — 2026-10-14, after real-Fusion tests:** G2 fixture verification COMPLETE: A–E passed 58/58 checks each in Fusion v2705.1.30; a direct read-only cut audit verified exact one-body ownership for each left/right dado operation. [Evidence](FUSION_TEST_PROTOCOL.md), [cut audit](docs/test-results/cut_audit_20261014_174320_047406.txt). Issue #2 closed. G3 three variants is now open as issue #4, on `feature/v5-g3-cabinet-variants`. The lines below are **historical pre-Fusion notes**, not the current status. G0 source provenance and `src/vandesign` integration are still unresolved. PR #3 remains draft.\n\n**2026-10-14** — Full 35-file source imported from the uploaded `vandesign_v5.zip` on `feature/v5-fusion-adapter`.
 
 - Offline Python tests: **30/30 passed** in the analysis environment using `python -m unittest discover -s tests -v` from this prototype folder.
 - Baseline `sha256sum -c SHA256SUMS.txt`: **2/2 matched**, when run within `baseline/`.
