@@ -5,7 +5,7 @@
 - Nesting, CAM, G-code, DXF/CSV export, cut-list output
 - Change engine: structural edits (shelf/door count) require a fresh build; no diffing of manual Fusion edits (G4)
 - Measured vs nominal plywood thickness, tolerance classes, material records beyond `material_ref`
-- Three cabinet variants from one core (G3); only the base cabinet exists
+- Three cabinet variants from one core (G3): implemented as data-only profiles and offline-tested, but NOT yet run in Fusion (see FUSION_TEST_PROTOCOL_G3.md). Fixture sizes are not engineering limits; no plinth, hanging rail, hinges or rabbet.
 - Save/reopen automation and a Fusion-hosted automated test run (manual smoke test in README)
 
 # Known risks to check on the first Fusion run

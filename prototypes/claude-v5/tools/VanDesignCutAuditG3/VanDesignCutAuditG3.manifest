@@ -1,0 +1,10 @@
+{
+  "autodeskProduct": "Fusion",
+  "type": "script",
+  "author": "",
+  "description": {
+    "": "VanDesign G3 read-only cut participant audit (all dado.* features)"
+  },
+  "supportedOS": "windows|mac",
+  "editEnabled": true
+}

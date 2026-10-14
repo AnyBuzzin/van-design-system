@@ -2,6 +2,8 @@
 
 Status (updated 2026-10-14): **V5 G2 Fusion-verified for the tested cabinet fixture.** User-run Fusion 360 v2705.1.30 tests A–E each returned **PASS 58/58**; a separate direct Fusion API audit confirmed one correct participant body for each dado cut (shelf excluded). See [FUSION_TEST_PROTOCOL.md](FUSION_TEST_PROTOCOL.md) and [original cut audit](docs/test-results/cut_audit_20261014_174320_047406.txt). The isolated prototype is NOT integrated into the repo's `src/vandesign`, nor manufacturing-approved. Next: G3 three variants, [issue #4](https://github.com/AnyBuzzin/van-design-system/issues/4).
 
+**G3 status: CODE COMPLETE (offline) / AWAITING REAL-FUSION TESTING.** base/tall/overhead variant profiles, the strict 0.1/0.2 spec loader, live range checks and the managed-ID census are implemented and pass the offline suite, but **no G3 test has been run in Fusion** (see [FUSION_TEST_PROTOCOL_G3.md](FUSION_TEST_PROTOCOL_G3.md), all steps `NOT RUN`). Variant sizes are test fixtures, not engineering sign-off.
+
 ## Layout
 ```
 baseline/                    G0: tested V4 rev 2 (.py, .manifest) + SHA256SUMS.txt
@@ -12,11 +14,14 @@ VanCabinetJoineryV5/         <- the Fusion script folder (copy this whole folder
   vandesign/
     core/         units, Expr (dimension-checked lengths), parameter graph, boxes, frames
     components/   stable IDs, Panel, DadoOperation, Constraint, AssemblyDefinition
-    schemas/      CabinetSpec (typed, versioned, hashed)
-    modules/      cabinet.py: CabinetSpec -> AssemblyDefinition (the ONLY place formulas live)
+    schemas/      CabinetSpec (typed, versioned, hashed); design_spec.py: strict 0.1/0.2 loader (G3)
+    modules/      cabinet.py: CabinetSpec -> AssemblyDefinition (the ONLY place formulas live);
+                  variants.py: data-only base/tall/overhead profiles (G3, no geometry)
     verification/ validate(): PASS / FAIL / UNKNOWN from measured solids
     cad/          protocol + shared preflight
     cad/fusion/   adapter.py, runner.py   <- only code that imports adsk
+specs/           G3 fully resolved 0.2 fixture specs (copy one to cabinet_spec.json)
+tools/           capture_g2_golden.py; VanDesignCutAuditG3/ (read-only Fusion audit script)
 tests/           unit tests, V4-equivalence, simulated-CAD failure modes
 ```
 
