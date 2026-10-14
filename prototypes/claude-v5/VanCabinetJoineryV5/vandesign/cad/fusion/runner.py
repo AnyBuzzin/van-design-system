@@ -26,21 +26,59 @@ def _load_spec(script_dir: str) -> CabinetSpec:
     return CabinetSpec()
 
 
-def _write_report(script_dir, app, spec, assembly, report, mode):
+def _fusion_parameters_mm(design):
+    """Read actual live Fusion user parameters (lengths expressed in mm)."""
+    values = {}
+    params = design.userParameters
+    for i in range(params.count):
+        parameter = params.item(i)
+        if parameter.name.startswith("Cab_"):
+            values[parameter.name] = {
+                "expression": parameter.expression,
+                "value_mm": parameter.value * 10.0,  # Fusion stores length in cm.
+            }
+    return values
+
+
+def _write_report(script_dir, app, design, spec, assembly, report, mode):
     folder = os.path.join(script_dir, "reports")
     os.makedirs(folder, exist_ok=True)
-    stamp = datetime.datetime.now().strftime("%Y%m%d_%H%M%S")
-    path = os.path.join(folder, "report_%s.json" % stamp)
+    stamp = datetime.datetime.now().strftime("%Y%m%d_%H%M%S_%f")
+    base = os.path.join(folder, "report_%s_%s" % (stamp, mode))
+    document = app.activeDocument
+    document_name = document.name if document else "(no active document)"
+    params = _fusion_parameters_mm(design)
     payload = {
-        "generator": GENERATOR_ID, "schema_version": SCHEMA_VERSION, "mode": mode,
-        "fusion_version": app.version, "assembly_id": assembly.assembly_id,
-        "spec_hash": assembly.spec_hash, "spec": spec.to_dict(),
+        "generator": GENERATOR_ID,
+        "schema_version": SCHEMA_VERSION,
+        "mode": mode,
+        "fusion_version": app.version,
+        "document_name": document_name,
+        "parameters_read_from_fusion": params,
+        "assembly_id": assembly.assembly_id,
+        "spec_hash": assembly.spec_hash,
+        "spec": spec.to_dict(),
         "exported_at": datetime.datetime.now().isoformat(timespec="seconds"),
         "validation": report.to_dict(),
     }
-    with open(path, "w", encoding="utf-8") as f:
-        json.dump(payload, f, indent=2)
-    return path
+    report_lines = [
+        "Document: %s" % document_name,
+        "Fusion version: %s" % app.version,
+        "Mode: %s" % mode,
+        "",
+        "Live Cab_* parameters read from Fusion:",
+    ]
+    for name in sorted(params):
+        p = params[name]
+        report_lines.append("  %s = %.4f mm [%s]" % (name, p["value_mm"], p["expression"]))
+    report_lines.extend(["", report.text(), ""])
+    txt_content = "\n".join(report_lines)
+    json_path, txt_path = base + ".json", base + ".txt"
+    with open(json_path, "w", encoding="utf-8") as handle:
+        json.dump(payload, handle, indent=2)
+    with open(txt_path, "w", encoding="utf-8") as handle:
+        handle.write(txt_content)
+    return json_path, txt_path
 
 
 def run_cabinet(app, ui, script_dir: str) -> None:
@@ -62,18 +100,25 @@ def run_cabinet(app, ui, script_dir: str) -> None:
     else:
         spec = _load_spec(script_dir)
         assembly = build_cabinet(spec)
-        adapter.compile(assembly)
-        adapter.store_spec_json(spec.to_json())
+        try:
+            adapter.compile(assembly)
+            adapter.store_spec_json(spec.to_json())
+        except Exception as exc:
+            raise RuntimeError(
+                "V5 build failed. The design may be partially built. "
+                "CLOSE this test design WITHOUT SAVING, open a new empty design, "
+                "and send the full error text to the developer."
+            ) from exc
         mode = "build"
         header = "V5 cabinet created."
 
     report = validate(assembly, adapter.geometry_source())
     app.log(report.text())
     try:
-        path = _write_report(script_dir, app, spec, assembly, report, mode)
-        footer = "\n\nReport saved: " + path
-    except OSError as e:
-        footer = "\n\n(Could not save JSON report: %s)" % e
+        json_path, txt_path = _write_report(script_dir, app, design, spec, assembly, report, mode)
+        footer = "\n\nReports saved:\n" + json_path + "\n" + txt_path
+    except (OSError, ValueError, AttributeError) as e:
+        footer = "\n\n(Report files unavailable: %s)" % e
     tail = ""
     if mode == "build":
         tail = ("\n\nNow edit parameters in Modify > Change Parameters and run this script "
