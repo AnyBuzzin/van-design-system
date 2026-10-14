@@ -11,3 +11,19 @@
 - Before merge, run the real Fusion fixture tests A-D and the save/reopen check, resolve all FAIL/UNKNOWN results and document the exact tested revision.
 
 Issue: https://github.com/AnyBuzzin/van-design-system/issues/2
+
+
+## Upstream pre-Fusion patch reconciliation — 2026-10-14
+
+The user supplied Claude's original `v5-pre-fusion-corrections.patch` and `FUSION_TEST_PROTOCOL.md` after earlier reporting improvements had already been committed. The patch's hunks **cannot be applied verbatim** to the modified `runner.py`; the changes were compared and reconciled manually, without altering the CAD geometry.
+
+- Live `Cab_*` parameter values, Fusion version and document name are captured in JSON and the readable text report.
+- JSON contains both `parameters_read_from_fusion` (values plus expressions) and a simpler `parameters_mm` mapping compatible with Claude's patch.
+- A missing stored specification on a managed assembly tells the user to discard a possible partial build.
+- Failed build operations show a direct dialog with traceback; the user must close the unsaved partial design.
+- Filename includes `_build` or `_measure`; both `.json` and `.txt` are written.
+- The supplied Fusion test protocol's A–E fixture values are preserved in `FUSION_TEST_PROTOCOL.md` (expanded to reflect the repo and new reporting structure).
+- A mocked-adsk report serialization test was added: **31/31 tests passed locally** in Python 3.13 after reconciliation. This is not a Fusion runtime result.
+- Feature-branch GitHub Actions now executes the V5 prototype suite in addition to the main foundation tests. GitHub CI outcome should be checked separately.
+
+**Fusion 360 verification: UNKNOWN.** No V5 build, parameter-edit or save/reopen test has been performed or reported inside Fusion. Do not merge until issue #2 and Draft PR #3 acceptance criteria pass.
