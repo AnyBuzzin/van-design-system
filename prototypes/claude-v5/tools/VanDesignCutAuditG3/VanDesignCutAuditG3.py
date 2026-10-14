@@ -132,9 +132,12 @@ def collect(design, cut_operation, expected):
         feats = comp.features.extrudeFeatures
         for i in range(feats.count):
             f = feats.item(i)
-            if not _DADO_RE.match(f.name):
+            # ANY dado.* extrude is relevant, including malformed/unexpected
+            # names.  Never silently skip a feature simply because its name
+            # does not match our expected operation-ID grammar.
+            if not f.name.startswith("dado."):
                 continue
-            if f.name not in expected:
+            if not _DADO_RE.fullmatch(f.name) or f.name not in expected:
                 extra.append(f.name)
                 continue
             obs = {"owner_id": None, "is_cut": None, "participants": None, "error": None}

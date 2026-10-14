@@ -87,7 +87,7 @@ class CabinetDesignSpec:
             "design_spec_hash": self.design_spec_hash,
             "assembly_legacy_spec_hash": self.assembly_legacy_spec_hash,
             "migrated_in_memory": self.migrated_in_memory,
-            "stored_spec_raw_sha256": self.raw_sha256,
+            "input_spec_raw_sha256": self.raw_sha256,
         }
 
 

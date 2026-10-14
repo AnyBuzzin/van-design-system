@@ -138,6 +138,14 @@ class AuditTests(unittest.TestCase):
         d.left.extrude_list.append(Feature("dado.shelf7.left", d.left, [Body(d.left)], tl=d.timeline))
         self.assertEqual(run(d)["overall"], "FAIL")
 
+    def test_unexpected_noncanonical_dado_feature_must_fail(self):
+        d = Design(shelves=1)
+        d.left.extrude_list.append(Feature("dado.rogue_cut", d.left, [Body(d.left)], tl=d.timeline))
+        r = run(d)
+        self.assertEqual(r["overall"], "FAIL")
+        self.assertTrue(any(x["operation_id"] == "dado.rogue_cut" and x["status"] == "FAIL"
+                            for x in r["results"]))
+
     def test_api_error_is_unknown_not_pass(self):
         d = Design(shelves=1)
         d.left.extrude_list[0].roll_fails = True

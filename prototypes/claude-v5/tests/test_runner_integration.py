@@ -125,6 +125,19 @@ class BuildPath(unittest.TestCase):
                 self.assertIn("parameters_read_from_fusion", j)
                 self.assertIn("parameters_mm", j)
 
+    def test_sparse_02_report_hashes_distinguish_input_and_stored_canonical_bytes(self):
+        import hashlib
+        sparse = json.dumps({"schema_version": "0.2", "module": "cabinet@1",
+                             "variant": "tall", "profile_version": 1,
+                             "parameters": {"width_mm": 600}}, separators=(",", ":"))
+        out = run_scenario(spec_file=sparse)
+        j = out["json"]
+        canonical_stored = out["calls"][1][1]
+        self.assertEqual(j["input_spec_raw_sha256"], hashlib.sha256(sparse.encode()).hexdigest())
+        self.assertEqual(j["stored_spec_raw_sha256"], hashlib.sha256(canonical_stored.encode()).hexdigest())
+        self.assertEqual(j["stored_spec_raw_sha256"], j["stored_spec"]["raw_sha256_after"])
+        self.assertNotEqual(j["input_spec_raw_sha256"], j["stored_spec_raw_sha256"])
+
     def test_bad_specs_rejected_before_any_cad_mutation(self):
         bad = {
             "duplicate": '{"schema_version":"0.1","schema_version":"0.1","module":"base_cabinet@1","parameters":{}}',

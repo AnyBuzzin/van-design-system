@@ -96,6 +96,9 @@ def _write_report(script_dir, app, design, spec, assembly, report, mode, design_
         # Additive G3 fields.  Legacy meaning of schema_version/spec/spec_hash is unchanged:
         # they describe the legacy generator spec; the design_* fields describe the stored document.
         payload.update(design_spec.metadata())
+        # On a sparse 0.2 input, the input bytes differ from the canonical
+        # full spec stored as the Fusion attribute. These are different hashes.
+        payload["stored_spec_raw_sha256"] = (stored or {}).get("raw_sha256_after")
         payload["design_spec_canonical_json"] = design_spec.canonical_stored_spec_json
         payload["profile_limits"] = {k: list(v) for k, v in profile_limits(design_spec.profile).items()}
         payload["design_counts"] = _design_counts(design)
