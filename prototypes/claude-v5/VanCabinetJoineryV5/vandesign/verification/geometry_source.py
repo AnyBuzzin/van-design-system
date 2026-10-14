@@ -3,7 +3,7 @@
 from __future__ import annotations
 
 from dataclasses import dataclass
-from typing import Optional, Protocol, Sequence
+from typing import Dict, Optional, Protocol, Sequence
 
 from ..core.geometry import Box, Vec
 
@@ -30,3 +30,9 @@ class GeometrySource(Protocol):
 
     def interference_count(self, panel_ids: Sequence[str]) -> Optional[int]:
         """Number of interfering body pairs among the given panels."""
+
+    def managed_ids(self) -> Optional[Dict[str, int]]:
+        """Read-only census: managed stable id -> number of occurrences carrying it.
+
+        None when the enumeration is unavailable (validation then reports UNKNOWN).
+        """

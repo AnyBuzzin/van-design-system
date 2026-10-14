@@ -246,6 +246,25 @@ class FusionGeometrySource:
             self.diagnostics.append("pointContainment failed for %s: %s" % (panel_id, e))
             return None
 
+    def managed_ids(self) -> Optional[Dict[str, int]]:
+        """Read-only census of managed stable ids across ALL root occurrences.
+
+        Enumerates live (not the constructor snapshot) and counts every occurrence
+        carrying a VanDesign stable_id attribute, so duplicates are visible as
+        multiplicity > 1.  Never mutates the design.  None if enumeration fails.
+        """
+        try:
+            root = self.design.rootComponent
+            counts: Dict[str, int] = {}
+            for i in range(root.occurrences.count):
+                attr = root.occurrences.item(i).component.attributes.itemByName(ATTR_GROUP, ATTR_ID)
+                if attr:
+                    counts[attr.value] = counts.get(attr.value, 0) + 1
+            return counts
+        except Exception as e:
+            self.diagnostics.append("managed id census failed: %s" % e)
+            return None
+
     def interference_count(self, panel_ids: Sequence[str]) -> Optional[int]:
         try:
             coll = adsk.core.ObjectCollection.create()

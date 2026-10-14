@@ -15,7 +15,8 @@ from vandesign.verification.geometry_source import MeasuredBody
 class SimGeometry:
     def __init__(self, assembly, overrides=None, bug_cut_all=False, skip_cuts=False,
                  shelf_dz=0.0, unreadable_params=(), unmeasurable=(), interference="compute",
-                 no_containment=False):
+                 no_containment=False, managed_missing=(), managed_duplicates=(),
+                 managed_extra=(), managed_unavailable=False, managed_raises=False):
         self.assembly = assembly
         self.overrides = dict(overrides or {})
         self.env = assembly.parameters.resolve(self.overrides)
@@ -27,6 +28,11 @@ class SimGeometry:
         self.unmeasurable = set(unmeasurable)
         self.interference = interference
         self.no_containment = no_containment
+        self.managed_missing = set(managed_missing)
+        self.managed_duplicates = list(managed_duplicates)
+        self.managed_extra = list(managed_extra)
+        self.managed_unavailable = managed_unavailable
+        self.managed_raises = managed_raises
         self.blank = {p.stable_id: p.box.resolve(self.env) for p in assembly.panels}
         self.cuts = [(o, o.cut.resolve(self.env)) for o in assembly.operations]
 
@@ -87,3 +93,15 @@ class SimGeometry:
                 if free > 1e-6:
                     n += 1
         return n
+
+    def managed_ids(self):
+        if self.managed_raises:
+            raise RuntimeError("simulated enumeration failure")
+        if self.managed_unavailable:
+            return None
+        counts = {p.stable_id: 1 for p in self.assembly.panels if p.stable_id not in self.managed_missing}
+        for pid in self.managed_duplicates:
+            counts[pid] = counts.get(pid, 0) + 1
+        for pid in self.managed_extra:
+            counts[pid] = counts.get(pid, 0) + 1
+        return counts

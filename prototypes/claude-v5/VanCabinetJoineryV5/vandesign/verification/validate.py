@@ -7,6 +7,7 @@ and compares that to the measured solids.
 
 from __future__ import annotations
 
+from collections import Counter
 from typing import Dict, Mapping, Optional, Tuple
 
 from ..components.model import AssemblyDefinition
@@ -26,6 +27,36 @@ def _cmp(report, cid, observed, expected, tol, unit="mm", ids=(), note=""):
         return
     ok = abs(observed - expected) <= tol
     report.add(Check(cid, PASS if ok else FAIL, observed, expected, tol, unit, tuple(ids), note))
+
+
+def _census_check(rep, assembly, source):
+    """entities.managed_ids: exact multiplicity census of managed stable ids."""
+    expected = Counter(p.stable_id for p in assembly.panels)
+    exp_total = float(sum(expected.values()))
+    fn = getattr(source, "managed_ids", None)
+    observed = None
+    if callable(fn):
+        try:
+            observed = fn()
+        except Exception as e:  # recorded, never silent; check becomes UNKNOWN
+            rep.diagnostics.append("managed id census failed: %s" % e)
+    if not isinstance(observed, Mapping):
+        rep.add(Check("entities.managed_ids", UNKNOWN, None, exp_total, 0.0, "entities", (),
+                      "managed-id enumeration unavailable"))
+        return
+    missing = sorted(i for i in expected if observed.get(i, 0) == 0)
+    duplicate = sorted(i for i in expected if observed.get(i, 0) > expected[i])
+    unexpected = sorted(i for i in observed if i not in expected and observed[i] > 0)
+    problems = []
+    if missing:
+        problems.append("missing: " + ", ".join(missing))
+    if duplicate:
+        problems.append("duplicate: " + ", ".join("%s x%d" % (i, observed[i]) for i in duplicate))
+    if unexpected:
+        problems.append("unexpected: " + ", ".join("%s x%d" % (i, observed[i]) for i in unexpected))
+    total = float(sum(v for v in observed.values()))
+    rep.add(Check("entities.managed_ids", FAIL if problems else PASS, total, exp_total, 0.0, "entities",
+                  tuple(missing + duplicate + unexpected), "; ".join(problems)))
 
 
 def _range_checks(rep, source, limits, variant, eps_mm):
@@ -164,7 +195,10 @@ def validate(assembly: AssemblyDefinition, source: GeometrySource, eps_mm: float
         else:
             rep.add(Check("interference.joined", PASS if n == 0 else FAIL, float(n), 0.0, 0.0, "pairs", tuple(joined)))
 
-    # 9. Optional provisional profile ranges (live values; added checks only).
+    # 9. Managed-entity census (multiplicity; added check, original checks unchanged).
+    _census_check(rep, assembly, source)
+
+    # 10. Optional provisional profile ranges (live values; added checks only).
     if profile_limits:
         _range_checks(rep, source, profile_limits, profile_variant, eps_mm)
 

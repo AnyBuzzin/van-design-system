@@ -61,8 +61,9 @@ class HandComputedFixtures(unittest.TestCase):
                 n = len([p for p in asm.panels if p.role == "shelf"])
                 d = len([p for p in asm.panels if p.role == "door"])
                 extra = len(profile_limits(get_profile(v, 1)))
-                self.assertEqual(len(rep.checks) - extra, 28 + 26 * n + 2 * d)
-                self.assertEqual(len(rep.checks) - extra, f["checks"])
+                census = 1  # entities.managed_ids (G3 addition)
+                self.assertEqual(len(rep.checks) - extra - census, 28 + 26 * n + 2 * d)
+                self.assertEqual(len(rep.checks) - extra - census, f["checks"])
 
 
 class OneGenerator(unittest.TestCase):
@@ -94,7 +95,9 @@ class OneGenerator(unittest.TestCase):
         with open(os.path.join(os.path.dirname(snap.__file__), "fixtures", "g2_golden.json"), encoding="utf-8") as fh:
             golden = json.load(fh)
         _, rep = run("base")
-        self.assertEqual([c.check_id for c in rep.checks], golden["combos"]["s1_d2"]["sim_check_ids"])
+        ids = [c.check_id for c in rep.checks]
+        self.assertEqual([i for i in ids if i != "entities.managed_ids"], golden["combos"]["s1_d2"]["sim_check_ids"])
+        self.assertEqual(len(ids), 59)
 
 
 class EditMatrix(unittest.TestCase):

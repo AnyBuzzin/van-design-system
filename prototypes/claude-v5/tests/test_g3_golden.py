@@ -21,7 +21,17 @@ class GoldenAssemblyTests(unittest.TestCase):
         for key, expected in golden.items():
             n, d = int(key.split("_")[0][1:]), int(key.split("_")[1][1:])
             with self.subTest(combo=key):
-                self.assertEqual(snap.combo_snapshot(n, d), expected)
+                got, exp = snap.combo_snapshot(n, d), dict(expected)
+                ids, sts = got.pop("sim_check_ids"), got.pop("sim_check_statuses")
+                exp_ids, exp_sts = exp.pop("sim_check_ids"), exp.pop("sim_check_statuses")
+                self.assertEqual(got, exp)  # assembly, params, panels, ops, hashes: identical
+                # G3 adds exactly one check (entities.managed_ids); every original check
+                # is retained, in order, with the same status.  Frozen fixture NOT edited.
+                census = "entities.managed_ids"
+                self.assertEqual(ids.count(census), 1)
+                self.assertEqual([i for i in ids if i != census], exp_ids)
+                self.assertEqual([s for i, s in zip(ids, sts) if i != census], exp_sts)
+                self.assertEqual(sts[ids.index(census)], "PASS")
 
     def test_default_legacy_hash_is_frozen(self):
         self.assertEqual(snap.combo_snapshot(1, 2)["legacy_spec_hash"], LEGACY_DEFAULT_HASH)
