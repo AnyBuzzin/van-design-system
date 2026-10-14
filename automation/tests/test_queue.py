@@ -126,6 +126,43 @@ class QueueTests(TmpDirCase):
         ids = {prepare({"command": "ping", "args": {}})["job_id"] for _ in range(50)}
         self.assertEqual(len(ids), 50)
 
+    def test_state_written_before_job_reaches_inbox(self):
+        """Regression (real Fusion, 2026-10-15): the runner claimed a job while the CLI was still
+        writing its 'queued' state -> WinError 32.  The state must exist before the inbox file."""
+        q = self.q()
+        seen = {}
+        import vdrunner.queue as qm
+        real = qm.atomic_write_json
+
+        def spy(path, obj):
+            if os.path.dirname(path) == q.p("inbox"):
+                seen["state_at_inbox_write"] = q.read_state("job-001")
+            return real(path, obj)
+        qm.atomic_write_json = spy
+        try:
+            q.submit(job("ping", target=None))
+        finally:
+            qm.atomic_write_json = real
+        self.assertEqual(seen["state_at_inbox_write"]["status"], "queued")
+
+    def test_replace_retries_transient_sharing_violation(self):
+        import vdrunner.queue as qm
+        calls = {"n": 0}
+        real = os.replace
+
+        def flaky(a, b):
+            calls["n"] += 1
+            if calls["n"] < 3:
+                raise PermissionError(32, "being used by another process")
+            return real(a, b)
+        qm.os.replace = flaky
+        try:
+            atomic_write_json(os.path.join(self.tmp, "r.json"), {"ok": 1})
+        finally:
+            qm.os.replace = real
+        self.assertEqual(read_json(os.path.join(self.tmp, "r.json")), {"ok": 1})
+        self.assertEqual(calls["n"], 3)
+
 
 if __name__ == "__main__":
     unittest.main()

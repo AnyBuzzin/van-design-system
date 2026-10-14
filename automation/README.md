@@ -39,6 +39,8 @@ G3 code; it imports the verified G3 install named in `config.json`.
 | `set_parameter` | yes | Allowlisted design only; `Cab_*` name in bounds; plain `N mm` expression only (formulas refused); journalled *before* the change; value read back |
 | `restore_parameter` | yes | Restores the journalled original, reads it back, re-measures; journal cleared only if both pass |
 | `audit_cuts` | no* | Runs `VanDesignCutAuditG3` (*it moves and restores the timeline marker); requires timeline restored, counts unchanged, all features PASS |
+| `preview_width_change` | no | G4: plan a width change from the stored spec (changed parameters/panels/cuts, new hash, refusal reasons). See `G4_WIDTH_UPDATE.md` |
+| `update_width` | yes | G4: verified, journalled width update of an existing cabinet; writes the new spec via the G3 adapter; rolls back on any failure |
 | `run_test_batch` | if any step mutates | Ordered steps, stops at the first non-PASS step, design counts/hash must stay equal to the batch's first measurement |
 
 The runner never saves, builds, deletes, exports or executes arbitrary code (enforced by a test that scans the add-in source).
