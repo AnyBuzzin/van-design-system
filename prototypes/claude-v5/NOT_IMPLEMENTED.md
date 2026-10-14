@@ -1,6 +1,6 @@
 # Explicitly NOT implemented (per the V5 brief)
 
-- AI generation / schema-constrained AI intake
+> **Current status 2026-10-14:** This list describes functionality not yet implemented. The section below called “Known risks to check on the first Fusion run” was written **before** the actual G2 smoke tests. Fusion version 2705.1.30 ran all A–E fixture scenarios (58/58 checks passed per run), including real `pointContainment` probes and component attributes; the separate cut audit also passed. Those historical API compatibility concerns are resolved **for the tested configuration only**. New G3 variants have **not** yet been run in Fusion.\n\n- AI generation / schema-constrained AI intake
 - Vehicle envelopes, datums, module placement, rotations (identity placement only)
 - Nesting, CAM, G-code, DXF/CSV export, cut-list output
 - Change engine: structural edits (shelf/door count) require a fresh build; no diffing of manual Fusion edits (G4)
