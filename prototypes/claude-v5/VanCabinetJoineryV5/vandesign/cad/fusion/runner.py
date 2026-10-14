@@ -5,6 +5,7 @@ from __future__ import annotations
 import datetime
 import json
 import os
+import traceback
 
 import adsk.core
 import adsk.fusion
@@ -40,13 +41,19 @@ def _fusion_parameters_mm(design):
     return values
 
 
+def _document_name(app):
+    try:
+        return app.activeDocument.name
+    except Exception as exc:
+        return 'unavailable (%s)' % exc
+
+
 def _write_report(script_dir, app, design, spec, assembly, report, mode):
     folder = os.path.join(script_dir, "reports")
     os.makedirs(folder, exist_ok=True)
     stamp = datetime.datetime.now().strftime("%Y%m%d_%H%M%S_%f")
     base = os.path.join(folder, "report_%s_%s" % (stamp, mode))
-    document = app.activeDocument
-    document_name = document.name if document else "(no active document)"
+    document_name = _document_name(app)
     params = _fusion_parameters_mm(design)
     payload = {
         "generator": GENERATOR_ID,
@@ -55,6 +62,7 @@ def _write_report(script_dir, app, design, spec, assembly, report, mode):
         "fusion_version": app.version,
         "document_name": document_name,
         "parameters_read_from_fusion": params,
+        "parameters_mm": {name: value["value_mm"] for name, value in params.items()},
         "assembly_id": assembly.assembly_id,
         "spec_hash": assembly.spec_hash,
         "spec": spec.to_dict(),
@@ -91,7 +99,9 @@ def run_cabinet(app, ui, script_dir: str) -> None:
     if adapter.has_managed_assembly():
         stored = adapter.stored_spec_json()
         if not stored:
-            ui.messageBox("Managed components found but no stored spec; cannot re-measure safely.")
+            ui.messageBox("Managed components found but no stored spec; cannot re-measure safely.\n"
+                          "If an earlier build failed part-way, close this test design WITHOUT SAVING "
+                          "and use a new empty design.")
             return
         spec = CabinetSpec.from_json(stored)
         assembly = build_cabinet(spec)
@@ -103,12 +113,12 @@ def run_cabinet(app, ui, script_dir: str) -> None:
         try:
             adapter.compile(assembly)
             adapter.store_spec_json(spec.to_json())
-        except Exception as exc:
-            raise RuntimeError(
-                "V5 build failed. The design may be partially built. "
-                "CLOSE this test design WITHOUT SAVING, open a new empty design, "
-                "and send the full error text to the developer."
-            ) from exc
+        except Exception:
+            error = traceback.format_exc()
+            app.log(error)
+            ui.messageBox("Build failed part-way. Close this test design WITHOUT SAVING, "
+                          "open a new empty design and run again. Send the error text:\n\n" + error)
+            return
         mode = "build"
         header = "V5 cabinet created."
 
