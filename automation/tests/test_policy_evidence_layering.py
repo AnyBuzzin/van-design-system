@@ -66,11 +66,15 @@ class LayeringTests(unittest.TestCase):
     def test_addin_has_no_forbidden_operations(self):
         """The add-in must not save, delete, export or execute arbitrary code."""
         forbidden = ("deleteMe", ".save(", "saveAs", "exportManager", "exec(", "eval(", "subprocess", "os.system",
-                     "store_spec_json", ".compile(")
+                     ".compile(")
         for n in ("VanDesignRunner.py", "fusion_backend.py"):
             src = open(os.path.join(AUTOMATION, "VanDesignRunner", n), encoding="utf-8").read()
             for f in forbidden:
                 self.assertNotIn(f, src, "%s contains %s" % (n, f))
+        # G4: the stored spec is written in exactly ONE place (store_spec_text, used by update_width)
+        backend = open(os.path.join(AUTOMATION, "VanDesignRunner", "fusion_backend.py"), encoding="utf-8").read()
+        self.assertEqual(backend.count("store_spec_json("), 1)
+        self.assertNotIn("store_spec_json", open(os.path.join(AUTOMATION, "VanDesignRunner", "VanDesignRunner.py"), encoding="utf-8").read())
 
 
 if __name__ == "__main__":

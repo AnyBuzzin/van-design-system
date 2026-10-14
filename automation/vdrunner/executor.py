@@ -31,6 +31,7 @@ from .journal import JournalError, RestoreJournal
 from .policy import PolicyError, check_parameter_edit, check_target
 from .queue import utc_now
 from .schema import BATCH_COMMAND, is_mutating, steps_of, validate_job
+from .width_change import plan_width_change
 
 
 class StepFailed(RuntimeError):
@@ -75,6 +76,8 @@ class Executor:
                 result["steps"].append(rec)
                 if st["command"] == "measure" and rec["status"] == "PASS" and baseline is None:
                     baseline = rec["summary"]
+                if st["command"] == "update_width" and rec["status"] == "PASS":
+                    baseline = rec["post_measure"]["summary"]   # the updated cabinet is the new reference
                 if rec["status"] != "PASS":
                     result["notes"].append("stopped at step %d (%s): %s" % (i, st["command"], rec.get("error") or "; ".join(rec.get("checks", []))))
                     break
@@ -129,6 +132,14 @@ class Executor:
                 return self._set(cmd, args, journal, job_id, t0)
             if cmd == "restore_parameter":
                 return self._restore(cmd, args, out_dir, label, journal, baseline, t0)
+            if cmd == "preview_width_change":
+                plan = self._plan(args)
+                plan.pop("_state", None)
+                status = "PASS" if not plan["refusals"] else "FAIL"
+                return self._step(cmd, args, status, (time.perf_counter() - t0) * 1000, preview=self._public(plan),
+                                  checks=["OK safe to update"] if status == "PASS" else ["REFUSED " + r for r in plan["refusals"]])
+            if cmd == "update_width":
+                return self._update_width(cmd, args, out_dir, label, journal, job_id, t0)
             raise StepFailed("unsupported step %s" % cmd)
         except (PolicyError, JournalError, StepFailed) as e:
             return self._step(cmd, args, "FAIL", (time.perf_counter() - t0) * 1000, error=str(e))
@@ -185,3 +196,112 @@ class Executor:
                           restored_expression=e["original_expression"], value_read_back_mm=got,
                           edit_and_regenerate_ms=round(edit_ms, 1), verification=m,
                           checks=["value restored: %s" % bool(value_ok)] + m.get("checks", []))
+
+    # ------------------------------------------------------------------ G4: safe width update
+    def _plan(self, args) -> Dict:
+        if args["unit"] != "mm":
+            raise PolicyError("unsupported unit")
+        st = self.b.cabinet_state()
+        bounds = self.cfg.get("parameter_bounds_mm", {}).get("Cab_Width")
+        plan = plan_width_change(self.b.g3_modules(), st["stored_text"], st["live_params"], float(args["new_width"]), bounds)
+        plan["_state"] = st
+        return plan
+
+    @staticmethod
+    def _public(plan: Dict) -> Dict:
+        return {k: v for k, v in plan.items() if not k.startswith("_") and k != "new_stored_text"}
+
+    def _update_width(self, cmd, args, out_dir, label, journal, job_id, t0) -> Dict:
+        if journal is None:
+            raise PolicyError("update_width requires a target design")
+        plan = self._plan(args)
+        before = plan.pop("_state")
+        rec = {"preview": self._public(plan)}
+        if plan["refusals"]:
+            return self._step(cmd, args, "FAIL", (time.perf_counter() - t0) * 1000, refused=True,
+                              checks=["REFUSED " + r for r in plan["refusals"]], **rec)
+        pre = self._measure("measure", {}, os.path.join(out_dir, "pre"), label + " pre", None, time.perf_counter())
+        rec["pre_measure"] = pre
+        if pre["status"] != "PASS":
+            return self._step(cmd, args, "FAIL", (time.perf_counter() - t0) * 1000, refused=True,
+                              checks=["REFUSED existing cabinet does not validate before the update"] + pre.get("checks", []), **rec)
+        orig = self.b.get_parameter("Cab_Width")
+        journal.begin_edit("Cab_Width", orig["expression"], orig["value_mm"], plan["new_expression"], job_id)
+        journal.mark("Cab_Width", "pending", kind="update_width", original_stored_text=before["stored_text"],
+                     new_design_spec_hash=plan["new_design_spec_hash"])
+        problems: List[str] = []
+        t_apply = time.perf_counter()
+        try:
+            got = self.b.set_parameter_expression("Cab_Width", plan["new_expression"])
+            journal.mark("Cab_Width", "applied", applied_value_mm=got)
+            stored_back = self.b.store_spec_text(plan["new_stored_text"])
+            rec["apply_ms"] = round((time.perf_counter() - t_apply) * 1000, 1)
+            if abs(got - plan["new_width_mm"]) > 1e-6:
+                problems.append("Cab_Width read back %s, expected %s" % (got, plan["new_width_mm"]))
+            if stored_back != plan["new_stored_text"]:
+                problems.append("stored specification read-back differs from the new canonical spec")
+            exp = dict(args.get("expect") or {})
+            exp.setdefault("design_spec_hash", plan["new_design_spec_hash"])
+            exp.setdefault("counts", pre["summary"]["design_counts"])
+            exp.setdefault("params_mm", {"Cab_Width": plan["expected_after_mm"]["Cab_Width"],
+                                         "Cab_Shelf_Length": plan["expected_after_mm"]["Cab_Shelf_Length"]})
+            post = self._measure("measure", {}, os.path.join(out_dir, "post"), label + " post", None,
+                                 time.perf_counter(), expect=exp)
+            rec["post_measure"] = post
+            if post["status"] != "PASS":
+                problems.append("post-update validation failed")
+            after = self.b.cabinet_state()
+            rec["identity_check"] = ident = _compare_identity(before, after)
+            problems += ident["problems"]
+            live_bad = [n for n, v in plan["expected_after_mm"].items()
+                        if abs(after["live_params"].get(n, {}).get("value_mm", float("nan")) - v) > 1e-6]
+            if live_bad:
+                problems.append("live parameters differ from the updated spec: %s" % live_bad)
+        except Exception as e:  # any API failure => roll back
+            problems.append("%s: %s" % (type(e).__name__, e))
+            rec["traceback"] = traceback.format_exc()
+        if not problems:
+            journal.clear("Cab_Width")   # permanent, verified change: spec and geometry agree again
+            s = rec["post_measure"]["summary"]
+            return self._step(cmd, args, "PASS", (time.perf_counter() - t0) * 1000, checks=[
+                "OK width %s -> %s mm; spec hash %s -> %s; validation %s/%s; component ids and timeline unchanged" % (
+                    plan["old_width_mm"], plan["new_width_mm"], plan["old_design_spec_hash"][:12],
+                    plan["new_design_spec_hash"][:12], s["counts"]["PASS"], s["total"])], **rec)
+        rec["rollback"] = self._rollback_width(orig, before["stored_text"], plan["old_design_spec_hash"],
+                                               pre["summary"]["design_counts"], out_dir, label, journal)
+        return self._step(cmd, args, "FAIL", (time.perf_counter() - t0) * 1000, checks=["FAIL " + p for p in problems], **rec)
+
+    def _rollback_width(self, orig, stored_text, old_hash, pre_counts, out_dir, label, journal) -> Dict:
+        out = {}
+        try:
+            out["value_read_back_mm"] = self.b.set_parameter_expression("Cab_Width", orig["expression"])
+            out["stored_restored"] = self.b.store_spec_text(stored_text) == stored_text
+            m = self._measure("measure", {}, os.path.join(out_dir, "rollback"), label + " rollback", None, time.perf_counter(),
+                              expect={"design_spec_hash": old_hash, "params_mm": {"Cab_Width": orig["value_mm"]},
+                                      "counts": pre_counts})
+            out["verification"] = m
+            ok = out["stored_restored"] and m["status"] == "PASS"
+        except Exception as e:
+            out["error"] = "%s: %s" % (type(e).__name__, e)
+            ok = False
+        if ok:
+            journal.clear("Cab_Width")
+        else:
+            journal.mark("Cab_Width", "restore_unverified")
+        out["verified"] = ok
+        return out
+
+
+def _compare_identity(before: Dict, after: Dict) -> Dict:
+    """Same managed components (stable id, entity token, component name, body count) and timeline length."""
+    problems = []
+    if before["occurrences"] != after["occurrences"]:
+        problems.append("managed component identities changed")
+    if before["timeline_count"] != after["timeline_count"]:
+        problems.append("timeline length changed %s -> %s (features added/removed)" % (
+            before["timeline_count"], after["timeline_count"]))
+    ids = [o["stable_id"] for o in after["occurrences"]]
+    if len(ids) != len(set(ids)):
+        problems.append("duplicate stable ids after update")
+    return {"problems": problems, "occurrences_before": before["occurrences"], "occurrences_after": after["occurrences"],
+            "timeline_before": before["timeline_count"], "timeline_after": after["timeline_count"]}
