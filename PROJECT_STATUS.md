@@ -1,21 +1,25 @@
 # Project status
-Updated: 2026-10-14
 
-| Gate | State | Evidence |
+Updated: 2026-10-14. Development branch: `feature/v5-g3-cabinet-variants`.
+
+| Milestone | Status | Evidence / limitation |
 | --- | --- | --- |
-| V4 shelf fit and parameter updates | User-verified in Fusion | All tests passed; exact final source still to be archived |
-| G0: preserve confirmed V4 source | INCOMPLETE | Obtain the exact tested Python and manifest and check hashes |
-| G1: CAD-independent calculations | PARTIAL | Core formulas and unit tests available; architectural contracts evolving |
-| G2: Fusion adapter | NOT VERIFIED | Prototype delivered; must run in Autodesk Fusion |
-| Vehicle fitment | NOT STARTED | Vehicle reference/scan and tolerance work needed |
-| Manufacturing exports | NOT STARTED | No approved CNC toolpaths |
+| Working V4 joinery | User-verified in Fusion | Golden exact local `.py`/`.manifest` provenance still unresolved |
+| G0 — preserve exact V4 source | **OPEN** | [Issue #1](https://github.com/AnyBuzzin/van-design-system/issues/1) |
+| G1 — CAD-neutral domain core | **PARTIAL** | 30/30 initial offline tests rerun successfully; 31-test expanded prototype and separate foundation CI passed; duplicated prototype/foundation packages not reconciled |
+| G2 — Fusion adapter smoke-test | **PASS for verified fixture** | Fusion v2705.1.30, scenarios A–E **58/58 PASS each**, explicit two-cut participant audit **PASS**; [Issue #2 CLOSED](https://github.com/AnyBuzzin/van-design-system/issues/2) |
+| G3 — base/tall/overhead variants | **OPEN / NEXT** | [Issue #4](https://github.com/AnyBuzzin/van-design-system/issues/4); no variant built or tested in Fusion yet |
+| G4 — structural change engine | **NOT STARTED** | Incremental regeneration, manual override conflicts and ownership-safe updates not implemented |
+| G5 — release candidate | **NOT STARTED** | No approved manufacturing export/CAM release |
 
-## Immediate tasks
-1. Archive exact V4 Fusion-tested baseline and hash it.
-2. Review the V5 package source, then commit to feature branch.
-3. Run V5 Fusion smoke test, capture geometry and validation reports.
-4. Resolve all FAIL and UNKNOWN results.
-5. Verify changes in width, dado depth and material thickness.
-6. Merge V5 adapter only after independent review and Fusion results.
+G2 test details: [FUSION_TEST_PROTOCOL.md](prototypes/claude-v5/FUSION_TEST_PROTOCOL.md), [real cut audit](prototypes/claude-v5/docs/test-results/cut_audit_20261014_174320_047406.txt). The original JSON reports are not yet archived in-repo; user-run save/reopen action is based on user workflow and `measure` report evidence.
 
-**Never record unperformed Fusion tests as PASS.**
+## Immediate next steps
+
+1. Review [G3 Claude handover](docs/ai/CLAUDE_V5_G3_HANDOVER_2026-10-14.md) and issue #4; confirm the variant design proposal.
+2. Implement G3 on `feature/v5-g3-cabinet-variants` without changing verified V5 default behavior.
+3. Offline tests, then one *new empty Fusion design per variant*, validation and save/reopen reports before declaring G3 PASS.
+4. Reconcile the isolated V5 prototype with `src/vandesign` through a separate reviewed migration plan; keep G2 PR #3 in draft until the integration decision.
+5. Still obtain exact V4 proven file hashes for G0.
+
+**Tests only count when performed and evidenced. No manufacturing approval is implied.**
