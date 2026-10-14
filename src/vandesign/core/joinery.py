@@ -10,6 +10,10 @@ class DadoShelf:
     dado_depth_mm: float
     end_clearance_mm: float
 
+    def __post_init__(self) -> None:
+        """Reject invalid geometry before any derived dimension can be read."""
+        self.validate()
+
     def validate(self) -> None:
         if self.cabinet_width_mm <= 2 * self.plywood_mm:
             raise ValueError("Cabinet must be wider than two side panels")
