@@ -1,0 +1,146 @@
+test_census_counts_multiplicity_and_is_read_only (test_adapter_census_mock.AdapterCensusMock.test_census_counts_multiplicity_and_is_read_only) ... ok
+test_census_check_is_last_original_checks_unchanged (test_census.CensusTests.test_census_check_is_last_original_checks_unchanged) ... ok
+test_duplicate_detected_by_multiplicity_even_when_set_matches (test_census.CensusTests.test_duplicate_detected_by_multiplicity_even_when_set_matches) ... ok
+test_exact_match_passes (test_census.CensusTests.test_exact_match_passes) ... ok
+test_missing_id_fails (test_census.CensusTests.test_missing_id_fails) ... ok
+test_missing_plus_duplicate_same_total_still_fails (test_census.CensusTests.test_missing_plus_duplicate_same_total_still_fails) ... ok
+test_raising_enumeration_is_unknown_and_recorded (test_census.CensusTests.test_raising_enumeration_is_unknown_and_recorded) ... ok
+test_source_without_method_is_unknown (test_census.CensusTests.test_source_without_method_is_unknown) ... ok
+test_unavailable_enumeration_is_unknown (test_census.CensusTests.test_unavailable_enumeration_is_unknown) ... ok
+test_unexpected_id_fails (test_census.CensusTests.test_unexpected_id_fails) ... ok
+test_all_shelf_and_door_counts_build (test_core.CabinetFixtureTests.test_all_shelf_and_door_counts_build) ... ok
+test_fixture_d_vertical_layout (test_core.CabinetFixtureTests.test_fixture_d_vertical_layout) ... ok
+test_fixtures_a_to_d (test_core.CabinetFixtureTests.test_fixtures_a_to_d) ... ok
+test_matches_archived_v4_derived_parameters (test_core.CabinetFixtureTests.test_matches_archived_v4_derived_parameters)
+V5 derived values must equal the tested V4 script's expressions. ... ok
+test_rendered_expressions_match_python_evaluation (test_core.CabinetFixtureTests.test_rendered_expressions_match_python_evaluation) ... ok
+test_shelf_and_cut_ownership (test_core.CabinetFixtureTests.test_shelf_and_cut_ownership) ... ok
+test_v4_parameter_names_preserved (test_core.CabinetFixtureTests.test_v4_parameter_names_preserved) ... ok
+test_dimension_rules (test_core.ExprTests.test_dimension_rules) ... ok
+test_parameter_graph_rejects_forward_and_duplicate (test_core.ExprTests.test_parameter_graph_rejects_forward_and_duplicate) ... ok
+test_render_and_eval_agree (test_core.ExprTests.test_render_and_eval_agree) ... ok
+test_unknown_param (test_core.ExprTests.test_unknown_param) ... ok
+test_constraint_violations_fail_before_cad (test_core.SpecTests.test_constraint_violations_fail_before_cad) ... ok
+test_rejections (test_core.SpecTests.test_rejections) ... ok
+test_roundtrip_and_hash (test_core.SpecTests.test_roundtrip_and_hash) ... ok
+test_api_error_is_unknown_not_pass (test_cut_audit_g3.AuditTests.test_api_error_is_unknown_not_pass) ... ok
+test_duplicate_feature_name_fails (test_cut_audit_g3.AuditTests.test_duplicate_feature_name_fails) ... ok
+test_expected_operations_for_0_2_spec (test_cut_audit_g3.AuditTests.test_expected_operations_for_0_2_spec) ... ok
+test_extra_participant_fails (test_cut_audit_g3.AuditTests.test_extra_participant_fails) ... ok
+test_missing_feature_fails (test_cut_audit_g3.AuditTests.test_missing_feature_fails) ... ok
+test_no_explicit_participants_fails (test_cut_audit_g3.AuditTests.test_no_explicit_participants_fails) ... ok
+test_no_stored_spec_unknown (test_cut_audit_g3.AuditTests.test_no_stored_spec_unknown) ... ok
+test_not_a_cut_fails (test_cut_audit_g3.AuditTests.test_not_a_cut_fails) ... ok
+test_restore_failure_is_fail_with_warning (test_cut_audit_g3.AuditTests.test_restore_failure_is_fail_with_warning) ... ok
+test_script_never_mutates_design (test_cut_audit_g3.AuditTests.test_script_never_mutates_design) ... ok
+test_shelf_as_participant_fails (test_cut_audit_g3.AuditTests.test_shelf_as_participant_fails) ... ok
+test_tall_six_of_six_pass_and_timeline_restored (test_cut_audit_g3.AuditTests.test_tall_six_of_six_pass_and_timeline_restored) ... ok
+test_unexpected_dado_feature_fails (test_cut_audit_g3.AuditTests.test_unexpected_dado_feature_fails) ... ok
+test_unexpected_noncanonical_dado_feature_must_fail (test_cut_audit_g3.AuditTests.test_unexpected_noncanonical_dado_feature_must_fail) ... ok
+test_wrong_side_participant_fails (test_cut_audit_g3.AuditTests.test_wrong_side_participant_fails) ... ok
+test_zero_shelves_audits_nothing_so_unknown (test_cut_audit_g3.AuditTests.test_zero_shelves_audits_nothing_so_unknown) ... ok
+test_02_specific_rejections (test_design_spec.MalformedCorpus.test_02_specific_rejections) ... ok
+test_bytes_input_accepted (test_design_spec.MalformedCorpus.test_bytes_input_accepted) ... ok
+test_errors_are_actionable (test_design_spec.MalformedCorpus.test_errors_are_actionable) ... ok
+test_oversize_and_bad_types (test_design_spec.MalformedCorpus.test_oversize_and_bad_types) ... ok
+test_rejected_inputs (test_design_spec.MalformedCorpus.test_rejected_inputs) ... ok
+test_M10_02_base_vs_01_default (test_design_spec.MigrationMatrix.test_M10_02_base_vs_01_default) ... ok
+test_M11_bad_module_variant_profile_schema (test_design_spec.MigrationMatrix.test_M11_bad_module_variant_profile_schema) ... ok
+test_M12_01_reemits_01_never_02 (test_design_spec.MigrationMatrix.test_M12_01_reemits_01_never_02) ... ok
+test_M13_loader_is_pure (test_design_spec.MigrationMatrix.test_M13_loader_is_pure) ... ok
+test_M14_initial_profile_range_rejected (test_design_spec.MigrationMatrix.test_M14_initial_profile_range_rejected) ... ok
+test_M1_g2_default_roundtrip (test_design_spec.MigrationMatrix.test_M1_g2_default_roundtrip) ... ok
+test_M2_all_combos_equal_g2_golden (test_design_spec.MigrationMatrix.test_M2_all_combos_equal_g2_golden) ... ok
+test_M3_sparse_01_uses_frozen_defaults (test_design_spec.MigrationMatrix.test_M3_sparse_01_uses_frozen_defaults) ... ok
+test_M4_int_vs_float_preserved_like_g2 (test_design_spec.MigrationMatrix.test_M4_int_vs_float_preserved_like_g2) ... ok
+test_M5_unknown_parameter_rejected (test_design_spec.MigrationMatrix.test_M5_unknown_parameter_rejected) ... ok
+test_M6_unknown_toplevel_and_duplicate_keys_rejected (test_design_spec.MigrationMatrix.test_M6_unknown_toplevel_and_duplicate_keys_rejected) ... ok
+test_M7_01_with_variant_or_wrong_module_rejected (test_design_spec.MigrationMatrix.test_M7_01_with_variant_or_wrong_module_rejected) ... ok
+test_M8_full_02_all_variants_roundtrip_and_build (test_design_spec.MigrationMatrix.test_M8_full_02_all_variants_roundtrip_and_build) ... ok
+test_M9_sparse_02_resolved_from_profile (test_design_spec.MigrationMatrix.test_M9_sparse_02_resolved_from_profile) ... ok
+test_all_shelf_door_combinations_match_frozen_snapshot (test_g3_golden.GoldenAssemblyTests.test_all_shelf_door_combinations_match_frozen_snapshot) ... ok
+test_default_base_has_58_named_checks (test_g3_golden.GoldenAssemblyTests.test_default_base_has_58_named_checks) ... ok
+test_default_legacy_hash_is_frozen (test_g3_golden.GoldenAssemblyTests.test_default_legacy_hash_is_frozen) ... ok
+test_adapter_geometry_methods_unchanged (test_g3_golden.ProtectedSourceTests.test_adapter_geometry_methods_unchanged) ... ok
+test_protected_files_byte_identical (test_g3_golden.ProtectedSourceTests.test_protected_files_byte_identical) ... ok
+test_layout_and_edits (test_interior_demo.InteriorTests.test_layout_and_edits) ... ok
+test_refuse_bad_layout (test_interior_demo.InteriorTests.test_refuse_bad_layout) ... ok
+test_adsk_only_imported_in_fusion_package (test_layering.LayeringTests.test_adsk_only_imported_in_fusion_package) ... ok
+test_core_imports_without_adsk (test_layering.LayeringTests.test_core_imports_without_adsk) ... ok
+test_entrypoint_has_no_business_logic (test_layering.LayeringTests.test_entrypoint_has_no_business_logic) ... ok
+test_bad_specs_rejected_before_any_cad_mutation (test_runner_integration.BuildPath.test_bad_specs_rejected_before_any_cad_mutation) ... ok
+test_each_02_fixture_builds_and_reports_metadata (test_runner_integration.BuildPath.test_each_02_fixture_builds_and_reports_metadata) ... ok
+test_failed_build_keeps_error_handling (test_runner_integration.BuildPath.test_failed_build_keeps_error_handling) ... ok
+test_no_spec_file_stores_exact_legacy_g2_default (test_runner_integration.BuildPath.test_no_spec_file_stores_exact_legacy_g2_default) ... ok
+test_sparse_02_report_hashes_distinguish_input_and_stored_canonical_bytes (test_runner_integration.BuildPath.test_sparse_02_report_hashes_distinguish_input_and_stored_canonical_bytes) ... ok
+test_g2_stored_design_measures_read_only (test_runner_integration.MeasurePath.test_g2_stored_design_measures_read_only) ... ok
+test_managed_components_without_spec_refuses (test_runner_integration.MeasurePath.test_managed_components_without_spec_refuses) ... ok
+test_noncanonical_stored_01_distinguishes_raw_from_canonical (test_runner_integration.MeasurePath.test_noncanonical_stored_01_distinguishes_raw_from_canonical) ... ok
+test_spec_file_ignored_when_design_already_has_spec (test_runner_integration.MeasurePath.test_spec_file_ignored_when_design_already_has_spec) ... ok
+test_stored_02_tall_measures_with_profile_checks_and_live_edit_fail (test_runner_integration.MeasurePath.test_stored_02_tall_measures_with_profile_checks_and_live_edit_fail) ... ok
+test_unreadable_stored_spec_changes_nothing (test_runner_integration.MeasurePath.test_unreadable_stored_spec_changes_nothing) ... ok
+test_json_and_text_reports_capture_live_values (test_runner_reporting.RunnerReportTests.test_json_and_text_reports_capture_live_values) ... ok
+test_each_file_loads_and_matches_profile (test_spec_files.SpecFiles.test_each_file_loads_and_matches_profile) ...
+  test_each_file_loads_and_matches_profile (test_spec_files.SpecFiles.test_each_file_loads_and_matches_profile) (variant='base') ... FAIL
+  test_each_file_loads_and_matches_profile (test_spec_files.SpecFiles.test_each_file_loads_and_matches_profile) (variant='tall') ... FAIL
+  test_each_file_loads_and_matches_profile (test_spec_files.SpecFiles.test_each_file_loads_and_matches_profile) (variant='overhead') ... FAIL
+test_interference_detected (test_validation.FailureModeTests.test_interference_detected) ... ok
+test_missing_grooves_detected (test_validation.FailureModeTests.test_missing_grooves_detected) ... ok
+test_report_serialises (test_validation.FailureModeTests.test_report_serialises) ... ok
+test_shelf_misplaced_vertically (test_validation.FailureModeTests.test_shelf_misplaced_vertically) ... ok
+test_unavailable_evidence_is_unknown_never_pass (test_validation.FailureModeTests.test_unavailable_evidence_is_unknown_never_pass)
+V5-08. ... ok
+test_v4_bug_cut_trims_shelf_is_detected (test_validation.FailureModeTests.test_v4_bug_cut_trims_shelf_is_detected)
+V5-06: grooves that also cut the shelf must FAIL. ... ok
+test_edit_that_violates_constraint_is_reported (test_validation.ParametricEditTests.test_edit_that_violates_constraint_is_reported) ... ok
+test_fixtures_pass_after_edit_without_rebuild (test_validation.ParametricEditTests.test_fixtures_pass_after_edit_without_rebuild) ... ok
+test_multiple_shelves_pass (test_validation.ParametricEditTests.test_multiple_shelves_pass) ... ok
+test_duplicate_ids_rejected (test_validation.StructureTests.test_duplicate_ids_rejected) ... ok
+test_missing_empty_and_self_targets (test_validation.StructureTests.test_missing_empty_and_self_targets) ... ok
+test_preflight_rejects_before_adapter_work (test_validation.StructureTests.test_preflight_rejects_before_adapter_work) ... ok
+test_preflight_rejects_constraint_violation (test_validation.StructureTests.test_preflight_rejects_constraint_violation) ... ok
+test_edits_pass_within_range (test_variants.EditMatrix.test_edits_pass_within_range) ... ok
+test_tall_height_2000_redistributes_shelves (test_variants.EditMatrix.test_tall_height_2000_redistributes_shelves) ... ok
+test_cut_trimming_shelf_fails_for_every_variant (test_variants.FaultInjection.test_cut_trimming_shelf_fails_for_every_variant) ... ok
+test_every_shelf_has_exactly_one_left_and_one_right_op (test_variants.FaultInjection.test_every_shelf_has_exactly_one_left_and_one_right_op) ... ok
+test_missing_grooves_unreadable_and_no_containment_never_pass (test_variants.FaultInjection.test_missing_grooves_unreadable_and_no_containment_never_pass) ... ok
+test_check_count_formula_and_snapshots (test_variants.HandComputedFixtures.test_check_count_formula_and_snapshots) ... ok
+test_values (test_variants.HandComputedFixtures.test_values) ... ok
+test_base_has_no_limits_and_no_profile_checks (test_variants.OneGenerator.test_base_has_no_limits_and_no_profile_checks) ... ok
+test_original_base_check_ids_retained (test_variants.OneGenerator.test_original_base_check_ids_retained) ... ok
+test_profiles_contain_no_geometry (test_variants.OneGenerator.test_profiles_contain_no_geometry) ... ok
+test_profiles_immutable (test_variants.OneGenerator.test_profiles_immutable) ... ok
+test_variants_use_build_cabinet_output (test_variants.OneGenerator.test_variants_use_build_cabinet_output) ... ok
+test_bounds_inclusive (test_variants.RangeChecks.test_bounds_inclusive) ... ok
+test_limit_metadata_layout (test_variants.RangeChecks.test_limit_metadata_layout) ... ok
+test_out_of_range_fails_by_name_without_clamping (test_variants.RangeChecks.test_out_of_range_fails_by_name_without_clamping) ... ok
+test_unreadable_parameter_is_unknown (test_variants.RangeChecks.test_unreadable_parameter_is_unknown) ... ok
+
+======================================================================
+FAIL: test_each_file_loads_and_matches_profile (test_spec_files.SpecFiles.test_each_file_loads_and_matches_profile) (variant='base')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "C:\Users\Buzz\Documents\GitHub\van-design-system\prototypes\claude-v5\tests\test_spec_files.py", line 26, in test_each_file_loads_and_matches_profile
+    self.assertNotIn(b"\r", raw)
+AssertionError: b'\r' unexpectedly found in b'{\r\n  "module": "cabinet@1",\r\n  "parameters": {\r\n    "back_mm": 6.0,\r\n    "cabinet_id": "cabinet.001",\r\n    "dado_depth_mm": 6.0,\r\n    "depth_mm": 550.0,\r\n    "door_count": 2,\r\n    "end_clearance_mm": 0.3,\r\n    "gap_mm": 3.0,\r\n    "height_mm": 850.0,\r\n    "material_ref": "ply_main",\r\n    "ply_mm": 18.0,\r\n    "shelf_count": 1,\r\n    "slot_clearance_mm": 0.5,\r\n    "width_mm": 1200.0\r\n  },\r\n  "profile_version": 1,\r\n  "schema_version": "0.2",\r\n  "variant": "base"\r\n}\r\n'
+
+======================================================================
+FAIL: test_each_file_loads_and_matches_profile (test_spec_files.SpecFiles.test_each_file_loads_and_matches_profile) (variant='tall')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "C:\Users\Buzz\Documents\GitHub\van-design-system\prototypes\claude-v5\tests\test_spec_files.py", line 26, in test_each_file_loads_and_matches_profile
+    self.assertNotIn(b"\r", raw)
+AssertionError: b'\r' unexpectedly found in b'{\r\n  "module": "cabinet@1",\r\n  "parameters": {\r\n    "back_mm": 6.0,\r\n    "cabinet_id": "cabinet.001",\r\n    "dado_depth_mm": 6.0,\r\n    "depth_mm": 550.0,\r\n    "door_count": 1,\r\n    "end_clearance_mm": 0.3,\r\n    "gap_mm": 3.0,\r\n    "height_mm": 1900.0,\r\n    "material_ref": "ply_main",\r\n    "ply_mm": 18.0,\r\n    "shelf_count": 3,\r\n    "slot_clearance_mm": 0.5,\r\n    "width_mm": 600.0\r\n  },\r\n  "profile_version": 1,\r\n  "schema_version": "0.2",\r\n  "variant": "tall"\r\n}\r\n'
+
+======================================================================
+FAIL: test_each_file_loads_and_matches_profile (test_spec_files.SpecFiles.test_each_file_loads_and_matches_profile) (variant='overhead')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "C:\Users\Buzz\Documents\GitHub\van-design-system\prototypes\claude-v5\tests\test_spec_files.py", line 26, in test_each_file_loads_and_matches_profile
+    self.assertNotIn(b"\r", raw)
+AssertionError: b'\r' unexpectedly found in b'{\r\n  "module": "cabinet@1",\r\n  "parameters": {\r\n    "back_mm": 6.0,\r\n    "cabinet_id": "cabinet.001",\r\n    "dado_depth_mm": 6.0,\r\n    "depth_mm": 350.0,\r\n    "door_count": 2,\r\n    "end_clearance_mm": 0.3,\r\n    "gap_mm": 3.0,\r\n    "height_mm": 400.0,\r\n    "material_ref": "ply_main",\r\n    "ply_mm": 18.0,\r\n    "shelf_count": 1,\r\n    "slot_clearance_mm": 0.5,\r\n    "width_mm": 1000.0\r\n  },\r\n  "profile_version": 1,\r\n  "schema_version": "0.2",\r\n  "variant": "overhead"\r\n}\r\n'
+
+----------------------------------------------------------------------
+Ran 111 tests in 5.105s
+
+FAILED (failures=3)
