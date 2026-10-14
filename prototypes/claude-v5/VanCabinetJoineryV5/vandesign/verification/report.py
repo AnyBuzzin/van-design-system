@@ -18,6 +18,8 @@ class Check:
     unit: str = ""
     object_ids: Tuple[str, ...] = ()
     note: str = ""
+    limit_min: Optional[float] = None   # optional range metadata (G3 profile checks)
+    limit_max: Optional[float] = None
 
     def line(self) -> str:
         parts = ["  %-7s %s" % (self.status, self.check_id)]
@@ -30,11 +32,17 @@ class Check:
         return "".join(parts)
 
     def to_dict(self) -> Dict:
-        return {
+        d = {
             "check_id": self.check_id, "status": self.status, "observed": self.observed,
             "expected": self.expected, "tolerance": self.tolerance, "unit": self.unit,
             "object_ids": list(self.object_ids), "note": self.note,
         }
+        # Emitted only when set so the original check layout is unchanged.
+        if self.limit_min is not None:
+            d["limit_min"] = self.limit_min
+        if self.limit_max is not None:
+            d["limit_max"] = self.limit_max
+        return d
 
 
 @dataclass
