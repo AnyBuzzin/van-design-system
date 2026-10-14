@@ -1,6 +1,6 @@
 # VanDesign V5 — G0/G1 skeleton + G2 Fusion adapter
 
-Status: **core and tests run and pass outside Fusion (30 tests). The Fusion adapter has NOT been run in Fusion yet.**
+Status (updated 2026-10-14): **V5 G2 Fusion-verified for the tested cabinet fixture.** User-run Fusion 360 v2705.1.30 tests A–E each returned **PASS 58/58**; a separate direct Fusion API audit confirmed one correct participant body for each dado cut (shelf excluded). See [FUSION_TEST_PROTOCOL.md](FUSION_TEST_PROTOCOL.md) and [original cut audit](docs/test-results/cut_audit_20261014_174320_047406.txt). The isolated prototype is NOT integrated into the repo's `src/vandesign`, nor manufacturing-approved. Next: G3 three variants, [issue #4](https://github.com/AnyBuzzin/van-design-system/issues/4).
 
 ## Layout
 ```
