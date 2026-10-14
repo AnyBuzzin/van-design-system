@@ -36,6 +36,8 @@ class RunnerReportTests(unittest.TestCase):
                 assert data['mode'] == 'build'
                 assert data['parameters_read_from_fusion']['Cab_Width']['value_mm'] == 1200.0
                 assert data['parameters_read_from_fusion']['Cab_Dado_Depth']['value_mm'] == 6.0
+                assert data['parameters_mm']['Cab_Dado_Depth'] == 6.0
+                assert data['parameters_mm']['Cab_Width'] == 1200.0
                 assert 'other_parameter' not in data['parameters_read_from_fusion']
                 assert 'Cab_Dado_Depth = 6.0000 mm' in text
                 assert 'RESULT: PASS' in text
