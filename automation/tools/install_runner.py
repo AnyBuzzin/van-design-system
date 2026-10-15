@@ -44,6 +44,9 @@ def install(a):
     audit = os.path.abspath(a.audit_script)
     if not os.path.isfile(audit):
         sys.exit("audit script not found: %s" % audit)
+    demo = getattr(a, 'demo_package_dir', None)
+    if demo and not os.path.isfile(os.path.join(demo, 'vandesign', 'cad', 'fusion', 'interior_demo.py')):
+        sys.exit("approved interior demo module not found")
     dst = _target(a.addins_dir)
     cfg_file = _cfg_path(a.addins_dir)
     old_cfg = None
@@ -52,14 +55,14 @@ def install(a):
             sys.exit("%s already exists; use --upgrade to replace the code (config.json is kept)" % dst)
         if os.path.exists(cfg_file):
             old_cfg = json.load(open(cfg_file, encoding="utf-8"))
-        for name in ("VanDesignRunner.py", "VanDesignRunner.manifest", "fusion_backend.py"):
+        for name in ("VanDesignRunner.py", "VanDesignRunner.manifest", "fusion_backend.py", "demo_workflow.py"):
             p = os.path.join(dst, name)
             if os.path.exists(p):
                 os.remove(p)
         shutil.rmtree(os.path.join(dst, "vdrunner"), ignore_errors=True)
     os.makedirs(dst, exist_ok=True)
     src = os.path.join(AUTOMATION, "VanDesignRunner")
-    for name in ("VanDesignRunner.py", "VanDesignRunner.manifest", "fusion_backend.py"):
+    for name in ("VanDesignRunner.py", "VanDesignRunner.manifest", "fusion_backend.py", "demo_workflow.py"):
         shutil.copy2(os.path.join(src, name), os.path.join(dst, name))
     shutil.copytree(os.path.join(AUTOMATION, "vdrunner"), os.path.join(dst, "vdrunner"),
                     ignore=shutil.ignore_patterns("__pycache__", "*.pyc"))
@@ -67,6 +70,8 @@ def install(a):
                       "parameter_bounds_mm": DEFAULT_PARAMETER_BOUNDS_MM}
     cfg.update(queue_root=os.path.abspath(a.queue_root), g3_script_dir=g3, audit_script=audit,
                runner_version=RUNNER_VERSION)
+    if demo:
+        cfg['demo_package_dir'] = os.path.abspath(demo)
     atomic_write_json(cfg_file, cfg)
     print(json.dumps({"installed": dst, "runner_version": RUNNER_VERSION, "config": cfg}, indent=2))
 
@@ -91,6 +96,7 @@ def main(argv=None):
     i = sub.add_parser("install")
     i.add_argument("--g3-dir", required=True); i.add_argument("--audit-script", required=True)
     i.add_argument("--queue-root", default=default_queue_root()); i.add_argument("--upgrade", action="store_true")
+    i.add_argument("--demo-package-dir", help="Trusted package containing the fixed FirstInteriorDemo entry point")
     for name in ("allow", "protect"):
         p = sub.add_parser(name)
         p.add_argument("design_id"); p.add_argument("--name", required=True); p.add_argument("--note")

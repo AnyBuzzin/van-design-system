@@ -64,7 +64,7 @@ class LayeringTests(unittest.TestCase):
                     self.assertFalse(any(x.split(".")[0] == "adsk" for x in names + [mod]), n)
 
     def test_addin_has_no_forbidden_operations(self):
-        """The add-in must not save, delete, export or execute arbitrary code."""
+        """Cloud save is isolated to the guarded demo lifecycle; no arbitrary code."""
         forbidden = ("deleteMe", ".save(", "saveAs", "exportManager", "exec(", "eval(", "subprocess", "os.system",
                      ".compile(")
         for n in ("VanDesignRunner.py", "fusion_backend.py"):
@@ -75,6 +75,10 @@ class LayeringTests(unittest.TestCase):
         backend = open(os.path.join(AUTOMATION, "VanDesignRunner", "fusion_backend.py"), encoding="utf-8").read()
         self.assertEqual(backend.count("store_spec_json("), 1)
         self.assertNotIn("store_spec_json", open(os.path.join(AUTOMATION, "VanDesignRunner", "VanDesignRunner.py"), encoding="utf-8").read())
+        lifecycle = open(os.path.join(AUTOMATION, "VanDesignRunner", "demo_workflow.py"), encoding="utf-8").read()
+        for f in ("deleteMe", ".save(", "exportManager", "exec(", "eval(", "subprocess", "os.system"):
+            self.assertNotIn(f, lifecycle)
+        self.assertEqual(lifecycle.count('doc.saveAs('), 1)
 
 
 if __name__ == "__main__":

@@ -3,7 +3,7 @@ import os
 import unittest
 
 from _helpers import AUTOMATION, DESIGN, job
-from vdrunner.schema import JobSchemaError, is_mutating, steps_of, validate_job
+from vdrunner.schema import ALL_COMMANDS, JobSchemaError, is_mutating, steps_of, validate_job
 
 
 class SchemaTests(unittest.TestCase):
@@ -70,7 +70,7 @@ class SchemaTests(unittest.TestCase):
         with open(os.path.join(AUTOMATION, "schema", "vdrunner-job-v1.schema.json")) as fh:
             doc = json.load(fh)
         self.assertEqual(sorted(doc["properties"]["command"]["enum"]),
-                         sorted(["ping", "inspect_design", "measure", "set_parameter", "restore_parameter", "audit_cuts", "run_test_batch"]))
+                         sorted(ALL_COMMANDS))
 
 
 if __name__ == "__main__":
