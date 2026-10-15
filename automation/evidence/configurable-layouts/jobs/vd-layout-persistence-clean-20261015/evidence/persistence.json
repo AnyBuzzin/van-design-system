@@ -1,0 +1,1061 @@
+{
+  "outcome": "PASS",
+  "before": {
+    "outcome": "PASS",
+    "parameters_mm": {
+      "Cab_Width": 1200.0,
+      "Cab_Height": 850.0,
+      "Cab_Depth": 550.0,
+      "Cab_Ply": 18.0,
+      "Cab_Back": 6.000000000000001,
+      "Cab_Gap": 3.0000000000000004,
+      "Cab_Dado_Depth": 6.000000000000001,
+      "Cab_Slot_Clearance": 0.5,
+      "Cab_End_Clearance": 0.3,
+      "Cab_Inner_Depth": 544.0,
+      "Cab_Slot_Height": 18.5,
+      "Cab_Shelf_X": 12.3,
+      "Cab_Shelf_Length": 1175.4,
+      "Cab_Compartment": 398.0,
+      "Cab_Shelf1_Z": 416.0,
+      "Cab_Slot1_Z": 415.75,
+      "Van_Width": 1800.0,
+      "Van_Length": 4000.0,
+      "Van_Height": 2000.0,
+      "Demo_Ply": 18.0,
+      "Bed_Length": 1900.0,
+      "Bed_Height": 700.0,
+      "Kitchen_X": 50.0,
+      "Kitchen_Y": 100.0
+    },
+    "checks": [
+      {
+        "id": "panel.left.001",
+        "status": "PASS",
+        "expected_volume_mm3": 8354616.0,
+        "expected_bounds_mm": {
+          "min": [
+            50.0,
+            118.0,
+            18.0
+          ],
+          "max": [
+            68.0,
+            668.0,
+            868.0
+          ]
+        },
+        "measured_bounds_mm": {
+          "min": [
+            50.0,
+            117.99999999999997,
+            18.0
+          ],
+          "max": [
+            68.0,
+            668.0,
+            868.0
+          ]
+        },
+        "measured_volume_mm3": 8354615.999999998
+      },
+      {
+        "id": "panel.right.001",
+        "status": "PASS",
+        "expected_volume_mm3": 8354616.0,
+        "expected_bounds_mm": {
+          "min": [
+            1232.0,
+            118.0,
+            18.0
+          ],
+          "max": [
+            1250.0,
+            668.0,
+            868.0
+          ]
+        },
+        "measured_bounds_mm": {
+          "min": [
+            1232.0,
+            117.99999999999997,
+            18.0
+          ],
+          "max": [
+            1250.0,
+            668.0,
+            868.0
+          ]
+        },
+        "measured_volume_mm3": 8354615.999999987
+      },
+      {
+        "id": "panel.bottom.001",
+        "status": "PASS",
+        "expected_volume_mm3": 11397888.0,
+        "expected_bounds_mm": {
+          "min": [
+            68.0,
+            118.0,
+            18.0
+          ],
+          "max": [
+            1232.0,
+            662.0,
+            36.0
+          ]
+        },
+        "measured_bounds_mm": {
+          "min": [
+            68.0,
+            118.0,
+            18.0
+          ],
+          "max": [
+            1232.0,
+            662.0,
+            36.0
+          ]
+        },
+        "measured_volume_mm3": 11397888.000000002
+      },
+      {
+        "id": "panel.top.001",
+        "status": "PASS",
+        "expected_volume_mm3": 11397888.0,
+        "expected_bounds_mm": {
+          "min": [
+            68.0,
+            118.0,
+            850.0
+          ],
+          "max": [
+            1232.0,
+            662.0,
+            868.0
+          ]
+        },
+        "measured_bounds_mm": {
+          "min": [
+            68.0,
+            118.0,
+            850.0
+          ],
+          "max": [
+            1232.0,
+            662.0,
+            868.0
+          ]
+        },
+        "measured_volume_mm3": 11397887.999999983
+      },
+      {
+        "id": "panel.back.001",
+        "status": "PASS",
+        "expected_volume_mm3": 5684976.0,
+        "expected_bounds_mm": {
+          "min": [
+            68.0,
+            662.0,
+            36.0
+          ],
+          "max": [
+            1232.0,
+            668.0,
+            850.0
+          ]
+        },
+        "measured_bounds_mm": {
+          "min": [
+            68.0,
+            661.9999999999999,
+            36.0
+          ],
+          "max": [
+            1232.0,
+            667.9999999999998,
+            850.0
+          ]
+        },
+        "measured_volume_mm3": 5684975.999999946
+      },
+      {
+        "id": "panel.shelf.001",
+        "status": "PASS",
+        "expected_volume_mm3": 11509516.8,
+        "expected_bounds_mm": {
+          "min": [
+            62.3,
+            118.0,
+            434.0
+          ],
+          "max": [
+            1237.7,
+            662.0,
+            452.0
+          ]
+        },
+        "measured_bounds_mm": {
+          "min": [
+            62.300000000000004,
+            118.0,
+            433.9999999999999
+          ],
+          "max": [
+            1237.7,
+            662.0,
+            451.9999999999999
+          ]
+        },
+        "measured_volume_mm3": 11509516.799999982
+      },
+      {
+        "id": "panel.door.001",
+        "status": "PASS",
+        "expected_volume_mm3": 9046836.0,
+        "expected_bounds_mm": {
+          "min": [
+            53.0,
+            100.0,
+            21.0
+          ],
+          "max": [
+            648.5,
+            118.0,
+            865.0
+          ]
+        },
+        "measured_bounds_mm": {
+          "min": [
+            53.0,
+            100.0,
+            21.0
+          ],
+          "max": [
+            648.5,
+            118.0,
+            865.0
+          ]
+        },
+        "measured_volume_mm3": 9046836.000000006
+      },
+      {
+        "id": "panel.door.002",
+        "status": "PASS",
+        "expected_volume_mm3": 9046836.0,
+        "expected_bounds_mm": {
+          "min": [
+            651.5,
+            100.0,
+            21.0
+          ],
+          "max": [
+            1247.0,
+            118.0,
+            865.0
+          ]
+        },
+        "measured_bounds_mm": {
+          "min": [
+            651.5,
+            100.0,
+            21.0
+          ],
+          "max": [
+            1247.0,
+            118.0,
+            865.0
+          ]
+        },
+        "measured_volume_mm3": 9046836.000000006
+      },
+      {
+        "id": "van.floor.001",
+        "status": "PASS",
+        "expected_volume_mm3": 129600000.0,
+        "expected_bounds_mm": {
+          "min": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "max": [
+            1800.0,
+            4000.0,
+            18.0
+          ]
+        },
+        "measured_bounds_mm": {
+          "min": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "max": [
+            1800.0,
+            4000.0,
+            18.0
+          ]
+        },
+        "measured_volume_mm3": 129600000.0
+      },
+      {
+        "id": "van.left.001",
+        "status": "PASS",
+        "expected_volume_mm3": 10800000.0,
+        "expected_bounds_mm": {
+          "min": [
+            0.0,
+            0.0,
+            18.0
+          ],
+          "max": [
+            18.0,
+            4000.0,
+            168.0
+          ]
+        },
+        "measured_bounds_mm": {
+          "min": [
+            0.0,
+            0.0,
+            18.0
+          ],
+          "max": [
+            18.0,
+            4000.0,
+            168.0
+          ]
+        },
+        "measured_volume_mm3": 10800000.0
+      },
+      {
+        "id": "van.right.001",
+        "status": "PASS",
+        "expected_volume_mm3": 10800000.0,
+        "expected_bounds_mm": {
+          "min": [
+            1782.0,
+            0.0,
+            18.0
+          ],
+          "max": [
+            1800.0,
+            4000.0,
+            168.0
+          ]
+        },
+        "measured_bounds_mm": {
+          "min": [
+            1782.0,
+            0.0,
+            18.0
+          ],
+          "max": [
+            1800.0,
+            4000.0,
+            168.0
+          ]
+        },
+        "measured_volume_mm3": 10800000.000000069
+      },
+      {
+        "id": "van.rear.001",
+        "status": "PASS",
+        "expected_volume_mm3": 62932464.0,
+        "expected_bounds_mm": {
+          "min": [
+            18.0,
+            3982.0,
+            18.0
+          ],
+          "max": [
+            1782.0,
+            4000.0,
+            2000.0
+          ]
+        },
+        "measured_bounds_mm": {
+          "min": [
+            18.0,
+            3982.0,
+            18.0
+          ],
+          "max": [
+            1782.0000000000002,
+            4000.0,
+            2000.0
+          ]
+        },
+        "measured_volume_mm3": 62932464.0000004
+      },
+      {
+        "id": "bed.deck.001",
+        "status": "PASS",
+        "expected_volume_mm3": 60328800.0,
+        "expected_bounds_mm": {
+          "min": [
+            18.0,
+            2082.0,
+            700.0
+          ],
+          "max": [
+            1782.0,
+            3982.0,
+            718.0
+          ]
+        },
+        "measured_bounds_mm": {
+          "min": [
+            18.0,
+            2082.0,
+            700.0
+          ],
+          "max": [
+            1782.0000000000002,
+            3982.0,
+            718.0
+          ]
+        },
+        "measured_volume_mm3": 60328799.99999992
+      },
+      {
+        "id": "bed.front.001",
+        "status": "PASS",
+        "expected_volume_mm3": 21654864.0,
+        "expected_bounds_mm": {
+          "min": [
+            18.0,
+            2082.0,
+            18.0
+          ],
+          "max": [
+            1782.0,
+            2100.0,
+            700.0
+          ]
+        },
+        "measured_bounds_mm": {
+          "min": [
+            18.0,
+            2082.0,
+            18.0
+          ],
+          "max": [
+            1782.0000000000002,
+            2100.0,
+            700.0
+          ]
+        },
+        "measured_volume_mm3": 21654864.000000138
+      },
+      {
+        "id": "bed.rear.001",
+        "status": "PASS",
+        "expected_volume_mm3": 21654864.0,
+        "expected_bounds_mm": {
+          "min": [
+            18.0,
+            3964.0,
+            18.0
+          ],
+          "max": [
+            1782.0,
+            3982.0,
+            700.0
+          ]
+        },
+        "measured_bounds_mm": {
+          "min": [
+            18.0,
+            3964.0,
+            18.0
+          ],
+          "max": [
+            1782.0000000000002,
+            3982.0,
+            700.0
+          ]
+        },
+        "measured_volume_mm3": 21654864.000000138
+      },
+      {
+        "id": "stable_ids",
+        "status": "PASS"
+      },
+      {
+        "id": "dado.shelf1.left.empty",
+        "status": "PASS"
+      },
+      {
+        "id": "dado.shelf1.right.empty",
+        "status": "PASS"
+      },
+      {
+        "id": "body_interference",
+        "count": 0,
+        "status": "PASS"
+      }
+    ],
+    "counts": {
+      "user_parameters": 24,
+      "root_occurrences": 15,
+      "all_components": 16,
+      "timeline_items": 49
+    }
+  },
+  "identity_before": {
+    "fusion_version": "2705.1.30",
+    "design_id": "urn:adsk.wipprod:dm.lineage:MLOAMeGnSuiHKAmPH6UjoQ",
+    "document_name": "VanDesign-Autonomous-Interior-Demo-20261015",
+    "is_saved": true,
+    "is_modified": false,
+    "version_number": 2,
+    "data_file_name": "VanDesign-Autonomous-Interior-Demo-20261015"
+  },
+  "after": {
+    "outcome": "PASS",
+    "parameters_mm": {
+      "Cab_Width": 1200.0,
+      "Cab_Height": 850.0,
+      "Cab_Depth": 550.0,
+      "Cab_Ply": 18.0,
+      "Cab_Back": 6.000000000000001,
+      "Cab_Gap": 3.0000000000000004,
+      "Cab_Dado_Depth": 6.000000000000001,
+      "Cab_Slot_Clearance": 0.5,
+      "Cab_End_Clearance": 0.3,
+      "Cab_Inner_Depth": 544.0,
+      "Cab_Slot_Height": 18.5,
+      "Cab_Shelf_X": 12.3,
+      "Cab_Shelf_Length": 1175.4,
+      "Cab_Compartment": 398.0,
+      "Cab_Shelf1_Z": 416.0,
+      "Cab_Slot1_Z": 415.75,
+      "Van_Width": 1800.0,
+      "Van_Length": 4000.0,
+      "Van_Height": 2000.0,
+      "Demo_Ply": 18.0,
+      "Bed_Length": 1900.0,
+      "Bed_Height": 700.0,
+      "Kitchen_X": 50.0,
+      "Kitchen_Y": 100.0
+    },
+    "checks": [
+      {
+        "id": "panel.left.001",
+        "status": "PASS",
+        "expected_volume_mm3": 8354616.0,
+        "expected_bounds_mm": {
+          "min": [
+            50.0,
+            118.0,
+            18.0
+          ],
+          "max": [
+            68.0,
+            668.0,
+            868.0
+          ]
+        },
+        "measured_bounds_mm": {
+          "min": [
+            50.0,
+            117.99999999999997,
+            18.0
+          ],
+          "max": [
+            68.0,
+            668.0,
+            868.0
+          ]
+        },
+        "measured_volume_mm3": 8354615.999999998
+      },
+      {
+        "id": "panel.right.001",
+        "status": "PASS",
+        "expected_volume_mm3": 8354616.0,
+        "expected_bounds_mm": {
+          "min": [
+            1232.0,
+            118.0,
+            18.0
+          ],
+          "max": [
+            1250.0,
+            668.0,
+            868.0
+          ]
+        },
+        "measured_bounds_mm": {
+          "min": [
+            1232.0,
+            117.99999999999997,
+            18.0
+          ],
+          "max": [
+            1250.0,
+            668.0,
+            868.0
+          ]
+        },
+        "measured_volume_mm3": 8354615.999999987
+      },
+      {
+        "id": "panel.bottom.001",
+        "status": "PASS",
+        "expected_volume_mm3": 11397888.0,
+        "expected_bounds_mm": {
+          "min": [
+            68.0,
+            118.0,
+            18.0
+          ],
+          "max": [
+            1232.0,
+            662.0,
+            36.0
+          ]
+        },
+        "measured_bounds_mm": {
+          "min": [
+            68.0,
+            118.0,
+            18.0
+          ],
+          "max": [
+            1232.0,
+            662.0,
+            36.0
+          ]
+        },
+        "measured_volume_mm3": 11397888.000000002
+      },
+      {
+        "id": "panel.top.001",
+        "status": "PASS",
+        "expected_volume_mm3": 11397888.0,
+        "expected_bounds_mm": {
+          "min": [
+            68.0,
+            118.0,
+            850.0
+          ],
+          "max": [
+            1232.0,
+            662.0,
+            868.0
+          ]
+        },
+        "measured_bounds_mm": {
+          "min": [
+            68.0,
+            118.0,
+            850.0
+          ],
+          "max": [
+            1232.0,
+            662.0,
+            868.0
+          ]
+        },
+        "measured_volume_mm3": 11397887.999999983
+      },
+      {
+        "id": "panel.back.001",
+        "status": "PASS",
+        "expected_volume_mm3": 5684976.0,
+        "expected_bounds_mm": {
+          "min": [
+            68.0,
+            662.0,
+            36.0
+          ],
+          "max": [
+            1232.0,
+            668.0,
+            850.0
+          ]
+        },
+        "measured_bounds_mm": {
+          "min": [
+            68.0,
+            661.9999999999999,
+            36.0
+          ],
+          "max": [
+            1232.0,
+            667.9999999999998,
+            850.0
+          ]
+        },
+        "measured_volume_mm3": 5684975.999999946
+      },
+      {
+        "id": "panel.shelf.001",
+        "status": "PASS",
+        "expected_volume_mm3": 11509516.8,
+        "expected_bounds_mm": {
+          "min": [
+            62.3,
+            118.0,
+            434.0
+          ],
+          "max": [
+            1237.7,
+            662.0,
+            452.0
+          ]
+        },
+        "measured_bounds_mm": {
+          "min": [
+            62.300000000000004,
+            118.0,
+            433.9999999999999
+          ],
+          "max": [
+            1237.7,
+            662.0,
+            451.9999999999999
+          ]
+        },
+        "measured_volume_mm3": 11509516.799999982
+      },
+      {
+        "id": "panel.door.001",
+        "status": "PASS",
+        "expected_volume_mm3": 9046836.0,
+        "expected_bounds_mm": {
+          "min": [
+            53.0,
+            100.0,
+            21.0
+          ],
+          "max": [
+            648.5,
+            118.0,
+            865.0
+          ]
+        },
+        "measured_bounds_mm": {
+          "min": [
+            53.0,
+            100.0,
+            21.0
+          ],
+          "max": [
+            648.5,
+            118.0,
+            865.0
+          ]
+        },
+        "measured_volume_mm3": 9046836.000000006
+      },
+      {
+        "id": "panel.door.002",
+        "status": "PASS",
+        "expected_volume_mm3": 9046836.0,
+        "expected_bounds_mm": {
+          "min": [
+            651.5,
+            100.0,
+            21.0
+          ],
+          "max": [
+            1247.0,
+            118.0,
+            865.0
+          ]
+        },
+        "measured_bounds_mm": {
+          "min": [
+            651.5,
+            100.0,
+            21.0
+          ],
+          "max": [
+            1247.0,
+            118.0,
+            865.0
+          ]
+        },
+        "measured_volume_mm3": 9046836.000000006
+      },
+      {
+        "id": "van.floor.001",
+        "status": "PASS",
+        "expected_volume_mm3": 129600000.0,
+        "expected_bounds_mm": {
+          "min": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "max": [
+            1800.0,
+            4000.0,
+            18.0
+          ]
+        },
+        "measured_bounds_mm": {
+          "min": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "max": [
+            1800.0,
+            4000.0,
+            18.0
+          ]
+        },
+        "measured_volume_mm3": 129600000.0
+      },
+      {
+        "id": "van.left.001",
+        "status": "PASS",
+        "expected_volume_mm3": 10800000.0,
+        "expected_bounds_mm": {
+          "min": [
+            0.0,
+            0.0,
+            18.0
+          ],
+          "max": [
+            18.0,
+            4000.0,
+            168.0
+          ]
+        },
+        "measured_bounds_mm": {
+          "min": [
+            0.0,
+            0.0,
+            18.0
+          ],
+          "max": [
+            18.0,
+            4000.0,
+            168.0
+          ]
+        },
+        "measured_volume_mm3": 10800000.0
+      },
+      {
+        "id": "van.right.001",
+        "status": "PASS",
+        "expected_volume_mm3": 10800000.0,
+        "expected_bounds_mm": {
+          "min": [
+            1782.0,
+            0.0,
+            18.0
+          ],
+          "max": [
+            1800.0,
+            4000.0,
+            168.0
+          ]
+        },
+        "measured_bounds_mm": {
+          "min": [
+            1782.0,
+            0.0,
+            18.0
+          ],
+          "max": [
+            1800.0,
+            4000.0,
+            168.0
+          ]
+        },
+        "measured_volume_mm3": 10800000.000000069
+      },
+      {
+        "id": "van.rear.001",
+        "status": "PASS",
+        "expected_volume_mm3": 62932464.0,
+        "expected_bounds_mm": {
+          "min": [
+            18.0,
+            3982.0,
+            18.0
+          ],
+          "max": [
+            1782.0,
+            4000.0,
+            2000.0
+          ]
+        },
+        "measured_bounds_mm": {
+          "min": [
+            18.0,
+            3982.0,
+            18.0
+          ],
+          "max": [
+            1782.0000000000002,
+            4000.0,
+            2000.0
+          ]
+        },
+        "measured_volume_mm3": 62932464.0000004
+      },
+      {
+        "id": "bed.deck.001",
+        "status": "PASS",
+        "expected_volume_mm3": 60328800.0,
+        "expected_bounds_mm": {
+          "min": [
+            18.0,
+            2082.0,
+            700.0
+          ],
+          "max": [
+            1782.0,
+            3982.0,
+            718.0
+          ]
+        },
+        "measured_bounds_mm": {
+          "min": [
+            18.0,
+            2082.0,
+            700.0
+          ],
+          "max": [
+            1782.0000000000002,
+            3982.0,
+            718.0
+          ]
+        },
+        "measured_volume_mm3": 60328799.99999992
+      },
+      {
+        "id": "bed.front.001",
+        "status": "PASS",
+        "expected_volume_mm3": 21654864.0,
+        "expected_bounds_mm": {
+          "min": [
+            18.0,
+            2082.0,
+            18.0
+          ],
+          "max": [
+            1782.0,
+            2100.0,
+            700.0
+          ]
+        },
+        "measured_bounds_mm": {
+          "min": [
+            18.0,
+            2082.0,
+            18.0
+          ],
+          "max": [
+            1782.0000000000002,
+            2100.0,
+            700.0
+          ]
+        },
+        "measured_volume_mm3": 21654864.000000138
+      },
+      {
+        "id": "bed.rear.001",
+        "status": "PASS",
+        "expected_volume_mm3": 21654864.0,
+        "expected_bounds_mm": {
+          "min": [
+            18.0,
+            3964.0,
+            18.0
+          ],
+          "max": [
+            1782.0,
+            3982.0,
+            700.0
+          ]
+        },
+        "measured_bounds_mm": {
+          "min": [
+            18.0,
+            3964.0,
+            18.0
+          ],
+          "max": [
+            1782.0000000000002,
+            3982.0,
+            700.0
+          ]
+        },
+        "measured_volume_mm3": 21654864.000000138
+      },
+      {
+        "id": "stable_ids",
+        "status": "PASS"
+      },
+      {
+        "id": "dado.shelf1.left.empty",
+        "status": "PASS"
+      },
+      {
+        "id": "dado.shelf1.right.empty",
+        "status": "PASS"
+      },
+      {
+        "id": "body_interference",
+        "count": 0,
+        "status": "PASS"
+      }
+    ],
+    "counts": {
+      "user_parameters": 24,
+      "root_occurrences": 15,
+      "all_components": 16,
+      "timeline_items": 49
+    }
+  },
+  "identity_after": {
+    "fusion_version": "2705.1.30",
+    "design_id": "urn:adsk.wipprod:dm.lineage:MLOAMeGnSuiHKAmPH6UjoQ",
+    "document_name": "VanDesign-Autonomous-Interior-Demo-20261015",
+    "is_saved": true,
+    "is_modified": false,
+    "version_number": 2,
+    "data_file_name": "VanDesign-Autonomous-Interior-Demo-20261015"
+  },
+  "existing_documents": [
+    {
+      "name": "v5-g3-base",
+      "is_saved": true,
+      "is_modified": true,
+      "is_valid": true
+    },
+    {
+      "name": "v5-g3-tall",
+      "is_saved": true,
+      "is_modified": true,
+      "is_valid": true
+    },
+    {
+      "name": "v5-g3-overhead",
+      "is_saved": true,
+      "is_modified": false,
+      "is_valid": true
+    },
+    {
+      "name": "v5-g4-width-demo",
+      "is_saved": true,
+      "is_modified": true,
+      "is_valid": true
+    },
+    {
+      "name": "Untitled",
+      "is_saved": false,
+      "is_modified": true,
+      "is_valid": true
+    }
+  ]
+}

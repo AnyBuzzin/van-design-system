@@ -16,10 +16,10 @@ from typing import Any, Dict, List
 from . import JOB_SCHEMA_ID
 
 READ_ONLY_COMMANDS = ("ping", "inspect_design", "measure", "audit_cuts", "preview_width_change")
-DEMO_COMMANDS = ("create_demo_design", "run_approved_demo", "save_demo_design", "capture_demo_viewport")
+DEMO_COMMANDS = ("create_demo_design", "run_approved_demo", "save_demo_design", "capture_demo_viewport", "verify_demo_persistence")
 MUTATING_COMMANDS = ("set_parameter", "restore_parameter", "update_width") + DEMO_COMMANDS[:3]
 BATCH_COMMAND = "run_test_batch"
-ALL_COMMANDS = READ_ONLY_COMMANDS + MUTATING_COMMANDS + ("capture_demo_viewport", BATCH_COMMAND)
+ALL_COMMANDS = READ_ONLY_COMMANDS + MUTATING_COMMANDS + ("capture_demo_viewport", "verify_demo_persistence", BATCH_COMMAND)
 STEP_COMMANDS = ("inspect_design", "measure", "set_parameter", "restore_parameter", "audit_cuts",
                  "preview_width_change", "update_width")
 
@@ -115,14 +115,18 @@ def validate_args(command: str, args: Any, path: str) -> None:
     elif command in DEMO_COMMANDS:
         required = {"create_demo_design": (), "run_approved_demo": ("demo_id", "entry_point"),
                     "save_demo_design": ("demo_id", "name", "project_id", "folder_id"),
-                    "capture_demo_viewport": ("demo_id",)}[command]
-        _keys(args, path, required)
+                    "capture_demo_viewport": ("demo_id",), "verify_demo_persistence": ("design_id",)}[command]
+        _keys(args, path, required, ("layout_mm",) if command == 'run_approved_demo' else ())
         for key in required:
             _str(args[key], path + "." + key, 300)
         if "demo_id" in args and not JOB_ID_RE.fullmatch(args["demo_id"]):
             _fail(path + ".demo_id", "must be the create job id")
         if command == "run_approved_demo" and args["entry_point"] != "FirstInteriorDemo":
             _fail(path + ".entry_point", "only FirstInteriorDemo is approved")
+        if 'layout_mm' in args:
+            _keys(args['layout_mm'], path+'.layout_mm', (), ('Bed_Width', 'Bed_Length', 'Bed_Height', 'Kitchen_X', 'Kitchen_Y'))
+            for key, value in args['layout_mm'].items():
+                _number(value, path+'.layout_mm.'+key)
         if command == "save_demo_design":
             name = args["name"]
             if name != name.strip() or len(name) > 120 or any(ord(c) < 32 or c in '/\\:*?"<>|' for c in name):

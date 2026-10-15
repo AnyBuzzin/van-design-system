@@ -27,6 +27,8 @@ def measure(design, assembly):
               and abs(body.volume_mm3-volume) < max(1, volume*1e-5))
         checks.append(dict(id=panel.stable_id, status="PASS" if ok else "FAIL",
                            expected_volume_mm3=volume,
+                           expected_bounds_mm=dict(min=expected[panel.stable_id].lo, max=expected[panel.stable_id].hi),
+                           measured_bounds_mm=None if body is None else dict(min=body.box.lo, max=body.box.hi),
                            measured_volume_mm3=None if body is None else body.volume_mm3))
     ids_ok = source.managed_ids() == {p.stable_id: 1 for p in assembly.panels}
     checks.append(dict(id="stable_ids", status="PASS" if ids_ok else "FAIL"))
@@ -43,7 +45,7 @@ def measure(design, assembly):
                 parameters_mm=env, checks=checks, counts=_design_counts(design))
 
 
-def run_demo(app, output_dir):
+def run_demo(app, output_dir, layout_mm=None):
     doc = app.activeDocument
     design = adsk.fusion.Design.cast(app.activeProduct)
     if (not doc or not design or doc.isSaved or doc.isModified
@@ -51,10 +53,10 @@ def run_demo(app, output_dir):
             or design.rootComponent.sketches.count or design.userParameters.count
             or design.timeline.count):
         raise RuntimeError("Select a NEW, EMPTY, unmodified, unsaved design. Existing documents are refused.")
-    assembly = build_interior()
+    assembly = build_interior(layout_mm)
     check_layout(assembly, assembly.parameters.resolve())
     payload = dict(fusion_version=app.version, document_name=doc.name,
-                   assembly_id=assembly.assembly_id, stages=[])
+                   assembly_id=assembly.assembly_id, layout_mm=layout_mm, stages=[])
     os.makedirs(output_dir, exist_ok=True)
     path = os.path.join(output_dir, "interior_%s.json" % datetime.datetime.now().strftime('%Y%m%d_%H%M%S'))
     try:
@@ -64,7 +66,14 @@ def run_demo(app, output_dir):
         payload['stages'].append(dict(label="baseline", **baseline))
         if baseline['outcome'] != 'PASS':
             raise RuntimeError("Baseline BRep verification failed; see report")
-        for name, value in (("Bed_Length", 1800), ("Cab_Width", 1100)):
+        bed_test_length = max(2*baseline['parameters_mm']['Demo_Ply'], baseline['parameters_mm']['Bed_Length']-100)
+        cases = [("Bed_Length", bed_test_length), ("Cab_Width", 1100)]
+        if layout_mm is not None:
+            cases += [('Kitchen_X', (baseline['parameters_mm']['Kitchen_X']+baseline['parameters_mm']['Demo_Ply'])/2),
+                      ('Kitchen_Y', max(0, baseline['parameters_mm']['Kitchen_Y']-50))]
+            payload['layout_edit_stages'] = []
+        for index, (name, value) in enumerate(cases):
+            stages = payload['stages'] if index < 2 else payload['layout_edit_stages']
             param = design.userParameters.itemByName(name)
             original = param.expression
             try:
@@ -74,7 +83,7 @@ def run_demo(app, output_dir):
                 if edited['counts'] != baseline['counts'] or abs(param.value*10-value) > 0.001:
                     edited['outcome'] = 'FAIL'
                     edited['error'] = 'Counts changed or parameter readback mismatch'
-                payload['stages'].append(dict(label="edit_"+name, **edited))
+                stages.append(dict(label="edit_"+name, **edited))
                 if edited['outcome'] != 'PASS':
                     raise RuntimeError("Edited BRep verification failed: " + name)
             finally:
@@ -84,7 +93,7 @@ def run_demo(app, output_dir):
                 if restored['counts'] != baseline['counts'] or restored['parameters_mm'] != baseline['parameters_mm']:
                     restored['outcome'] = 'FAIL'
                     restored['error'] = 'Counts or parameters did not restore'
-                payload['stages'].append(dict(label="restore_"+name, **restored))
+                stages.append(dict(label="restore_"+name, **restored))
             if restored['outcome'] != 'PASS':
                 raise RuntimeError("Restored BRep verification failed: " + name)
         payload['outcome'] = 'PASS'

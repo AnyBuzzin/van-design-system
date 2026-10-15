@@ -114,9 +114,67 @@ def unused(folder, name):
         raise PolicyError("Document name already exists; no overwrite or duplicate-name save permitted")
 
 
+def persistence(backend, design_id, out_dir):
+    """Only the explicitly allowlisted, clean, active demo may be closed/reopened."""
+    cfg, app = backend.cfg, backend.app
+    protected = {x if isinstance(x, str) else x['design_id'] for x in cfg.get('protected_design_ids', [])}
+    if design_id in protected or design_id not in cfg.get('demo_persistence_design_ids', []):
+        raise PolicyError('Persistence target is not an explicitly approved demonstration')
+    doc = app.activeDocument
+    if backend.identity().get('design_id') != design_id or not doc.isSaved or doc.isModified:
+        raise PolicyError('Persistence requires the exact active saved demo with NO unsaved changes')
+    design = adsk.fusion.Design.cast(app.activeProduct)
+    marker = design.rootComponent.attributes.itemByName('VanDesignInterior', 'demo_id')
+    if not marker or marker.value != 'interior.demo.001':
+        raise PolicyError('Persistence target lacks the interior-demo marker')
+    module = modules(cfg)
+    before = module.measure(design, module.build_interior())
+    identity = backend.identity()
+    other = dict(existing=[(d, dict(name=d.name, is_saved=d.isSaved, is_modified=d.isModified, is_valid=d.isValid))
+                          for d in (app.documents.item(i) for i in range(app.documents.count)) if not d.isActive])
+    payload = dict(outcome='UNKNOWN', before=before, identity_before=identity)
+    path = os.path.join(out_dir, 'persistence.json')
+    try:
+        if before['outcome'] != 'PASS' or doc.isModified:
+            raise PolicyError('Pre-reopen geometry failed or document became modified')
+        data_file = doc.dataFile
+        if not data_file.isComplete:
+            raise PolicyError('Cloud version is not complete')
+        if not doc.close(False):
+            raise PolicyError('Clean demo did not close')
+        reopened = app.documents.open(data_file, True)
+        if not reopened or not reopened.isActive:
+            raise PolicyError('Reopen failed; target remains closed, existing designs untouched')
+        after = module.measure(adsk.fusion.Design.cast(app.activeProduct), module.build_interior())
+        payload.update(after=after, identity_after=backend.identity(), existing_documents=unchanged(other))
+        # Compare all measured geometry, allowing harmless floating-point readback noise.
+        def close_values(a, b):
+            if isinstance(a, dict):
+                return isinstance(b, dict) and a.keys() == b.keys() and all(close_values(a[k], b[k]) for k in a)
+            if isinstance(a, (list, tuple)):
+                return isinstance(b, (list, tuple)) and len(a) == len(b) and all(close_values(x, y) for x, y in zip(a, b))
+            if isinstance(a, (int, float)) and not isinstance(a, bool):
+                return isinstance(b, (int, float)) and abs(a-b) <= max(1e-6, abs(a)*1e-10)
+            return a == b
+        same_identity = all(payload['identity_after'].get(k) == identity.get(k) for k in
+                            ('fusion_version', 'design_id', 'data_file_name', 'version_number', 'is_saved', 'is_modified'))
+        if after['outcome'] != 'PASS' or not close_values(before, after) or not same_identity:
+            raise PolicyError('Reopened geometry, parameters, counts or document identity differ')
+        payload['outcome'] = 'PASS'
+        return payload
+    except Exception as exc:
+        payload.update(outcome='FAIL', error=str(exc))
+        raise
+    finally:
+        with open(path, 'w', encoding='utf-8') as fh:
+            json.dump(payload, fh, indent=2)
+
+
 def execute(backend, command, args, out_dir, job_id):
     app = backend.app
     os.makedirs(out_dir, exist_ok=True)
+    if command == 'verify_demo_persistence':
+        return persistence(backend, args['design_id'], out_dir)
     if command == 'create_demo_design':
         available = capacity(app)
         # Read cloud metadata before opening a tab; unavailable evidence fails closed.
@@ -141,14 +199,24 @@ def execute(backend, command, args, out_dir, job_id):
             raise PolicyError("Only FirstInteriorDemo in an unused runner session is approved")
         empty(design, doc)
         module = modules(backend.cfg)
+        layout = args.get('layout_mm')
+        # Pure preflight runs before the first CAD operation.
+        try:
+            assembly = module.build_interior(layout) if layout is not None else module.build_interior()
+            module.check_layout(assembly, assembly.parameters.resolve())
+        except ValueError as exc:
+            with open(os.path.join(out_dir, 'layout_refusal.json'), 'w', encoding='utf-8') as fh:
+                json.dump(dict(outcome='REFUSED', layout_mm=layout, reason=str(exc), identity=backend.identity()), fh, indent=2)
+            state['status'] = 'layout_refused'
+            raise PolicyError(str(exc))
         state['status'] = 'build_attempted'  # Any interruption/failure permanently blocks saving.
-        path = module.run_demo(app, out_dir)
+        path = module.run_demo(app, out_dir, layout_mm=layout) if layout is not None else module.run_demo(app, out_dir)
         with open(path, encoding='utf-8') as fh:
             report = json.load(fh)
         if not verified(report):
             raise PolicyError("Build verification failed; saving is blocked")
         session(args['demo_id'])
-        state.update(status='verified', baseline=report['stages'][0])
+        state.update(status='verified', baseline=report['stages'][0], layout_mm=layout)
         return dict(outcome='PASS', demo_id=args['demo_id'], report_path=path,
                     verification=report, identity=backend.identity(), existing_documents=unchanged(state))
 
@@ -160,7 +228,8 @@ def execute(backend, command, args, out_dir, job_id):
         unused(folder, args['name'])
         module = modules(backend.cfg)
         state['status'] = 'verification_pending'
-        fresh = module.measure(design, module.build_interior())
+        assembly = module.build_interior(state['layout_mm']) if state.get('layout_mm') is not None else module.build_interior()
+        fresh = module.measure(design, assembly)
         with open(os.path.join(out_dir, 'presave_geometry.json'), 'w', encoding='utf-8') as fh:
             json.dump(fresh, fh, indent=2)
         if (fresh['outcome'] != 'PASS' or fresh['counts'] != state['baseline']['counts']

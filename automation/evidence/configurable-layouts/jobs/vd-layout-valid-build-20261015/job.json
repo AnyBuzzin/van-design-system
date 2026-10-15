@@ -1,0 +1,17 @@
+{
+  "command": "run_approved_demo",
+  "args": {
+    "demo_id": "vd-layout-valid-create-20261015",
+    "layout_mm": {
+      "Bed_Width": 1500,
+      "Kitchen_Y": 600,
+      "Bed_Length": 2000,
+      "Kitchen_X": 200,
+      "Bed_Height": 650
+    },
+    "entry_point": "FirstInteriorDemo"
+  },
+  "schema": "vandesign.runner.job/1",
+  "job_id": "vd-layout-valid-build-20261015",
+  "created_utc": "2026-10-15T00:41:57.253+00:00"
+}

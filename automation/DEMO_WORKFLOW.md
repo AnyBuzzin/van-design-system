@@ -1,6 +1,7 @@
 # Runner-created demonstration workflow
 
-Extends the existing queue/add-in; no new service or UI. Requires runner 0.2.0.
+Extends the existing queue/add-in; no new service or UI. Requires runner 0.2.0
+(0.3.0 for [configurable layouts and targeted persistence](CONFIGURABLE_LAYOUTS.md)).
 FirstInteriorDemo is the only compiled-in approved entry point. Its trusted
 package folder is configured by the installer, never supplied in a job.
 
@@ -28,7 +29,9 @@ After restart the sessions are forgotten and old documents cannot be adopted.
 A failed/interrupted build or uncertain save cannot be retried or saved through
 another job; inspect evidence and create a new demo session when appropriate.
 Saving an already saved session is refused. Existing documents are never saved,
-closed, discarded or assigned editable status. Existing document validity,
+closed, discarded or assigned editable status by build/save operations. The
+separate persistence check can reopen only explicitly approved clean demos.
+Existing document validity,
 saved/modified flags and names are checked against their creation-time snapshot.
 
 Install with the existing install_runner.py `install --upgrade`, retaining the

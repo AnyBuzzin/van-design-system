@@ -2,6 +2,12 @@
 
 Updated: 2026-10-14. Development branch: `feature/v5-g3-cabinet-variants`.
 
+Product demonstration update (2026-10-15): autonomous interior save/reopen verified
+on the dedicated demo; configurable rear-bed dimensions and kitchen placement
+demonstrated in real Fusion with one successful layout and one preflight-refused
+overlap. See [scope, evidence and remaining checks](automation/evidence/configurable-layouts/STATUS.md).
+This product milestone does not close the historical engineering gates below.
+
 | Milestone | Status | Evidence / limitation |
 | --- | --- | --- |
 | Working V4 joinery | User-verified in Fusion | Golden exact local `.py`/`.manifest` provenance still unresolved |
