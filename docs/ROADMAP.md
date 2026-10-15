@@ -22,6 +22,10 @@ accept explicit millimetre inputs with preflight overlap/envelope refusal and
 real Fusion evidence. See [layout milestone](../automation/CONFIGURABLE_LAYOUTS.md).
 This limited fixture does not complete the unresolved V5 gates or engineering checks.
 
+The next scoped demonstration adds variable van dimensions, simplified wheel-arch
+intrusions and a measured kitchen-aisle constraint; see [usable vehicle space](../automation/VEHICLE_SPACE.md).
+This remains an unmeasured fixture rather than a vehicle-body library or fit approval.
+
 - **V6 — furniture library:** beds, drawers, worktops, partitions using stable interfaces.
 - **V7 — vehicle integration:** measured envelopes, datums, mounts, tolerances and access/collision volumes.
 - **V8 — layout intelligence:** AI-proposed constrained designs reviewed by humans.

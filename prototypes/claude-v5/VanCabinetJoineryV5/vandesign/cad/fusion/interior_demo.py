@@ -115,6 +115,11 @@ def run_demo(app, output_dir, layout_mm=None, vehicle_mm=None):
             if restored['outcome'] != 'PASS':
                 raise RuntimeError("Restored BRep verification failed: " + name)
         payload['outcome'] = 'PASS'
+        if vehicle_mm is not None:
+            camera = app.activeViewport.camera
+            camera.viewOrientation = adsk.core.ViewOrientations.IsoTopRightViewOrientation
+            camera.isFitView = True
+            app.activeViewport.camera = camera
         app.activeViewport.fit()
     except Exception as exc:
         payload['outcome'] = 'FAIL'

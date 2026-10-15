@@ -1,0 +1,12 @@
+{
+  "command": "save_demo_design",
+  "schema": "vandesign.runner.job/1",
+  "job_id": "vd-vehicle-view-save-20261015",
+  "args": {
+    "demo_id": "vd-vehicle-view-create-20261015",
+    "project_id": "a.YnVzaW5lc3M6Z21haWw2OTE3MDc5IzIwMjYwNzI3MTExODg3NDA4MQ",
+    "folder_id": "urn:adsk.wipprod:fs.folder:co.gWxsBe8pRiiQCVWk3LBryQ",
+    "name": "VanDesign-Vehicle-Space-View-Demo-20261015"
+  },
+  "created_utc": "2026-10-15T01:10:32.891+00:00"
+}

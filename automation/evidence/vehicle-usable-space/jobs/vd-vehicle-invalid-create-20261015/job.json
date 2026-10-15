@@ -1,0 +1,7 @@
+{
+  "job_id": "vd-vehicle-invalid-create-20261015",
+  "args": {},
+  "command": "create_demo_design",
+  "schema": "vandesign.runner.job/1",
+  "created_utc": "2026-10-15T01:06:40.359+00:00"
+}

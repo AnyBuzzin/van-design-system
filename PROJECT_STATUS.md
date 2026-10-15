@@ -8,6 +8,11 @@ demonstrated in real Fusion with one successful layout and one preflight-refused
 overlap. See [scope, evidence and remaining checks](automation/evidence/configurable-layouts/STATUS.md).
 This product milestone does not close the historical engineering gates below.
 
+Vehicle usable-space demonstration (2026-10-15): configurable envelope and wheel
+arches, structural/cabinet intrusion refusal and measured aisle check demonstrated
+in Fusion. Prior configured-demo reopen PASS; focused CRLF fix tracked in issue #11.
+See [actual evidence and limitations](automation/evidence/vehicle-usable-space/STATUS.md).
+
 | Milestone | Status | Evidence / limitation |
 | --- | --- | --- |
 | Working V4 joinery | User-verified in Fusion | Golden exact local `.py`/`.manifest` provenance still unresolved |
