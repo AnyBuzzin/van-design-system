@@ -17,6 +17,11 @@ The earlier starter roadmap accidentally used different G3/G4 labels. For **V5**
 
 ## Later product development (not the V5 gate numbers)
 
+2026-10-15 product demonstration: rear-bed dimensions and kitchen placement now
+accept explicit millimetre inputs with preflight overlap/envelope refusal and
+real Fusion evidence. See [layout milestone](../automation/CONFIGURABLE_LAYOUTS.md).
+This limited fixture does not complete the unresolved V5 gates or engineering checks.
+
 - **V6 — furniture library:** beds, drawers, worktops, partitions using stable interfaces.
 - **V7 — vehicle integration:** measured envelopes, datums, mounts, tolerances and access/collision volumes.
 - **V8 — layout intelligence:** AI-proposed constrained designs reviewed by humans.

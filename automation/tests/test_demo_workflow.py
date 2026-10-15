@@ -50,7 +50,7 @@ class DemoTests(TmpDirCase):
         self.report_path = os.path.join(self.tmp, 'report.json')
         with open(self.report_path, 'w') as fh:
             json.dump(self.report, fh)
-        self.module = NS(run_demo=Mock(return_value=self.report_path), build_interior=Mock(),
+        self.module = NS(run_demo=Mock(return_value=self.report_path), build_interior=Mock(), check_layout=Mock(),
                          measure=Mock(return_value=copy.deepcopy(self.report['stages'][0])))
         self.args = dict(demo_id='demo-001', name='New demo', project_id='project-1', folder_id='folder-1')
 
@@ -153,6 +153,23 @@ class DemoTests(TmpDirCase):
             self.run_cmd('run_approved_demo', dict(demo_id='demo-001', entry_point='FirstInteriorDemo'))
         self.doc.saveAs.assert_not_called()
 
+    def test_layout_refusal_happens_before_build_and_blocks_save(self):
+        self.run_cmd('create_demo_design')
+        self.module.check_layout.side_effect = ValueError('Kitchen/storage overlaps rear bed')
+        with patch.object(workflow, 'modules', return_value=self.module), self.assertRaises(PolicyError):
+            self.run_cmd('run_approved_demo', dict(demo_id='demo-001', entry_point='FirstInteriorDemo', layout_mm={'Kitchen_Y':3000}))
+        self.module.run_demo.assert_not_called()
+        self.assertEqual(self.design.rootComponent.occurrences.count, 0)
+        with self.assertRaises(PolicyError): self.run_cmd('save_demo_design', self.args)
+        self.doc.saveAs.assert_not_called()
+
+    def test_layout_schema_accepts_only_explicit_finite_mm_inputs(self):
+        validate_job(job('run_approved_demo', dict(demo_id='demo-001', entry_point='FirstInteriorDemo',
+                                                  layout_mm={'Bed_Width':1500, 'Kitchen_X':200}), target=None))
+        for layout in ({'Kitchen_X':True}, {'Bed_Width':'1500'}, {'Kitchen_Y':float('inf')}, {'unit':'in'}):
+            with self.assertRaises(JobSchemaError):
+                validate_job(job('run_approved_demo', dict(demo_id='demo-001', entry_point='FirstInteriorDemo', layout_mm=layout), target=None))
+
     def test_schema_rejects_python_paths_targets_and_bad_names(self):
         validate_job(job('create_demo_design', target=None))
         validate_job(job('save_demo_design', self.args, target=None))
@@ -166,3 +183,36 @@ class DemoTests(TmpDirCase):
         backend = NS(identity=lambda: {}, demo_command=lambda *a: {'outcome':'UNKNOWN'})
         result = Executor(backend, cfg(), self.tmp).run(job('create_demo_design', target=None), self.tmp)
         self.assertEqual(result['outcome'], 'FAIL')
+
+    def test_persistence_requires_explicit_clean_unprotected_demo(self):
+        self.app.activeDocument = self.doc
+        self.backend.identity = lambda: {'design_id':'saved-demo', 'is_saved':True, 'is_modified':False}
+        self.backend.cfg['demo_persistence_design_ids'] = ['saved-demo']
+        self.doc.isSaved = True; self.doc.isModified = True
+        with self.assertRaises(PolicyError):
+            workflow.persistence(self.backend, 'saved-demo', self.tmp)
+        self.doc.close.assert_not_called()
+        self.doc.isModified = False
+        self.backend.cfg['protected_design_ids'] = ['saved-demo']
+        with self.assertRaises(PolicyError): workflow.persistence(self.backend, 'saved-demo', self.tmp)
+        self.doc.close.assert_not_called()
+
+    def test_persistence_closes_only_clean_approved_demo_and_compares_geometry(self):
+        self.app.activeDocument = self.doc
+        self.doc.isSaved = True; self.doc.isModified = False
+        self.doc.isActive = True; self.protected.isActive = False
+        self.doc.dataFile = NS(isComplete=True)
+        self.backend.identity = lambda: {'design_id':'saved-demo', 'is_saved':True, 'is_modified':False}
+        self.backend.cfg['demo_persistence_design_ids'] = ['saved-demo']
+        self.design.rootComponent.attributes = NS(itemByName=lambda *a: NS(value='interior.demo.001'))
+        self.app.documents.open = Mock(return_value=self.doc)
+        with patch.object(workflow, 'modules', return_value=self.module):
+            result = workflow.persistence(self.backend, 'saved-demo', self.tmp)
+        self.assertEqual(result['outcome'], 'PASS')
+        self.doc.close.assert_called_once_with(False)
+        self.app.documents.open.assert_called_once_with(self.doc.dataFile, True)
+        self.protected.close.assert_not_called(); self.protected.saveAs.assert_not_called()
+        after = copy.deepcopy(self.report['stages'][0]); after['counts']['all_components'] += 1
+        self.module.measure.side_effect = [copy.deepcopy(self.report['stages'][0]), after]
+        with patch.object(workflow, 'modules', return_value=self.module), self.assertRaises(PolicyError):
+            workflow.persistence(self.backend, 'saved-demo', self.tmp)

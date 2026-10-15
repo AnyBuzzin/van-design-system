@@ -9,7 +9,7 @@
   "properties": {
     "schema": {"const": "vandesign.runner.job/1"},
     "job_id": {"type": "string", "pattern": "^[A-Za-z0-9][A-Za-z0-9_.-]{2,79}$"},
-    "command": {"enum": ["ping", "inspect_design", "measure", "set_parameter", "restore_parameter", "audit_cuts", "run_test_batch", "preview_width_change", "update_width", "create_demo_design", "run_approved_demo", "save_demo_design", "capture_demo_viewport"]},
+    "command": {"enum": ["ping", "inspect_design", "measure", "set_parameter", "restore_parameter", "audit_cuts", "run_test_batch", "preview_width_change", "update_width", "create_demo_design", "run_approved_demo", "save_demo_design", "capture_demo_viewport", "verify_demo_persistence"]},
     "target": {
       "type": "object", "additionalProperties": false, "required": ["design_id"],
       "description": "Required for every command except ping/inspect_design. design_id is the Fusion DataFile.id (cloud lineage id), never the title.",
@@ -21,8 +21,9 @@
     "args": {"type": "object", "description": "Per-command arguments; see $defs."}
   },
   "$defs": {
+    "verify_demo_persistence": {"type":"object","additionalProperties":false,"required":["design_id"],"properties":{"design_id":{"type":"string","minLength":1,"maxLength":300}}},
     "create_demo_design": {"type": "object", "additionalProperties": false, "required": [], "properties": {}},
-    "run_approved_demo": {"type": "object", "additionalProperties": false, "required": ["demo_id", "entry_point"], "properties": {"demo_id": {"type": "string", "minLength": 1, "maxLength": 300}, "entry_point": {"const": "FirstInteriorDemo"}}},
+    "run_approved_demo": {"type": "object", "additionalProperties": false, "required": ["demo_id", "entry_point"], "properties": {"demo_id": {"type": "string", "minLength": 1, "maxLength": 300}, "entry_point": {"const": "FirstInteriorDemo"}, "layout_mm": {"type": "object", "additionalProperties": false, "properties": {"Bed_Width": {"type": "number"}, "Bed_Length": {"type": "number"}, "Bed_Height": {"type": "number"}, "Kitchen_X": {"type": "number"}, "Kitchen_Y": {"type": "number"}}}}},
     "save_demo_design": {"type": "object", "additionalProperties": false, "required": ["demo_id", "name", "project_id", "folder_id"], "properties": {"demo_id": {"type": "string", "minLength": 1, "maxLength": 300}, "name": {"type": "string", "minLength": 1, "maxLength": 300}, "project_id": {"type": "string", "minLength": 1, "maxLength": 300}, "folder_id": {"type": "string", "minLength": 1, "maxLength": 300}}},
     "capture_demo_viewport": {"type": "object", "additionalProperties": false, "required": ["demo_id"], "properties": {"demo_id": {"type": "string", "minLength": 1, "maxLength": 300}}},
     "expect": {

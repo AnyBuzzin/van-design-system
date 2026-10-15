@@ -3,9 +3,9 @@
   "type": "addin",
   "author": "VanDesign",
   "description": {
-    "": "VanDesign Runner: validated local jobs, guarded new demo creation, approved builds, verified first saves and viewport capture. Existing designs are never saved or closed by demo operations."
+    "": "VanDesign Runner: guarded new demo builds, configurable layouts, verified saves and viewport capture. Persistence checks reopen only explicitly approved clean demos; protected designs remain untouched."
   },
-  "version": "0.2.0",
+  "version": "0.3.0",
   "runOnStartup": false,
   "supportedOS": "windows|mac",
   "editEnabled": true
