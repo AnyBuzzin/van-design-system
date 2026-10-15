@@ -1,0 +1,58 @@
+{
+  "schema": "vandesign.runner.result/1",
+  "runner_version": "0.1.0",
+  "job_id": "vd-20261015T005744-e5210b",
+  "command": "inspect_design",
+  "target": null,
+  "started_utc": "2026-10-14T23:57:45.229+00:00",
+  "steps": [
+    {
+      "command": "inspect_design",
+      "label": null,
+      "status": "PASS",
+      "elapsed_ms": 54.0,
+      "inspection": {
+        "identity": {
+          "fusion_version": "2705.1.30",
+          "design_id": null,
+          "document_name": "Untitled",
+          "is_saved": false,
+          "is_modified": false,
+          "version_number": null
+        },
+        "design_type": "parametric",
+        "has_managed_assembly": false,
+        "stored_spec_sha256": null,
+        "design_counts": {
+          "user_parameters": 0,
+          "root_occurrences": 0,
+          "all_components": 1,
+          "timeline_items": 0
+        },
+        "timeline": {
+          "count": 0,
+          "marker_position": 0
+        },
+        "managed_ids": {},
+        "user_parameters": []
+      }
+    }
+  ],
+  "outcome": "PASS",
+  "notes": [],
+  "identity_at_start": {
+    "fusion_version": "2705.1.30",
+    "design_id": null,
+    "document_name": "Untitled",
+    "is_saved": false,
+    "is_modified": false,
+    "version_number": null
+  },
+  "finished_utc": "2026-10-14T23:57:45.283+00:00",
+  "elapsed_ms": 54.1,
+  "summary": {
+    "steps": 1,
+    "passed": 1,
+    "outcome": "PASS"
+  }
+}

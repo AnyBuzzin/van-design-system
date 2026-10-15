@@ -7,7 +7,8 @@ All lengths are millimetres; X across, Y front to rear, Z up.
 Fixture: 1800 x 4000 x 2000 rectangular envelope, open roof/front and low
 side sills for visibility. Rear bed platform 1764 x 1900 at Z=700 with two
 supports. Existing 1200 x 850 x 550 base cabinet is the simplified kitchen/storage
-unit, offset to X=50, Y=100, Z=18. No appliances, utilities or fixings.
+unit, offset to X=50, Y=100, Z=18. The 550 mm depth is the cabinet body;
+including the front doors its occupied depth is 568 mm. No appliances, utilities or fixings.
 
 ## Run in Fusion
 
@@ -36,6 +37,10 @@ Do not submit parameter mutation jobs against any existing design.
 
 ## Status and limits
 
-Fusion build, BRep edit tests and interference checks are UNKNOWN until real
-reports are captured. Offline layout tests are not geometry evidence.
+Fusion 2705.1.30: first build, BRep bed/cabinet edit-and-restore tests and
+interference checks PASS for this fixture (95 checks across five stages).
+The live runner independently confirmed restored parameters and object counts.
+See `evidence/STATUS.md` for evidence, placement and remaining UNKNOWN checks.
+The original report stores dimension-check verdicts rather than raw BRep corners.
+Save/reopen persistence remains UNKNOWN. Offline layout tests are not geometry evidence.
 This fixture is not measured van-fit, structural, road-legal or manufacturing approval.
