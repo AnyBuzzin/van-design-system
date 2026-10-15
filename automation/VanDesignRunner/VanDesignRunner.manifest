@@ -5,7 +5,7 @@
   "description": {
     "": "VanDesign Runner: guarded new demo builds, configurable layouts, verified saves and viewport capture. Persistence checks reopen only explicitly approved clean demos; protected designs remain untouched."
   },
-  "version": "0.3.0",
+  "version": "0.4.0",
   "runOnStartup": false,
   "supportedOS": "windows|mac",
   "editEnabled": true

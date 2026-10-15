@@ -1,0 +1,2 @@
+# These canonical profile fixtures are checked byte-for-byte by test_spec_files.
+prototypes/claude-v5/specs/*.json text eol=lf

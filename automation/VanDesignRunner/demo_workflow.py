@@ -85,11 +85,18 @@ def modules(cfg):
 def verified(report):
     stages = report.get('stages', [])
     labels = ['baseline', 'edit_Bed_Length', 'restore_Bed_Length', 'edit_Cab_Width', 'restore_Cab_Width']
+    extra = report.get('layout_edit_stages', [])
+    expected_count = 22 if report.get('vehicle_mm') is not None else 19
+    if report.get('layout_mm') is not None and [s.get('label') for s in extra] != [
+            'edit_Kitchen_X','restore_Kitchen_X','edit_Kitchen_Y','restore_Kitchen_Y']:
+        return False
     return (report.get('outcome') == 'PASS' and [s.get('label') for s in stages] == labels
-            and all(s.get('outcome') == 'PASS' and len(s.get('checks', [])) == 19
-                    and all(c.get('status') == 'PASS' for c in s['checks']) for s in stages)
+            and all(s.get('outcome') == 'PASS' and len(s.get('checks', [])) == expected_count
+                    and len({c['id'] for c in s['checks']}) == expected_count
+                    and all(c.get('status') == 'PASS' for c in s['checks']) for s in stages+extra)
             and stages[-1]['parameters_mm'] == stages[0]['parameters_mm']
-            and all(s['counts'] == stages[0]['counts'] for s in stages))
+            and all(s['counts'] == stages[0]['counts'] for s in stages+extra)
+            and (not extra or extra[-1]['parameters_mm'] == stages[0]['parameters_mm']))
 
 
 def resolve_folder(app, project_id, folder_id):
@@ -200,23 +207,26 @@ def execute(backend, command, args, out_dir, job_id):
         empty(design, doc)
         module = modules(backend.cfg)
         layout = args.get('layout_mm')
+        vehicle = args.get('vehicle_mm')
         # Pure preflight runs before the first CAD operation.
         try:
-            assembly = module.build_interior(layout) if layout is not None else module.build_interior()
+            assembly = (module.build_interior(layout, vehicle_mm=vehicle) if vehicle is not None else
+                        module.build_interior(layout) if layout is not None else module.build_interior())
             module.check_layout(assembly, assembly.parameters.resolve())
         except ValueError as exc:
             with open(os.path.join(out_dir, 'layout_refusal.json'), 'w', encoding='utf-8') as fh:
-                json.dump(dict(outcome='REFUSED', layout_mm=layout, reason=str(exc), identity=backend.identity()), fh, indent=2)
+                json.dump(dict(outcome='REFUSED', layout_mm=layout, vehicle_mm=vehicle, reason=str(exc), identity=backend.identity()), fh, indent=2)
             state['status'] = 'layout_refused'
             raise PolicyError(str(exc))
         state['status'] = 'build_attempted'  # Any interruption/failure permanently blocks saving.
-        path = module.run_demo(app, out_dir, layout_mm=layout) if layout is not None else module.run_demo(app, out_dir)
+        path = (module.run_demo(app, out_dir, layout_mm=layout, vehicle_mm=vehicle) if vehicle is not None else
+                module.run_demo(app, out_dir, layout_mm=layout) if layout is not None else module.run_demo(app, out_dir))
         with open(path, encoding='utf-8') as fh:
             report = json.load(fh)
         if not verified(report):
             raise PolicyError("Build verification failed; saving is blocked")
         session(args['demo_id'])
-        state.update(status='verified', baseline=report['stages'][0], layout_mm=layout)
+        state.update(status='verified', baseline=report['stages'][0], layout_mm=layout, vehicle_mm=vehicle)
         return dict(outcome='PASS', demo_id=args['demo_id'], report_path=path,
                     verification=report, identity=backend.identity(), existing_documents=unchanged(state))
 
@@ -228,7 +238,8 @@ def execute(backend, command, args, out_dir, job_id):
         unused(folder, args['name'])
         module = modules(backend.cfg)
         state['status'] = 'verification_pending'
-        assembly = module.build_interior(state['layout_mm']) if state.get('layout_mm') is not None else module.build_interior()
+        assembly = (module.build_interior(state.get('layout_mm'), vehicle_mm=state['vehicle_mm']) if state.get('vehicle_mm') is not None else
+                    module.build_interior(state['layout_mm']) if state.get('layout_mm') is not None else module.build_interior())
         fresh = module.measure(design, assembly)
         with open(os.path.join(out_dir, 'presave_geometry.json'), 'w', encoding='utf-8') as fh:
             json.dump(fresh, fh, indent=2)

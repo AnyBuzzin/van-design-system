@@ -1,0 +1,3 @@
+prototypes/claude-v5/specs/base.json: eol: lf
+prototypes/claude-v5/specs/tall.json: eol: lf
+prototypes/claude-v5/specs/overhead.json: eol: lf

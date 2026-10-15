@@ -1,0 +1,27 @@
+{
+  "schema": "vandesign.runner.result/1",
+  "runner_version": "0.4.0",
+  "job_id": "vd-vehicle-invalid-build-20261015",
+  "command": "run_approved_demo",
+  "target": null,
+  "started_utc": "2026-10-15T01:06:58.628+00:00",
+  "steps": [],
+  "outcome": "REFUSED",
+  "notes": [],
+  "identity_at_start": {
+    "fusion_version": "2705.1.30",
+    "design_id": null,
+    "document_name": "Untitled",
+    "is_saved": false,
+    "is_modified": false,
+    "version_number": null
+  },
+  "error": "Clear kitchen aisle 482.000 mm is below required 600.000 mm",
+  "finished_utc": "2026-10-15T01:06:58.672+00:00",
+  "elapsed_ms": 43.9,
+  "summary": {
+    "steps": 0,
+    "passed": 0,
+    "outcome": "REFUSED"
+  }
+}

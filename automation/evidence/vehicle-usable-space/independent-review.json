@@ -1,0 +1,29 @@
+{
+  "outcome": "PASS",
+  "geometry_checks": 198,
+  "presave_checks": 22,
+  "measured_clearances": {
+    "aisle_width_mm": 782.0,
+    "minimum_aisle_mm": 600.0,
+    "bed_deck_above_arch_top_mm": 432.0,
+    "prohibited_overlap_count": 0
+  },
+  "invalid_aisle_refused": true,
+  "invalid_document_empty": true,
+  "saved_identity": {
+    "fusion_version": "2705.1.30",
+    "design_id": "urn:adsk.wipprod:dm.lineage:qqe9qLvAR7mz1L7RpvEkEA",
+    "document_name": "VanDesign-Vehicle-Space-View-Demo-20261015",
+    "is_saved": true,
+    "is_modified": false,
+    "version_number": 1,
+    "data_file_name": "VanDesign-Vehicle-Space-View-Demo-20261015"
+  },
+  "counts": {
+    "user_parameters": 31,
+    "root_occurrences": 17,
+    "all_components": 18,
+    "timeline_items": 55
+  },
+  "other_document_snapshots_equal": true
+}
