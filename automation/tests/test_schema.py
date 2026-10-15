@@ -61,12 +61,14 @@ class SchemaTests(unittest.TestCase):
         names = sorted(n for n in os.listdir(ex) if n.endswith(".json"))
         self.assertTrue(names)
         for n in names:
-            j = json.load(open(os.path.join(ex, n)))
+            with open(os.path.join(ex, n)) as fh:
+                j = json.load(fh)
             j.setdefault("job_id", "example-job")
             if j["command"] not in ("ping", "inspect_design"):
                 j["target"] = {"design_id": DESIGN}
             validate_job(j)
-        doc = json.load(open(os.path.join(AUTOMATION, "schema", "vdrunner-job-v1.schema.json")))
+        with open(os.path.join(AUTOMATION, "schema", "vdrunner-job-v1.schema.json")) as fh:
+            doc = json.load(fh)
         self.assertEqual(sorted(doc["properties"]["command"]["enum"]),
                          sorted(["ping", "inspect_design", "measure", "set_parameter", "restore_parameter", "audit_cuts", "run_test_batch"]))
 

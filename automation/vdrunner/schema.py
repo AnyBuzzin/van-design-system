@@ -15,11 +15,12 @@ from typing import Any, Dict, List
 
 from . import JOB_SCHEMA_ID
 
-READ_ONLY_COMMANDS = ("ping", "inspect_design", "measure", "audit_cuts")
-MUTATING_COMMANDS = ("set_parameter", "restore_parameter")
+READ_ONLY_COMMANDS = ("ping", "inspect_design", "measure", "audit_cuts", "preview_width_change")
+MUTATING_COMMANDS = ("set_parameter", "restore_parameter", "update_width")
 BATCH_COMMAND = "run_test_batch"
 ALL_COMMANDS = READ_ONLY_COMMANDS + MUTATING_COMMANDS + (BATCH_COMMAND,)
-STEP_COMMANDS = ("inspect_design", "measure", "set_parameter", "restore_parameter", "audit_cuts")
+STEP_COMMANDS = ("inspect_design", "measure", "set_parameter", "restore_parameter", "audit_cuts",
+                 "preview_width_change", "update_width")
 
 JOB_ID_RE = re.compile(r"^[A-Za-z0-9][A-Za-z0-9_.-]{2,79}$")
 PARAM_NAME_RE = re.compile(r"^Cab_[A-Za-z0-9_]{1,40}$")
@@ -124,6 +125,13 @@ def validate_args(command: str, args: Any, path: str) -> None:
             _fail(path + ".value", "must be > 0")
         if args["unit"] not in SUPPORTED_UNITS:
             _fail(path + ".unit", "unsupported unit %r (supported: %s)" % (args["unit"], ", ".join(SUPPORTED_UNITS)))
+    elif command in ("preview_width_change", "update_width"):
+        # G4: width change of an existing managed cabinet, driven by its stored spec
+        _keys(args, path, ("new_width", "unit"), ("expect", "label"))
+        if _number(args["new_width"], path + ".new_width") <= 0:
+            _fail(path + ".new_width", "must be > 0")
+        if args["unit"] not in SUPPORTED_UNITS:
+            _fail(path + ".unit", "unsupported unit %r" % (args["unit"],))
     elif command == "restore_parameter":
         _keys(args, path, ("name",), ("expect", "label"))
         _param_name(args["name"], path + ".name")

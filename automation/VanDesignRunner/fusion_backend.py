@@ -179,6 +179,46 @@ class FusionBackend:
         adsk.doEvents()
         return p.value * 10.0
 
+    # ------------------------------------------------------------ G4: safe width update support
+    def g3_modules(self):
+        g3 = self._g3()
+        g3["expr"] = importlib.import_module("vandesign.core.expr")
+        return g3
+
+    def cabinet_state(self):
+        """Read-only snapshot used to plan and verify an update."""
+        design = self._design()
+        g3 = self._g3()
+        adapter = g3["adapter"].FusionAdapter(design)
+        if not adapter.has_managed_assembly():
+            raise BackendError("no managed VanDesign cabinet in this design")
+        stored = adapter.stored_spec_json()
+        if not stored:
+            raise BackendError("managed cabinet has no stored specification")
+        live = {}
+        ups = design.userParameters
+        for i in range(ups.count):
+            p = ups.item(i)
+            if p.name.startswith("Cab_"):
+                live[p.name] = {"expression": p.expression, "unit": p.unit,
+                                "value_mm": p.value * 10.0 if p.unit == "mm" else None}
+        occs = []
+        root = design.rootComponent
+        for i in range(root.occurrences.count):
+            occ = root.occurrences.item(i)
+            attr = occ.component.attributes.itemByName("VanDesign", "stable_id")
+            occs.append({"stable_id": attr.value if attr else None, "entity_token": occ.entityToken,
+                         "component": occ.component.name, "bodies": occ.component.bRepBodies.count})
+        return {"stored_text": stored, "live_params": live, "occurrences": occs,
+                "timeline_count": design.timeline.count, "timeline_marker": design.timeline.markerPosition}
+
+    def store_spec_text(self, text):
+        """Write the updated spec through the G3 adapter's own attribute writer; return the read-back."""
+        design = self._design()
+        adapter = self._g3()["adapter"].FusionAdapter(design)
+        adapter.store_spec_json(text)
+        return adapter.stored_spec_json()
+
     # ------------------------------------------------------------ independent cut audit (G3 audit script)
     def audit(self, out_dir, label):
         design = self._design()

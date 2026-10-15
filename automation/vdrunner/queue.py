@@ -46,6 +46,19 @@ def utc_now() -> str:
     return _dt.datetime.now(_dt.timezone.utc).isoformat(timespec="milliseconds")
 
 
+_RETRIES, _RETRY_S = 50, 0.02   # Windows: a reader holding the file blocks os.replace briefly (WinError 32)
+
+
+def _retry(fn, *args):
+    for i in range(_RETRIES):
+        try:
+            return fn(*args)
+        except PermissionError:
+            if i == _RETRIES - 1:
+                raise
+            time.sleep(_RETRY_S)
+
+
 def atomic_write_json(path: str, obj) -> None:
     folder = os.path.dirname(path)
     os.makedirs(folder, exist_ok=True)
@@ -55,7 +68,7 @@ def atomic_write_json(path: str, obj) -> None:
             json.dump(obj, fh, indent=2, sort_keys=False)
             fh.flush()
             os.fsync(fh.fileno())
-        os.replace(tmp, path)
+        _retry(os.replace, tmp, path)
     except BaseException:
         try:
             os.unlink(tmp)
@@ -64,9 +77,13 @@ def atomic_write_json(path: str, obj) -> None:
         raise
 
 
-def read_json(path: str):
+def _read_json_once(path: str):
     with open(path, encoding="utf-8") as fh:
         return json.load(fh)
+
+
+def read_json(path: str):
+    return _retry(_read_json_once, path)
 
 
 def _create_exclusive(path: str, text: str) -> bool:
@@ -119,8 +136,11 @@ class JobQueue:
         jid = job["job_id"]
         if not _create_exclusive(self.p("ledger", jid + ".submitted"), utc_now()):
             raise DuplicateJob("job id %r was already submitted (ledger)" % jid)
+        # State first, inbox second: once the file is in the inbox the runner may claim it
+        # immediately, so the orchestrator must not write the state file after that point.
+        st = self.write_state(jid, "queued", command=job["command"], submitted_utc=utc_now())
         atomic_write_json(self.p("inbox", jid + ".json"), job)
-        return self.write_state(jid, "queued", command=job["command"], submitted_utc=utc_now())
+        return st
 
     def cancel(self, job_id: str) -> bool:
         """Withdraw a job that the runner has not claimed.  Returns False if it was already claimed."""
