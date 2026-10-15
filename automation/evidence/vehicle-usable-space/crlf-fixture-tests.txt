@@ -1,0 +1,6 @@
+test_each_file_loads_and_matches_profile (test_spec_files.SpecFiles.test_each_file_loads_and_matches_profile) ... ok
+
+----------------------------------------------------------------------
+Ran 1 test in 0.004s
+
+OK
