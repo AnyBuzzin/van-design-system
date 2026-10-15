@@ -41,4 +41,3 @@ Offline tests verify every generated hash, refusal to overwrite, both isolated l
 G0 exact executed V4 source provenance remains UNKNOWN/open. G1 package migration is prepared and offline-tested, pending review and deployment smoke; no full gate closure. G3 F0 and deferred overhead F3 checks remain open; broader G4 structural/manual-divergence qualifications remain open. G5 release/report/cut-list acceptance remains open.
 
 This child PR should be reviewed as an addition to PR #13. Do not merge PRs, retarget the original stack or choose both aggregate and sequential delivery routes as part of this milestone.
-

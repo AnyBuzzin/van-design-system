@@ -2,4 +2,3 @@
 Algorithm : SHA256
 Hash      : 549FF8843B8966E7339181E9A75D835C8CB5E1D3AC5B20A2954C7ADC2BCEF80F
 Path      : C:\Users\Buzz\Documents\Codex\2026-10-15\referenced-chatgpt-conversation-this-is-an-3\work\migration-wheels\vandesign-0.5.0-py3-none-any.whl
-

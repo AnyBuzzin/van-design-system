@@ -8,6 +8,6 @@ test_generated_bundles_and_launchers (test_package_migration.MigrationTests.test
 test_v5_runtime_matches_preserved_source (test_package_migration.MigrationTests.test_v5_runtime_matches_preserved_source) ... ok
 
 ----------------------------------------------------------------------
-Ran 8 tests in 1.341s
+Ran 8 tests in 1.162s
 
 OK

@@ -8,6 +8,7 @@ import subprocess
 import sys
 import tempfile
 import unittest
+from unittest.mock import patch
 
 import vandesign
 from vandesign.core.joinery import DadoShelf
@@ -51,6 +52,11 @@ class MigrationTests(unittest.TestCase):
         tool = importlib.util.module_from_spec(spec)
         spec.loader.exec_module(tool)
         with tempfile.TemporaryDirectory() as temp:
+            historical = ROOT / 'prototypes/claude-v5/VanCabinetJoineryV5/vandesign/__init__.py'
+            with patch.object(vandesign, '__file__', str(historical)):
+                with self.assertRaises(RuntimeError):
+                    tool.deploy(Path(temp) / 'refuse-historical')
+            self.assertFalse((Path(temp) / 'refuse-historical').exists())
             output = tool.deploy(Path(temp) / 'new-bundle')
             with self.assertRaises(FileExistsError):
                 tool.deploy(output)
