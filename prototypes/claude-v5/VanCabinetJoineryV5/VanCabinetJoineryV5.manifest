@@ -1,0 +1,10 @@
+{
+  "autodeskProduct": "Fusion",
+  "type": "script",
+  "author": "",
+  "description": {
+    "": "VanDesign V5: parametric cabinet with sliding dado joinery, verified against actual BRep geometry"
+  },
+  "supportedOS": "windows|mac",
+  "editEnabled": true
+}
