@@ -1,3 +1,7 @@
+> **FINAL STATUS (2026-10-15):** This is the preserved *pre-integration investigation*, not the current roadmap. The original eight-head stack and source-preserving package migration were integrated into `develop` together by [PR #14](https://github.com/AnyBuzzin/van-design-system/pull/14), merge `b799db8`; GitHub Python 3.10/3.12 post-merge CI passed. [PR #13](https://github.com/AnyBuzzin/van-design-system/pull/13) became merged via ancestry, **not a second separately executed merge**. The original duplicate-package blocker was corrected in `src/vandesign`, and the reviewed `base@1` wheel-built bundle passed its [actual Fusion checkpoint](pr14-checkpoint-evidence/live-20261015/FINAL_REVIEW.md). The text below correctly records **earlier** failures and decisions, not the final merged state. Historical G0 / deferred G3 / broader G4 / G5 gates remain open. See [current project status](../../PROJECT_STATUS.md).
+
+---
+
 # Consolidation review — 2026-10-15
 
 Jason approved consolidation. This branch prepares the complete accumulated stack; **nothing has merged to develop or main**. Original branches and draft PRs remain open. Eight non-fast-forward merges preserve each source head without rewriting history.
