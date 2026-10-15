@@ -1,0 +1,890 @@
+{
+  "source_bundle": "C:\\Users\\Buzz\\Documents\\Codex\\2026-10-15\\referenced-chatgpt-conversation-this-is-an-3\\work\\review-fusion-bundles\\VanCabinetJoineryV5",
+  "source_report": "report_20261015_220807_336357_build.json",
+  "report_sha256": "c93f7ca0ce626656082ab5ad60aacb8cef26b1e692778c463e937807e3c0ee30",
+  "fusion_version": "2705.1.30",
+  "document": "Untitled",
+  "validation": {
+    "verdict": "PASS",
+    "counts": {
+      "PASS": 59,
+      "FAIL": 0,
+      "UNKNOWN": 0
+    },
+    "checks": [
+      {
+        "check_id": "constraint.ply_positive",
+        "status": "PASS",
+        "observed": 18.0,
+        "expected": 0.0,
+        "tolerance": null,
+        "unit": "mm",
+        "object_ids": [],
+        "note": "Cab_Ply > 0"
+      },
+      {
+        "check_id": "constraint.dado_positive",
+        "status": "PASS",
+        "observed": 6.000000000000001,
+        "expected": 0.0,
+        "tolerance": null,
+        "unit": "mm",
+        "object_ids": [],
+        "note": "Cab_Dado_Depth > 0"
+      },
+      {
+        "check_id": "constraint.dado_lt_ply",
+        "status": "PASS",
+        "observed": 18.0,
+        "expected": 6.000000000000001,
+        "tolerance": null,
+        "unit": "mm",
+        "object_ids": [],
+        "note": "groove must leave side-panel material (Cab_Ply > Cab_Dado_Depth)"
+      },
+      {
+        "check_id": "constraint.end_clearance_nonneg",
+        "status": "PASS",
+        "observed": 0.3,
+        "expected": 0.0,
+        "tolerance": null,
+        "unit": "mm",
+        "object_ids": [],
+        "note": "Cab_End_Clearance >= 0"
+      },
+      {
+        "check_id": "constraint.end_clearance_lt_dado",
+        "status": "PASS",
+        "observed": 6.000000000000001,
+        "expected": 0.3,
+        "tolerance": null,
+        "unit": "mm",
+        "object_ids": [],
+        "note": "shelf must enter the groove (Cab_Dado_Depth > Cab_End_Clearance)"
+      },
+      {
+        "check_id": "constraint.slot_clearance_nonneg",
+        "status": "PASS",
+        "observed": 0.5,
+        "expected": 0.0,
+        "tolerance": null,
+        "unit": "mm",
+        "object_ids": [],
+        "note": "Cab_Slot_Clearance >= 0"
+      },
+      {
+        "check_id": "constraint.back_positive",
+        "status": "PASS",
+        "observed": 6.000000000000001,
+        "expected": 0.0,
+        "tolerance": null,
+        "unit": "mm",
+        "object_ids": [],
+        "note": "Cab_Back > 0"
+      },
+      {
+        "check_id": "constraint.back_lt_depth",
+        "status": "PASS",
+        "observed": 550.0,
+        "expected": 6.000000000000001,
+        "tolerance": null,
+        "unit": "mm",
+        "object_ids": [],
+        "note": "Cab_Depth > Cab_Back"
+      },
+      {
+        "check_id": "constraint.gap_nonneg",
+        "status": "PASS",
+        "observed": 3.0000000000000004,
+        "expected": 0.0,
+        "tolerance": null,
+        "unit": "mm",
+        "object_ids": [],
+        "note": "Cab_Gap >= 0"
+      },
+      {
+        "check_id": "constraint.height_fits",
+        "status": "PASS",
+        "observed": 850.0,
+        "expected": 54.0,
+        "tolerance": null,
+        "unit": "mm",
+        "object_ids": [],
+        "note": "Cab_Height > (2 + shelves) * Cab_Ply"
+      },
+      {
+        "check_id": "constraint.width_fits",
+        "status": "PASS",
+        "observed": 1200.0,
+        "expected": 36.0,
+        "tolerance": null,
+        "unit": "mm",
+        "object_ids": [],
+        "note": "Cab_Width > 2 * Cab_Ply"
+      },
+      {
+        "check_id": "constraint.doors_fit",
+        "status": "PASS",
+        "observed": 1200.0,
+        "expected": 9.000000000000002,
+        "tolerance": null,
+        "unit": "mm",
+        "object_ids": [],
+        "note": "Cab_Width > (doors + 1) * Cab_Gap"
+      },
+      {
+        "check_id": "param.Cab_Inner_Depth",
+        "status": "PASS",
+        "observed": 544.0,
+        "expected": 544.0,
+        "tolerance": 0.01,
+        "unit": "mm",
+        "object_ids": [],
+        "note": ""
+      },
+      {
+        "check_id": "param.Cab_Slot_Height",
+        "status": "PASS",
+        "observed": 18.5,
+        "expected": 18.5,
+        "tolerance": 0.01,
+        "unit": "mm",
+        "object_ids": [],
+        "note": ""
+      },
+      {
+        "check_id": "param.Cab_Shelf_X",
+        "status": "PASS",
+        "observed": 12.3,
+        "expected": 12.3,
+        "tolerance": 0.01,
+        "unit": "mm",
+        "object_ids": [],
+        "note": ""
+      },
+      {
+        "check_id": "param.Cab_Shelf_Length",
+        "status": "PASS",
+        "observed": 1175.4,
+        "expected": 1175.4,
+        "tolerance": 0.01,
+        "unit": "mm",
+        "object_ids": [],
+        "note": ""
+      },
+      {
+        "check_id": "param.Cab_Compartment",
+        "status": "PASS",
+        "observed": 398.0,
+        "expected": 398.0,
+        "tolerance": 0.01,
+        "unit": "mm",
+        "object_ids": [],
+        "note": ""
+      },
+      {
+        "check_id": "param.Cab_Shelf1_Z",
+        "status": "PASS",
+        "observed": 415.99999999999994,
+        "expected": 416.0,
+        "tolerance": 0.01,
+        "unit": "mm",
+        "object_ids": [],
+        "note": ""
+      },
+      {
+        "check_id": "param.Cab_Slot1_Z",
+        "status": "PASS",
+        "observed": 415.74999999999994,
+        "expected": 415.75,
+        "tolerance": 0.01,
+        "unit": "mm",
+        "object_ids": [],
+        "note": ""
+      },
+      {
+        "check_id": "panel.left.001.bbox",
+        "status": "PASS",
+        "observed": 2.842170943040401E-14,
+        "expected": 0.0,
+        "tolerance": 0.01,
+        "unit": "mm",
+        "object_ids": [
+          "panel.left.001"
+        ],
+        "note": ""
+      },
+      {
+        "check_id": "panel.left.001.volume",
+        "status": "PASS",
+        "observed": 8354616.0,
+        "expected": 8354616.0,
+        "tolerance": 8.354616,
+        "unit": "mm3",
+        "object_ids": [
+          "panel.left.001"
+        ],
+        "note": "blank minus its own grooves only"
+      },
+      {
+        "check_id": "panel.right.001.bbox",
+        "status": "PASS",
+        "observed": 2.842170943040401E-14,
+        "expected": 0.0,
+        "tolerance": 0.01,
+        "unit": "mm",
+        "object_ids": [
+          "panel.right.001"
+        ],
+        "note": ""
+      },
+      {
+        "check_id": "panel.right.001.volume",
+        "status": "PASS",
+        "observed": 8354615.999999987,
+        "expected": 8354616.0,
+        "tolerance": 8.354616,
+        "unit": "mm3",
+        "object_ids": [
+          "panel.right.001"
+        ],
+        "note": "blank minus its own grooves only"
+      },
+      {
+        "check_id": "panel.bottom.001.bbox",
+        "status": "PASS",
+        "observed": 0.0,
+        "expected": 0.0,
+        "tolerance": 0.01,
+        "unit": "mm",
+        "object_ids": [
+          "panel.bottom.001"
+        ],
+        "note": ""
+      },
+      {
+        "check_id": "panel.bottom.001.volume",
+        "status": "PASS",
+        "observed": 11397888.0,
+        "expected": 11397888.0,
+        "tolerance": 11.397888,
+        "unit": "mm3",
+        "object_ids": [
+          "panel.bottom.001"
+        ],
+        "note": "blank minus its own grooves only"
+      },
+      {
+        "check_id": "panel.top.001.bbox",
+        "status": "PASS",
+        "observed": 0.0,
+        "expected": 0.0,
+        "tolerance": 0.01,
+        "unit": "mm",
+        "object_ids": [
+          "panel.top.001"
+        ],
+        "note": ""
+      },
+      {
+        "check_id": "panel.top.001.volume",
+        "status": "PASS",
+        "observed": 11397887.999999981,
+        "expected": 11397888.0,
+        "tolerance": 11.397888,
+        "unit": "mm3",
+        "object_ids": [
+          "panel.top.001"
+        ],
+        "note": "blank minus its own grooves only"
+      },
+      {
+        "check_id": "panel.back.001.bbox",
+        "status": "PASS",
+        "observed": 0.0,
+        "expected": 0.0,
+        "tolerance": 0.01,
+        "unit": "mm",
+        "object_ids": [
+          "panel.back.001"
+        ],
+        "note": ""
+      },
+      {
+        "check_id": "panel.back.001.volume",
+        "status": "PASS",
+        "observed": 5684976.000000014,
+        "expected": 5684976.0,
+        "tolerance": 5.684976,
+        "unit": "mm3",
+        "object_ids": [
+          "panel.back.001"
+        ],
+        "note": "blank minus its own grooves only"
+      },
+      {
+        "check_id": "panel.shelf.001.bbox",
+        "status": "PASS",
+        "observed": 1.1368683772161603E-13,
+        "expected": 0.0,
+        "tolerance": 0.01,
+        "unit": "mm",
+        "object_ids": [
+          "panel.shelf.001"
+        ],
+        "note": ""
+      },
+      {
+        "check_id": "panel.shelf.001.volume",
+        "status": "PASS",
+        "observed": 11509516.799999982,
+        "expected": 11509516.8,
+        "tolerance": 11.5095168,
+        "unit": "mm3",
+        "object_ids": [
+          "panel.shelf.001"
+        ],
+        "note": "blank minus its own grooves only"
+      },
+      {
+        "check_id": "panel.door.001.bbox",
+        "status": "PASS",
+        "observed": 0.0,
+        "expected": 0.0,
+        "tolerance": 0.01,
+        "unit": "mm",
+        "object_ids": [
+          "panel.door.001"
+        ],
+        "note": ""
+      },
+      {
+        "check_id": "panel.door.001.volume",
+        "status": "PASS",
+        "observed": 9046836.000000002,
+        "expected": 9046836.0,
+        "tolerance": 9.046835999999999,
+        "unit": "mm3",
+        "object_ids": [
+          "panel.door.001"
+        ],
+        "note": "blank minus its own grooves only"
+      },
+      {
+        "check_id": "panel.door.002.bbox",
+        "status": "PASS",
+        "observed": 0.0,
+        "expected": 0.0,
+        "tolerance": 0.01,
+        "unit": "mm",
+        "object_ids": [
+          "panel.door.002"
+        ],
+        "note": ""
+      },
+      {
+        "check_id": "panel.door.002.volume",
+        "status": "PASS",
+        "observed": 9046836.0,
+        "expected": 9046836.0,
+        "tolerance": 9.046835999999999,
+        "unit": "mm3",
+        "object_ids": [
+          "panel.door.002"
+        ],
+        "note": "blank minus its own grooves only"
+      },
+      {
+        "check_id": "dado.shelf1.left.penetration",
+        "status": "PASS",
+        "observed": 5.699999999999999,
+        "expected": 5.700000000000001,
+        "tolerance": 0.01,
+        "unit": "mm",
+        "object_ids": [
+          "panel.left.001",
+          "panel.shelf.001"
+        ],
+        "note": ""
+      },
+      {
+        "check_id": "dado.shelf1.left.end_gap",
+        "status": "PASS",
+        "observed": 0.3000000000000007,
+        "expected": 0.3,
+        "tolerance": 0.01,
+        "unit": "mm",
+        "object_ids": [
+          "panel.left.001",
+          "panel.shelf.001"
+        ],
+        "note": ""
+      },
+      {
+        "check_id": "dado.shelf1.left.gap_below",
+        "status": "PASS",
+        "observed": 0.24999999999994316,
+        "expected": 0.25,
+        "tolerance": 0.01,
+        "unit": "mm",
+        "object_ids": [
+          "panel.left.001",
+          "panel.shelf.001"
+        ],
+        "note": ""
+      },
+      {
+        "check_id": "dado.shelf1.left.gap_above",
+        "status": "PASS",
+        "observed": 0.2500000000001137,
+        "expected": 0.25,
+        "tolerance": 0.01,
+        "unit": "mm",
+        "object_ids": [
+          "panel.left.001",
+          "panel.shelf.001"
+        ],
+        "note": ""
+      },
+      {
+        "check_id": "dado.shelf1.left.mating_unmodified",
+        "status": "PASS",
+        "observed": 11509516.799999982,
+        "expected": 11509516.8,
+        "tolerance": 11.5095168,
+        "unit": "mm3",
+        "object_ids": [
+          "panel.left.001",
+          "panel.shelf.001"
+        ],
+        "note": "the cut must not touch the shelf"
+      },
+      {
+        "check_id": "dado.shelf1.left.probe.centre_empty",
+        "status": "PASS",
+        "observed": null,
+        "expected": null,
+        "tolerance": null,
+        "unit": "",
+        "object_ids": [
+          "panel.left.001"
+        ],
+        "note": "expected empty"
+      },
+      {
+        "check_id": "dado.shelf1.left.probe.front_open",
+        "status": "PASS",
+        "observed": null,
+        "expected": null,
+        "tolerance": null,
+        "unit": "",
+        "object_ids": [
+          "panel.left.001"
+        ],
+        "note": "expected empty"
+      },
+      {
+        "check_id": "dado.shelf1.left.probe.below_solid",
+        "status": "PASS",
+        "observed": null,
+        "expected": null,
+        "tolerance": null,
+        "unit": "",
+        "object_ids": [
+          "panel.left.001"
+        ],
+        "note": "expected material"
+      },
+      {
+        "check_id": "dado.shelf1.left.probe.above_solid",
+        "status": "PASS",
+        "observed": null,
+        "expected": null,
+        "tolerance": null,
+        "unit": "",
+        "object_ids": [
+          "panel.left.001"
+        ],
+        "note": "expected material"
+      },
+      {
+        "check_id": "dado.shelf1.left.probe.far_wall_solid",
+        "status": "PASS",
+        "observed": null,
+        "expected": null,
+        "tolerance": null,
+        "unit": "",
+        "object_ids": [
+          "panel.left.001"
+        ],
+        "note": "expected material"
+      },
+      {
+        "check_id": "dado.shelf1.left.probe.rear_wall_solid",
+        "status": "PASS",
+        "observed": null,
+        "expected": null,
+        "tolerance": null,
+        "unit": "",
+        "object_ids": [
+          "panel.left.001"
+        ],
+        "note": "expected material"
+      },
+      {
+        "check_id": "dado.shelf1.right.penetration",
+        "status": "PASS",
+        "observed": 5.7000000000000455,
+        "expected": 5.700000000000001,
+        "tolerance": 0.01,
+        "unit": "mm",
+        "object_ids": [
+          "panel.right.001",
+          "panel.shelf.001"
+        ],
+        "note": ""
+      },
+      {
+        "check_id": "dado.shelf1.right.end_gap",
+        "status": "PASS",
+        "observed": 0.2999999999999545,
+        "expected": 0.3,
+        "tolerance": 0.01,
+        "unit": "mm",
+        "object_ids": [
+          "panel.right.001",
+          "panel.shelf.001"
+        ],
+        "note": ""
+      },
+      {
+        "check_id": "dado.shelf1.right.gap_below",
+        "status": "PASS",
+        "observed": 0.24999999999994316,
+        "expected": 0.25,
+        "tolerance": 0.01,
+        "unit": "mm",
+        "object_ids": [
+          "panel.right.001",
+          "panel.shelf.001"
+        ],
+        "note": ""
+      },
+      {
+        "check_id": "dado.shelf1.right.gap_above",
+        "status": "PASS",
+        "observed": 0.2500000000001137,
+        "expected": 0.25,
+        "tolerance": 0.01,
+        "unit": "mm",
+        "object_ids": [
+          "panel.right.001",
+          "panel.shelf.001"
+        ],
+        "note": ""
+      },
+      {
+        "check_id": "dado.shelf1.right.mating_unmodified",
+        "status": "PASS",
+        "observed": 11509516.799999982,
+        "expected": 11509516.8,
+        "tolerance": 11.5095168,
+        "unit": "mm3",
+        "object_ids": [
+          "panel.right.001",
+          "panel.shelf.001"
+        ],
+        "note": "the cut must not touch the shelf"
+      },
+      {
+        "check_id": "dado.shelf1.right.probe.centre_empty",
+        "status": "PASS",
+        "observed": null,
+        "expected": null,
+        "tolerance": null,
+        "unit": "",
+        "object_ids": [
+          "panel.right.001"
+        ],
+        "note": "expected empty"
+      },
+      {
+        "check_id": "dado.shelf1.right.probe.front_open",
+        "status": "PASS",
+        "observed": null,
+        "expected": null,
+        "tolerance": null,
+        "unit": "",
+        "object_ids": [
+          "panel.right.001"
+        ],
+        "note": "expected empty"
+      },
+      {
+        "check_id": "dado.shelf1.right.probe.below_solid",
+        "status": "PASS",
+        "observed": null,
+        "expected": null,
+        "tolerance": null,
+        "unit": "",
+        "object_ids": [
+          "panel.right.001"
+        ],
+        "note": "expected material"
+      },
+      {
+        "check_id": "dado.shelf1.right.probe.above_solid",
+        "status": "PASS",
+        "observed": null,
+        "expected": null,
+        "tolerance": null,
+        "unit": "",
+        "object_ids": [
+          "panel.right.001"
+        ],
+        "note": "expected material"
+      },
+      {
+        "check_id": "dado.shelf1.right.probe.far_wall_solid",
+        "status": "PASS",
+        "observed": null,
+        "expected": null,
+        "tolerance": null,
+        "unit": "",
+        "object_ids": [
+          "panel.right.001"
+        ],
+        "note": "expected material"
+      },
+      {
+        "check_id": "dado.shelf1.right.probe.rear_wall_solid",
+        "status": "PASS",
+        "observed": null,
+        "expected": null,
+        "tolerance": null,
+        "unit": "",
+        "object_ids": [
+          "panel.right.001"
+        ],
+        "note": "expected material"
+      },
+      {
+        "check_id": "interference.joined",
+        "status": "PASS",
+        "observed": 0.0,
+        "expected": 0.0,
+        "tolerance": 0.0,
+        "unit": "pairs",
+        "object_ids": [
+          "panel.left.001",
+          "panel.right.001",
+          "panel.shelf.001"
+        ],
+        "note": ""
+      },
+      {
+        "check_id": "entities.managed_ids",
+        "status": "PASS",
+        "observed": 8.0,
+        "expected": 8.0,
+        "tolerance": 0.0,
+        "unit": "entities",
+        "object_ids": [],
+        "note": ""
+      }
+    ],
+    "diagnostics": []
+  },
+  "manifest_file_count": 31,
+  "manifest_files": [
+    {
+      "path": "VanCabinetJoineryV5.manifest",
+      "expected_sha256": "50a6783abe5b3f46f53887bcc87132bd8840386248d6a58be4ea502292ba8dda",
+      "actual_sha256": "50a6783abe5b3f46f53887bcc87132bd8840386248d6a58be4ea502292ba8dda",
+      "match": true
+    },
+    {
+      "path": "VanCabinetJoineryV5.py",
+      "expected_sha256": "e66fecb714efc93ca30fed465a9b5752a5ae3e7c01277cf42f40e7a29ceb1b32",
+      "actual_sha256": "e66fecb714efc93ca30fed465a9b5752a5ae3e7c01277cf42f40e7a29ceb1b32",
+      "match": true
+    },
+    {
+      "path": "vandesign/__init__.py",
+      "expected_sha256": "f7d5f6479928f96a87f042f37c9e3cd015827549879087cc2cf80d69f93f57fd",
+      "actual_sha256": "f7d5f6479928f96a87f042f37c9e3cd015827549879087cc2cf80d69f93f57fd",
+      "match": true
+    },
+    {
+      "path": "vandesign/adapters/__init__.py",
+      "expected_sha256": "40043c7eccf4dbba97aa5d84c4866c14896ad9247b6828195045ef5ba7d53870",
+      "actual_sha256": "40043c7eccf4dbba97aa5d84c4866c14896ad9247b6828195045ef5ba7d53870",
+      "match": true
+    },
+    {
+      "path": "vandesign/cad/__init__.py",
+      "expected_sha256": "703824dc29bf256f5438a5b0397702e06c6821ca21a7755c27223ccc972ed398",
+      "actual_sha256": "703824dc29bf256f5438a5b0397702e06c6821ca21a7755c27223ccc972ed398",
+      "match": true
+    },
+    {
+      "path": "vandesign/cad/fusion/__init__.py",
+      "expected_sha256": "360d13dae8b2db83cc3d60be0628c4db8becaac794fc7e2508bf363f34dd5468",
+      "actual_sha256": "360d13dae8b2db83cc3d60be0628c4db8becaac794fc7e2508bf363f34dd5468",
+      "match": true
+    },
+    {
+      "path": "vandesign/cad/fusion/adapter.py",
+      "expected_sha256": "e4a739a49fd7062dab8f49f30426df5dc125824a0cd236d686e7a8e4ee14037a",
+      "actual_sha256": "e4a739a49fd7062dab8f49f30426df5dc125824a0cd236d686e7a8e4ee14037a",
+      "match": true
+    },
+    {
+      "path": "vandesign/cad/fusion/interior_demo.py",
+      "expected_sha256": "8766bfa5cf8b7a9a93678bc50d4e0d2bb9834f9e2be517b17cfe085c60f2b7ae",
+      "actual_sha256": "8766bfa5cf8b7a9a93678bc50d4e0d2bb9834f9e2be517b17cfe085c60f2b7ae",
+      "match": true
+    },
+    {
+      "path": "vandesign/cad/fusion/runner.py",
+      "expected_sha256": "41529f25bdfa55546db299da220b601d53c6789d995490fe4bf488fcd6e20b84",
+      "actual_sha256": "41529f25bdfa55546db299da220b601d53c6789d995490fe4bf488fcd6e20b84",
+      "match": true
+    },
+    {
+      "path": "vandesign/cad/protocol.py",
+      "expected_sha256": "c09af102cfa5d8fa9bfe5d59f1e59a8e18081def90493fa9a0d0ac6c11884524",
+      "actual_sha256": "c09af102cfa5d8fa9bfe5d59f1e59a8e18081def90493fa9a0d0ac6c11884524",
+      "match": true
+    },
+    {
+      "path": "vandesign/components/__init__.py",
+      "expected_sha256": "601c5f2f9af792b150c021c34d83f921c2142ed86aa0193c7a04aa28a3fbdd0e",
+      "actual_sha256": "601c5f2f9af792b150c021c34d83f921c2142ed86aa0193c7a04aa28a3fbdd0e",
+      "match": true
+    },
+    {
+      "path": "vandesign/components/ids.py",
+      "expected_sha256": "61cc0afa349d799d2d4ac1b728ddf54b6c46a9a856775e9f2f8e33a207a6231c",
+      "actual_sha256": "61cc0afa349d799d2d4ac1b728ddf54b6c46a9a856775e9f2f8e33a207a6231c",
+      "match": true
+    },
+    {
+      "path": "vandesign/components/model.py",
+      "expected_sha256": "f0f389d46f3c1b91c3961e1167150047c51f9fcb442b995fdb2f2163ecfa3869",
+      "actual_sha256": "f0f389d46f3c1b91c3961e1167150047c51f9fcb442b995fdb2f2163ecfa3869",
+      "match": true
+    },
+    {
+      "path": "vandesign/core/__init__.py",
+      "expected_sha256": "a70d0810f0e1d9d6081859ff8ba5c94c19d5bed75be248bb1bb066c9752ce25e",
+      "actual_sha256": "a70d0810f0e1d9d6081859ff8ba5c94c19d5bed75be248bb1bb066c9752ce25e",
+      "match": true
+    },
+    {
+      "path": "vandesign/core/expr.py",
+      "expected_sha256": "bdf5bfc6d4c6a8f1ca46ced7b68d27f05b4a91fe2affe9e57397a4a5aafc4e2b",
+      "actual_sha256": "bdf5bfc6d4c6a8f1ca46ced7b68d27f05b4a91fe2affe9e57397a4a5aafc4e2b",
+      "match": true
+    },
+    {
+      "path": "vandesign/core/frames.py",
+      "expected_sha256": "cce5e53d6b4565c3e8fb5c2ead3a4ed157e8acbfc7d5ff3d9cf7ec055b2750f7",
+      "actual_sha256": "cce5e53d6b4565c3e8fb5c2ead3a4ed157e8acbfc7d5ff3d9cf7ec055b2750f7",
+      "match": true
+    },
+    {
+      "path": "vandesign/core/geometry.py",
+      "expected_sha256": "0319a91e58ac3b21f71ededcd84480befa31118f9a13fe733af1b56f05068045",
+      "actual_sha256": "0319a91e58ac3b21f71ededcd84480befa31118f9a13fe733af1b56f05068045",
+      "match": true
+    },
+    {
+      "path": "vandesign/core/joinery.py",
+      "expected_sha256": "83a8850d9c1e45e0f417466590d378348c4ab651365fdf8cb9f174abb8a6db6b",
+      "actual_sha256": "83a8850d9c1e45e0f417466590d378348c4ab651365fdf8cb9f174abb8a6db6b",
+      "match": true
+    },
+    {
+      "path": "vandesign/core/params.py",
+      "expected_sha256": "2a67bb7cddc96191d920600b3154dfd7c54dfa72467cc5cf887cf4e24c650738",
+      "actual_sha256": "2a67bb7cddc96191d920600b3154dfd7c54dfa72467cc5cf887cf4e24c650738",
+      "match": true
+    },
+    {
+      "path": "vandesign/core/units.py",
+      "expected_sha256": "d6e17b17ccd9459c25df187b8c6d0f1302ffb9659ea3cf1dee8d2fbe4b421961",
+      "actual_sha256": "d6e17b17ccd9459c25df187b8c6d0f1302ffb9659ea3cf1dee8d2fbe4b421961",
+      "match": true
+    },
+    {
+      "path": "vandesign/modules/__init__.py",
+      "expected_sha256": "e4dd7b82bd0b5ea3cbdf6fac4469526e26ad1fef64b20a68cca9c769ed040f5e",
+      "actual_sha256": "e4dd7b82bd0b5ea3cbdf6fac4469526e26ad1fef64b20a68cca9c769ed040f5e",
+      "match": true
+    },
+    {
+      "path": "vandesign/modules/cabinet.py",
+      "expected_sha256": "db10f0ecea7b270b54288d559fc7a546939eaf397119675bcfd80848fbca66c5",
+      "actual_sha256": "db10f0ecea7b270b54288d559fc7a546939eaf397119675bcfd80848fbca66c5",
+      "match": true
+    },
+    {
+      "path": "vandesign/modules/interior_demo.py",
+      "expected_sha256": "f65097f4cfc6a9e9674b2111805edbb615d3188385c6634556dac90c885829c8",
+      "actual_sha256": "f65097f4cfc6a9e9674b2111805edbb615d3188385c6634556dac90c885829c8",
+      "match": true
+    },
+    {
+      "path": "vandesign/modules/variants.py",
+      "expected_sha256": "b263d8e7b2bd9bec36fbd22c09f5c31a3606080543f6ec15b0f39d5f6bd85ce7",
+      "actual_sha256": "b263d8e7b2bd9bec36fbd22c09f5c31a3606080543f6ec15b0f39d5f6bd85ce7",
+      "match": true
+    },
+    {
+      "path": "vandesign/schemas/__init__.py",
+      "expected_sha256": "8ae003ec476f0f7d952313fafaa3cd5794bf0139d121544230149e1461356609",
+      "actual_sha256": "8ae003ec476f0f7d952313fafaa3cd5794bf0139d121544230149e1461356609",
+      "match": true
+    },
+    {
+      "path": "vandesign/schemas/cabinet_spec.py",
+      "expected_sha256": "b73a7651a64159a3127024667a1c348feb06b8ef08478417c54dd0be1a367cff",
+      "actual_sha256": "b73a7651a64159a3127024667a1c348feb06b8ef08478417c54dd0be1a367cff",
+      "match": true
+    },
+    {
+      "path": "vandesign/schemas/design_spec.py",
+      "expected_sha256": "3816b2edcad608c2743ec23f84ff2e118803958dfcd68ad44180f936b462fc8f",
+      "actual_sha256": "3816b2edcad608c2743ec23f84ff2e118803958dfcd68ad44180f936b462fc8f",
+      "match": true
+    },
+    {
+      "path": "vandesign/verification/__init__.py",
+      "expected_sha256": "6519acfbda1c30aa4fc840352f3d54f6f5168a2c598018f1e1c3dab05a18b4a0",
+      "actual_sha256": "6519acfbda1c30aa4fc840352f3d54f6f5168a2c598018f1e1c3dab05a18b4a0",
+      "match": true
+    },
+    {
+      "path": "vandesign/verification/geometry_source.py",
+      "expected_sha256": "0d42d325606120ddaf079743e4401df3a44c1d8ee86920bda5256a5b6428d6c5",
+      "actual_sha256": "0d42d325606120ddaf079743e4401df3a44c1d8ee86920bda5256a5b6428d6c5",
+      "match": true
+    },
+    {
+      "path": "vandesign/verification/report.py",
+      "expected_sha256": "a162dd8b6fd05d20386cb47f95374e9b54f0df285367266fa55e6d81bea4bfbe",
+      "actual_sha256": "a162dd8b6fd05d20386cb47f95374e9b54f0df285367266fa55e6d81bea4bfbe",
+      "match": true
+    },
+    {
+      "path": "vandesign/verification/validate.py",
+      "expected_sha256": "5a1d0ae614c0e068beed15f0b09ee9392c093625a0efb1b1e205c873b3ce900a",
+      "actual_sha256": "5a1d0ae614c0e068beed15f0b09ee9392c093625a0efb1b1e205c873b3ce900a",
+      "match": true
+    }
+  ],
+  "in_process_runtime_identity": "UNVERIFIED",
+  "explicit_cut_participants": "UNKNOWN",
+  "parameter_edit_restore": "UNKNOWN"
+}
