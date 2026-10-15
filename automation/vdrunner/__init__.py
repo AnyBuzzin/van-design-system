@@ -6,6 +6,6 @@ and evidence packaging.  Everything that touches Fusion lives in the
 add-in (``automation/VanDesignRunner``).
 """
 
-RUNNER_VERSION = "0.3.0"
+RUNNER_VERSION = "0.4.0"
 JOB_SCHEMA_ID = "vandesign.runner.job/1"
 RESULT_SCHEMA_ID = "vandesign.runner.result/1"

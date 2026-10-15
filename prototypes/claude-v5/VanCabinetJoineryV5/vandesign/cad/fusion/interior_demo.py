@@ -6,7 +6,7 @@ import os
 import adsk.core
 import adsk.fusion
 
-from ...modules.interior_demo import build_interior, check_layout
+from ...modules.interior_demo import LAYOUT_KEYS, VEHICLE_KEYS, build_interior, check_layout, vehicle_clearances
 from .adapter import FusionAdapter
 from .runner import _design_counts
 
@@ -14,12 +14,24 @@ from .runner import _design_counts
 def measure(design, assembly):
     adapter = FusionAdapter(design)
     source = adapter.geometry_source()
+    # Read-only reconstruction for persistence of earlier configured documents.
+    # Existing default documents retain their original parameter set.
+    if (('Bed_Width' not in assembly.parameters.names() and source.parameter_value('Bed_Width') is not None)
+            or ('Arch_Width' not in assembly.parameters.names() and source.parameter_value('Arch_Width') is not None)):
+        layout = ({k: source.parameter_value(k) for k in LAYOUT_KEYS if source.parameter_value(k) is not None}
+                  if source.parameter_value('Bed_Width') is not None else None)
+        vehicle = ({k: source.parameter_value(k) for k in VEHICLE_KEYS if source.parameter_value(k) is not None}
+                   if source.parameter_value('Arch_Width') is not None else None)
+        assembly = build_interior(layout, vehicle)
     env = assembly.parameters.resolve({p.name: source.parameter_value(p.name)
                                        for p in assembly.parameters.base()})
     expected = check_layout(assembly, env)
     checks = []
+    measured_boxes = {}
     for panel in assembly.panels:
         body = source.body(panel.stable_id)
+        if body is not None:
+            measured_boxes[panel.stable_id] = body.box
         volume = expected[panel.stable_id].volume - sum(
             o.cut.resolve(env).volume for o in assembly.operations
             if o.target_panel_id == panel.stable_id)
@@ -41,11 +53,17 @@ def measure(design, assembly):
     interference = source.interference_count([p.stable_id for p in assembly.panels])
     checks.append(dict(id="body_interference", count=interference,
                        status="UNKNOWN" if interference is None else "PASS" if interference == 0 else "FAIL"))
+    if 'Arch_Width' in env:
+        try:
+            clearances = vehicle_clearances(env, measured_boxes, tolerance_mm=0.05)
+            checks.append(dict(id='vehicle_clearances', status='PASS', measured=clearances))
+        except (ValueError, KeyError) as exc:
+            checks.append(dict(id='vehicle_clearances', status='FAIL', error=str(exc)))
     return dict(outcome="PASS" if all(c['status']=='PASS' for c in checks) else "FAIL",
                 parameters_mm=env, checks=checks, counts=_design_counts(design))
 
 
-def run_demo(app, output_dir, layout_mm=None):
+def run_demo(app, output_dir, layout_mm=None, vehicle_mm=None):
     doc = app.activeDocument
     design = adsk.fusion.Design.cast(app.activeProduct)
     if (not doc or not design or doc.isSaved or doc.isModified
@@ -53,10 +71,10 @@ def run_demo(app, output_dir, layout_mm=None):
             or design.rootComponent.sketches.count or design.userParameters.count
             or design.timeline.count):
         raise RuntimeError("Select a NEW, EMPTY, unmodified, unsaved design. Existing documents are refused.")
-    assembly = build_interior(layout_mm)
+    assembly = build_interior(layout_mm, vehicle_mm)
     check_layout(assembly, assembly.parameters.resolve())
     payload = dict(fusion_version=app.version, document_name=doc.name,
-                   assembly_id=assembly.assembly_id, layout_mm=layout_mm, stages=[])
+                   assembly_id=assembly.assembly_id, layout_mm=layout_mm, vehicle_mm=vehicle_mm, stages=[])
     os.makedirs(output_dir, exist_ok=True)
     path = os.path.join(output_dir, "interior_%s.json" % datetime.datetime.now().strftime('%Y%m%d_%H%M%S'))
     try:

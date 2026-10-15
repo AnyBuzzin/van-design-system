@@ -170,6 +170,17 @@ class DemoTests(TmpDirCase):
             with self.assertRaises(JobSchemaError):
                 validate_job(job('run_approved_demo', dict(demo_id='demo-001', entry_point='FirstInteriorDemo', layout_mm=layout), target=None))
 
+    def test_vehicle_schema_and_extra_evidence_fail_closed(self):
+        args=dict(demo_id='demo-001',entry_point='FirstInteriorDemo',vehicle_mm={'Van_Width':2100,'Min_Aisle':600})
+        validate_job(job('run_approved_demo',args,target=None))
+        for vehicle in ({'Arch_Width':True},{'Van_Length':'4600'},{'command':'x'},{'Min_Aisle':float('nan')}):
+            with self.assertRaises(JobSchemaError):
+                validate_job(job('run_approved_demo',dict(args,vehicle_mm=vehicle),target=None))
+        missing=copy.deepcopy(self.report); missing['vehicle_mm']={}
+        self.assertFalse(workflow.verified(missing))
+        missing=copy.deepcopy(self.report); missing['layout_mm']={}
+        self.assertFalse(workflow.verified(missing))
+
     def test_schema_rejects_python_paths_targets_and_bad_names(self):
         validate_job(job('create_demo_design', target=None))
         validate_job(job('save_demo_design', self.args, target=None))

@@ -116,7 +116,7 @@ def validate_args(command: str, args: Any, path: str) -> None:
         required = {"create_demo_design": (), "run_approved_demo": ("demo_id", "entry_point"),
                     "save_demo_design": ("demo_id", "name", "project_id", "folder_id"),
                     "capture_demo_viewport": ("demo_id",), "verify_demo_persistence": ("design_id",)}[command]
-        _keys(args, path, required, ("layout_mm",) if command == 'run_approved_demo' else ())
+        _keys(args, path, required, ("layout_mm", "vehicle_mm") if command == 'run_approved_demo' else ())
         for key in required:
             _str(args[key], path + "." + key, 300)
         if "demo_id" in args and not JOB_ID_RE.fullmatch(args["demo_id"]):
@@ -127,6 +127,11 @@ def validate_args(command: str, args: Any, path: str) -> None:
             _keys(args['layout_mm'], path+'.layout_mm', (), ('Bed_Width', 'Bed_Length', 'Bed_Height', 'Kitchen_X', 'Kitchen_Y'))
             for key, value in args['layout_mm'].items():
                 _number(value, path+'.layout_mm.'+key)
+        if 'vehicle_mm' in args:
+            _keys(args['vehicle_mm'], path+'.vehicle_mm', (), ('Van_Width','Van_Length','Van_Height',
+                  'Arch_Width','Arch_Length','Arch_Height','Arch_Left_Y','Arch_Right_Y','Min_Aisle'))
+            for key,value in args['vehicle_mm'].items():
+                _number(value, path+'.vehicle_mm.'+key)
         if command == "save_demo_design":
             name = args["name"]
             if name != name.strip() or len(name) > 120 or any(ord(c) < 32 or c in '/\\:*?"<>|' for c in name):
