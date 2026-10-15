@@ -1,0 +1,10 @@
+{
+  "outcome": "PASS",
+  "build_checks_passed": 95,
+  "fresh_presave_checks_passed": 19,
+  "cloud_complete": true,
+  "saved_version": 1,
+  "existing_document_snapshots_equal": true,
+  "saved_inspection_matches": true,
+  "viewport_file_present": true
+}

@@ -3,9 +3,9 @@
   "type": "addin",
   "author": "VanDesign",
   "description": {
-    "": "VanDesign Runner: executes validated local test jobs (measure, temporary parameter edits with verified restore, G3 cut audit). Never builds, saves, deletes or exports."
+    "": "VanDesign Runner: validated local jobs, guarded new demo creation, approved builds, verified first saves and viewport capture. Existing designs are never saved or closed by demo operations."
   },
-  "version": "0.1.0",
+  "version": "0.2.0",
   "runOnStartup": false,
   "supportedOS": "windows|mac",
   "editEnabled": true

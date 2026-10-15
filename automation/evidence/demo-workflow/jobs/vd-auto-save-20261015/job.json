@@ -1,0 +1,12 @@
+{
+  "command": "save_demo_design",
+  "args": {
+    "name": "VanDesign-Autonomous-Interior-Demo-20261015",
+    "demo_id": "vd-auto-create-20261015",
+    "project_id": "a.YnVzaW5lc3M6Z21haWw2OTE3MDc5IzIwMjYwNzI3MTExODg3NDA4MQ",
+    "folder_id": "urn:adsk.wipprod:fs.folder:co.gWxsBe8pRiiQCVWk3LBryQ"
+  },
+  "schema": "vandesign.runner.job/1",
+  "job_id": "vd-auto-save-20261015",
+  "created_utc": "2026-10-15T00:26:49.769+00:00"
+}
