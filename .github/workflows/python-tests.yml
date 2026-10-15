@@ -26,3 +26,8 @@ jobs:
       - name: Compile V5 prototype source
         if: hashFiles('prototypes/claude-v5/VanCabinetJoineryV5/VanCabinetJoineryV5.py') != ''
         run: python -m compileall -q prototypes/claude-v5/VanCabinetJoineryV5 prototypes/claude-v5/tests
+      - name: Run Fusion automation runner tests (offline, no Fusion runtime)
+        working-directory: automation/tests
+        run: python -m unittest discover -v
+      - name: Compile Fusion automation runner
+        run: python -m compileall -q automation

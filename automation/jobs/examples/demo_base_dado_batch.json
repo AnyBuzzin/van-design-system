@@ -1,0 +1,23 @@
+{
+  "schema": "vandesign.runner.job/1",
+  "command": "run_test_batch",
+  "timeout_s": 900,
+  "note": "Milestone demo: base@1 baseline, Cab_Dado_Depth 6 -> 10 -> 6 with verification, then the independent G3 cut audit. Disposable design only (target supplied with --target-id).",
+  "args": {
+    "label": "base dado-depth automated batch",
+    "stable_counts": true,
+    "steps": [
+      {"command": "inspect_design", "args": {"label": "inspect before"}},
+      {"command": "measure", "args": {"label": "baseline 6 mm", "expect": {"verdict": "PASS", "pass_count": 59, "total": 59,
+        "params_mm": {"Cab_Dado_Depth": 6, "Cab_Shelf_Length": 1175.4, "Cab_Shelf_X": 12.3}, "tol_mm": 0.0001,
+        "counts": {"user_parameters": 16, "root_occurrences": 8, "all_components": 9, "timeline_items": 28}}}},
+      {"command": "set_parameter", "args": {"label": "dado 6 -> 10", "name": "Cab_Dado_Depth", "value": 10, "unit": "mm"}},
+      {"command": "measure", "args": {"label": "dado 10 mm", "expect": {"verdict": "PASS", "pass_count": 59, "total": 59,
+        "params_mm": {"Cab_Dado_Depth": 10, "Cab_Shelf_Length": 1183.4, "Cab_Shelf_X": 8.3}, "tol_mm": 0.0001}}},
+      {"command": "restore_parameter", "args": {"label": "restore dado 6", "name": "Cab_Dado_Depth", "expect": {"verdict": "PASS",
+        "pass_count": 59, "total": 59, "params_mm": {"Cab_Dado_Depth": 6, "Cab_Shelf_Length": 1175.4, "Cab_Shelf_X": 12.3}, "tol_mm": 0.0001}}},
+      {"command": "audit_cuts", "args": {"label": "independent G3 cut audit", "expect": {"features_passed": 2}}},
+      {"command": "inspect_design", "args": {"label": "inspect after"}}
+    ]
+  }
+}

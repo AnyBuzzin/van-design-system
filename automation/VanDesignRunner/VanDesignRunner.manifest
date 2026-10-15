@@ -1,0 +1,12 @@
+{
+  "autodeskProduct": "Fusion",
+  "type": "addin",
+  "author": "VanDesign",
+  "description": {
+    "": "VanDesign Runner: executes validated local test jobs (measure, temporary parameter edits with verified restore, G3 cut audit). Never builds, saves, deletes or exports."
+  },
+  "version": "0.1.0",
+  "runOnStartup": false,
+  "supportedOS": "windows|mac",
+  "editEnabled": true
+}
