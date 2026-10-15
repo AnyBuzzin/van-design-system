@@ -1,0 +1,9 @@
+test_brep_comparison_rejects_changed_geometry_or_missing_panel (test_pr14_checkpoint.CheckpointSafetyTests.test_brep_comparison_rejects_changed_geometry_or_missing_panel) ... ok
+test_edit_failure_still_restores_exact_original_expression (test_pr14_checkpoint.CheckpointSafetyTests.test_edit_failure_still_restores_exact_original_expression) ... ok
+test_non_test_document_refused (test_pr14_checkpoint.CheckpointSafetyTests.test_non_test_document_refused) ... ok
+test_saved_document_refused_before_parameter_access (test_pr14_checkpoint.CheckpointSafetyTests.test_saved_document_refused_before_parameter_access) ... ok
+
+----------------------------------------------------------------------
+Ran 4 tests in 0.001s
+
+OK

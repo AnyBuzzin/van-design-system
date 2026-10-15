@@ -1,0 +1,77 @@
+{
+  "fixture_materialization": "Three JSON files replaced with exact HEAD blob bytes after verifying CRLF-only difference. No tracked content changes.",
+  "v4_archive": {
+    "VanCabinetJoinery_V4_rev2.manifest": "769bb38f15de59746245610af329c7dacd222c656839a9ea593fcf2c66120054",
+    "VanCabinetJoinery_V4_rev2.py": "73527d01eaffdaf1b73dfc0206cd9544a2149ddfba0540e0160797bf0dd0d248"
+  },
+  "v4_committed_blobs": {
+    "VanCabinetJoinery_V4_rev2.manifest": "4969eda24918b5a4f7a629f64b9d528f7d14443b3a26cdb37d92bc6aeab3f8c2",
+    "VanCabinetJoinery_V4_rev2.py": "6f7a8b4647ad60f34d33b2fe0665b1c48a2bfa6055ceace6f1351792e21fabbd"
+  },
+  "downloaded_v4_candidate": {
+    "sha256": "78f85ac569f4bfe1884218c42f9e272fb32081a885241e95282347aaa7561b18",
+    "identity_with_executed_file": "UNKNOWN"
+  },
+  "g3_archives": [
+    {
+      "name": "F1-base-repeatability-reports-20261014.zip",
+      "sha256": "9eda0e9c813e56af4b3598cd568f20e2e58e81326eb4702e8e21a2809847d186",
+      "entries": 4,
+      "crc_error": null
+    },
+    {
+      "name": "F1-batch-reports-20261014.zip",
+      "sha256": "6c22133c45bb1eed1d37d10d7a8110415d5ae147e457ac86277d957985cef6e6",
+      "entries": 21,
+      "crc_error": null
+    },
+    {
+      "name": "F1-dado-depth-test-reports-20261014.zip",
+      "sha256": "bbd827bd95507449d5be0607eae7ee4c4236d9ca8337d073f0cf777f0c6b9aa9",
+      "entries": 4,
+      "crc_error": null
+    },
+    {
+      "name": "F1-phase3-cut-audit-20261014.zip",
+      "sha256": "a460372d701ee7be2078fae02d6eb19d078e8b33c21d72e9faa67e989177f503",
+      "entries": 4,
+      "crc_error": null
+    },
+    {
+      "name": "G3-F2-F3-partial-evidence.zip",
+      "sha256": "3463781dc1c959652a2f83dee56c154da51e06944584b0e6c923cdf7bac5cf42",
+      "entries": 60,
+      "crc_error": null
+    }
+  ],
+  "package_imports": [
+    {
+      "path": "src",
+      "module": "vandesign.core.joinery",
+      "exit": 0,
+      "stdout": "C:\\Users\\Buzz\\Documents\\Codex\\2026-10-15\\referenced-chatgpt-conversation-this-is-an-3\\work\\integration\\src\\vandesign\\core\\joinery.py\n",
+      "stderr": ""
+    },
+    {
+      "path": "src",
+      "module": "vandesign.modules.cabinet",
+      "exit": 1,
+      "stdout": "",
+      "stderr": "Traceback (most recent call last):\n  File \"<string>\", line 1, in <module>\n  File \"C:\\Users\\Buzz\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\python\\Lib\\importlib\\__init__.py\", line 90, in import_module\n    return _bootstrap._gcd_import(name[level:], package, level)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"<frozen importlib._bootstrap>\", line 1387, in _gcd_import\n  File \"<frozen importlib._bootstrap>\", line 1360, in _find_and_load\n  File \"<frozen importlib._bootstrap>\", line 1310, in _find_and_load_unlocked\n  File \"<frozen importlib._bootstrap>\", line 488, in _call_with_frames_removed\n  File \"<frozen importlib._bootstrap>\", line 1387, in _gcd_import\n  File \"<frozen importlib._bootstrap>\", line 1360, in _find_and_load\n  File \"<frozen importlib._bootstrap>\", line 1324, in _find_and_load_unlocked\nModuleNotFoundError: No module named 'vandesign.modules'\n"
+    },
+    {
+      "path": "prototypes/claude-v5/VanCabinetJoineryV5",
+      "module": "vandesign.modules.cabinet",
+      "exit": 0,
+      "stdout": "C:\\Users\\Buzz\\Documents\\Codex\\2026-10-15\\referenced-chatgpt-conversation-this-is-an-3\\work\\integration\\prototypes\\claude-v5\\VanCabinetJoineryV5\\vandesign\\modules\\cabinet.py\n",
+      "stderr": ""
+    },
+    {
+      "path": "prototypes/claude-v5/VanCabinetJoineryV5",
+      "module": "vandesign.core.joinery",
+      "exit": 1,
+      "stdout": "",
+      "stderr": "Traceback (most recent call last):\n  File \"<string>\", line 1, in <module>\n  File \"C:\\Users\\Buzz\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\python\\Lib\\importlib\\__init__.py\", line 90, in import_module\n    return _bootstrap._gcd_import(name[level:], package, level)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"<frozen importlib._bootstrap>\", line 1387, in _gcd_import\n  File \"<frozen importlib._bootstrap>\", line 1360, in _find_and_load\n  File \"<frozen importlib._bootstrap>\", line 1324, in _find_and_load_unlocked\nModuleNotFoundError: No module named 'vandesign.core.joinery'\n"
+    }
+  ]
+}

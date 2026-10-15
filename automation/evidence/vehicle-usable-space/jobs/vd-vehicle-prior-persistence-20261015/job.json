@@ -1,0 +1,9 @@
+{
+  "args": {
+    "design_id": "urn:adsk.wipprod:dm.lineage:b2Rkuzt1SDieIGYA4kygmQ"
+  },
+  "schema": "vandesign.runner.job/1",
+  "command": "verify_demo_persistence",
+  "job_id": "vd-vehicle-prior-persistence-20261015",
+  "created_utc": "2026-10-15T00:58:05.494+00:00"
+}

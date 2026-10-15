@@ -16,6 +16,26 @@ jobs:
       - uses: actions/setup-python@v5
         with:
           python-version: ${{ matrix.python-version }}
-      - run: python -m pip install -e .
+      - name: Build the distributable wheel
+        run: python -m pip wheel --no-deps --wheel-dir dist .
+      - name: Install wheel into a clean environment
+        run: |
+          python -m venv .wheel-env
+          .wheel-env/bin/python -m pip install --no-deps dist/*.whl
+          echo "$PWD/.wheel-env/bin" >> "$GITHUB_PATH"
+      - name: Verify installed runtime in isolated interpreter
+        run: python -I tools/check_installed.py
       - run: python -m unittest discover -s tests -v
       - run: python -m compileall -q src tests
+      - name: Run V5 prototype regression suite
+        if: hashFiles('prototypes/claude-v5/tests/test_core.py') != ''
+        working-directory: prototypes/claude-v5/tests
+        run: python -m unittest discover -v
+      - name: Compile V5 prototype source
+        if: hashFiles('prototypes/claude-v5/VanCabinetJoineryV5/VanCabinetJoineryV5.py') != ''
+        run: python -m compileall -q prototypes/claude-v5/VanCabinetJoineryV5 prototypes/claude-v5/tests
+      - name: Run Fusion automation runner tests (offline, no Fusion runtime)
+        working-directory: automation/tests
+        run: python -m unittest discover -v
+      - name: Compile Fusion automation runner
+        run: python -m compileall -q automation

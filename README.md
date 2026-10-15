@@ -1,3 +1,5 @@
+> Single-package migration: [review status and deployment](docs/integration/ONE_PACKAGE_MIGRATION.md). src/vandesign is the sole maintained runtime; G0/deferred G3/G4 and live deployment smoke remain open.
+
 # VanDesign — AI-powered van engineering
 
 **Status:** V5 architecture + CAD-neutral framework foundation. **Not manufacturing-ready.**
@@ -31,7 +33,7 @@ The CAD-specific adapter must explicitly specify cut participants; never allow a
 
 ## Source-status policy
 - V4 shelf fit has been verified by the user in Fusion. Archive the **exact** verified file before labelling any source release verified.
-- Claude's V5 implementation passed 30 CAD-independent Python tests, but its Fusion adapter has **not** been run in Fusion.
+- The V5 Fusion adapter **was user-tested in real Fusion 360** (v2705.1.30): smoke tests A–E all passed 58/58, with separate API verification of exact left/right cut participants. This is a verified limited fixture, **not** manufacturing qualification or a guarantee for other configurations. See [test evidence](prototypes/claude-v5/FUSION_TEST_PROTOCOL.md).
 - Never equate passing arithmetic/unit tests with physical fitment or CNC readiness.
 
 ## Run foundation tests
@@ -42,6 +44,7 @@ python -m unittest discover -s tests -v
 ## Branch policy
 `main`: stable project structure and independently exercised Python utilities.
 `develop`: integration preparation.
-`feature/v5-fusion-adapter`: V5 Fusion prototype; do not merge without a smoke test.
+`feature/v5-fusion-adapter`: G2 real-Fusion smoke-test and audit passed; **draft PR #3 remains unmerged pending integration review**.
+`feature/v5-g3-cabinet-variants`: successor G3 branch for three variants, [Claude handover](docs/ai/CLAUDE_V5_G3_HANDOVER_2026-10-14.md).
 
 Private project. No redistribution licence granted.

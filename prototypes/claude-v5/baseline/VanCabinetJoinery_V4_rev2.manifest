@@ -1,0 +1,10 @@
+{
+  "autodeskProduct": "Fusion",
+  "type": "script",
+  "author": "",
+  "description": {
+    "": "Parametric cabinet with sliding dado joinery (V4)"
+  },
+  "supportedOS": "windows|mac",
+  "editEnabled": true
+}

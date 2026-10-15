@@ -1,3 +1,6 @@
 # Fusion adapter (experimental)
 
-The actual Fusion adapter from Claude's V5 package requires a Fusion runtime smoke test before integration. Keep it isolated on feature/v5-fusion-adapter. Explicit cut participants are a non-negotiable contract.
+Legacy placeholder path. The maintained adapter is `vandesign.cad.fusion`,
+migrated without geometry changes into `src/vandesign/cad/fusion`.
+See the single-package migration review for deployment and remaining live smoke
+qualification. Explicit cut participants remain a non-negotiable contract.

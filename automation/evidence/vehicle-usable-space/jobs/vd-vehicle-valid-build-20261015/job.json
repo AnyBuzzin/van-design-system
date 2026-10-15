@@ -1,0 +1,28 @@
+{
+  "job_id": "vd-vehicle-valid-build-20261015",
+  "args": {
+    "layout_mm": {
+      "Bed_Height": 750,
+      "Kitchen_X": 100,
+      "Bed_Width": 1700,
+      "Bed_Length": 2000,
+      "Kitchen_Y": 500
+    },
+    "entry_point": "FirstInteriorDemo",
+    "demo_id": "vd-vehicle-valid-create-20261015",
+    "vehicle_mm": {
+      "Van_Height": 2200,
+      "Van_Width": 2100,
+      "Van_Length": 4600,
+      "Arch_Height": 300,
+      "Arch_Left_Y": 3000,
+      "Arch_Length": 800,
+      "Arch_Right_Y": 3000,
+      "Arch_Width": 250,
+      "Min_Aisle": 600
+    }
+  },
+  "command": "run_approved_demo",
+  "schema": "vandesign.runner.job/1",
+  "created_utc": "2026-10-15T01:07:34.317+00:00"
+}

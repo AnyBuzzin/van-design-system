@@ -1,0 +1,7 @@
+{
+  "command": "inspect_design",
+  "args": {},
+  "schema": "vandesign.runner.job/1",
+  "job_id": "vd-20261015T020659-396c17",
+  "created_utc": "2026-10-15T01:06:59.264+00:00"
+}

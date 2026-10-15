@@ -1,0 +1,21 @@
+{
+  "module": "cabinet@1",
+  "parameters": {
+    "back_mm": 6.0,
+    "cabinet_id": "cabinet.001",
+    "dado_depth_mm": 6.0,
+    "depth_mm": 550.0,
+    "door_count": 2,
+    "end_clearance_mm": 0.3,
+    "gap_mm": 3.0,
+    "height_mm": 850.0,
+    "material_ref": "ply_main",
+    "ply_mm": 18.0,
+    "shelf_count": 1,
+    "slot_clearance_mm": 0.5,
+    "width_mm": 1200.0
+  },
+  "profile_version": 1,
+  "schema_version": "0.2",
+  "variant": "base"
+}
