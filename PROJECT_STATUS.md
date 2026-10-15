@@ -1,3 +1,5 @@
+> Current consolidation status (2026-10-15): see [integration review](docs/integration/CONSOLIDATION_2026-10-15.md). G3 has partial Fusion evidence; G4 width-only is evidenced; package reconciliation/G0 remain open. Nothing has merged to develop.
+
 # Project status
 
 Updated: 2026-10-14. Development branch: `feature/v5-g3-cabinet-variants`.

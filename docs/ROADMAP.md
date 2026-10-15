@@ -1,3 +1,5 @@
+> Current status: [2026-10-15 consolidation review](integration/CONSOLIDATION_2026-10-15.md) supersedes the historical gate states below. G3 partial Fusion / G4 width-only evidence exists; full gates remain open.
+
 # Roadmap and stage gates
 
 ## Version 5 delivery gates (authoritative V5 numbering)

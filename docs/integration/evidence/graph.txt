@@ -1,0 +1,8 @@
+origin/develop -> origin/feature/v5-fusion-adapter parent=f77f7a0a7adc1a2dce2333fde02eba150af0df27 head=0dfd34a6cdc7956a212a2312830b27e609007357 merge-base=f77f7a0a7adc1a2dce2333fde02eba150af0df27
+origin/feature/v5-fusion-adapter -> origin/feature/v5-g3-cabinet-variants parent=0dfd34a6cdc7956a212a2312830b27e609007357 head=4d4345b6cde6084b1731c5298fa50d70759ef061 merge-base=0dfd34a6cdc7956a212a2312830b27e609007357
+origin/feature/v5-g3-cabinet-variants -> origin/feature/fusion-automation-runner parent=4d4345b6cde6084b1731c5298fa50d70759ef061 head=917800de4a5fe8d3e2c594ead71deac2f3b09a99 merge-base=4d4345b6cde6084b1731c5298fa50d70759ef061
+origin/feature/fusion-automation-runner -> origin/feature/g4-safe-width-update parent=917800de4a5fe8d3e2c594ead71deac2f3b09a99 head=ce09a533a48438f1ff02b096da21e2106ed88aed merge-base=917800de4a5fe8d3e2c594ead71deac2f3b09a99
+origin/feature/g4-safe-width-update -> origin/feature/first-interior-demo parent=ce09a533a48438f1ff02b096da21e2106ed88aed head=a4341bea10724e485d650f4e621db1c4cb6c815a merge-base=ce09a533a48438f1ff02b096da21e2106ed88aed
+origin/feature/first-interior-demo -> origin/feature/runner-demo-workflow parent=a4341bea10724e485d650f4e621db1c4cb6c815a head=820ec958b7de50ac5c3d517b1ea233f3115383e9 merge-base=a4341bea10724e485d650f4e621db1c4cb6c815a
+origin/feature/runner-demo-workflow -> origin/feature/configurable-interior-layouts parent=820ec958b7de50ac5c3d517b1ea233f3115383e9 head=f0826c6f6795b111d1465fcd226d64d963d69ef6 merge-base=820ec958b7de50ac5c3d517b1ea233f3115383e9
+origin/feature/configurable-interior-layouts -> origin/feature/vehicle-usable-space parent=f0826c6f6795b111d1465fcd226d64d963d69ef6 head=c95d131b73ff14c23483a097b05cfd8fd10d07f1 merge-base=f0826c6f6795b111d1465fcd226d64d963d69ef6
