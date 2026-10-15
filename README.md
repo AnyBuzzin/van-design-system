@@ -1,50 +1,46 @@
-> Single-package migration: [review status and deployment](docs/integration/ONE_PACKAGE_MIGRATION.md). src/vandesign is the sole maintained runtime; G0/deferred G3/G4 and live deployment smoke remain open.
+# VanDesign — AI-assisted parametric van engineering
 
-# VanDesign — AI-powered van engineering
+**Current state (2026-10-15): V5 engineering development integrated into `develop`; NOT manufacturing-ready.** [Complete project status](PROJECT_STATUS.md) · [Current roadmap](docs/ROADMAP.md).
 
-**Status:** V5 architecture + CAD-neutral framework foundation. **Not manufacturing-ready.**
-
-VanDesign aims to turn configurable vehicle and customer requirements into editable Fusion 360 assemblies and validated manufacturing data.
-
-AI proposes design specifications; deterministic engineering rules calculate geometry; validation measures the resulting solids; a human approves fabrication.
+VanDesign aims to turn typed van/customer requirements into editable Autodesk Fusion 360 assemblies, with deterministic geometry, measured CAD validation and, at later approved stages, traceable manufacturing information. **AI proposes intent; the engineering core constructs and validates; humans approve fabrication.**
 
 ## Start here
-- [Current status](PROJECT_STATUS.md)
-- [Roadmap](docs/ROADMAP.md)
-- [Engineering constraints](docs/standards/precision-and-ownership.md)
-- [AI assistant rules](AGENTS.md)
-- [Contributing](CONTRIBUTING.md)
-- [V4 baseline provenance](legacy/v4-verified/README.md)
 
-## Architecture
-```
-core + component model (no adsk imports)
-         |
-furniture/vehicle design modules
-         |
-CAD adapter: Autodesk Fusion 360
-         |
-independent solid-body validation
-         |
-reviewed manufacturing outputs
-```
+- [Current status, completed work and exact gaps](PROJECT_STATUS.md)
+- [Authoritative V5 gates G0–G5 and later V6–V10 roadmap](docs/ROADMAP.md)
+- [Rules for AI development and milestone scope](AGENTS.md)
+- [Geometry precision and cut ownership](docs/standards/precision-and-ownership.md)
+- [Contributor guidance](CONTRIBUTING.md)
+- [Preserved original V4 provenance](legacy/v4-verified/README.md)
+- [Single-runtime migration details](docs/integration/ONE_PACKAGE_MIGRATION.md)
+- [Real-Fusion deployed-package checkpoint](docs/integration/pr14-checkpoint-evidence/live-20261015/FINAL_REVIEW.md)
 
-The CAD-specific adapter must explicitly specify cut participants; never allow a dado cut to modify a neighbouring shelf. Every component gets a stable identifier.
+## Architecture and source of truth
 
-## Source-status policy
-- V4 shelf fit has been verified by the user in Fusion. Archive the **exact** verified file before labelling any source release verified.
-- The V5 Fusion adapter **was user-tested in real Fusion 360** (v2705.1.30): smoke tests A–E all passed 58/58, with separate API verification of exact left/right cut participants. This is a verified limited fixture, **not** manufacturing qualification or a guarantee for other configurations. See [test evidence](prototypes/claude-v5/FUSION_TEST_PROTOCOL.md).
-- Never equate passing arithmetic/unit tests with physical fitment or CNC readiness.
-
-## Run foundation tests
-```bash
-python -m unittest discover -s tests -v
+```text
+typed millimetre specifications
+       |
+src/vandesign — CAD-neutral expressions, panels and geometry
+       |
+furniture and simplified vehicle-layout modules
+       |
+Fusion adapter and generated, hash-verified script bundles
+       |
+read-only BRep verification + exact boolean cut participants
+       |
+reviewed, scoped engineering evidence
 ```
 
-## Branch policy
-`main`: stable project structure and independently exercised Python utilities.
-`develop`: integration preparation.
-`feature/v5-fusion-adapter`: G2 real-Fusion smoke-test and audit passed; **draft PR #3 remains unmerged pending integration review**.
-`feature/v5-g3-cabinet-variants`: successor G3 branch for three variants, [Claude handover](docs/ai/CLAUDE_V5_G3_HANDOVER_2026-10-14.md).
+**`src/vandesign` is the sole maintained Python runtime.** The former `prototypes/claude-v5` package is retained as historical source and test evidence, **not** a second runtime. The installed wheel provides legacy `DadoShelf` and the V5 component/model/Fusion-adapter interfaces. No code outside the CAD adapter may depend on `adsk`.
 
-Private project. No redistribution licence granted.
+The original V4 final executed source identity is still under investigation; the V5 G2 base fixture and the deployed PR14 `base@1` checkpoint have documented real-Fusion geometry and exclusive cut-ownership PASS results. This does **not** prove arbitrary variants, measured vehicle fit, production structures or CNC safety.
+
+## Development and testing
+
+- Use `develop` as the starting baseline and create **one focused feature branch/PR per milestone**. `main` is reserved for separately authorised stable/release changes.
+- Offline tests use the installed Python package and GitHub Actions on Python 3.10 and 3.12. The development-only integration of [PR #14](https://github.com/AnyBuzzin/van-design-system/pull/14) (including the PR #13 stack) passed post-merge CI.
+- For changed CAD behaviour, collect focused real-Fusion BRep/owned-cut/edit-restore or persistence evidence; don't restart unrelated historical regression campaigns.
+- Existing live Fusion runner installations may still point to historical package folders; **do not silently replace them**. Migrate through a separate approved backup/rollback procedure.
+- Treat any actual product release, manufacturing/CAM/CNC operation and physical van installation as **unqualified** until formal future acceptance.
+
+VanDesign source is not offered under a redistribution licence.
