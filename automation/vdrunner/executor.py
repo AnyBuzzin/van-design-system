@@ -15,7 +15,8 @@ Rules enforced here: target identity is re-checked before EVERY step; mutating
 work requires an allowlisted, unprotected design and a clean restore journal;
 every edit is journalled before it is applied; a restore is accepted only when
 the original value reads back AND the follow-up measurement passes; the first
-unexpected result stops the job.  Nothing is ever saved by the runner.
+unexpected result stops the job. Dedicated demo lifecycle operations use
+runner-created session references and fresh geometry verification before saving.
 """
 
 from __future__ import annotations
@@ -30,7 +31,7 @@ from .expect import evaluate_audit, evaluate_measure
 from .journal import JournalError, RestoreJournal
 from .policy import PolicyError, check_parameter_edit, check_target
 from .queue import utc_now
-from .schema import BATCH_COMMAND, is_mutating, steps_of, validate_job
+from .schema import BATCH_COMMAND, DEMO_COMMANDS, is_mutating, steps_of, validate_job
 from .width_change import plan_width_change
 
 
@@ -56,6 +57,12 @@ class Executor:
         try:
             ident = self.b.identity()
             result["identity_at_start"] = ident
+            if job["command"] in DEMO_COMMANDS:
+                summary = self.b.demo_command(job["command"], job["args"], evidence_dir, job["job_id"])
+                status = "PASS" if summary.get("outcome") == "PASS" else "FAIL"
+                result["steps"].append(self._step(job["command"], {}, status, 0, summary=summary))
+                result["outcome"] = status
+                return self._done(result, t_job)
             if job["command"] == "ping":
                 result["steps"].append(self._step("ping", {}, "PASS", 0.0, ident=ident))
                 result["outcome"] = "PASS"

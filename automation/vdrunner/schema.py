@@ -16,9 +16,10 @@ from typing import Any, Dict, List
 from . import JOB_SCHEMA_ID
 
 READ_ONLY_COMMANDS = ("ping", "inspect_design", "measure", "audit_cuts", "preview_width_change")
-MUTATING_COMMANDS = ("set_parameter", "restore_parameter", "update_width")
+DEMO_COMMANDS = ("create_demo_design", "run_approved_demo", "save_demo_design", "capture_demo_viewport")
+MUTATING_COMMANDS = ("set_parameter", "restore_parameter", "update_width") + DEMO_COMMANDS[:3]
 BATCH_COMMAND = "run_test_batch"
-ALL_COMMANDS = READ_ONLY_COMMANDS + MUTATING_COMMANDS + (BATCH_COMMAND,)
+ALL_COMMANDS = READ_ONLY_COMMANDS + MUTATING_COMMANDS + ("capture_demo_viewport", BATCH_COMMAND)
 STEP_COMMANDS = ("inspect_design", "measure", "set_parameter", "restore_parameter", "audit_cuts",
                  "preview_width_change", "update_width")
 
@@ -111,6 +112,21 @@ def validate_expect(exp: Any, path: str) -> None:
 def validate_args(command: str, args: Any, path: str) -> None:
     if command == "ping":
         _keys(args, path, ())
+    elif command in DEMO_COMMANDS:
+        required = {"create_demo_design": (), "run_approved_demo": ("demo_id", "entry_point"),
+                    "save_demo_design": ("demo_id", "name", "project_id", "folder_id"),
+                    "capture_demo_viewport": ("demo_id",)}[command]
+        _keys(args, path, required)
+        for key in required:
+            _str(args[key], path + "." + key, 300)
+        if "demo_id" in args and not JOB_ID_RE.fullmatch(args["demo_id"]):
+            _fail(path + ".demo_id", "must be the create job id")
+        if command == "run_approved_demo" and args["entry_point"] != "FirstInteriorDemo":
+            _fail(path + ".entry_point", "only FirstInteriorDemo is approved")
+        if command == "save_demo_design":
+            name = args["name"]
+            if name != name.strip() or len(name) > 120 or any(ord(c) < 32 or c in '/\\:*?"<>|' for c in name):
+                _fail(path + ".name", "invalid document name")
     elif command == "inspect_design":
         _keys(args, path, (), ("label",))
     elif command == "measure":
@@ -173,7 +189,9 @@ def validate_job(job: Any) -> Dict:
     for k in ("created_utc", "note"):
         if k in job:
             _str(job[k], k, 500)
-    needs_target = cmd != "ping" and cmd != "inspect_design"
+    needs_target = cmd not in ("ping", "inspect_design") + DEMO_COMMANDS
+    if cmd in DEMO_COMMANDS and "target" in job:
+        _fail("target", "demo commands use runner-created session identity, not cloud targets")
     if "target" in job:
         _keys(job["target"], "target", ("design_id",), ("document_name",))
         _str(job["target"]["design_id"], "target.design_id", 300)

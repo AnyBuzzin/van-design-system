@@ -7,7 +7,9 @@ It REUSES the verified G3 code instead of re-implementing it:
 * cut audit: the configured ``VanDesignCutAuditG3.py`` (``run_audit`` /
   ``render_text``), loaded fresh for every audit.
 
-It never builds a cabinet, never saves, never deletes and never exports.
+Existing-design operations never build or save. The separate demo_workflow
+module guards creation, allowlisted builds and first saves of new sessions.
+No operation deletes existing designs or exports manufacturing data.
 All methods run on Fusion's main thread (called from a CustomEvent handler).
 """
 
@@ -38,6 +40,10 @@ class FusionBackend:
         self.cfg = cfg
         self.g3_dir = cfg["g3_script_dir"]
         self.audit_script = cfg["audit_script"]
+
+    def demo_command(self, command, args, out_dir, job_id):
+        from demo_workflow import execute
+        return execute(self, command, args, out_dir, job_id)
 
     # ------------------------------------------------------------ helpers
     def _doc(self):
@@ -108,7 +114,9 @@ class FusionBackend:
         stored = adapter.stored_spec_json()
         tl = design.timeline
         src = adapter.geometry_source()
+        from demo_workflow import destinations
         return {
+            "cloud_destinations": destinations(self.app),
             "identity": self.identity(),
             "design_type": "parametric" if design.designType == adsk.fusion.DesignTypes.ParametricDesignType else "direct",
             "has_managed_assembly": adapter.has_managed_assembly(),

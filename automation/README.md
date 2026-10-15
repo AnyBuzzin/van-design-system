@@ -1,4 +1,8 @@
-# VanDesign Fusion automation runner (v0.1.0)
+# VanDesign Fusion automation runner (v0.2.0)
+
+Runner-created demo creation, approved build, verified first save and viewport
+capture: [DEMO_WORKFLOW.md](DEMO_WORKFLOW.md). Existing-design mutation rules
+remain unchanged; only newly runner-created sessions can use the demo lifecycle.
 
 Replaces repeated Claude Computer Use clicking with validated local jobs executed
 inside Autodesk Fusion through its supported Python API.
@@ -43,7 +47,10 @@ G3 code; it imports the verified G3 install named in `config.json`.
 | `update_width` | yes | G4: verified, journalled width update of an existing cabinet; writes the new spec via the G3 adapter; rolls back on any failure |
 | `run_test_batch` | if any step mutates | Ordered steps, stops at the first non-PASS step, design counts/hash must stay equal to the batch's first measurement |
 
-The runner never saves, builds, deletes, exports or executes arbitrary code (enforced by a test that scans the add-in source).
+Existing-design operations never save or build. The guarded demo lifecycle can
+create a new design, run FirstInteriorDemo and first-save verified results.
+The runner never deletes existing designs, exports manufacturing data or
+executes Python supplied in jobs (enforced by schema and lifecycle tests).
 
 ## Safety model
 

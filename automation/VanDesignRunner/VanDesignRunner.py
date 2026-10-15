@@ -21,7 +21,7 @@ if _HERE not in sys.path:
     sys.path.insert(0, _HERE)
 # Fusion keeps imported modules alive across add-in stop/start in the same session.
 # Drop ours so an upgraded install is really loaded on restart (found in real use).
-for _name in [n for n in sys.modules if n in ("vdrunner", "fusion_backend") or n.startswith("vdrunner.")]:
+for _name in [n for n in sys.modules if n in ("vdrunner", "fusion_backend", "demo_workflow") or n.startswith("vdrunner.")]:
     del sys.modules[_name]
 
 from vdrunner import RUNNER_VERSION  # noqa: E402
