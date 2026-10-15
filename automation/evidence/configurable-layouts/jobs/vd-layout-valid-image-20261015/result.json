@@ -1,0 +1,39 @@
+{
+  "schema": "vandesign.runner.result/1",
+  "runner_version": "0.3.0",
+  "job_id": "vd-layout-valid-image-20261015",
+  "command": "capture_demo_viewport",
+  "target": null,
+  "started_utc": "2026-10-15T00:43:18.427+00:00",
+  "steps": [
+    {
+      "command": "capture_demo_viewport",
+      "label": null,
+      "status": "PASS",
+      "elapsed_ms": 0,
+      "summary": {
+        "outcome": "PASS",
+        "image_path": "C:\\Users\\Buzz\\Documents\\VanDesign-Runner\\queue\\results\\vd-layout-valid-image-20261015\\evidence\\viewport.png",
+        "demo_id": "vd-layout-valid-create-20261015"
+      }
+    }
+  ],
+  "outcome": "PASS",
+  "notes": [],
+  "identity_at_start": {
+    "fusion_version": "2705.1.30",
+    "design_id": "urn:adsk.wipprod:dm.lineage:b2Rkuzt1SDieIGYA4kygmQ",
+    "document_name": "VanDesign-Configurable-Layout-Demo-20261015",
+    "is_saved": true,
+    "is_modified": false,
+    "version_number": 1,
+    "data_file_name": "VanDesign-Configurable-Layout-Demo-20261015"
+  },
+  "finished_utc": "2026-10-15T00:43:18.717+00:00",
+  "elapsed_ms": 290.1,
+  "summary": {
+    "steps": 1,
+    "passed": 1,
+    "outcome": "PASS"
+  }
+}

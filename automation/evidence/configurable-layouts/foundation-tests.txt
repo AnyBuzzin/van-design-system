@@ -1,0 +1,10 @@
+test_dado_10 (test_joinery.JoineryRegression.test_dado_10) ... ok
+test_dado_6 (test_joinery.JoineryRegression.test_dado_6) ... ok
+test_invalid (test_joinery.JoineryRegression.test_invalid) ... ok
+test_material (test_joinery.JoineryRegression.test_material) ... ok
+test_resize (test_joinery.JoineryRegression.test_resize) ... ok
+
+----------------------------------------------------------------------
+Ran 5 tests in 0.000s
+
+OK
