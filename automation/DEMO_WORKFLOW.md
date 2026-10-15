@@ -34,8 +34,11 @@ separate persistence check can reopen only explicitly approved clean demos.
 Existing document validity,
 saved/modified flags and names are checked against their creation-time snapshot.
 
-Install with the existing install_runner.py `install --upgrade`, retaining the
-existing G3/audit locations and adding `--demo-package-dir <repo>/prototypes/claude-v5/VanCabinetJoineryV5`.
+For a reviewed future installation, generate bundles from the installed wheel
+using [the single-package deployment procedure](../docs/integration/ONE_PACKAGE_MIGRATION.md).
+Use its VanCabinetJoineryV5 folder for `--g3-dir` and FirstInteriorDemo folder for
+`--demo-package-dir`, retaining the existing audit location. The migration itself
+does not run the installer or change existing pinned configurations.
 An already running older add-in needs one stop/start to load upgraded code;
 thereafter create/build/save/capture are normal queue jobs without UI clicks.
 No Windows permission changes are needed.

@@ -4,7 +4,7 @@ import subprocess
 import sys
 import unittest
 
-from core_path import SCRIPT_DIR
+from core_path import SCRIPT_DIR, HISTORICAL_SCRIPT_DIR
 
 PKG = os.path.join(SCRIPT_DIR, "vandesign")
 FUSION_PKG = os.path.join(PKG, "cad", "fusion")
@@ -26,14 +26,14 @@ class LayeringTests(unittest.TestCase):
 
     def test_core_imports_without_adsk(self):
         code = (
-            "import sys; sys.path.insert(0, %r); "
+            "import sys; "
             "import vandesign.modules.cabinet, vandesign.verification.validate, vandesign.cad.protocol; "
-            "assert not any(m == 'adsk' or m.startswith('adsk.') for m in sys.modules)" % SCRIPT_DIR
+            "assert not any(m == 'adsk' or m.startswith('adsk.') for m in sys.modules)"
         )
         subprocess.run([sys.executable, "-I", "-c", code], check=True)
 
     def test_entrypoint_has_no_business_logic(self):
-        with open(os.path.join(SCRIPT_DIR, "VanCabinetJoineryV5.py"), encoding="utf-8") as fh:
+        with open(os.path.join(HISTORICAL_SCRIPT_DIR, "VanCabinetJoineryV5.py"), encoding="utf-8") as fh:
             text = fh.read()
         self.assertLess(len(text.splitlines()), 50)
         self.assertNotIn("sketch", text.lower())

@@ -1,0 +1,10 @@
+Processing c:\users\buzz\documents\codex\2026-10-15\referenced-chatgpt-conversation-this-is-an-3\work\migration-wheels\vandesign-0.5.0-py3-none-any.whl
+Installing collected packages: vandesign
+  Attempting uninstall: vandesign
+    Found existing installation: vandesign 0.5.0
+    Uninstalling vandesign-0.5.0:
+      Successfully uninstalled vandesign-0.5.0
+Successfully installed vandesign-0.5.0
+
+[notice] A new release of pip is available: 25.0.1 -> 26.2.1
+[notice] To update, run: C:\Users\Buzz\Documents\Codex\2026-10-15\referenced-chatgpt-conversation-this-is-an-3\work\migration-env\Scripts\python.exe -m pip install --upgrade pip

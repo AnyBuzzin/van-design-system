@@ -1,1 +1,1 @@
-"""Engineering core independent from Autodesk Fusion."""
+"""Units, expressions, parameter graph, geometry primitives."""

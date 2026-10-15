@@ -1,3 +1,5 @@
+> The maintained launcher now uses src/vandesign in the repository, or the installed-wheel package in a [generated standalone bundle](../docs/integration/ONE_PACKAGE_MIGRATION.md). Reports are written beside the launcher in reports/. Historical evidence stays here unchanged.
+
 # First campervan interior demonstration
 
 Branch `feature/first-interior-demo`, based on verified G4 `ce09a533`.

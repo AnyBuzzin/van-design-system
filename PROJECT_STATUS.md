@@ -1,4 +1,4 @@
-> Current consolidation status (2026-10-15): see [integration review](docs/integration/CONSOLIDATION_2026-10-15.md). G3 has partial Fusion evidence; G4 width-only is evidenced; package reconciliation/G0 remain open. Nothing has merged to develop.
+> Single-package migration: [review status and deployment](docs/integration/ONE_PACKAGE_MIGRATION.md). src/vandesign is the sole maintained runtime; G0/deferred G3/G4 and live deployment smoke remain open.
 
 # Project status
 

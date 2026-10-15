@@ -15,7 +15,6 @@ class RunnerReportTests(unittest.TestCase):
             adsk.core = types.ModuleType('adsk.core')
             adsk.fusion = types.ModuleType('adsk.fusion')
             sys.modules.update({'adsk':adsk, 'adsk.core':adsk.core, 'adsk.fusion':adsk.fusion})
-            sys.path.insert(0, __SCRIPT_DIR__)
             from vandesign.cad.fusion.runner import _write_report
             from types import SimpleNamespace as N
             params = [N(name='Cab_Width', value=120.0, expression='1200 mm'),
@@ -43,7 +42,7 @@ class RunnerReportTests(unittest.TestCase):
                 assert 'RESULT: PASS' in text
                 assert pathlib.Path(p_txt).name.endswith('_build.txt')
             print('REPORT TEST PASSED')
-        """).replace('__SCRIPT_DIR__', repr(SCRIPT_DIR))
+        """)
         result = subprocess.run([sys.executable, '-I', '-c', script], capture_output=True, text=True)
         self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
         self.assertIn('REPORT TEST PASSED', result.stdout)

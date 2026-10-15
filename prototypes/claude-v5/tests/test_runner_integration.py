@@ -24,7 +24,7 @@ DRIVER = textwrap.dedent("""
     adsk = types.ModuleType('adsk'); adsk.core = types.ModuleType('adsk.core'); adsk.fusion = types.ModuleType('adsk.fusion')
     adsk.fusion.Design = N(cast=lambda x: x)
     sys.modules.update({'adsk': adsk, 'adsk.core': adsk.core, 'adsk.fusion': adsk.fusion})
-    sys.path.insert(0, %(script)r); sys.path.insert(0, %(tests)r)
+    sys.path.insert(0, %(tests)r)
     from sim_geometry import SimGeometry
     from vandesign.cad.fusion import runner
     from vandesign.modules.variants import build_variant

@@ -1,3 +1,5 @@
+> New installations: generate scripts from the installed wheel as described in [single-package deployment](../docs/integration/ONE_PACKAGE_MIGRATION.md), then use those generated folders for --g3-dir and --demo-package-dir. Existing pinned installations are not changed by the migration.
+
 # VanDesign Fusion automation runner (v0.2.0)
 
 Runner-created demo creation, approved build, verified first save and viewport

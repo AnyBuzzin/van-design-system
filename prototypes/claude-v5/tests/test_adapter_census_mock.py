@@ -13,7 +13,6 @@ class AdapterCensusMock(unittest.TestCase):
             import sys, types
             adsk = types.ModuleType('adsk'); adsk.core = types.ModuleType('adsk.core'); adsk.fusion = types.ModuleType('adsk.fusion')
             sys.modules.update({'adsk': adsk, 'adsk.core': adsk.core, 'adsk.fusion': adsk.fusion})
-            sys.path.insert(0, __SCRIPT_DIR__)
             from vandesign.cad.fusion.adapter import FusionGeometrySource
             from types import SimpleNamespace as N
 
@@ -37,7 +36,7 @@ class AdapterCensusMock(unittest.TestCase):
             s.design = N(rootComponent=N(occurrences=N(count=1, item=boom)))
             assert s.managed_ids() is None and any('census failed' in d for d in s.diagnostics)
             print('CENSUS MOCK PASSED')
-        """).replace('__SCRIPT_DIR__', repr(SCRIPT_DIR))
+        """)
         r = subprocess.run([sys.executable, '-I', '-c', script], capture_output=True, text=True)
         self.assertEqual(r.returncode, 0, r.stdout + r.stderr)
         self.assertIn('CENSUS MOCK PASSED', r.stdout)

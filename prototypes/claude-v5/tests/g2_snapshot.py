@@ -10,14 +10,15 @@ import ast
 import hashlib
 import os
 
-from core_path import SCRIPT_DIR, ROOT  # noqa: F401  (sets sys.path)
+from core_path import HISTORICAL_SCRIPT_DIR, ROOT
+import vandesign
 from sim_geometry import SimGeometry
 
 from vandesign.modules.cabinet import build_cabinet
 from vandesign.schemas.cabinet_spec import CabinetSpec
 from vandesign.verification.validate import validate
 
-PKG = os.path.join(SCRIPT_DIR, "vandesign")
+PKG = os.path.dirname(vandesign.__file__)
 
 # Sources that must stay byte-identical (CRLF normalised to LF before hashing).
 PROTECTED_FILES = [
@@ -51,7 +52,7 @@ def _sha(data: bytes) -> str:
 def protected_manifest() -> dict:
     files = {}
     for rel in PROTECTED_FILES:
-        with open(os.path.join(SCRIPT_DIR, rel), "rb") as fh:
+        with open(os.path.join(HISTORICAL_SCRIPT_DIR, rel), "rb") as fh:
             files[rel] = _sha(fh.read())
     baseline = {}
     for dirpath, dirnames, filenames in os.walk(PROTECTED_BASELINE_DIR):

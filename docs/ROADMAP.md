@@ -1,4 +1,4 @@
-> Current status: [2026-10-15 consolidation review](integration/CONSOLIDATION_2026-10-15.md) supersedes the historical gate states below. G3 partial Fusion / G4 width-only evidence exists; full gates remain open.
+> Current package migration: [single runtime review](integration/ONE_PACKAGE_MIGRATION.md). G0, deferred G3/G4 and G5 remain open; historical gate states below are not current acceptance.
 
 # Roadmap and stage gates
 

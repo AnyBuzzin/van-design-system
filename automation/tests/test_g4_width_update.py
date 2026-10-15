@@ -3,7 +3,6 @@
 import importlib
 import json
 import os
-import sys
 import unittest
 
 from _helpers import AUTOMATION, DESIGN, OTHER, TmpDirCase, cfg, job
@@ -12,13 +11,10 @@ from vdrunner.journal import RestoreJournal
 from vdrunner.width_change import expected_expressions, plan_width_change
 
 REPO = os.path.dirname(AUTOMATION)
-G3_DIR = os.path.join(REPO, "prototypes", "claude-v5", "VanCabinetJoineryV5")
 BASE_SPEC = os.path.join(REPO, "prototypes", "claude-v5", "specs", "base.json")
 
 
 def g3_modules():
-    if G3_DIR not in sys.path:
-        sys.path.insert(0, G3_DIR)
     return {k: importlib.import_module(m) for k, m in (
         ("design_spec", "vandesign.schemas.design_spec"), ("variants", "vandesign.modules.variants"),
         ("expr", "vandesign.core.expr"))}
