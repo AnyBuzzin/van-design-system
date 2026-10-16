@@ -1,0 +1,39 @@
+{
+  "created_utc": "2026-10-15T23:47:38.085681+00:00",
+  "status": "STAGED_ONLY_AWAITING_FINAL_PATH_APPROVAL",
+  "bundles": [
+    {
+      "bundle": "VanCabinetJoineryV5",
+      "source": "%USERPROFILE%\\Documents\\Codex\\2026-10-15\\referenced-chatgpt-conversation-this-is-an-3\\work\\review-fusion-bundles\\VanCabinetJoineryV5",
+      "destination": "%USERPROFILE%\\Documents\\VanDesign-Runner\\deployments\\vandesign-0.5.0\\VanCabinetJoineryV5",
+      "manifest_sha256": "9dca986105401b2b3c506b151d5d21684057a8f8cc2eece85752705ce66bcb2a",
+      "covered_files": 31,
+      "all_hashes_match": true,
+      "unexpected_files": []
+    },
+    {
+      "bundle": "FirstInteriorDemo",
+      "source": "%USERPROFILE%\\Documents\\Codex\\2026-10-15\\referenced-chatgpt-conversation-this-is-an-3\\work\\review-fusion-bundles\\FirstInteriorDemo",
+      "destination": "%USERPROFILE%\\Documents\\VanDesign-Runner\\deployments\\vandesign-0.5.0\\FirstInteriorDemo",
+      "manifest_sha256": "c5fee18088bf2518f6679df134c7f5eefa5dffbbd0057aad030639a717d1380e",
+      "covered_files": 31,
+      "all_hashes_match": true,
+      "unexpected_files": []
+    }
+  ],
+  "wheel_sha256": "549ff8843b8966e7339181e9a75d835c8cb5e1d3ac5b20a2954c7adc2bcef80f",
+  "config_changes": {
+    "g3_script_dir": {
+      "old": "%USERPROFILE%\\Documents\\VanDesign-G3\\4d4345b\\VanCabinetJoineryV5",
+      "new": "%USERPROFILE%\\Documents\\VanDesign-Runner\\deployments\\vandesign-0.5.0\\VanCabinetJoineryV5"
+    },
+    "demo_package_dir": {
+      "old": "%USERPROFILE%\\Documents\\GitHub\\van-design-system\\prototypes\\claude-v5\\VanCabinetJoineryV5",
+      "new": "%USERPROFILE%\\Documents\\VanDesign-Runner\\deployments\\vandesign-0.5.0\\FirstInteriorDemo"
+    }
+  },
+  "live_config_unchanged": true,
+  "original_backup_unchanged": true,
+  "proposed_config_sha256": "70bf4288f224cef35efc1760aae594c54cf39d1676a298aa10956621d81d8378",
+  "copy_policy": "Only original manifest-covered files plus exact DEPLOYMENT.json copied. Reports/editor settings/bytecode caches remain untouched at the source."
+}

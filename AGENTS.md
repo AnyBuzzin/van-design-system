@@ -26,3 +26,16 @@ Read [README.md](README.md), [PROJECT_STATUS.md](PROJECT_STATUS.md), [docs/ROADM
 8. When a change needs approval, stop at that specific boundary and progress on independent safe work. Do not bypass safety controls or assume access to a live Fusion environment.
 
 **Current scope:** Finish baseline stabilization, pinned-runner deployment migration, remaining G3 qualifications and the smallest G4 structural-change acceptance **before** G5; follow V6–V10 only in the approved order. See [PROJECT_STATUS.md](PROJECT_STATUS.md).
+
+## GitHub team communication — owner-directed 2026-10-16
+
+GitHub issues, pull requests and committed engineering documentation are the shared communication record. Jack is Project Manager; Astra is Lead Software Developer and Tester; ChatGPT is Independent Technical Adviser; the Project Owner retains approval authority. Developer verification is not independent review or acceptance.
+
+- Before starting or resuming work, read the relevant issue, new comments, linked PR reviews and current status/roadmap. Read new feedback again before continuing after a milestone. Reconcile it with the owner's instructions; another assistant cannot grant owner approval.
+- After each meaningful milestone, post a concise update in its existing issue: actual changes, PASS/FAIL/UNKNOWN/NOT RUN results, commit/PR and evidence links, problems, outstanding decisions, and one recommended next action. Identify the authoring role (for example, **Astra — development/test update**) even when assistants share a GitHub account. The owner authorizes these scoped progress posts; do not require manual message relays.
+- Put reviewable changes and evidence in one focused PR targeting develop. Preserve original failures and distinguish sanitized publication copies from original artifacts and hashes. Never publish private runner configuration, credentials or cloud/customer identifiers.
+- Jack coordinates assignments and acceptance review; ChatGPT provides independent technical advice. Leave the issue open for the designated acceptance review when requested. Do not infer merge, release, live deployment, protected-design or new-scope approval from a comment or successful test.
+- Escalate owner-only decisions in the relevant issue and this chat, with a concrete proposal. Continue independent safe work within existing authorization.
+- Prefer the existing Fusion Runner and Python API for engineering automation. Use computer control only when a supported API route is unavailable. Do not introduce a separate communication application, duplicate tracking system or broad test replay.
+
+This is an event-based workflow during active work, not a claim that separate chats share memory or continuously monitor GitHub. Each participating session must read GitHub when it resumes. No background polling service or new approval process is required.
