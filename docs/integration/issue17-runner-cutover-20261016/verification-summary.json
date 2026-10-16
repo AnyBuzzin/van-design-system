@@ -1,0 +1,77 @@
+{
+  "utc": "2026-10-16T00:00:32.503959+00:00",
+  "final_outcome": "PASS_FOR_ISSUE17_DEFAULT_SMOKE",
+  "geometry_checks": 95,
+  "failed_geometry_checks": 0,
+  "unknown_geometry_checks": 0,
+  "stages": [
+    {
+      "label": "baseline",
+      "Bed_Length_mm": 1900.0,
+      "Cab_Width_mm": 1200.0,
+      "counts": {
+        "user_parameters": 24,
+        "root_occurrences": 15,
+        "all_components": 16,
+        "timeline_items": 49
+      }
+    },
+    {
+      "label": "edit_Bed_Length",
+      "Bed_Length_mm": 1800.0,
+      "Cab_Width_mm": 1200.0,
+      "counts": {
+        "user_parameters": 24,
+        "root_occurrences": 15,
+        "all_components": 16,
+        "timeline_items": 49
+      }
+    },
+    {
+      "label": "restore_Bed_Length",
+      "Bed_Length_mm": 1900.0,
+      "Cab_Width_mm": 1200.0,
+      "counts": {
+        "user_parameters": 24,
+        "root_occurrences": 15,
+        "all_components": 16,
+        "timeline_items": 49
+      }
+    },
+    {
+      "label": "edit_Cab_Width",
+      "Bed_Length_mm": 1900.0,
+      "Cab_Width_mm": 1100.0,
+      "counts": {
+        "user_parameters": 24,
+        "root_occurrences": 15,
+        "all_components": 16,
+        "timeline_items": 49
+      }
+    },
+    {
+      "label": "restore_Cab_Width",
+      "Bed_Length_mm": 1900.0,
+      "Cab_Width_mm": 1200.0,
+      "counts": {
+        "user_parameters": 24,
+        "root_occurrences": 15,
+        "all_components": 16,
+        "timeline_items": 49
+      }
+    }
+  ],
+  "restored_raw_checks_exact": true,
+  "existing_document_unchanged": true,
+  "test_design_unsaved": true,
+  "loaded_cabinet_modules_verified": 24,
+  "loaded_demo_modules_verified": 26,
+  "runner_source_unchanged": true,
+  "only_approved_config_changes": true,
+  "historical_queue_records_unchanged": true,
+  "pending_jobs": 0,
+  "journal_entries": 0,
+  "first_reload_attempt": "Ping timed out unclaimed; original config restored and ping passed after native Fusion lifecycle reload. Approved migration then completed with a new ping and new jobs.",
+  "explicit_combined_interior_cut_participant_audit": "UNKNOWN / not performed; no saved-target safeguard bypass",
+  "cloud_save_or_persistence_test": "NOT RUN / not requested"
+}

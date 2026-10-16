@@ -1,0 +1,18 @@
+{
+  "job_id": "vd-20261016T005726-2b0e08",
+  "history": [
+    {
+      "status": "queued",
+      "utc": "2026-10-15T23:57:26.126+00:00"
+    },
+    {
+      "status": "cancelled",
+      "utc": "2026-10-15T23:57:46.247+00:00"
+    }
+  ],
+  "status": "cancelled",
+  "updated_utc": "2026-10-15T23:57:46.247+00:00",
+  "command": "ping",
+  "submitted_utc": "2026-10-15T23:57:26.126+00:00",
+  "reason": "cancelled by orchestrator before execution"
+}

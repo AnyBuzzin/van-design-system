@@ -1,0 +1,11 @@
+{
+  "utc": "2026-10-15T23:57:16.218585+00:00",
+  "status": "APPLIED",
+  "before_sha256": "ed0d8eb01bd7e3391c6f0469daf687462bf4742c6d9d9c88df7e74bb3aa51fc5",
+  "after_sha256": "70bf4288f224cef35efc1760aae594c54cf39d1676a298aa10956621d81d8378",
+  "changed_keys": [
+    "g3_script_dir",
+    "demo_package_dir"
+  ],
+  "verified_original_backup": true
+}

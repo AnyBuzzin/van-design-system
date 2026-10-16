@@ -1,0 +1,11 @@
+{
+  "scope": "Publication validation only; existing Fusion tests were not rerun",
+  "geometry_checks_in_record": 95,
+  "all_recorded_checks_pass": true,
+  "restoration_exact": true,
+  "provenance_manifest_comparison": "PASS",
+  "published_artifact_hashes": "PASS",
+  "private_configuration_excluded": true,
+  "cloud_destination_lists_excluded": true,
+  "published_artifacts": 23
+}

@@ -1,5 +1,7 @@
 # VanDesign project status
 
+**Runner update, 2026-10-16:** Owner-approved issue #17 migration to permanent wheel-built bundles completed with 95/95 default disposable-interior BRep checks and verified live module hashes. The first reload failed its ping, was rolled back, and the migration then succeeded using Fusion's native add-in lifecycle. Evidence is [ready for Jack's review](docs/integration/issue17-runner-cutover-20261016/README.md); **issue #17 remains open, acceptance pending**. The [owner-directed GitHub team workflow](AGENTS.md#github-team-communication--owner-directed-2026-10-16) governs milestone communication. No additional Fusion tests were run to publish this evidence.
+
 **As of 2026-10-15.** Authoritative integration branch: `develop`, merge `b799db8a73309a9d47a355ec37c955f5e4dc7850`. [Aggregate PR #14](https://github.com/AnyBuzzin/van-design-system/pull/14) merged the original development stack, [PR #13](https://github.com/AnyBuzzin/van-design-system/pull/13), unified package and Fusion checkpoint together. `main` is intentionally unchanged. Python 3.10/3.12 CI passed on the merge commit. **This is an experimental engineering baseline, NOT a G5/manufacturing release.**
 
 ## Canonical source and verified engineering gates
@@ -29,14 +31,14 @@
 ## Integration and operating state
 
 - [PR #14](https://github.com/AnyBuzzin/van-design-system/pull/14) is merged into `develop`; [PR #13](https://github.com/AnyBuzzin/van-design-system/pull/13) and earlier feature heads are included in its commit ancestry, not separate merge targets. Historical branches/reports should be retained. `main` has not been merged or deployed.
-- The last inspected **live Fusion runner installation** was pinned to **historical G3 and demo package paths**, and the heartbeat was stale/stopped. Do **not** claim it is already running the integrated wheel. Offline loader checks and the independent PR14 cabinet script passed, but migration of the installed runner to reviewed generated bundles needs an explicit backup/rollback plan and approval before modification.
+- The **live Fusion runner installation** was migrated with owner approval on 2026-10-16 to permanent `VanDesign-Runner/deployments/vandesign-0.5.0` cabinet/interior bundles. Only two trusted path settings changed; source, safety controls and historical designs were preserved. Default disposable smoke: 95/95 PASS, 24 cabinet/26 demo module origins and hashes verified. [Issue #17 evidence](docs/integration/issue17-runner-cutover-20261016/README.md) awaits Jack's acceptance. Combined-interior explicit participant readback remains UNKNOWN; cloud save/reopen was not tested by this milestone. This does not close G3/G4 or authorize further design operations.
 - Windows canonical spec-fixture CRLF error was traced to checkout line endings and narrowly fixed by `.gitattributes` in the merged vehicle-space milestone. [Issue #11](https://github.com/AnyBuzzin/van-design-system/issues/11) may be closed only after reviewing the landed fix and focused passing test evidence.
 - **GitHub branch protections:** `main` and `develop` were found unprotected on 2026-10-15; add required checks and avoid direct pushes when the repository settings interface allows it.
 
 ## Ordered next milestones
 
 1. **Baseline stabilization:** update central docs and AI prompts; reconcile obsolete PRs/issues, verify merged CI, add lightweight branch protection. No geometry changes.
-2. **Safe runner transition:** prepare generated bundles from the installed `src/vandesign` wheel, backup live config and audit/rollback, then explicitly approve and perform a controlled switch/restart and a targeted disposable-design smoke. Do not silently replace the user's live installation.
+2. **Safe runner transition:** executed with owner approval; evidence and rollback record are ready for Jack's review on #17. Do not repeat successful tests without a specific evidence gap; keep the issue open pending acceptance.
 3. **G3 remaining acceptance:** only the outstanding F0/overhead F3 coverage; no wholesale replay of completed fixtures. In parallel, conduct one **bounded** G0 provenance search and keep UNKNOWN if it cannot be authenticated.
 4. **G4 smallest structural regeneration:** one scoped ownership-safe shelf count change with offline tests, a disposable real-Fusion geometry/cut check, rollback/manual-divergence handling and a single reviewable PR. Expand only after that operation is proven.
 5. **G5 scope and release checkpoint:** specific supported features, traceable reports, deterministic cut-list **preview** and release acceptance; not production CAD/CNC approval.

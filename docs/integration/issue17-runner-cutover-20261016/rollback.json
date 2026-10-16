@@ -1,0 +1,6 @@
+{
+  "utc": "2026-10-15T23:58:02.053868+00:00",
+  "config_restored": true,
+  "sha256": "ed0d8eb01bd7e3391c6f0469daf687462bf4742c6d9d9c88df7e74bb3aa51fc5",
+  "reason": "First post-reload ping timed out unclaimed; cancelled by existing CLI. No design mutation."
+}
