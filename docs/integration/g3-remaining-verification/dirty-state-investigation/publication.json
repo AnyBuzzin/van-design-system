@@ -1,0 +1,30 @@
+{
+  "artifacts": [
+    {
+      "file": "snapshot.json",
+      "original_sha256": "3bf49dcfe9f13efe07a807c9c2e61970c374890d86c414e822070d5a96ffbcf9",
+      "published_sha256": "f75589bb8e9ba06411db4da3241711e3a676e1c36d42e025c299c9fd5469251f",
+      "transform": "cloud identifiers hashed; native API wrapper unwrapped where applicable"
+    },
+    {
+      "file": "comparison.json",
+      "original_sha256": "7a1a1b28204a1ba72237af5d73eab141adf17c37df79cc334cda2d99bc0af046",
+      "published_sha256": "63d4e48c5817bbf24532ea3812d4491e8451345b25a83c622f0fd14c98d65c77",
+      "transform": "cloud identifiers hashed; native API wrapper unwrapped where applicable"
+    },
+    {
+      "file": "native-document-state.json",
+      "original_sha256": "837ac0ec7c5607416e03744cbcdde6e02f63d525516f56c657031e72338fcc75",
+      "published_sha256": "db761943e27673856d8c07fa6fb9ddb3413f6e9c5cc92e7b8fd2cd2dcc1737b5",
+      "transform": "cloud identifiers hashed; native API wrapper unwrapped where applicable"
+    },
+    {
+      "file": "read-only-snapshot.py",
+      "original_sha256": "7f2b0e20a79e70f4e151f0a39effeda24933f14caba0fe348082f97e868ca7ce",
+      "published_sha256": "45d091150e05d8bd6d84148d3294a3eb06f4d9af02040c31ad8ea721abc4f045",
+      "transform": "private expected cloud ID replaced with non-executable placeholder"
+    }
+  ],
+  "raw_api_snapshot_sha256": "871e2f2c0ab73a89375fb18fda1c7d91636ed5c3dd2d459e83ab22e15d2b5398",
+  "unchanged_runner_configuration_sha256": "70bf4288f224cef35efc1760aae594c54cf39d1676a298aa10956621d81d8378"
+}

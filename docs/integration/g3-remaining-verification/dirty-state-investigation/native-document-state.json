@@ -1,0 +1,17 @@
+{
+  "message": "1 open document(s)",
+  "results": [
+    {
+      "id": "sha256:bfcb0256beff68debe934785d128d4eca4f4540e5139bac6caf49b641ca9e743",
+      "isActive": true,
+      "isModified": false,
+      "isReadOnly": false,
+      "isSaved": true,
+      "name": "VanDesign-G3-overhead-remaining-20261017",
+      "parentFolder": "Default Project",
+      "parentProject": "Default Project",
+      "parentProjectId": "sha256:30777945d5f2243d3b83ef2fdddc0a7c0eeadef5a55fea8b065546da3748f2ca"
+    }
+  ],
+  "success": true
+}

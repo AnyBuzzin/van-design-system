@@ -1,0 +1,32 @@
+{
+  "source": "%LOCALAPPDATA%/Autodesk/Autodesk Fusion 360/SCPQ9TRYQDTCYEUG/logs/AppLogFile20261017T011443.log",
+  "private_snapshot_sha256": "100f5ed52d49cd865f216b86dc8151886982b725bdf60079b064145e8c104336",
+  "line_numbers_are_one_based": true,
+  "time_basis": "Native log local timestamps, Europe/Dublin (UTC+1 on 2026-10-17)",
+  "selected_lines": [
+    {
+      "line": 3029,
+      "text": "20261017T012125 D  .3100 MCP:MCPAnalytics.cpp:319: MCPAnalytics tracked: mcp_execute_script (success=true, duration=2ms)"
+    },
+    {
+      "line": 3132,
+      "text": "20261017T012942 I  23120 Started Autosave for: VanDesign-G3-overhead-remaining-20261017. Document Type is: Fusion Document"
+    },
+    {
+      "line": 3133,
+      "text": "20261017T012942 I  26932 Thread ~WriteToDiskSaveContext has been started"
+    },
+    {
+      "line": 3134,
+      "text": "20261017T012942 I  23120 Finished autosaving document: VanDesign-G3-overhead-remaining-20261017"
+    },
+    {
+      "line": 3135,
+      "text": "20261017T012942 I  26932 Thread ~WriteToDiskSaveContext has been ended"
+    },
+    {
+      "line": 3176,
+      "text": "20261017T013235 D  .3100 MCP:MCPAnalytics.cpp:319: MCPAnalytics tracked: mcp_execute_script (success=true, duration=3ms)"
+    }
+  ]
+}
