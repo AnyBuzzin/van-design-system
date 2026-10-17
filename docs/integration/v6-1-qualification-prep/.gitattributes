@@ -1,0 +1,2 @@
+qualify_bed.py -text
+*.json -text
