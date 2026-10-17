@@ -1,11 +1,11 @@
 {
-  "notice": "Original artifacts retained locally; cloud identifiers redacted in publication; no configuration, backup, credential or session contents included.",
+  "notice": "Sanitized publication copies corrected after independent review on 2026-10-18. Document IDs use redacted-sha256:<SHA256 of exact original UTF-8 ID>, consistent with stage one. Exact private originals and original_sha256 values preserved. Earlier public commits retain exposed IDs; no history rewrite performed. See PUBLICATION-CORRECTION.md.",
   "files": [
     {
       "path": "capacity-preflight.json",
       "original_sha256": "62df16f8979e21d453bbe2949bc120e5cec9eab94b68c86f0f03895b227e013b",
-      "published_sha256": "62df16f8979e21d453bbe2949bc120e5cec9eab94b68c86f0f03895b227e013b",
-      "sanitized": false
+      "published_sha256": "ab6a4b47644eaf8d20711c619dced17734e89364b96fde1b6361bb9875a2ae2a",
+      "sanitized": true
     },
     {
       "path": "capacity-preflight-api-name-error.json",
@@ -16,8 +16,8 @@
     {
       "path": "protected-before.json",
       "original_sha256": "e9b1b728ea84a775dcf86afd7fb10ca83a27fab0a9718c94c9b93416a997808f",
-      "published_sha256": "e9b1b728ea84a775dcf86afd7fb10ca83a27fab0a9718c94c9b93416a997808f",
-      "sanitized": false
+      "published_sha256": "0e93284986c668d42124eac052d524ffa952beb86e3755470db801dea652a99f",
+      "sanitized": true
     },
     {
       "path": "original-installation-manifest.json",
@@ -52,8 +52,8 @@
     {
       "path": "first-save.json",
       "original_sha256": "7361936e596d88c85bf94ebb65cdc03cc154f39dbcf5d44d16ac4587f4302550",
-      "published_sha256": "7361936e596d88c85bf94ebb65cdc03cc154f39dbcf5d44d16ac4587f4302550",
-      "sanitized": false
+      "published_sha256": "febc25721701a6c061c92d270c7e91a5ee4aec1a5086c12b1168796828f408cb",
+      "sanitized": true
     },
     {
       "path": "restoration-extra-proof.json",
@@ -64,14 +64,14 @@
     {
       "path": "no-op-proof.json",
       "original_sha256": "1af5706f35e97d1caa0ca120c8aba2c2421f05c6b8fab1fb007af186a30581c5",
-      "published_sha256": "1af5706f35e97d1caa0ca120c8aba2c2421f05c6b8fab1fb007af186a30581c5",
-      "sanitized": false
+      "published_sha256": "8454dcc8a272aeaf66b6ce99a59a0da6781f444bea4fbacd67fd34e05ecdb5e3",
+      "sanitized": true
     },
     {
       "path": "before-runner-restore.json",
       "original_sha256": "3d158c3b38f95acea5faec2ddbcb280f90ed4cc373cf8d6176a0f9d7cc036d5f",
-      "published_sha256": "3d158c3b38f95acea5faec2ddbcb280f90ed4cc373cf8d6176a0f9d7cc036d5f",
-      "sanitized": false
+      "published_sha256": "e0973612eeeab75e9334216855500576573e57c71fc282495fbc55299c2d6464",
+      "sanitized": true
     },
     {
       "path": "installation-restored.json",
@@ -82,8 +82,8 @@
     {
       "path": "final-state.json",
       "original_sha256": "900c55da7d4ebb5ba0672af5628540cb3c5e048ee8e405b229bd20acdc26a265",
-      "published_sha256": "900c55da7d4ebb5ba0672af5628540cb3c5e048ee8e405b229bd20acdc26a265",
-      "sanitized": false
+      "published_sha256": "7f1d7dce4320047aed405899e03a5933bce6002605e2375a5ddec3b09c282128",
+      "sanitized": true
     },
     {
       "path": "restored-ping.txt",
@@ -154,26 +154,26 @@
     {
       "path": "jobs/v5demo-g4-20261018-preview-two/job.json",
       "original_sha256": "96820ae7b3fc0e0c7ee01ff1feea70c408ec96edb1ff84857864770bf0113c3b",
-      "published_sha256": "96820ae7b3fc0e0c7ee01ff1feea70c408ec96edb1ff84857864770bf0113c3b",
-      "sanitized": false
+      "published_sha256": "14fcba5bf7471fa8fcc70defd962d790891cf8cf50d02942f74772fd36a8e10b",
+      "sanitized": true
     },
     {
       "path": "jobs/v5demo-g4-20261018-preview-two/result.json",
       "original_sha256": "061261f0d713bb5f124a900a06915ebe7e861774e958275970768672c2da3117",
-      "published_sha256": "061261f0d713bb5f124a900a06915ebe7e861774e958275970768672c2da3117",
-      "sanitized": false
+      "published_sha256": "abe5e2d9ade73b42fb15df607e0bd0dd390cc15f7829bc239f1776e7b4ae37a8",
+      "sanitized": true
     },
     {
       "path": "jobs/v5demo-g4-20261018-to-two/job.json",
       "original_sha256": "4bcce80dfc317e88755b49d37b2d247bdf22884e0ae91dea4939a1bdbb7dd416",
-      "published_sha256": "4bcce80dfc317e88755b49d37b2d247bdf22884e0ae91dea4939a1bdbb7dd416",
-      "sanitized": false
+      "published_sha256": "5c48ee7413972230814a87e99f854632617f475797ef8c4d9ac3986ea2bc6d49",
+      "sanitized": true
     },
     {
       "path": "jobs/v5demo-g4-20261018-to-two/result.json",
       "original_sha256": "4ab2aab7705887070cf5c58d915fc5c902e3df1906e8ecf75fe85b42d6fcef78",
-      "published_sha256": "4ab2aab7705887070cf5c58d915fc5c902e3df1906e8ecf75fe85b42d6fcef78",
-      "sanitized": false
+      "published_sha256": "29e267299928ae3e21fceeafb5e7130f7b1525f02884dde062cc0139f2bd117b",
+      "sanitized": true
     },
     {
       "path": "jobs/v5demo-g4-20261018-to-two/evidence/00_update_shelf_count/post/cut_audit_g3_20261018_001100_324128.json",
@@ -226,26 +226,26 @@
     {
       "path": "jobs/v5demo-g4-20261018-preview-one/job.json",
       "original_sha256": "5e45a2f7db03feadaca899f5cb4e723cec49d070a3b18dd48d7cf023c5afc09c",
-      "published_sha256": "5e45a2f7db03feadaca899f5cb4e723cec49d070a3b18dd48d7cf023c5afc09c",
-      "sanitized": false
+      "published_sha256": "f6fcca9e2c25ac928b571a269c0450c635fdd433d8d40cbdf432c1b179a3beb7",
+      "sanitized": true
     },
     {
       "path": "jobs/v5demo-g4-20261018-preview-one/result.json",
       "original_sha256": "6ceb15f545810508bd7c48b2d483254a41530c3fe1d62aebb25987738d0906d7",
-      "published_sha256": "6ceb15f545810508bd7c48b2d483254a41530c3fe1d62aebb25987738d0906d7",
-      "sanitized": false
+      "published_sha256": "5360e49fd1ab801a735d001b2f9d688f90bdfdb62816f4de0875c6e227a577cf",
+      "sanitized": true
     },
     {
       "path": "jobs/v5demo-g4-20261018-to-one/job.json",
       "original_sha256": "fca095493424a6ab62c87755312a652cadba57553ec134e6e9d59d1a6219de18",
-      "published_sha256": "fca095493424a6ab62c87755312a652cadba57553ec134e6e9d59d1a6219de18",
-      "sanitized": false
+      "published_sha256": "b8b5ba28d976976a7e3a8d26900fe04ff0b93b6ee7d3f36595bc1869118e7334",
+      "sanitized": true
     },
     {
       "path": "jobs/v5demo-g4-20261018-to-one/result.json",
       "original_sha256": "b1b21cb64406dec177f380d0cdf793233fa3ec9b79987c6a77d27a0a7b837798",
-      "published_sha256": "b1b21cb64406dec177f380d0cdf793233fa3ec9b79987c6a77d27a0a7b837798",
-      "sanitized": false
+      "published_sha256": "2175c8e53a219b9063d8025d62a2590f2f4db680b6aee95259a9f9ebf9c24225",
+      "sanitized": true
     },
     {
       "path": "jobs/v5demo-g4-20261018-to-one/evidence/00_update_shelf_count/post/cut_audit_g3_20261018_001131_433324.json",
@@ -298,14 +298,14 @@
     {
       "path": "jobs/v5demo-g4-20261018-no-op/job.json",
       "original_sha256": "030ea7b20897aed1c7b924a9067207c21f47e70661ccafd4682cf41596e36a44",
-      "published_sha256": "030ea7b20897aed1c7b924a9067207c21f47e70661ccafd4682cf41596e36a44",
-      "sanitized": false
+      "published_sha256": "b91b7d81a7c5751e457bc819af9875c7bfac8a667a2c64a403be2c722c0e30ee",
+      "sanitized": true
     },
     {
       "path": "jobs/v5demo-g4-20261018-no-op/result.json",
       "original_sha256": "1c23bced7693a1ca84a4dbccf26c22d43b6bcebce60398981d19eb25073ca92e",
-      "published_sha256": "1c23bced7693a1ca84a4dbccf26c22d43b6bcebce60398981d19eb25073ca92e",
-      "sanitized": false
+      "published_sha256": "e5800a2cedba1c524efd80b598674f20016f6856b716c5525431799e3bc82873",
+      "sanitized": true
     }
   ]
 }

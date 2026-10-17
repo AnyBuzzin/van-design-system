@@ -5,7 +5,7 @@
     "job_id": "v5demo-g4-20261018-no-op",
     "command": "update_shelf_count",
     "target": {
-      "design_id": "urn:adsk.wipprod:dm.lineage:cdCo6Vx1Slmp6omVsESFIg",
+      "design_id": "redacted-sha256:ee76fcdc877f819a17dc9b2d5eee3d8f1060ef2973695ee7928007a0d11ba768",
       "document_name": "V5-Demo-Shelves-20261017-01"
     },
     "started_utc": "2026-10-17T23:11:40.469+00:00",
@@ -76,7 +76,7 @@
     ],
     "identity_at_start": {
       "fusion_version": "2705.1.30",
-      "design_id": "urn:adsk.wipprod:dm.lineage:cdCo6Vx1Slmp6omVsESFIg",
+      "design_id": "redacted-sha256:ee76fcdc877f819a17dc9b2d5eee3d8f1060ef2973695ee7928007a0d11ba768",
       "document_name": "V5-Demo-Shelves-20261017-01",
       "is_saved": true,
       "is_modified": true,
@@ -1826,7 +1826,7 @@
     },
     "identity": {
       "fusion_version": "2705.1.30",
-      "design_id": "urn:adsk.wipprod:dm.lineage:cdCo6Vx1Slmp6omVsESFIg",
+      "design_id": "redacted-sha256:ee76fcdc877f819a17dc9b2d5eee3d8f1060ef2973695ee7928007a0d11ba768",
       "document_name": "V5-Demo-Shelves-20261017-01",
       "is_saved": true,
       "is_modified": true,
@@ -3568,7 +3568,7 @@
     },
     "identity": {
       "fusion_version": "2705.1.30",
-      "design_id": "urn:adsk.wipprod:dm.lineage:cdCo6Vx1Slmp6omVsESFIg",
+      "design_id": "redacted-sha256:ee76fcdc877f819a17dc9b2d5eee3d8f1060ef2973695ee7928007a0d11ba768",
       "document_name": "V5-Demo-Shelves-20261017-01",
       "is_saved": true,
       "is_modified": true,

@@ -1,5 +1,7 @@
 # V5 demonstration — approved G4 stage, 18 October 2026
 
+**Publication correction:** [16 artifacts sanitized after Jack's review](PUBLICATION-CORRECTION.md). Earlier public commits retain exposed document IDs; historical remediation requires a separate owner decision. Measurements and engineering outcomes are unchanged.
+
 Astra — developer verification, pending Jack's independent assessment. Owner separately approved a fresh capacity check and one new structural fixture using the same backup/restoration procedure. This continues [stage one](../README.md) on the same evidence-only draft PR; no runtime code changes, merge, release, permanent installation or V6.
 
 | Capability | Expected and observed | Result | Evidence |
@@ -32,3 +34,4 @@ One initial read-only inventory helper used `Application.isOffline` instead of F
 Review the actual85→59 measurements,4→2 owned cuts,108 restoration probes, retained no-op FAIL and exact Runner/protected-document restoration. Prior [stage-one cut-list results](../cut-list-crosscheck.json) and accepted [G5 regression evidence](../../g5-candidate-evidence/numeric-review-fix/README.md) remain unchanged. No new general persistence claim. Next recommended action: independent review of the two completed demonstration stages; separately plan/approve any earlier experimental demonstration before proceeding. No additional live work is implied by this report.
 
 [Publication manifest](PUBLICATION-MANIFEST.json) records original and sanitized published hashes. Original reports, backup, private configuration and journals remain locally preserved. Cloud IDs are redacted; numeric values and negative outcomes retained. Any embedded original report hashes refer to original bytes. No credential/session/config contents published.
+
