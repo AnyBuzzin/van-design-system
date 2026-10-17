@@ -86,7 +86,7 @@ class PanelPreviewTests(unittest.TestCase):
             ('FAIL', lambda r: r.update(design_spec_hash='stale')),
             ('FAIL', lambda r: r['validation']['checks'][0].update(status='FAIL')),
             ('UNKNOWN', lambda r: r.pop('parameters_read_from_fusion')),
-            ('UNKNOWN', lambda r: r['validation']['checks'][0].update(status='UNKNOWN')),
+            ('FAIL', lambda r: r['validation']['checks'][0].update(status='UNKNOWN')),  # stale PASS counts
             ('UNKNOWN', lambda r: r['parameters_read_from_fusion']['Cab_Width'].update(value_mm=None)),
             ('FAIL', lambda r: r['validation']['checks'].append(r['validation']['checks'][0])),
             ('FAIL', lambda r: r['validation']['checks'].append({'check_id':'panel.orphan.001.bbox','status':'PASS'})),
@@ -95,6 +95,13 @@ class PanelPreviewTests(unittest.TestCase):
             report = copy.deepcopy(baseline)
             mutate(report)
             self.assertEqual(make_preview(spec, json.dumps(report).encode())['evidence']['status'], expected)
+
+    def test_skipped_check_unknown_even_with_consistent_counts(self):
+        spec, raw, _ = measured_case()
+        report = json.loads(raw)
+        report['validation']['checks'] = [c for c in report['validation']['checks'] if c['check_id'] != 'panel.left.001.volume']
+        report['validation']['counts']['PASS'] -= 1
+        self.assertEqual(make_preview(spec, json.dumps(report).encode())['evidence']['status'], 'UNKNOWN')
 
     def test_reused_overhead_scalar_edit_is_explicit_divergence(self):
         directory = ROOT / 'docs/integration/g3-remaining-verification/runner/g3-overhead-remaining-20261017-001/evidence'

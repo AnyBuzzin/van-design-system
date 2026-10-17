@@ -153,6 +153,19 @@ def compare_report(design, assembly, report):
         by_id = {c.get("check_id"): c for c in checks}
         if len(by_id) != len(checks):
             failures.append("duplicate validation check IDs")
+        counts = {s: sum(c.get("status") == s for c in checks) for s in ("PASS", "FAIL", "UNKNOWN")}
+        if validation.get("counts") != counts:
+            failures.append("validation counts inconsistent")
+        required = {"constraint." + c.constraint_id for c in assembly.constraints}
+        required.update("param." + p.name for p in assembly.parameters.derived())
+        required.update(p.stable_id + suffix for p in assembly.panels for suffix in (".bbox", ".volume"))
+        required.update(o.operation_id + suffix for o in assembly.operations for suffix in (
+            ".penetration", ".end_gap", ".gap_below", ".gap_above", ".mating_unmodified",
+            ".probe.centre_empty", ".probe.front_open", ".probe.below_solid",
+            ".probe.above_solid", ".probe.far_wall_solid", ".probe.rear_wall_solid"))
+        required.update(("interference.joined", "entities.managed_ids"))
+        if required - set(by_id):
+            unknowns.append("missing validation checks: " + ", ".join(sorted(required - set(by_id))))
         expected_ids = {p.stable_id for p in assembly.panels}
         actual_ids = {c.get("check_id", "")[:-5] for c in checks
                       if c.get("check_id", "").endswith(".bbox")}
