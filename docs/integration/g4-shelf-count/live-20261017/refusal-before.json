@@ -1,0 +1,290 @@
+{
+  "no_op_refused_without_change": true,
+  "sentinel_before": {
+    "occurrences": [
+      [
+        "/v4BAAAARlJLZXkAH4sIAAAAAAAA/32OsQ1CMQxERUPHDl7AUmI7jn/7l4A2IU7JDizAJDQ0bMEKSOxBgRE9usZ3ejpfAgGCDCmUyeLKv0Thtduc7o91e3nvz7fn4RoEAStU7erVDCXNhtJTQ0s8sVopWo/eeZRoCVKYhqsROufAhRdchgwMl6U5Gc3y/1eQ0cqKZK2jZHJsZWGcPkqiNil2fLd/AOsu/BXHAAAA",
+        "01 Left Side",
+        2,
+        2,
+        [
+          [
+            8354.616,
+            [
+              0.0,
+              1.7999999999999972,
+              0.0
+            ],
+            [
+              1.8,
+              56.8,
+              85.0
+            ],
+            10,
+            24,
+            16
+          ]
+        ]
+      ],
+      [
+        "/v4BAAAARlJLZXkAH4sIAAAAAAAA/4WOuw0CMAxERUPHDl7AUhLbid2yBLT5OCU7sACT0NCwBSsgsQcFQQyArjmdnu4uAEOCCGEpJl0u/pIMr93mdH/st5f34Xx7Hq+LSEAZSm7ZiypymBW5hYoaaGJRkVy6NxqyWhYp3bSTD4yDB7KzotU2sRXrcVjJEv9sJa8i0RTJ80TuZKjdBZlL6DZJq/n3+wdb+10jxwAAAA==",
+        "02 Right Side",
+        2,
+        2,
+        [
+          [
+            8354.615999999987,
+            [
+              118.2,
+              1.7999999999999972,
+              0.0
+            ],
+            [
+              120.0,
+              56.8,
+              85.0
+            ],
+            10,
+            24,
+            16
+          ]
+        ]
+      ],
+      [
+        "/v4BAAAARlJLZXkAH4sIAAAAAAAA/32OsQ1CMQxERUPHDl7AkhM7jn/LEtDG+UnJDizAJDQ0bMEKSOxBgRE9cnM6Pd0zgUCGBBSXskVKv0bhtduc7o/99vI+nG/P4zWIDKxQ1XVUMxSaDcWpoRFPrFaK1j6c1xIrQY7UsnauaOaBW1nRqyTkTG6FWZTtv2s1oiKhqYtRuHTi0pMjy2TqeSEd+v39AzVxzzPHAAAA",
+        "03 Bottom",
+        1,
+        1,
+        [
+          [
+            11397.888,
+            [
+              1.8,
+              1.8,
+              0.0
+            ],
+            [
+              118.2,
+              56.199999999999996,
+              1.8
+            ],
+            6,
+            12,
+            8
+          ]
+        ]
+      ],
+      [
+        "/v4BAAAARlJLZXkAH4sIAAAAAAAA/32OsQ0CMAwERUPHDlnAku0kTtKyBLRxnJTswAJMQkPDFqyAxB4UGNGjb16v0/9jSIEDBXQRV3f0SyS8dpvT/bHfXt6H8+15vDrBIUooojJLrZBwdUiKHSrGBaXmLGVMjZa9xUkz55oS1JKdZEKoXQVkKHI0njzk/xZpk0adQMxrUrEGLS2GNGj1OLBb+z7HD+LS7OLHAAAA",
+        "04 Top",
+        1,
+        1,
+        [
+          [
+            11397.88799999998,
+            [
+              1.8,
+              1.8,
+              83.2
+            ],
+            [
+              118.2,
+              56.199999999999996,
+              85.0
+            ],
+            6,
+            12,
+            8
+          ]
+        ]
+      ],
+      [
+        "/v4BAAAARlJLZXkAH4sIAAAAAAAA/32OsQ1CMQxERUPHDlnAkmM7dtKyBLTO/3HJDizAJDQ0bMEKSOxBQRA9uuZ0ero7TJIo5YRTmep0+Zdoeu02p/tjv728D+fb83idBCXWZNp1WK0gGA7S0aEiB1gtRW0ZndcyWybp1cuQNYDCAmSYQ3NqMDjbsrK3oPi/xYa5uxSQogQSMhvEEIZ1YqfQ0r7P8QPZnDidxwAAAA==",
+        "05 Back",
+        1,
+        1,
+        [
+          [
+            5684.976000000014,
+            [
+              1.8,
+              56.199999999999996,
+              1.8
+            ],
+            [
+              118.2,
+              56.8,
+              83.2
+            ],
+            6,
+            12,
+            8
+          ]
+        ]
+      ],
+      [
+        "/v4BAAAARlJLZXkAH4sIAAAAAAAA/4WOsQ0CMAwERUPHDl7AkpM4jtOyBLRx4pTswAJMQkPDFqyAxB4UBDEA+ub1Ov0/AUOEALQUoi4XfonAa7c53R/77eV9ON+ex+siIiSBIiZeVJFpNmSjhkppYtGcpXS3NPJqWWQes4xAFbnGtPCasBYjrD5d+3Ca4c+W6GxGnrEEc2RmwdaHYBXJ3Lynbu37/QNNzgh+xwAAAA==",
+        "06 Shelf 1",
+        1,
+        1,
+        [
+          [
+            11509.516799999983,
+            [
+              1.23,
+              1.8,
+              41.599999999999994
+            ],
+            [
+              118.77000000000001,
+              56.199999999999996,
+              43.39999999999999
+            ],
+            6,
+            12,
+            8
+          ]
+        ]
+      ],
+      [
+        "/v4BAAAARlJLZXkAH4sIAAAAAAAA/32OvQ1CMQyERUPHDl7AUuz4Ly1LQJu8l5TswAJMQkPDFqyAxB4UBNGja06n7+xLIMBAkKaIYzr6JQav3eZ0f+y3l/fhfHser5NgyAZuzbpHoKRRUVqqGCkP9FA1X3rLq84rk+SqkrIy1nVCUopjIQn0vnCImgzj/79qT2PWVlQjQSEaWNQNR9XSlJRY4rv9A5vevS3HAAAA",
+        "07 Door 1",
+        1,
+        1,
+        [
+          [
+            9046.836000000001,
+            [
+              0.30000000000000004,
+              0.0,
+              0.30000000000000004
+            ],
+            [
+              59.849999999999994,
+              1.8,
+              84.7
+            ],
+            6,
+            12,
+            8
+          ]
+        ]
+      ],
+      [
+        "/v4BAAAARlJLZXkAH4sIAAAAAAAA/31Ouw1CMQwUDR07eAFLju04fi1LQBu/JCU7sACT0NCwBSsgsQcFQfTomtPpfgQKDAloIrFPln6KwWu3Od0f++3lfTjfnsfrdDCIQbGwXtxRaVTUoIpOMrB4zlbWHtLybJnOxKsEt4wsPVC7FgyKiguRd3LRJfz/loVLayEoTAVVZ9h7NWyjK8uoZRnx/f4BaohuRscAAAA=",
+        "07 Door 2",
+        1,
+        1,
+        [
+          [
+            9046.836,
+            [
+              60.15,
+              0.0,
+              0.30000000000000004
+            ],
+            [
+              119.69999999999999,
+              1.8,
+              84.7
+            ],
+            6,
+            12,
+            8
+          ]
+        ]
+      ],
+      [
+        "/v4BAAAARlJLZXkAH4sIAAAAAAAA/32OsQ1CMQxERUPHDl7Akp04tn/LEtAmcX7JDizAJDQ0bMEKSOxBQRA9uuZ0ero7AoEEDDTFyafjX6Lw2m1O98d+e3kfzrfn8TqJBFnBtOkwdxRaK0qjik55RfNS1PpoOcpsmWRpi/euFVMbDSVLwsai2D1Cgt180P8tCQo2ITSJgqImuCRlZK7S17J6zfb9/gE0EALHxwAAAA==",
+        "G4 refusal sentinel (test-created only)",
+        0,
+        0,
+        []
+      ]
+    ],
+    "timeline": 29,
+    "components": 10,
+    "params": [
+      [
+        "Cab_Width",
+        "1200 mm",
+        120.0
+      ],
+      [
+        "Cab_Height",
+        "850 mm",
+        85.0
+      ],
+      [
+        "Cab_Depth",
+        "550 mm",
+        55.0
+      ],
+      [
+        "Cab_Ply",
+        "18 mm",
+        1.8
+      ],
+      [
+        "Cab_Back",
+        "6 mm",
+        0.6000000000000001
+      ],
+      [
+        "Cab_Gap",
+        "3 mm",
+        0.30000000000000004
+      ],
+      [
+        "Cab_Dado_Depth",
+        "6 mm",
+        0.6000000000000001
+      ],
+      [
+        "Cab_Slot_Clearance",
+        "0.5 mm",
+        0.05
+      ],
+      [
+        "Cab_End_Clearance",
+        "0.3 mm",
+        0.03
+      ],
+      [
+        "Cab_Inner_Depth",
+        "( Cab_Depth - Cab_Back )",
+        54.4
+      ],
+      [
+        "Cab_Slot_Height",
+        "( Cab_Ply + Cab_Slot_Clearance )",
+        1.85
+      ],
+      [
+        "Cab_Shelf_X",
+        "( ( Cab_Ply - Cab_Dado_Depth ) + Cab_End_Clearance )",
+        1.23
+      ],
+      [
+        "Cab_Shelf_Length",
+        "( ( ( Cab_Width - ( 2 * Cab_Ply ) ) + ( 2 * Cab_Dado_Depth ) ) - ( 2 * Cab_End_Clearance ) )",
+        117.54
+      ],
+      [
+        "Cab_Compartment",
+        "( ( Cab_Height - ( 3 * Cab_Ply ) ) / 2 )",
+        39.8
+      ],
+      [
+        "Cab_Shelf1_Z",
+        "( ( Cab_Ply + ( 1 * Cab_Compartment ) ) + ( 0 * Cab_Ply ) )",
+        41.599999999999994
+      ],
+      [
+        "Cab_Slot1_Z",
+        "( Cab_Shelf1_Z - ( Cab_Slot_Clearance / 2 ) )",
+        41.574999999999996
+      ]
+    ]
+  }
+}

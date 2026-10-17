@@ -60,6 +60,15 @@ class RestoreJournal:
         data["entries"][name].update(info, state=state, utc=utc_now())
         self._save(data)
 
+    def begin_structural(self, name: str, original: Dict, desired_spec: str, job_id: str) -> None:
+        data = self.load()
+        if data["entries"]:
+            raise JournalError("structural update requires an entirely clear restore journal")
+        data["entries"][name] = {"state": "pending", "kind": "shelf_reconstruction",
+                                 "original": original, "desired_spec": desired_spec,
+                                 "job_id": job_id, "utc": utc_now()}
+        self._save(data)  # must succeed before the first destructive operation
+
     def clear(self, name: str) -> None:
         data = self.load()
         data["entries"].pop(name, None)

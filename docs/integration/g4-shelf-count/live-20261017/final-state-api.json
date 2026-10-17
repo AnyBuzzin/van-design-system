@@ -1,0 +1,12 @@
+{
+  "id": 17,
+  "jsonrpc": "2.0",
+  "result": {
+    "content": [
+      {
+        "text": "{\n  \"message\": \"{\\n  \\\"original_runner_active\\\": true,\\n  \\\"exact_installation_restored\\\": true,\\n  \\\"original_modules_verified\\\": 24,\\n  \\\"existing_documents_unchanged\\\": true,\\n  \\\"fixture_version\\\": 1,\\n  \\\"fixture_left_open_with_unsaved_test_changes\\\": true\\n}\",\n  \"success\": true\n}",
+        "type": "text"
+      }
+    ]
+  }
+}

@@ -9,7 +9,7 @@
   "properties": {
     "schema": {"const": "vandesign.runner.job/1"},
     "job_id": {"type": "string", "pattern": "^[A-Za-z0-9][A-Za-z0-9_.-]{2,79}$"},
-    "command": {"enum": ["ping", "inspect_design", "measure", "set_parameter", "restore_parameter", "audit_cuts", "run_test_batch", "preview_width_change", "update_width", "create_demo_design", "run_approved_demo", "save_demo_design", "capture_demo_viewport", "verify_demo_persistence"]},
+    "command": {"enum": ["ping", "inspect_design", "measure", "set_parameter", "restore_parameter", "audit_cuts", "run_test_batch", "preview_width_change", "update_width", "preview_shelf_count_change", "update_shelf_count", "create_demo_design", "run_approved_demo", "save_demo_design", "capture_demo_viewport", "verify_demo_persistence"]},
     "target": {
       "type": "object", "additionalProperties": false, "required": ["design_id"],
       "description": "Required for every command except ping/inspect_design. design_id is the Fusion DataFile.id (cloud lineage id), never the title.",
@@ -20,7 +20,10 @@
     "note": {"type": "string"},
     "args": {"type": "object", "description": "Per-command arguments; see $defs."}
   },
+  "allOf": [{"if":{"properties":{"command":{"enum":["preview_shelf_count_change","update_shelf_count"]}}},"then":{"required":["target"],"properties":{"args":{"$ref":"#/$defs/shelf_change"}}}},
+    {"if":{"properties":{"command":{"const":"run_test_batch"}}},"then":{"properties":{"args":{"$ref":"#/$defs/run_test_batch"}}}}],
   "$defs": {
+    "shelf_change": {"type":"object","additionalProperties":false,"required":["new_shelf_count"],"properties":{"new_shelf_count":{"type":"integer","enum":[1,2]},"label":{"type":"string","minLength":1,"maxLength":120}}},
     "verify_demo_persistence": {"type":"object","additionalProperties":false,"required":["design_id"],"properties":{"design_id":{"type":"string","minLength":1,"maxLength":300}}},
     "create_demo_design": {"type": "object", "additionalProperties": false, "required": [], "properties": {}},
     "run_approved_demo": {"type": "object", "additionalProperties": false, "required": ["demo_id", "entry_point"], "properties": {"demo_id": {"type": "string", "minLength": 1, "maxLength": 300}, "entry_point": {"const": "FirstInteriorDemo"}, "layout_mm": {"type": "object", "additionalProperties": false, "properties": {"Bed_Width": {"type": "number"}, "Bed_Length": {"type": "number"}, "Bed_Height": {"type": "number"}, "Kitchen_X": {"type": "number"}, "Kitchen_Y": {"type": "number"}}}, "vehicle_mm": {"type": "object", "additionalProperties": false, "properties": {"Van_Width": {"type": "number"}, "Van_Length": {"type": "number"}, "Van_Height": {"type": "number"}, "Arch_Width": {"type": "number"}, "Arch_Length": {"type": "number"}, "Arch_Height": {"type": "number"}, "Arch_Left_Y": {"type": "number"}, "Arch_Right_Y": {"type": "number"}, "Min_Aisle": {"type": "number"}}}}},
@@ -48,6 +51,7 @@
     "run_test_batch": {"type": "object", "additionalProperties": false, "required": ["steps"],
       "properties": {"label": {"type": "string"}, "stable_counts": {"type": "boolean", "default": true},
         "steps": {"type": "array", "minItems": 1, "maxItems": 60, "items": {"type": "object", "additionalProperties": false, "required": ["command"],
-          "properties": {"command": {"enum": ["inspect_design", "measure", "set_parameter", "restore_parameter", "audit_cuts"]}, "args": {"type": "object"}}}}}}
+          "properties": {"command": {"enum": ["inspect_design", "measure", "set_parameter", "restore_parameter", "audit_cuts", "preview_width_change", "update_width", "preview_shelf_count_change", "update_shelf_count"]}, "args": {"type": "object"}},
+          "allOf": [{"if":{"properties":{"command":{"enum":["preview_shelf_count_change","update_shelf_count"]}}},"then":{"required":["args"],"properties":{"args":{"$ref":"#/$defs/shelf_change"}}}}]}}}}
   }
 }

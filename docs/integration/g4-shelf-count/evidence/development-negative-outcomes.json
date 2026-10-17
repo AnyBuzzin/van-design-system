@@ -1,0 +1,26 @@
+{
+  "kind": "recorded development observations; not live Fusion results",
+  "initial_source_path_run": {
+    "command": "python -B -m unittest discover -s tests -q with PYTHONPATH=src",
+    "tests": 12,
+    "failures": 1,
+    "errors": 1,
+    "observed_errors": [
+      "test_v5_runtime_matches_preserved_source: adapter.py source parity failed for the initial opt-in-hook implementation",
+      "test_generated_bundles_and_launchers: RuntimeError: Deploy from an installed wheel, not a historical or editable package"
+    ],
+    "resolution": "Original adapter and source-parity test restored unchanged; G4 isolated in subclass. Final verification used an installed wheel."
+  },
+  "initial_build_attempt": {
+    "command": "pip wheel --no-deps --no-build-isolation",
+    "observed_error": "BackendUnavailable: Cannot import 'setuptools.build_meta'",
+    "resolution": "Normal isolated wheel build in a separate G4 development environment; no system or live Fusion installation changes."
+  },
+  "initial_g3_regression": {
+    "tests": 119,
+    "failures": 1,
+    "raw_log": "g3-regression-v2.log",
+    "observed_error": "test_adapter_geometry_methods_unchanged: protected adapter method hashes differ",
+    "resolution": "Removed all changes to the accepted G3 adapter. Original golden suite passes without test/fixture changes."
+  }
+}
