@@ -1,0 +1,43 @@
+{
+  "schema": "vandesign.runner.result/1",
+  "runner_version": "0.4.0",
+  "job_id": "vd-20261017T223608-ba3b25",
+  "command": "ping",
+  "target": null,
+  "started_utc": "2026-10-17T21:36:08.589+00:00",
+  "steps": [
+    {
+      "command": "ping",
+      "label": null,
+      "status": "PASS",
+      "elapsed_ms": 0.0,
+      "ident": {
+        "fusion_version": "2705.1.30",
+        "design_id": "REDACTED_CLOUD_ID_66bacffad31a",
+        "document_name": "VanDesign-G4-base-shelf-count-20261017",
+        "is_saved": true,
+        "is_modified": true,
+        "version_number": 1,
+        "data_file_name": "VanDesign-G4-base-shelf-count-20261017"
+      }
+    }
+  ],
+  "outcome": "PASS",
+  "notes": [],
+  "identity_at_start": {
+    "fusion_version": "2705.1.30",
+    "design_id": "REDACTED_CLOUD_ID_66bacffad31a",
+    "document_name": "VanDesign-G4-base-shelf-count-20261017",
+    "is_saved": true,
+    "is_modified": true,
+    "version_number": 1,
+    "data_file_name": "VanDesign-G4-base-shelf-count-20261017"
+  },
+  "finished_utc": "2026-10-17T21:36:08.589+00:00",
+  "elapsed_ms": 0.5,
+  "summary": {
+    "steps": 1,
+    "passed": 1,
+    "outcome": "PASS"
+  }
+}

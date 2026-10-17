@@ -1,0 +1,22 @@
+{
+  "exact_file_set_and_hashes_restored": true,
+  "files_verified": 26,
+  "config_sha256": "70bf4288f224cef35efc1760aae594c54cf39d1676a298aa10956621d81d8378",
+  "restored_files": [
+    "config.json",
+    "fusion_backend.py",
+    "vdrunner/executor.py",
+    "vdrunner/journal.py",
+    "vdrunner/schema.py",
+    "__pycache__/fusion_backend.cpython-314.pyc",
+    "vdrunner/__pycache__/executor.cpython-314.pyc",
+    "vdrunner/__pycache__/journal.cpython-314.pyc",
+    "vdrunner/__pycache__/schema.cpython-314.pyc"
+  ],
+  "removed_test_added_files": [
+    "vdrunner/__pycache__/shelf_change.cpython-314.pyc",
+    "vdrunner/shelf_change.py"
+  ],
+  "historical_journal_hashes_unchanged": true,
+  "all_journals_clear": true
+}

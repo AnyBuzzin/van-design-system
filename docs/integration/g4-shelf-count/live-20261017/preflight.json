@@ -1,0 +1,50 @@
+{
+  "utc": "20261017T212117Z",
+  "reviewed_commit": "50c195593ca4d32702d17a502bf56baffe9d445f",
+  "local_head_matches": true,
+  "worktree_clean": true,
+  "staged_manifests": {
+    "Runner": {
+      "files": 16,
+      "mismatches": [],
+      "manifest_sha256": "63bcca76be048c1714b86d7e80a01c6985aa1dabfc709bb020ac599b08cae5f7"
+    },
+    "VanCabinetJoineryV5": {
+      "files": 32,
+      "mismatches": [],
+      "manifest_sha256": "001b6ef9694ef865e150e702f27c89ecd378b9146de12f92df9142ae298e7548"
+    }
+  },
+  "deployment_performed": false,
+  "fixture_created": false,
+  "live_tests": "NOT RUN",
+  "backup": "NOT STARTED; live connection prerequisite failed",
+  "wheel_sha256": "6985f3e7ffcb2ed0a7f01553ca8498a22c6062da9acecacc293ed03ad54346eb",
+  "config_sha256": "70bf4288f224cef35efc1760aae594c54cf39d1676a298aa10956621d81d8378",
+  "config_matches_review": true,
+  "functional_changed_files": [
+    "fusion_backend.py",
+    "vdrunner/executor.py",
+    "vdrunner/journal.py",
+    "vdrunner/schema.py"
+  ],
+  "new_files": [
+    "vdrunner/shelf_change.py"
+  ],
+  "queue_counts": {
+    "inbox": 0,
+    "claimed": 0
+  },
+  "journal_files": 3,
+  "nonempty_journals": 0,
+  "heartbeat": {
+    "stopped": true,
+    "busy": false,
+    "utc": "2026-10-17T00:55:07.995+00:00",
+    "runner_version": "0.4.0",
+    "pid": 19872
+  },
+  "fusion_api_port": "UNAVAILABLE: [WinError 10061] No connection could be made because the target machine actively refused it",
+  "prerequisite": "STOP: Fusion process absent, API unavailable, Runner heartbeat stopped",
+  "remaining_live_preconditions": "UNKNOWN: loaded sources, open documents, cloud-name uniqueness, destination permissions; no live access"
+}

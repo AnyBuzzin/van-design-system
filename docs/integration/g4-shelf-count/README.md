@@ -1,6 +1,6 @@
 # G4 shelf-count candidate — independent review requested
 
-Issue [#20](https://github.com/AnyBuzzin/van-design-system/issues/20), based on integrated develop `a2aba70a7e1824cc823f83ffb2ede7483802b1b7`. **G4 remains OPEN. No live Fusion test or deployment performed.**
+Issue [#20](https://github.com/AnyBuzzin/van-design-system/issues/20), based on integrated develop `a2aba70a7e1824cc823f83ffb2ede7483802b1b7`. **G4 remains OPEN pending independent acceptance.** Owner-approved [bounded live qualification](live-20261017/README.md) has now completed on reviewed source50c1955:1→2→1, refusal/recovery and exact original-installation restoration observed PASS. The candidate/offline report below is retained as the pre-live checkpoint; its pending-test statements are superseded by the linked live evidence.
 
 ## Implementation
 

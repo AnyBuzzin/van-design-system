@@ -1,0 +1,4 @@
+# Preserve published artifact bytes and pinned helper hashes across checkouts.
+*.json -text
+*.txt -text
+*.py -text
