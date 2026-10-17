@@ -7,7 +7,8 @@ It REUSES the verified G3 code instead of re-implementing it:
 * cut audit: the configured ``VanDesignCutAuditG3.py`` (``run_audit`` /
   ``render_text``), loaded fresh for every audit.
 
-Existing-design operations never build or save. The separate demo_workflow
+Existing-design operations never save. G4 reconstruction requires a fresh-fixture
+ownership receipt and explicit target allowlisting. The separate demo_workflow
 module guards creation, allowlisted builds and first saves of new sessions.
 No operation deletes existing designs or exports manufacturing data.
 All methods run on Fusion's main thread (called from a CustomEvent handler).
@@ -226,6 +227,26 @@ class FusionBackend:
         adapter = self._g3()["adapter"].FusionAdapter(design)
         adapter.store_spec_json(text)
         return adapter.stored_spec_json()
+
+    def shelf_state(self):
+        g3 = self._g3()
+        adapter = g3["adapter"].FusionAdapter(self._design())
+        stored = adapter.stored_spec_json()
+        ds = g3["design_spec"].load_design_spec(stored)
+        assembly = g3["variants"].build_variant(ds.resolved_params, ds.profile)
+        from vandesign.cad.fusion.shelf_regeneration import verified_state
+        state = verified_state(adapter, assembly)  # any unavailable read refuses the operation
+        return {"stored_text": stored, "live_params": state["live_params"],
+                "ownership_verified": True, "inventory": state, "identity": self.identity()}
+
+    def begin_shelf_regeneration(self, new_stored_text):
+        g3 = self._g3()
+        from vandesign.cad.fusion.shelf_regeneration import Reconstruction, ShelfFixtureAdapter
+        adapter = ShelfFixtureAdapter(self._design())
+        def assembly(text):
+            ds = g3["design_spec"].load_design_spec(text)
+            return g3["variants"].build_variant(ds.resolved_params, ds.profile)
+        return Reconstruction(adapter, assembly(adapter.stored_spec_json()), assembly(new_stored_text))
 
     # ------------------------------------------------------------ independent cut audit (G3 audit script)
     def audit(self, out_dir, label):

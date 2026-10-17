@@ -15,13 +15,13 @@ from typing import Any, Dict, List
 
 from . import JOB_SCHEMA_ID
 
-READ_ONLY_COMMANDS = ("ping", "inspect_design", "measure", "audit_cuts", "preview_width_change")
+READ_ONLY_COMMANDS = ("ping", "inspect_design", "measure", "audit_cuts", "preview_width_change", "preview_shelf_count_change")
 DEMO_COMMANDS = ("create_demo_design", "run_approved_demo", "save_demo_design", "capture_demo_viewport", "verify_demo_persistence")
-MUTATING_COMMANDS = ("set_parameter", "restore_parameter", "update_width") + DEMO_COMMANDS[:3]
+MUTATING_COMMANDS = ("set_parameter", "restore_parameter", "update_width", "update_shelf_count") + DEMO_COMMANDS[:3]
 BATCH_COMMAND = "run_test_batch"
 ALL_COMMANDS = READ_ONLY_COMMANDS + MUTATING_COMMANDS + ("capture_demo_viewport", "verify_demo_persistence", BATCH_COMMAND)
 STEP_COMMANDS = ("inspect_design", "measure", "set_parameter", "restore_parameter", "audit_cuts",
-                 "preview_width_change", "update_width")
+                 "preview_width_change", "update_width", "preview_shelf_count_change", "update_shelf_count")
 
 JOB_ID_RE = re.compile(r"^[A-Za-z0-9][A-Za-z0-9_.-]{2,79}$")
 PARAM_NAME_RE = re.compile(r"^Cab_[A-Za-z0-9_]{1,40}$")
@@ -157,6 +157,9 @@ def validate_args(command: str, args: Any, path: str) -> None:
             _fail(path + ".new_width", "must be > 0")
         if args["unit"] not in SUPPORTED_UNITS:
             _fail(path + ".unit", "unsupported unit %r" % (args["unit"],))
+    elif command in ("preview_shelf_count_change", "update_shelf_count"):
+        _keys(args, path, ("new_shelf_count",), ("label",))
+        _int(args["new_shelf_count"], path + ".new_shelf_count", 1, 2)
     elif command == "restore_parameter":
         _keys(args, path, ("name",), ("expect", "label"))
         _param_name(args["name"], path + ".name")

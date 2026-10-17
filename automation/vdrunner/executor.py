@@ -33,6 +33,7 @@ from .policy import PolicyError, check_parameter_edit, check_target
 from .queue import utc_now
 from .schema import BATCH_COMMAND, DEMO_COMMANDS, is_mutating, steps_of, validate_job
 from .width_change import plan_width_change
+from .shelf_change import JOURNAL_KEY, equivalent, plan_shelf_count_change
 
 
 class StepFailed(RuntimeError):
@@ -83,7 +84,7 @@ class Executor:
                 result["steps"].append(rec)
                 if st["command"] == "measure" and rec["status"] == "PASS" and baseline is None:
                     baseline = rec["summary"]
-                if st["command"] == "update_width" and rec["status"] == "PASS":
+                if st["command"] in ("update_width", "update_shelf_count") and rec["status"] == "PASS":
                     baseline = rec["post_measure"]["summary"]   # the updated cabinet is the new reference
                 if rec["status"] != "PASS":
                     result["notes"].append("stopped at step %d (%s): %s" % (i, st["command"], rec.get("error") or "; ".join(rec.get("checks", []))))
@@ -147,6 +148,16 @@ class Executor:
                                   checks=["OK safe to update"] if status == "PASS" else ["REFUSED " + r for r in plan["refusals"]])
             if cmd == "update_width":
                 return self._update_width(cmd, args, out_dir, label, journal, job_id, t0)
+            if cmd in ("preview_shelf_count_change", "update_shelf_count"):
+                if journal is None or journal.load()["entries"]:
+                    raise PolicyError("shelf change requires a target and an entirely clear restore journal")
+                before = self.b.shelf_state()
+                plan = plan_shelf_count_change(self.b.g3_modules(), before, args["new_shelf_count"])
+                if plan["refusals"] or cmd == "preview_shelf_count_change":
+                    return self._step(cmd, args, "FAIL" if plan["refusals"] else "PASS",
+                                      (time.perf_counter()-t0)*1000, preview=self._public(plan),
+                                      refused=bool(plan["refusals"]), checks=plan["refusals"])
+                return self._update_shelves(cmd, args, out_dir, label, journal, job_id, t0, before, plan)
             raise StepFailed("unsupported step %s" % cmd)
         except (PolicyError, JournalError, StepFailed) as e:
             return self._step(cmd, args, "FAIL", (time.perf_counter() - t0) * 1000, error=str(e))
@@ -203,6 +214,81 @@ class Executor:
                           restored_expression=e["original_expression"], value_read_back_mm=got,
                           edit_and_regenerate_ms=round(edit_ms, 1), verification=m,
                           checks=["value restored: %s" % bool(value_ok)] + m.get("checks", []))
+
+    # ------------------------------------------------------------------ G4: bounded shelf reconstruction
+    def _shelf_verify(self, out_dir, label, count, expected_hash, expected_params, expected_counts):
+        m = self._measure("measure", {}, out_dir, label, None, time.perf_counter(),
+                          expect={"design_spec_hash": expected_hash, "params_mm": expected_params,
+                                  "counts": expected_counts})
+        audit = self.b.audit(out_dir, label)
+        audit_ok, notes = evaluate_audit(audit, {"features_passed": 2*count})
+        exact_ops = {"dado.shelf%d.%s" % (n,side): "PASS" for n in range(1,count+1) for side in ("left","right")}
+        state = self.b.shelf_state()
+        ok = (m["status"] == "PASS" and audit_ok and audit.get("operations") == exact_ops
+              and equivalent(m["summary"].get("params_mm"), expected_params))
+        return {"verified": ok, "measure": m, "audit": audit, "audit_checks": notes, "state": state}
+
+    @staticmethod
+    def _same_document(before, after):
+        keys = ("design_id", "document_name", "is_saved", "version_number")
+        return (bool(before.get("design_id")) and before.get("is_saved") is True
+                and type(before.get("version_number")) is int
+                and all(before.get(k) == after.get(k) for k in keys))
+
+    def _update_shelves(self, cmd, args, out_dir, label, journal, job_id, t0, before, plan):
+        g3 = self.b.g3_modules()
+        old = g3["design_spec"].load_design_spec(before["stored_text"])
+        asm = g3["variants"].build_variant(old.resolved_params, old.profile)
+        old_params = asm.parameters.resolve()
+        old_counts = {"user_parameters": len(old_params), "root_occurrences": len(asm.panels),
+                      "all_components": len(asm.panels)+1,
+                      "timeline_items": 3*len(asm.panels)+2*len(asm.operations)}
+        pre = self._shelf_verify(os.path.join(out_dir,"pre"), label+" pre", plan["old_shelf_count"],
+                                 old.design_spec_hash, old_params, old_counts)
+        rec = {"preview": self._public(plan), "pre_verification": pre}
+        if (not pre["verified"] or not equivalent(before["inventory"], pre["state"]["inventory"])
+                or not self._same_document(before["identity"], self.b.identity())):
+            return self._step(cmd,args,"FAIL",(time.perf_counter()-t0)*1000, refused=True,
+                              checks=["REFUSED baseline or document identity verification"], **rec)
+        operation = self.b.begin_shelf_regeneration(plan["new_stored_text"])
+        journal.begin_structural(JOURNAL_KEY, before, plan["new_stored_text"], job_id)
+        try:
+            if not self._same_document(before["identity"], self.b.identity()):
+                raise StepFailed("document identity changed before mutation")
+            operation.apply(plan["new_stored_text"])
+            post = self._shelf_verify(os.path.join(out_dir,"post"), label+" post", plan["new_shelf_count"],
+                                     plan["new_design_spec_hash"], plan["expected_after_mm"], plan["expected_counts"])
+            rec["post_verification"] = post
+            rec["post_measure"] = post["measure"]
+            if (not post["verified"] or post["state"]["stored_text"] != plan["new_stored_text"]
+                    or not self._same_document(before["identity"], self.b.identity())):
+                raise StepFailed("post-reconstruction verification failed")
+            journal.clear(JOURNAL_KEY)
+            return self._step(cmd,args,"PASS",(time.perf_counter()-t0)*1000, **rec)
+        except Exception as exc:
+            rec["error"] = "%s: %s" % (type(exc).__name__, exc)
+            recovery = {"verified": False}
+            try:
+                # Never reconstruct against a different active document or saved identity.
+                if not self._same_document(before["identity"], self.b.identity()):
+                    raise StepFailed("document changed; automatic recovery stopped")
+                if operation.started:
+                    operation.restore(before["stored_text"])
+                recovery = self._shelf_verify(os.path.join(out_dir,"recovery"), label+" recovery", plan["old_shelf_count"],
+                                              old.design_spec_hash, old_params, old_counts)
+                recovery["verified"] = (recovery["verified"]
+                    and recovery["state"]["stored_text"] == before["stored_text"]
+                    and equivalent(before["inventory"], recovery["state"]["inventory"])
+                    and self._same_document(before["identity"], self.b.identity()))
+            except Exception as restore_exc:
+                recovery["error"] = "%s: %s" % (type(restore_exc).__name__, restore_exc)
+                recovery["verified"] = False
+            if recovery["verified"]:
+                journal.clear(JOURNAL_KEY)
+            else:
+                journal.mark(JOURNAL_KEY, "restore_unverified", error=rec["error"], recovery=recovery)
+            rec["recovery"] = recovery
+            return self._step(cmd,args,"FAIL",(time.perf_counter()-t0)*1000, **rec)
 
     # ------------------------------------------------------------------ G4: safe width update
     def _plan(self, args) -> Dict:
