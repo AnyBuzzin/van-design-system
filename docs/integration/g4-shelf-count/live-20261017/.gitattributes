@@ -1,4 +1,4 @@
 # Preserve published artifact bytes and pinned helper hashes across checkouts.
-*.json -text
-*.txt -text
-*.py -text
+*.json -text whitespace=cr-at-eol
+*.txt -text whitespace=cr-at-eol
+*.py -text whitespace=cr-at-eol
