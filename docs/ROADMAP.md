@@ -44,3 +44,5 @@ Real Fusion has demonstrated a first bed-and-kitchen interior (95/95 BRep checks
 - **V10 — Production orchestration:** approved jobs, controlled revisions, traceability and as-built evidence.
 
 **Do not implement later capabilities simply to keep agents busy.** No verified manufacturing, road-legal, load-bearing or measured vehicle-fit claims currently exist.
+
+Owner requirements retained for later V6–V9 work, per [Jack's planning-only issue #20](https://github.com/AnyBuzzin/van-design-system/issues/20): nominal plywood options 5, 10, 12, 15 and 18 mm; custom and mixed panel/material thicknesses with measured-stock and tolerance semantics; self-supporting interlocking CNC furniture with final mechanical fasteners and secure vehicle anchoring. These need separate furniture/material, measured mounting/load, constrained-layout and fabrication qualification in the approved order. Current uniform `Cab_Ply` fixtures do not qualify those capabilities. Issue #20 authorizes no implementation: G3 acceptance and explicit owner approval are required before G4 progression.

@@ -4,7 +4,7 @@
 
 ## Contract and scope
 
-Based on integrated `develop` `7508f45840b5400da9ec0435d92f574e17969825`, following [Jack's instructions](https://github.com/AnyBuzzin/van-design-system/issues/4#issuecomment-6205063240). Objective: only missing overhead F3 checks and F0 evidence disposition. Changed files: this evidence directory and the small accepted-#17 correction in `PROJECT_STATUS.md`. No production code, G4/G5, release, merge, new infrastructure or deployment-package changes.
+Based on integrated `develop` `7508f45840b5400da9ec0435d92f574e17969825`, following [Jack's instructions](https://github.com/AnyBuzzin/van-design-system/issues/4#issuecomment-6205063240). Objective: only missing overhead F3 checks and F0 evidence disposition. Changed files: this evidence directory, the small accepted-#17 correction in `PROJECT_STATUS.md`, and Jack's requested retention of future material/anchoring requirements in `docs/ROADMAP.md` (planning only, issue #20). No production code, G4/G5 implementation, release, merge, new infrastructure or deployment-package changes.
 
 The owner explicitly approved, in this chat, saving the newly created fixture in Default Project's root folder, temporarily allowlisting only its new cloud identity, performing the parameter tests, saving the restored baseline and closing/reopening only that fixture once. Existing designs were outside that authorization. The original runner configuration was backed up before changing the allowlist and restored byte-for-byte after testing. No restart was needed: the existing runner reloads configuration for each job.
 
