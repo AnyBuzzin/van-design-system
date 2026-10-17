@@ -1,0 +1,16 @@
+# Numeric evidence review correction
+
+Addresses [Jack's blocking review](https://github.com/AnyBuzzin/van-design-system/pull/25#pullrequestreview-5560390544) in the existing G5 PR. Package source commit `638a2b9` (full identity in [source proof](source-proof.json)). Original evidence in the parent directory is preserved unchanged and superseded only for candidate package identity.
+
+The comparator now checks required numeric observations, expectations and tolerances for finite numbers, their units and object IDs, and their numeric relationship. Equality measurements use the existing absolute-tolerance semantics; constraints retain their existing > or >= semantics with no numeric tolerance. Missing/nonfinite values are UNKNOWN; contradictions, negative tolerance and wrong units/identities are FAIL. Boolean probes remain status/note records with intentional None numeric fields. No new framework or CAD validator changes.
+
+- **PASS:** [before](numeric-before.json)/[after](numeric-after.json) reproduction of both reported defects. Missing panel volume changes from erroneous PASS to UNKNOWN; observed123 against expected8294232/tolerance8.294232 changes from erroneous PASS to FAIL. [Reproducer](reproduce-review.py) runs against either installed wheel.
+- **PASS:** [33 root tests](root-tests.txt), including11 preview tests; [119 prototype regressions](prototype-tests.txt); [79 Runner tests](runner-tests.txt). Total231. New tests cover missing/NaN/infinite/bool numeric fields, contradictions, negative tolerances, wrong units/targets and accepted boolean probes.
+- **PASS:** [isolated wheel origin](installed.txt), compilation, [31 source files verified](source-proof.json), and [two identical wheels/bundle sets](reproducibility.json). Wheel SHA256 `55d9530da10866d08a2e0c84e6c7083d9aef5044278648f62e78ef183eb10e50`; same recorded fixed timestamp and builder method as the original candidate. Each generated bundle verifies33 files. No runtime dependency/schema/generator change.
+- **PASS:** all four historical configurations retain historical-consistency PASS. [All eight CSV/JSON example files remain byte-identical](preview-comparison.json). [Refreshed traceability](TRACEABILITY.json) links the new package/source hashes and unchanged accepted reports/previews.
+- **CI:** Python3.10/3.12 results will be reported on PR25 after this evidence commit is pushed.
+- **NOT RUN:** Fusion operations, deployment/configuration changes, protected-design operations or cache cleanup. G4 fixture and unsaved changes untouched. Structural persistence remains UNKNOWN/excluded; no release or merge.
+
+The first development test run exposed that an entirely omitted numeric record was being classified FAIL for missing unit/identity instead of retaining the established UNKNOWN result. The loop now defers absent records to the existing required-record check; the original skipped-record assertion is unchanged and passes. Original negative outcomes and Jack's review remain retained.
+
+[MANIFEST.json](MANIFEST.json) records all20 generated artifact hashes. Jack: re-review the numeric semantics and focused tests in draft PR25. Issue24 remains open pending independent review and owner approval.
