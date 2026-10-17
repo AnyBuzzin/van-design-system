@@ -1,0 +1,640 @@
+{
+  "schema": "vandesign.runner.result/1",
+  "runner_version": "0.4.0",
+  "job_id": "v5demo-tall-resize-20261017-01",
+  "command": "run_test_batch",
+  "target": {
+    "design_id": "redacted-sha256:5adf7d08cf0cd354df6e9923b94e65f74014667d91274c4bcd5c42e50de1fb62",
+    "document_name": "V5-Demo-Tall-20261017-01"
+  },
+  "started_utc": "2026-10-17T22:59:51.218+00:00",
+  "steps": [
+    {
+      "command": "set_parameter",
+      "label": null,
+      "status": "PASS",
+      "elapsed_ms": 199.6,
+      "parameter": "Cab_Width",
+      "original_expression": "600 mm",
+      "original_value_mm": 600.0,
+      "new_expression": "700 mm",
+      "value_read_back_mm": 700.0,
+      "edit_and_regenerate_ms": 193.4,
+      "checks": [
+        "Cab_Width read back 700.0 mm (requested 700.0)"
+      ]
+    },
+    {
+      "command": "measure",
+      "label": "Cab_Width changed",
+      "status": "PASS",
+      "elapsed_ms": 111.6,
+      "summary": {
+        "label": "Cab_Width changed",
+        "verdict": "PASS",
+        "counts": {
+          "PASS": 112,
+          "FAIL": 0,
+          "UNKNOWN": 0
+        },
+        "total": 112,
+        "fail_ids": [],
+        "unknown_ids": [],
+        "params_mm": {
+          "Cab_Width": 700.0,
+          "Cab_Height": 1900.0,
+          "Cab_Depth": 550.0,
+          "Cab_Ply": 18.0,
+          "Cab_Back": 6.000000000000001,
+          "Cab_Gap": 3.0000000000000004,
+          "Cab_Dado_Depth": 6.000000000000001,
+          "Cab_Slot_Clearance": 0.5,
+          "Cab_End_Clearance": 0.3,
+          "Cab_Inner_Depth": 544.0,
+          "Cab_Slot_Height": 18.5,
+          "Cab_Shelf_X": 12.3,
+          "Cab_Shelf_Length": 675.4000000000001,
+          "Cab_Compartment": 452.5,
+          "Cab_Shelf1_Z": 470.5,
+          "Cab_Slot1_Z": 470.25,
+          "Cab_Shelf2_Z": 941.0,
+          "Cab_Slot2_Z": 940.7499999999999,
+          "Cab_Shelf3_Z": 1411.5,
+          "Cab_Slot3_Z": 1411.25
+        },
+        "design_counts": {
+          "user_parameters": 20,
+          "root_occurrences": 9,
+          "all_components": 10,
+          "timeline_items": 39
+        },
+        "design_spec_hash": "4026125d3a279b956198cb9620ca30397bc88d6be4de9aef756687530a638eb0",
+        "variant": "tall@1",
+        "stored_unchanged": true,
+        "document_name": "V5-Demo-Tall-20261017-01",
+        "report_json": "reports\\report_20261017_235951_525034_measure.json",
+        "report_txt": "reports\\report_20261017_235951_525034_measure.txt"
+      },
+      "checks": [
+        "OK all expectations met (PASS 112/112)"
+      ]
+    },
+    {
+      "command": "audit_cuts",
+      "label": null,
+      "status": "PASS",
+      "elapsed_ms": 96.9,
+      "summary": {
+        "label": "02_audit_cuts",
+        "overall": "PASS",
+        "features_passed": 6,
+        "features_total": 6,
+        "operations": {
+          "dado.shelf1.left": "PASS",
+          "dado.shelf1.right": "PASS",
+          "dado.shelf2.left": "PASS",
+          "dado.shelf2.right": "PASS",
+          "dado.shelf3.left": "PASS",
+          "dado.shelf3.right": "PASS"
+        },
+        "timeline_restored": true,
+        "counts_equal": true,
+        "counts_after": {
+          "timeline_items": 39,
+          "user_parameters": 20,
+          "root_occurrences": 9
+        },
+        "report_txt": "cut_audit_g3_20261017_235951_627056.txt",
+        "report_json": "cut_audit_g3_20261017_235951_627056.json"
+      },
+      "checks": [
+        "OK audit 6/6, timeline restored, counts unchanged"
+      ]
+    },
+    {
+      "command": "restore_parameter",
+      "label": null,
+      "status": "PASS",
+      "elapsed_ms": 258.1,
+      "parameter": "Cab_Width",
+      "restored_expression": "600 mm",
+      "value_read_back_mm": 600.0,
+      "edit_and_regenerate_ms": 185.5,
+      "verification": {
+        "command": "measure",
+        "label": null,
+        "status": "PASS",
+        "elapsed_ms": 69.2,
+        "summary": {
+          "label": "03_restore_parameter",
+          "verdict": "PASS",
+          "counts": {
+            "PASS": 112,
+            "FAIL": 0,
+            "UNKNOWN": 0
+          },
+          "total": 112,
+          "fail_ids": [],
+          "unknown_ids": [],
+          "params_mm": {
+            "Cab_Width": 600.0,
+            "Cab_Height": 1900.0,
+            "Cab_Depth": 550.0,
+            "Cab_Ply": 18.0,
+            "Cab_Back": 6.000000000000001,
+            "Cab_Gap": 3.0000000000000004,
+            "Cab_Dado_Depth": 6.000000000000001,
+            "Cab_Slot_Clearance": 0.5,
+            "Cab_End_Clearance": 0.3,
+            "Cab_Inner_Depth": 544.0,
+            "Cab_Slot_Height": 18.5,
+            "Cab_Shelf_X": 12.3,
+            "Cab_Shelf_Length": 575.4,
+            "Cab_Compartment": 452.5,
+            "Cab_Shelf1_Z": 470.5,
+            "Cab_Slot1_Z": 470.25,
+            "Cab_Shelf2_Z": 941.0,
+            "Cab_Slot2_Z": 940.7499999999999,
+            "Cab_Shelf3_Z": 1411.5,
+            "Cab_Slot3_Z": 1411.25
+          },
+          "design_counts": {
+            "user_parameters": 20,
+            "root_occurrences": 9,
+            "all_components": 10,
+            "timeline_items": 39
+          },
+          "design_spec_hash": "4026125d3a279b956198cb9620ca30397bc88d6be4de9aef756687530a638eb0",
+          "variant": "tall@1",
+          "stored_unchanged": true,
+          "document_name": "V5-Demo-Tall-20261017-01",
+          "report_json": "reports\\report_20261017_235951_878328_measure.json",
+          "report_txt": "reports\\report_20261017_235951_878328_measure.txt"
+        },
+        "checks": [
+          "OK all expectations met (PASS 112/112)"
+        ]
+      },
+      "checks": [
+        "value restored: True",
+        "OK all expectations met (PASS 112/112)"
+      ]
+    },
+    {
+      "command": "audit_cuts",
+      "label": null,
+      "status": "PASS",
+      "elapsed_ms": 70.9,
+      "summary": {
+        "label": "04_audit_cuts",
+        "overall": "PASS",
+        "features_passed": 6,
+        "features_total": 6,
+        "operations": {
+          "dado.shelf1.left": "PASS",
+          "dado.shelf1.right": "PASS",
+          "dado.shelf2.left": "PASS",
+          "dado.shelf2.right": "PASS",
+          "dado.shelf3.left": "PASS",
+          "dado.shelf3.right": "PASS"
+        },
+        "timeline_restored": true,
+        "counts_equal": true,
+        "counts_after": {
+          "timeline_items": 39,
+          "user_parameters": 20,
+          "root_occurrences": 9
+        },
+        "report_txt": "cut_audit_g3_20261017_235951_957341.txt",
+        "report_json": "cut_audit_g3_20261017_235951_957341.json"
+      },
+      "checks": [
+        "OK audit 6/6, timeline restored, counts unchanged"
+      ]
+    },
+    {
+      "command": "set_parameter",
+      "label": null,
+      "status": "PASS",
+      "elapsed_ms": 190.3,
+      "parameter": "Cab_Depth",
+      "original_expression": "550 mm",
+      "original_value_mm": 550.0,
+      "new_expression": "600 mm",
+      "value_read_back_mm": 600.0,
+      "edit_and_regenerate_ms": 183.1,
+      "checks": [
+        "Cab_Depth read back 600.0 mm (requested 600.0)"
+      ]
+    },
+    {
+      "command": "measure",
+      "label": "Cab_Depth changed",
+      "status": "PASS",
+      "elapsed_ms": 70.3,
+      "summary": {
+        "label": "Cab_Depth changed",
+        "verdict": "PASS",
+        "counts": {
+          "PASS": 112,
+          "FAIL": 0,
+          "UNKNOWN": 0
+        },
+        "total": 112,
+        "fail_ids": [],
+        "unknown_ids": [],
+        "params_mm": {
+          "Cab_Width": 600.0,
+          "Cab_Height": 1900.0,
+          "Cab_Depth": 600.0,
+          "Cab_Ply": 18.0,
+          "Cab_Back": 6.000000000000001,
+          "Cab_Gap": 3.0000000000000004,
+          "Cab_Dado_Depth": 6.000000000000001,
+          "Cab_Slot_Clearance": 0.5,
+          "Cab_End_Clearance": 0.3,
+          "Cab_Inner_Depth": 594.0,
+          "Cab_Slot_Height": 18.5,
+          "Cab_Shelf_X": 12.3,
+          "Cab_Shelf_Length": 575.4,
+          "Cab_Compartment": 452.5,
+          "Cab_Shelf1_Z": 470.5,
+          "Cab_Slot1_Z": 470.25,
+          "Cab_Shelf2_Z": 941.0,
+          "Cab_Slot2_Z": 940.7499999999999,
+          "Cab_Shelf3_Z": 1411.5,
+          "Cab_Slot3_Z": 1411.25
+        },
+        "design_counts": {
+          "user_parameters": 20,
+          "root_occurrences": 9,
+          "all_components": 10,
+          "timeline_items": 39
+        },
+        "design_spec_hash": "4026125d3a279b956198cb9620ca30397bc88d6be4de9aef756687530a638eb0",
+        "variant": "tall@1",
+        "stored_unchanged": true,
+        "document_name": "V5-Demo-Tall-20261017-01",
+        "report_json": "reports\\report_20261017_235952_214070_measure.json",
+        "report_txt": "reports\\report_20261017_235952_214070_measure.txt"
+      },
+      "checks": [
+        "OK all expectations met (PASS 112/112)"
+      ]
+    },
+    {
+      "command": "audit_cuts",
+      "label": null,
+      "status": "PASS",
+      "elapsed_ms": 66.2,
+      "summary": {
+        "label": "07_audit_cuts",
+        "overall": "PASS",
+        "features_passed": 6,
+        "features_total": 6,
+        "operations": {
+          "dado.shelf1.left": "PASS",
+          "dado.shelf1.right": "PASS",
+          "dado.shelf2.left": "PASS",
+          "dado.shelf2.right": "PASS",
+          "dado.shelf3.left": "PASS",
+          "dado.shelf3.right": "PASS"
+        },
+        "timeline_restored": true,
+        "counts_equal": true,
+        "counts_after": {
+          "timeline_items": 39,
+          "user_parameters": 20,
+          "root_occurrences": 9
+        },
+        "report_txt": "cut_audit_g3_20261017_235952_285359.txt",
+        "report_json": "cut_audit_g3_20261017_235952_285359.json"
+      },
+      "checks": [
+        "OK audit 6/6, timeline restored, counts unchanged"
+      ]
+    },
+    {
+      "command": "restore_parameter",
+      "label": null,
+      "status": "PASS",
+      "elapsed_ms": 281.8,
+      "parameter": "Cab_Depth",
+      "restored_expression": "550 mm",
+      "value_read_back_mm": 550.0,
+      "edit_and_regenerate_ms": 209.1,
+      "verification": {
+        "command": "measure",
+        "label": null,
+        "status": "PASS",
+        "elapsed_ms": 69.6,
+        "summary": {
+          "label": "08_restore_parameter",
+          "verdict": "PASS",
+          "counts": {
+            "PASS": 112,
+            "FAIL": 0,
+            "UNKNOWN": 0
+          },
+          "total": 112,
+          "fail_ids": [],
+          "unknown_ids": [],
+          "params_mm": {
+            "Cab_Width": 600.0,
+            "Cab_Height": 1900.0,
+            "Cab_Depth": 550.0,
+            "Cab_Ply": 18.0,
+            "Cab_Back": 6.000000000000001,
+            "Cab_Gap": 3.0000000000000004,
+            "Cab_Dado_Depth": 6.000000000000001,
+            "Cab_Slot_Clearance": 0.5,
+            "Cab_End_Clearance": 0.3,
+            "Cab_Inner_Depth": 544.0,
+            "Cab_Slot_Height": 18.5,
+            "Cab_Shelf_X": 12.3,
+            "Cab_Shelf_Length": 575.4,
+            "Cab_Compartment": 452.5,
+            "Cab_Shelf1_Z": 470.5,
+            "Cab_Slot1_Z": 470.25,
+            "Cab_Shelf2_Z": 941.0,
+            "Cab_Slot2_Z": 940.7499999999999,
+            "Cab_Shelf3_Z": 1411.5,
+            "Cab_Slot3_Z": 1411.25
+          },
+          "design_counts": {
+            "user_parameters": 20,
+            "root_occurrences": 9,
+            "all_components": 10,
+            "timeline_items": 39
+          },
+          "design_spec_hash": "4026125d3a279b956198cb9620ca30397bc88d6be4de9aef756687530a638eb0",
+          "variant": "tall@1",
+          "stored_unchanged": true,
+          "document_name": "V5-Demo-Tall-20261017-01",
+          "report_json": "reports\\report_20261017_235952_560171_measure.json",
+          "report_txt": "reports\\report_20261017_235952_560171_measure.txt"
+        },
+        "checks": [
+          "OK all expectations met (PASS 112/112)"
+        ]
+      },
+      "checks": [
+        "value restored: True",
+        "OK all expectations met (PASS 112/112)"
+      ]
+    },
+    {
+      "command": "audit_cuts",
+      "label": null,
+      "status": "PASS",
+      "elapsed_ms": 66.0,
+      "summary": {
+        "label": "09_audit_cuts",
+        "overall": "PASS",
+        "features_passed": 6,
+        "features_total": 6,
+        "operations": {
+          "dado.shelf1.left": "PASS",
+          "dado.shelf1.right": "PASS",
+          "dado.shelf2.left": "PASS",
+          "dado.shelf2.right": "PASS",
+          "dado.shelf3.left": "PASS",
+          "dado.shelf3.right": "PASS"
+        },
+        "timeline_restored": true,
+        "counts_equal": true,
+        "counts_after": {
+          "timeline_items": 39,
+          "user_parameters": 20,
+          "root_occurrences": 9
+        },
+        "report_txt": "cut_audit_g3_20261017_235952_634159.txt",
+        "report_json": "cut_audit_g3_20261017_235952_634159.json"
+      },
+      "checks": [
+        "OK audit 6/6, timeline restored, counts unchanged"
+      ]
+    },
+    {
+      "command": "set_parameter",
+      "label": null,
+      "status": "PASS",
+      "elapsed_ms": 100.4,
+      "parameter": "Cab_Height",
+      "original_expression": "1900 mm",
+      "original_value_mm": 1900.0,
+      "new_expression": "2000 mm",
+      "value_read_back_mm": 2000.0,
+      "edit_and_regenerate_ms": 94.4,
+      "checks": [
+        "Cab_Height read back 2000.0 mm (requested 2000.0)"
+      ]
+    },
+    {
+      "command": "measure",
+      "label": "Cab_Height changed",
+      "status": "PASS",
+      "elapsed_ms": 70.0,
+      "summary": {
+        "label": "Cab_Height changed",
+        "verdict": "PASS",
+        "counts": {
+          "PASS": 112,
+          "FAIL": 0,
+          "UNKNOWN": 0
+        },
+        "total": 112,
+        "fail_ids": [],
+        "unknown_ids": [],
+        "params_mm": {
+          "Cab_Width": 600.0,
+          "Cab_Height": 2000.0,
+          "Cab_Depth": 550.0,
+          "Cab_Ply": 18.0,
+          "Cab_Back": 6.000000000000001,
+          "Cab_Gap": 3.0000000000000004,
+          "Cab_Dado_Depth": 6.000000000000001,
+          "Cab_Slot_Clearance": 0.5,
+          "Cab_End_Clearance": 0.3,
+          "Cab_Inner_Depth": 544.0,
+          "Cab_Slot_Height": 18.5,
+          "Cab_Shelf_X": 12.3,
+          "Cab_Shelf_Length": 575.4,
+          "Cab_Compartment": 477.5,
+          "Cab_Shelf1_Z": 495.5,
+          "Cab_Slot1_Z": 495.25,
+          "Cab_Shelf2_Z": 991.0,
+          "Cab_Slot2_Z": 990.7499999999999,
+          "Cab_Shelf3_Z": 1486.5,
+          "Cab_Slot3_Z": 1486.25
+        },
+        "design_counts": {
+          "user_parameters": 20,
+          "root_occurrences": 9,
+          "all_components": 10,
+          "timeline_items": 39
+        },
+        "design_spec_hash": "4026125d3a279b956198cb9620ca30397bc88d6be4de9aef756687530a638eb0",
+        "variant": "tall@1",
+        "stored_unchanged": true,
+        "document_name": "V5-Demo-Tall-20261017-01",
+        "report_json": "reports\\report_20261017_235952_800986_measure.json",
+        "report_txt": "reports\\report_20261017_235952_800986_measure.txt"
+      },
+      "checks": [
+        "OK all expectations met (PASS 112/112)"
+      ]
+    },
+    {
+      "command": "audit_cuts",
+      "label": null,
+      "status": "PASS",
+      "elapsed_ms": 68.0,
+      "summary": {
+        "label": "12_audit_cuts",
+        "overall": "PASS",
+        "features_passed": 6,
+        "features_total": 6,
+        "operations": {
+          "dado.shelf1.left": "PASS",
+          "dado.shelf1.right": "PASS",
+          "dado.shelf2.left": "PASS",
+          "dado.shelf2.right": "PASS",
+          "dado.shelf3.left": "PASS",
+          "dado.shelf3.right": "PASS"
+        },
+        "timeline_restored": true,
+        "counts_equal": true,
+        "counts_after": {
+          "timeline_items": 39,
+          "user_parameters": 20,
+          "root_occurrences": 9
+        },
+        "report_txt": "cut_audit_g3_20261017_235952_873879.txt",
+        "report_json": "cut_audit_g3_20261017_235952_873879.json"
+      },
+      "checks": [
+        "OK audit 6/6, timeline restored, counts unchanged"
+      ]
+    },
+    {
+      "command": "restore_parameter",
+      "label": null,
+      "status": "PASS",
+      "elapsed_ms": 187.6,
+      "parameter": "Cab_Height",
+      "restored_expression": "1900 mm",
+      "value_read_back_mm": 1900.0,
+      "edit_and_regenerate_ms": 106.2,
+      "verification": {
+        "command": "measure",
+        "label": null,
+        "status": "PASS",
+        "elapsed_ms": 78.1,
+        "summary": {
+          "label": "13_restore_parameter",
+          "verdict": "PASS",
+          "counts": {
+            "PASS": 112,
+            "FAIL": 0,
+            "UNKNOWN": 0
+          },
+          "total": 112,
+          "fail_ids": [],
+          "unknown_ids": [],
+          "params_mm": {
+            "Cab_Width": 600.0,
+            "Cab_Height": 1900.0,
+            "Cab_Depth": 550.0,
+            "Cab_Ply": 18.0,
+            "Cab_Back": 6.000000000000001,
+            "Cab_Gap": 3.0000000000000004,
+            "Cab_Dado_Depth": 6.000000000000001,
+            "Cab_Slot_Clearance": 0.5,
+            "Cab_End_Clearance": 0.3,
+            "Cab_Inner_Depth": 544.0,
+            "Cab_Slot_Height": 18.5,
+            "Cab_Shelf_X": 12.3,
+            "Cab_Shelf_Length": 575.4,
+            "Cab_Compartment": 452.5,
+            "Cab_Shelf1_Z": 470.5,
+            "Cab_Slot1_Z": 470.25,
+            "Cab_Shelf2_Z": 941.0,
+            "Cab_Slot2_Z": 940.7499999999999,
+            "Cab_Shelf3_Z": 1411.5,
+            "Cab_Slot3_Z": 1411.25
+          },
+          "design_counts": {
+            "user_parameters": 20,
+            "root_occurrences": 9,
+            "all_components": 10,
+            "timeline_items": 39
+          },
+          "design_spec_hash": "4026125d3a279b956198cb9620ca30397bc88d6be4de9aef756687530a638eb0",
+          "variant": "tall@1",
+          "stored_unchanged": true,
+          "document_name": "V5-Demo-Tall-20261017-01",
+          "report_json": "reports\\report_20261017_235953_053684_measure.json",
+          "report_txt": "reports\\report_20261017_235953_053684_measure.txt"
+        },
+        "checks": [
+          "OK all expectations met (PASS 112/112)"
+        ]
+      },
+      "checks": [
+        "value restored: True",
+        "OK all expectations met (PASS 112/112)"
+      ]
+    },
+    {
+      "command": "audit_cuts",
+      "label": null,
+      "status": "PASS",
+      "elapsed_ms": 72.4,
+      "summary": {
+        "label": "14_audit_cuts",
+        "overall": "PASS",
+        "features_passed": 6,
+        "features_total": 6,
+        "operations": {
+          "dado.shelf1.left": "PASS",
+          "dado.shelf1.right": "PASS",
+          "dado.shelf2.left": "PASS",
+          "dado.shelf2.right": "PASS",
+          "dado.shelf3.left": "PASS",
+          "dado.shelf3.right": "PASS"
+        },
+        "timeline_restored": true,
+        "counts_equal": true,
+        "counts_after": {
+          "timeline_items": 39,
+          "user_parameters": 20,
+          "root_occurrences": 9
+        },
+        "report_txt": "cut_audit_g3_20261017_235953_134951.txt",
+        "report_json": "cut_audit_g3_20261017_235953_134951.json"
+      },
+      "checks": [
+        "OK audit 6/6, timeline restored, counts unchanged"
+      ]
+    }
+  ],
+  "outcome": "PASS",
+  "notes": [],
+  "identity_at_start": {
+    "fusion_version": "2705.1.30",
+    "design_id": "redacted-sha256:5adf7d08cf0cd354df6e9923b94e65f74014667d91274c4bcd5c42e50de1fb62",
+    "document_name": "V5-Demo-Tall-20261017-01",
+    "is_saved": true,
+    "is_modified": false,
+    "version_number": 1,
+    "data_file_name": "V5-Demo-Tall-20261017-01"
+  },
+  "finished_utc": "2026-10-17T22:59:53.136+00:00",
+  "elapsed_ms": 1917.8,
+  "summary": {
+    "steps": 15,
+    "passed": 15,
+    "outcome": "PASS"
+  }
+}

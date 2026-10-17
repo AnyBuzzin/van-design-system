@@ -1,0 +1,39 @@
+{
+  "job_id": "vd-20261018T000146-94ff03",
+  "status": "queued",
+  "submit_ms": 7.29,
+  "wait": "done",
+  "waited_s": 0.753,
+  "state": {
+    "job_id": "vd-20261018T000146-94ff03",
+    "history": [
+      {
+        "status": "queued",
+        "utc": "2026-10-17T23:01:46.763+00:00"
+      },
+      {
+        "status": "running",
+        "utc": "2026-10-17T23:01:47.274+00:00"
+      },
+      {
+        "status": "completed",
+        "utc": "2026-10-17T23:01:47.282+00:00"
+      }
+    ],
+    "status": "completed",
+    "updated_utc": "2026-10-17T23:01:47.282+00:00",
+    "command": "ping",
+    "submitted_utc": "2026-10-17T23:01:46.763+00:00",
+    "started_utc": "2026-10-17T23:01:47.274+00:00",
+    "runner_pid": 26348,
+    "finished_utc": "2026-10-17T23:01:47.281+00:00",
+    "outcome": "PASS",
+    "result_path": "C:\\Users\\Buzz\\Documents\\VanDesign-Runner\\queue\\results\\vd-20261018T000146-94ff03\\result.json"
+  },
+  "outcome": "PASS",
+  "summary": {
+    "steps": 1,
+    "passed": 1,
+    "outcome": "PASS"
+  }
+}

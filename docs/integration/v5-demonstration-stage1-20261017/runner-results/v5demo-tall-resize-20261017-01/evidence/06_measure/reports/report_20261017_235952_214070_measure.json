@@ -1,0 +1,1509 @@
+{
+  "generator": "vandesign.cabinet@0.5.0",
+  "schema_version": "0.1",
+  "mode": "measure",
+  "fusion_version": "2705.1.30",
+  "document_name": "V5-Demo-Tall-20261017-01",
+  "parameters_read_from_fusion": {
+    "Cab_Width": {
+      "expression": "600 mm",
+      "value_mm": 600.0
+    },
+    "Cab_Height": {
+      "expression": "1900 mm",
+      "value_mm": 1900.0
+    },
+    "Cab_Depth": {
+      "expression": "600 mm",
+      "value_mm": 600.0
+    },
+    "Cab_Ply": {
+      "expression": "18 mm",
+      "value_mm": 18.0
+    },
+    "Cab_Back": {
+      "expression": "6 mm",
+      "value_mm": 6.000000000000001
+    },
+    "Cab_Gap": {
+      "expression": "3 mm",
+      "value_mm": 3.0000000000000004
+    },
+    "Cab_Dado_Depth": {
+      "expression": "6 mm",
+      "value_mm": 6.000000000000001
+    },
+    "Cab_Slot_Clearance": {
+      "expression": "0.5 mm",
+      "value_mm": 0.5
+    },
+    "Cab_End_Clearance": {
+      "expression": "0.3 mm",
+      "value_mm": 0.3
+    },
+    "Cab_Inner_Depth": {
+      "expression": "( Cab_Depth - Cab_Back )",
+      "value_mm": 594.0
+    },
+    "Cab_Slot_Height": {
+      "expression": "( Cab_Ply + Cab_Slot_Clearance )",
+      "value_mm": 18.5
+    },
+    "Cab_Shelf_X": {
+      "expression": "( ( Cab_Ply - Cab_Dado_Depth ) + Cab_End_Clearance )",
+      "value_mm": 12.3
+    },
+    "Cab_Shelf_Length": {
+      "expression": "( ( ( Cab_Width - ( 2 * Cab_Ply ) ) + ( 2 * Cab_Dado_Depth ) ) - ( 2 * Cab_End_Clearance ) )",
+      "value_mm": 575.4
+    },
+    "Cab_Compartment": {
+      "expression": "( ( Cab_Height - ( 5 * Cab_Ply ) ) / 4 )",
+      "value_mm": 452.5
+    },
+    "Cab_Shelf1_Z": {
+      "expression": "( ( Cab_Ply + ( 1 * Cab_Compartment ) ) + ( 0 * Cab_Ply ) )",
+      "value_mm": 470.5
+    },
+    "Cab_Slot1_Z": {
+      "expression": "( Cab_Shelf1_Z - ( Cab_Slot_Clearance / 2 ) )",
+      "value_mm": 470.25
+    },
+    "Cab_Shelf2_Z": {
+      "expression": "( ( Cab_Ply + ( 2 * Cab_Compartment ) ) + ( 1 * Cab_Ply ) )",
+      "value_mm": 941.0
+    },
+    "Cab_Slot2_Z": {
+      "expression": "( Cab_Shelf2_Z - ( Cab_Slot_Clearance / 2 ) )",
+      "value_mm": 940.7499999999999
+    },
+    "Cab_Shelf3_Z": {
+      "expression": "( ( Cab_Ply + ( 3 * Cab_Compartment ) ) + ( 2 * Cab_Ply ) )",
+      "value_mm": 1411.5
+    },
+    "Cab_Slot3_Z": {
+      "expression": "( Cab_Shelf3_Z - ( Cab_Slot_Clearance / 2 ) )",
+      "value_mm": 1411.25
+    }
+  },
+  "parameters_mm": {
+    "Cab_Width": 600.0,
+    "Cab_Height": 1900.0,
+    "Cab_Depth": 600.0,
+    "Cab_Ply": 18.0,
+    "Cab_Back": 6.000000000000001,
+    "Cab_Gap": 3.0000000000000004,
+    "Cab_Dado_Depth": 6.000000000000001,
+    "Cab_Slot_Clearance": 0.5,
+    "Cab_End_Clearance": 0.3,
+    "Cab_Inner_Depth": 594.0,
+    "Cab_Slot_Height": 18.5,
+    "Cab_Shelf_X": 12.3,
+    "Cab_Shelf_Length": 575.4,
+    "Cab_Compartment": 452.5,
+    "Cab_Shelf1_Z": 470.5,
+    "Cab_Slot1_Z": 470.25,
+    "Cab_Shelf2_Z": 941.0,
+    "Cab_Slot2_Z": 940.7499999999999,
+    "Cab_Shelf3_Z": 1411.5,
+    "Cab_Slot3_Z": 1411.25
+  },
+  "assembly_id": "cabinet.001",
+  "spec_hash": "c4bd20328eda51a685a04ded6ea7d06ad4794490c21e455ac37bd81445eef811",
+  "spec": {
+    "schema_version": "0.1",
+    "module": "base_cabinet@1",
+    "parameters": {
+      "cabinet_id": "cabinet.001",
+      "material_ref": "ply_main",
+      "width_mm": 600.0,
+      "height_mm": 1900.0,
+      "depth_mm": 550.0,
+      "ply_mm": 18.0,
+      "back_mm": 6.0,
+      "gap_mm": 3.0,
+      "dado_depth_mm": 6.0,
+      "slot_clearance_mm": 0.5,
+      "end_clearance_mm": 0.3,
+      "shelf_count": 3,
+      "door_count": 1
+    }
+  },
+  "exported_at": "2026-10-17T23:59:52",
+  "validation": {
+    "verdict": "PASS",
+    "counts": {
+      "PASS": 112,
+      "FAIL": 0,
+      "UNKNOWN": 0
+    },
+    "checks": [
+      {
+        "check_id": "constraint.ply_positive",
+        "status": "PASS",
+        "observed": 18.0,
+        "expected": 0.0,
+        "tolerance": null,
+        "unit": "mm",
+        "object_ids": [],
+        "note": "Cab_Ply > 0"
+      },
+      {
+        "check_id": "constraint.dado_positive",
+        "status": "PASS",
+        "observed": 6.000000000000001,
+        "expected": 0.0,
+        "tolerance": null,
+        "unit": "mm",
+        "object_ids": [],
+        "note": "Cab_Dado_Depth > 0"
+      },
+      {
+        "check_id": "constraint.dado_lt_ply",
+        "status": "PASS",
+        "observed": 18.0,
+        "expected": 6.000000000000001,
+        "tolerance": null,
+        "unit": "mm",
+        "object_ids": [],
+        "note": "groove must leave side-panel material (Cab_Ply > Cab_Dado_Depth)"
+      },
+      {
+        "check_id": "constraint.end_clearance_nonneg",
+        "status": "PASS",
+        "observed": 0.3,
+        "expected": 0.0,
+        "tolerance": null,
+        "unit": "mm",
+        "object_ids": [],
+        "note": "Cab_End_Clearance >= 0"
+      },
+      {
+        "check_id": "constraint.end_clearance_lt_dado",
+        "status": "PASS",
+        "observed": 6.000000000000001,
+        "expected": 0.3,
+        "tolerance": null,
+        "unit": "mm",
+        "object_ids": [],
+        "note": "shelf must enter the groove (Cab_Dado_Depth > Cab_End_Clearance)"
+      },
+      {
+        "check_id": "constraint.slot_clearance_nonneg",
+        "status": "PASS",
+        "observed": 0.5,
+        "expected": 0.0,
+        "tolerance": null,
+        "unit": "mm",
+        "object_ids": [],
+        "note": "Cab_Slot_Clearance >= 0"
+      },
+      {
+        "check_id": "constraint.back_positive",
+        "status": "PASS",
+        "observed": 6.000000000000001,
+        "expected": 0.0,
+        "tolerance": null,
+        "unit": "mm",
+        "object_ids": [],
+        "note": "Cab_Back > 0"
+      },
+      {
+        "check_id": "constraint.back_lt_depth",
+        "status": "PASS",
+        "observed": 600.0,
+        "expected": 6.000000000000001,
+        "tolerance": null,
+        "unit": "mm",
+        "object_ids": [],
+        "note": "Cab_Depth > Cab_Back"
+      },
+      {
+        "check_id": "constraint.gap_nonneg",
+        "status": "PASS",
+        "observed": 3.0000000000000004,
+        "expected": 0.0,
+        "tolerance": null,
+        "unit": "mm",
+        "object_ids": [],
+        "note": "Cab_Gap >= 0"
+      },
+      {
+        "check_id": "constraint.height_fits",
+        "status": "PASS",
+        "observed": 1900.0,
+        "expected": 90.0,
+        "tolerance": null,
+        "unit": "mm",
+        "object_ids": [],
+        "note": "Cab_Height > (2 + shelves) * Cab_Ply"
+      },
+      {
+        "check_id": "constraint.width_fits",
+        "status": "PASS",
+        "observed": 600.0,
+        "expected": 36.0,
+        "tolerance": null,
+        "unit": "mm",
+        "object_ids": [],
+        "note": "Cab_Width > 2 * Cab_Ply"
+      },
+      {
+        "check_id": "constraint.doors_fit",
+        "status": "PASS",
+        "observed": 600.0,
+        "expected": 6.000000000000001,
+        "tolerance": null,
+        "unit": "mm",
+        "object_ids": [],
+        "note": "Cab_Width > (doors + 1) * Cab_Gap"
+      },
+      {
+        "check_id": "param.Cab_Inner_Depth",
+        "status": "PASS",
+        "observed": 594.0,
+        "expected": 594.0,
+        "tolerance": 0.01,
+        "unit": "mm",
+        "object_ids": [],
+        "note": ""
+      },
+      {
+        "check_id": "param.Cab_Slot_Height",
+        "status": "PASS",
+        "observed": 18.5,
+        "expected": 18.5,
+        "tolerance": 0.01,
+        "unit": "mm",
+        "object_ids": [],
+        "note": ""
+      },
+      {
+        "check_id": "param.Cab_Shelf_X",
+        "status": "PASS",
+        "observed": 12.3,
+        "expected": 12.3,
+        "tolerance": 0.01,
+        "unit": "mm",
+        "object_ids": [],
+        "note": ""
+      },
+      {
+        "check_id": "param.Cab_Shelf_Length",
+        "status": "PASS",
+        "observed": 575.4,
+        "expected": 575.4,
+        "tolerance": 0.01,
+        "unit": "mm",
+        "object_ids": [],
+        "note": ""
+      },
+      {
+        "check_id": "param.Cab_Compartment",
+        "status": "PASS",
+        "observed": 452.5,
+        "expected": 452.5,
+        "tolerance": 0.01,
+        "unit": "mm",
+        "object_ids": [],
+        "note": ""
+      },
+      {
+        "check_id": "param.Cab_Shelf1_Z",
+        "status": "PASS",
+        "observed": 470.5,
+        "expected": 470.5,
+        "tolerance": 0.01,
+        "unit": "mm",
+        "object_ids": [],
+        "note": ""
+      },
+      {
+        "check_id": "param.Cab_Slot1_Z",
+        "status": "PASS",
+        "observed": 470.25,
+        "expected": 470.25,
+        "tolerance": 0.01,
+        "unit": "mm",
+        "object_ids": [],
+        "note": ""
+      },
+      {
+        "check_id": "param.Cab_Shelf2_Z",
+        "status": "PASS",
+        "observed": 941.0,
+        "expected": 941.0,
+        "tolerance": 0.01,
+        "unit": "mm",
+        "object_ids": [],
+        "note": ""
+      },
+      {
+        "check_id": "param.Cab_Slot2_Z",
+        "status": "PASS",
+        "observed": 940.7499999999999,
+        "expected": 940.75,
+        "tolerance": 0.01,
+        "unit": "mm",
+        "object_ids": [],
+        "note": ""
+      },
+      {
+        "check_id": "param.Cab_Shelf3_Z",
+        "status": "PASS",
+        "observed": 1411.5,
+        "expected": 1411.5,
+        "tolerance": 0.01,
+        "unit": "mm",
+        "object_ids": [],
+        "note": ""
+      },
+      {
+        "check_id": "param.Cab_Slot3_Z",
+        "status": "PASS",
+        "observed": 1411.25,
+        "expected": 1411.25,
+        "tolerance": 0.01,
+        "unit": "mm",
+        "object_ids": [],
+        "note": ""
+      },
+      {
+        "check_id": "panel.left.001.bbox",
+        "status": "PASS",
+        "observed": 2.842170943040401e-14,
+        "expected": 0.0,
+        "tolerance": 0.01,
+        "unit": "mm",
+        "object_ids": [
+          "panel.left.001"
+        ],
+        "note": ""
+      },
+      {
+        "check_id": "panel.left.001.volume",
+        "status": "PASS",
+        "observed": 20322197.999999996,
+        "expected": 20322198.0,
+        "tolerance": 20.322198,
+        "unit": "mm3",
+        "object_ids": [
+          "panel.left.001"
+        ],
+        "note": "blank minus its own grooves only"
+      },
+      {
+        "check_id": "panel.right.001.bbox",
+        "status": "PASS",
+        "observed": 2.842170943040401e-14,
+        "expected": 0.0,
+        "tolerance": 0.01,
+        "unit": "mm",
+        "object_ids": [
+          "panel.right.001"
+        ],
+        "note": ""
+      },
+      {
+        "check_id": "panel.right.001.volume",
+        "status": "PASS",
+        "observed": 20322197.999999963,
+        "expected": 20322198.0,
+        "tolerance": 20.322198,
+        "unit": "mm3",
+        "object_ids": [
+          "panel.right.001"
+        ],
+        "note": "blank minus its own grooves only"
+      },
+      {
+        "check_id": "panel.bottom.001.bbox",
+        "status": "PASS",
+        "observed": 0.0,
+        "expected": 0.0,
+        "tolerance": 0.01,
+        "unit": "mm",
+        "object_ids": [
+          "panel.bottom.001"
+        ],
+        "note": ""
+      },
+      {
+        "check_id": "panel.bottom.001.volume",
+        "status": "PASS",
+        "observed": 6030288.0,
+        "expected": 6030288.0,
+        "tolerance": 6.030288,
+        "unit": "mm3",
+        "object_ids": [
+          "panel.bottom.001"
+        ],
+        "note": "blank minus its own grooves only"
+      },
+      {
+        "check_id": "panel.top.001.bbox",
+        "status": "PASS",
+        "observed": 0.0,
+        "expected": 0.0,
+        "tolerance": 0.01,
+        "unit": "mm",
+        "object_ids": [
+          "panel.top.001"
+        ],
+        "note": ""
+      },
+      {
+        "check_id": "panel.top.001.volume",
+        "status": "PASS",
+        "observed": 6030288.000000039,
+        "expected": 6030288.0,
+        "tolerance": 6.030288,
+        "unit": "mm3",
+        "object_ids": [
+          "panel.top.001"
+        ],
+        "note": "blank minus its own grooves only"
+      },
+      {
+        "check_id": "panel.back.001.bbox",
+        "status": "PASS",
+        "observed": 2.2737367544323206e-13,
+        "expected": 0.0,
+        "tolerance": 0.01,
+        "unit": "mm",
+        "object_ids": [
+          "panel.back.001"
+        ],
+        "note": ""
+      },
+      {
+        "check_id": "panel.back.001.volume",
+        "status": "PASS",
+        "observed": 6307776.000000015,
+        "expected": 6307776.0,
+        "tolerance": 6.307776,
+        "unit": "mm3",
+        "object_ids": [
+          "panel.back.001"
+        ],
+        "note": "blank minus its own grooves only"
+      },
+      {
+        "check_id": "panel.shelf.001.bbox",
+        "status": "PASS",
+        "observed": 5.684341886080802e-14,
+        "expected": 0.0,
+        "tolerance": 0.01,
+        "unit": "mm",
+        "object_ids": [
+          "panel.shelf.001"
+        ],
+        "note": ""
+      },
+      {
+        "check_id": "panel.shelf.001.volume",
+        "status": "PASS",
+        "observed": 6152176.7999999905,
+        "expected": 6152176.8,
+        "tolerance": 6.1521767999999994,
+        "unit": "mm3",
+        "object_ids": [
+          "panel.shelf.001"
+        ],
+        "note": "blank minus its own grooves only"
+      },
+      {
+        "check_id": "panel.shelf.002.bbox",
+        "status": "PASS",
+        "observed": 1.1368683772161603e-13,
+        "expected": 0.0,
+        "tolerance": 0.01,
+        "unit": "mm",
+        "object_ids": [
+          "panel.shelf.002"
+        ],
+        "note": ""
+      },
+      {
+        "check_id": "panel.shelf.002.volume",
+        "status": "PASS",
+        "observed": 6152176.7999999905,
+        "expected": 6152176.8,
+        "tolerance": 6.1521767999999994,
+        "unit": "mm3",
+        "object_ids": [
+          "panel.shelf.002"
+        ],
+        "note": "blank minus its own grooves only"
+      },
+      {
+        "check_id": "panel.shelf.003.bbox",
+        "status": "PASS",
+        "observed": 2.2737367544323206e-13,
+        "expected": 0.0,
+        "tolerance": 0.01,
+        "unit": "mm",
+        "object_ids": [
+          "panel.shelf.003"
+        ],
+        "note": ""
+      },
+      {
+        "check_id": "panel.shelf.003.volume",
+        "status": "PASS",
+        "observed": 6152176.800000039,
+        "expected": 6152176.8,
+        "tolerance": 6.1521767999999994,
+        "unit": "mm3",
+        "object_ids": [
+          "panel.shelf.003"
+        ],
+        "note": "blank minus its own grooves only"
+      },
+      {
+        "check_id": "panel.door.001.bbox",
+        "status": "PASS",
+        "observed": 2.2737367544323206e-13,
+        "expected": 0.0,
+        "tolerance": 0.01,
+        "unit": "mm",
+        "object_ids": [
+          "panel.door.001"
+        ],
+        "note": ""
+      },
+      {
+        "check_id": "panel.door.001.volume",
+        "status": "PASS",
+        "observed": 20250648.000000004,
+        "expected": 20250648.0,
+        "tolerance": 20.250647999999998,
+        "unit": "mm3",
+        "object_ids": [
+          "panel.door.001"
+        ],
+        "note": "blank minus its own grooves only"
+      },
+      {
+        "check_id": "dado.shelf1.left.penetration",
+        "status": "PASS",
+        "observed": 5.699999999999999,
+        "expected": 5.700000000000001,
+        "tolerance": 0.01,
+        "unit": "mm",
+        "object_ids": [
+          "panel.left.001",
+          "panel.shelf.001"
+        ],
+        "note": ""
+      },
+      {
+        "check_id": "dado.shelf1.left.end_gap",
+        "status": "PASS",
+        "observed": 0.3000000000000007,
+        "expected": 0.3,
+        "tolerance": 0.01,
+        "unit": "mm",
+        "object_ids": [
+          "panel.left.001",
+          "panel.shelf.001"
+        ],
+        "note": ""
+      },
+      {
+        "check_id": "dado.shelf1.left.gap_below",
+        "status": "PASS",
+        "observed": 0.25,
+        "expected": 0.25,
+        "tolerance": 0.01,
+        "unit": "mm",
+        "object_ids": [
+          "panel.left.001",
+          "panel.shelf.001"
+        ],
+        "note": ""
+      },
+      {
+        "check_id": "dado.shelf1.left.gap_above",
+        "status": "PASS",
+        "observed": 0.25000000000005684,
+        "expected": 0.25,
+        "tolerance": 0.01,
+        "unit": "mm",
+        "object_ids": [
+          "panel.left.001",
+          "panel.shelf.001"
+        ],
+        "note": ""
+      },
+      {
+        "check_id": "dado.shelf1.left.mating_unmodified",
+        "status": "PASS",
+        "observed": 6152176.7999999905,
+        "expected": 6152176.8,
+        "tolerance": 6.1521767999999994,
+        "unit": "mm3",
+        "object_ids": [
+          "panel.left.001",
+          "panel.shelf.001"
+        ],
+        "note": "the cut must not touch the shelf"
+      },
+      {
+        "check_id": "dado.shelf1.left.probe.centre_empty",
+        "status": "PASS",
+        "observed": null,
+        "expected": null,
+        "tolerance": null,
+        "unit": "",
+        "object_ids": [
+          "panel.left.001"
+        ],
+        "note": "expected empty"
+      },
+      {
+        "check_id": "dado.shelf1.left.probe.front_open",
+        "status": "PASS",
+        "observed": null,
+        "expected": null,
+        "tolerance": null,
+        "unit": "",
+        "object_ids": [
+          "panel.left.001"
+        ],
+        "note": "expected empty"
+      },
+      {
+        "check_id": "dado.shelf1.left.probe.below_solid",
+        "status": "PASS",
+        "observed": null,
+        "expected": null,
+        "tolerance": null,
+        "unit": "",
+        "object_ids": [
+          "panel.left.001"
+        ],
+        "note": "expected material"
+      },
+      {
+        "check_id": "dado.shelf1.left.probe.above_solid",
+        "status": "PASS",
+        "observed": null,
+        "expected": null,
+        "tolerance": null,
+        "unit": "",
+        "object_ids": [
+          "panel.left.001"
+        ],
+        "note": "expected material"
+      },
+      {
+        "check_id": "dado.shelf1.left.probe.far_wall_solid",
+        "status": "PASS",
+        "observed": null,
+        "expected": null,
+        "tolerance": null,
+        "unit": "",
+        "object_ids": [
+          "panel.left.001"
+        ],
+        "note": "expected material"
+      },
+      {
+        "check_id": "dado.shelf1.left.probe.rear_wall_solid",
+        "status": "PASS",
+        "observed": null,
+        "expected": null,
+        "tolerance": null,
+        "unit": "",
+        "object_ids": [
+          "panel.left.001"
+        ],
+        "note": "expected material"
+      },
+      {
+        "check_id": "dado.shelf1.right.penetration",
+        "status": "PASS",
+        "observed": 5.699999999999932,
+        "expected": 5.700000000000001,
+        "tolerance": 0.01,
+        "unit": "mm",
+        "object_ids": [
+          "panel.right.001",
+          "panel.shelf.001"
+        ],
+        "note": ""
+      },
+      {
+        "check_id": "dado.shelf1.right.end_gap",
+        "status": "PASS",
+        "observed": 0.3000000000000682,
+        "expected": 0.3,
+        "tolerance": 0.01,
+        "unit": "mm",
+        "object_ids": [
+          "panel.right.001",
+          "panel.shelf.001"
+        ],
+        "note": ""
+      },
+      {
+        "check_id": "dado.shelf1.right.gap_below",
+        "status": "PASS",
+        "observed": 0.25,
+        "expected": 0.25,
+        "tolerance": 0.01,
+        "unit": "mm",
+        "object_ids": [
+          "panel.right.001",
+          "panel.shelf.001"
+        ],
+        "note": ""
+      },
+      {
+        "check_id": "dado.shelf1.right.gap_above",
+        "status": "PASS",
+        "observed": 0.25000000000005684,
+        "expected": 0.25,
+        "tolerance": 0.01,
+        "unit": "mm",
+        "object_ids": [
+          "panel.right.001",
+          "panel.shelf.001"
+        ],
+        "note": ""
+      },
+      {
+        "check_id": "dado.shelf1.right.mating_unmodified",
+        "status": "PASS",
+        "observed": 6152176.7999999905,
+        "expected": 6152176.8,
+        "tolerance": 6.1521767999999994,
+        "unit": "mm3",
+        "object_ids": [
+          "panel.right.001",
+          "panel.shelf.001"
+        ],
+        "note": "the cut must not touch the shelf"
+      },
+      {
+        "check_id": "dado.shelf1.right.probe.centre_empty",
+        "status": "PASS",
+        "observed": null,
+        "expected": null,
+        "tolerance": null,
+        "unit": "",
+        "object_ids": [
+          "panel.right.001"
+        ],
+        "note": "expected empty"
+      },
+      {
+        "check_id": "dado.shelf1.right.probe.front_open",
+        "status": "PASS",
+        "observed": null,
+        "expected": null,
+        "tolerance": null,
+        "unit": "",
+        "object_ids": [
+          "panel.right.001"
+        ],
+        "note": "expected empty"
+      },
+      {
+        "check_id": "dado.shelf1.right.probe.below_solid",
+        "status": "PASS",
+        "observed": null,
+        "expected": null,
+        "tolerance": null,
+        "unit": "",
+        "object_ids": [
+          "panel.right.001"
+        ],
+        "note": "expected material"
+      },
+      {
+        "check_id": "dado.shelf1.right.probe.above_solid",
+        "status": "PASS",
+        "observed": null,
+        "expected": null,
+        "tolerance": null,
+        "unit": "",
+        "object_ids": [
+          "panel.right.001"
+        ],
+        "note": "expected material"
+      },
+      {
+        "check_id": "dado.shelf1.right.probe.far_wall_solid",
+        "status": "PASS",
+        "observed": null,
+        "expected": null,
+        "tolerance": null,
+        "unit": "",
+        "object_ids": [
+          "panel.right.001"
+        ],
+        "note": "expected material"
+      },
+      {
+        "check_id": "dado.shelf1.right.probe.rear_wall_solid",
+        "status": "PASS",
+        "observed": null,
+        "expected": null,
+        "tolerance": null,
+        "unit": "",
+        "object_ids": [
+          "panel.right.001"
+        ],
+        "note": "expected material"
+      },
+      {
+        "check_id": "dado.shelf2.left.penetration",
+        "status": "PASS",
+        "observed": 5.699999999999999,
+        "expected": 5.700000000000001,
+        "tolerance": 0.01,
+        "unit": "mm",
+        "object_ids": [
+          "panel.left.001",
+          "panel.shelf.002"
+        ],
+        "note": ""
+      },
+      {
+        "check_id": "dado.shelf2.left.end_gap",
+        "status": "PASS",
+        "observed": 0.3000000000000007,
+        "expected": 0.3,
+        "tolerance": 0.01,
+        "unit": "mm",
+        "object_ids": [
+          "panel.left.001",
+          "panel.shelf.002"
+        ],
+        "note": ""
+      },
+      {
+        "check_id": "dado.shelf2.left.gap_below",
+        "status": "PASS",
+        "observed": 0.25,
+        "expected": 0.25,
+        "tolerance": 0.01,
+        "unit": "mm",
+        "object_ids": [
+          "panel.left.001",
+          "panel.shelf.002"
+        ],
+        "note": ""
+      },
+      {
+        "check_id": "dado.shelf2.left.gap_above",
+        "status": "PASS",
+        "observed": 0.2500000000001137,
+        "expected": 0.25,
+        "tolerance": 0.01,
+        "unit": "mm",
+        "object_ids": [
+          "panel.left.001",
+          "panel.shelf.002"
+        ],
+        "note": ""
+      },
+      {
+        "check_id": "dado.shelf2.left.mating_unmodified",
+        "status": "PASS",
+        "observed": 6152176.7999999905,
+        "expected": 6152176.8,
+        "tolerance": 6.1521767999999994,
+        "unit": "mm3",
+        "object_ids": [
+          "panel.left.001",
+          "panel.shelf.002"
+        ],
+        "note": "the cut must not touch the shelf"
+      },
+      {
+        "check_id": "dado.shelf2.left.probe.centre_empty",
+        "status": "PASS",
+        "observed": null,
+        "expected": null,
+        "tolerance": null,
+        "unit": "",
+        "object_ids": [
+          "panel.left.001"
+        ],
+        "note": "expected empty"
+      },
+      {
+        "check_id": "dado.shelf2.left.probe.front_open",
+        "status": "PASS",
+        "observed": null,
+        "expected": null,
+        "tolerance": null,
+        "unit": "",
+        "object_ids": [
+          "panel.left.001"
+        ],
+        "note": "expected empty"
+      },
+      {
+        "check_id": "dado.shelf2.left.probe.below_solid",
+        "status": "PASS",
+        "observed": null,
+        "expected": null,
+        "tolerance": null,
+        "unit": "",
+        "object_ids": [
+          "panel.left.001"
+        ],
+        "note": "expected material"
+      },
+      {
+        "check_id": "dado.shelf2.left.probe.above_solid",
+        "status": "PASS",
+        "observed": null,
+        "expected": null,
+        "tolerance": null,
+        "unit": "",
+        "object_ids": [
+          "panel.left.001"
+        ],
+        "note": "expected material"
+      },
+      {
+        "check_id": "dado.shelf2.left.probe.far_wall_solid",
+        "status": "PASS",
+        "observed": null,
+        "expected": null,
+        "tolerance": null,
+        "unit": "",
+        "object_ids": [
+          "panel.left.001"
+        ],
+        "note": "expected material"
+      },
+      {
+        "check_id": "dado.shelf2.left.probe.rear_wall_solid",
+        "status": "PASS",
+        "observed": null,
+        "expected": null,
+        "tolerance": null,
+        "unit": "",
+        "object_ids": [
+          "panel.left.001"
+        ],
+        "note": "expected material"
+      },
+      {
+        "check_id": "dado.shelf2.right.penetration",
+        "status": "PASS",
+        "observed": 5.699999999999932,
+        "expected": 5.700000000000001,
+        "tolerance": 0.01,
+        "unit": "mm",
+        "object_ids": [
+          "panel.right.001",
+          "panel.shelf.002"
+        ],
+        "note": ""
+      },
+      {
+        "check_id": "dado.shelf2.right.end_gap",
+        "status": "PASS",
+        "observed": 0.3000000000000682,
+        "expected": 0.3,
+        "tolerance": 0.01,
+        "unit": "mm",
+        "object_ids": [
+          "panel.right.001",
+          "panel.shelf.002"
+        ],
+        "note": ""
+      },
+      {
+        "check_id": "dado.shelf2.right.gap_below",
+        "status": "PASS",
+        "observed": 0.25,
+        "expected": 0.25,
+        "tolerance": 0.01,
+        "unit": "mm",
+        "object_ids": [
+          "panel.right.001",
+          "panel.shelf.002"
+        ],
+        "note": ""
+      },
+      {
+        "check_id": "dado.shelf2.right.gap_above",
+        "status": "PASS",
+        "observed": 0.2500000000001137,
+        "expected": 0.25,
+        "tolerance": 0.01,
+        "unit": "mm",
+        "object_ids": [
+          "panel.right.001",
+          "panel.shelf.002"
+        ],
+        "note": ""
+      },
+      {
+        "check_id": "dado.shelf2.right.mating_unmodified",
+        "status": "PASS",
+        "observed": 6152176.7999999905,
+        "expected": 6152176.8,
+        "tolerance": 6.1521767999999994,
+        "unit": "mm3",
+        "object_ids": [
+          "panel.right.001",
+          "panel.shelf.002"
+        ],
+        "note": "the cut must not touch the shelf"
+      },
+      {
+        "check_id": "dado.shelf2.right.probe.centre_empty",
+        "status": "PASS",
+        "observed": null,
+        "expected": null,
+        "tolerance": null,
+        "unit": "",
+        "object_ids": [
+          "panel.right.001"
+        ],
+        "note": "expected empty"
+      },
+      {
+        "check_id": "dado.shelf2.right.probe.front_open",
+        "status": "PASS",
+        "observed": null,
+        "expected": null,
+        "tolerance": null,
+        "unit": "",
+        "object_ids": [
+          "panel.right.001"
+        ],
+        "note": "expected empty"
+      },
+      {
+        "check_id": "dado.shelf2.right.probe.below_solid",
+        "status": "PASS",
+        "observed": null,
+        "expected": null,
+        "tolerance": null,
+        "unit": "",
+        "object_ids": [
+          "panel.right.001"
+        ],
+        "note": "expected material"
+      },
+      {
+        "check_id": "dado.shelf2.right.probe.above_solid",
+        "status": "PASS",
+        "observed": null,
+        "expected": null,
+        "tolerance": null,
+        "unit": "",
+        "object_ids": [
+          "panel.right.001"
+        ],
+        "note": "expected material"
+      },
+      {
+        "check_id": "dado.shelf2.right.probe.far_wall_solid",
+        "status": "PASS",
+        "observed": null,
+        "expected": null,
+        "tolerance": null,
+        "unit": "",
+        "object_ids": [
+          "panel.right.001"
+        ],
+        "note": "expected material"
+      },
+      {
+        "check_id": "dado.shelf2.right.probe.rear_wall_solid",
+        "status": "PASS",
+        "observed": null,
+        "expected": null,
+        "tolerance": null,
+        "unit": "",
+        "object_ids": [
+          "panel.right.001"
+        ],
+        "note": "expected material"
+      },
+      {
+        "check_id": "dado.shelf3.left.penetration",
+        "status": "PASS",
+        "observed": 5.699999999999999,
+        "expected": 5.700000000000001,
+        "tolerance": 0.01,
+        "unit": "mm",
+        "object_ids": [
+          "panel.left.001",
+          "panel.shelf.003"
+        ],
+        "note": ""
+      },
+      {
+        "check_id": "dado.shelf3.left.end_gap",
+        "status": "PASS",
+        "observed": 0.3000000000000007,
+        "expected": 0.3,
+        "tolerance": 0.01,
+        "unit": "mm",
+        "object_ids": [
+          "panel.left.001",
+          "panel.shelf.003"
+        ],
+        "note": ""
+      },
+      {
+        "check_id": "dado.shelf3.left.gap_below",
+        "status": "PASS",
+        "observed": 0.25,
+        "expected": 0.25,
+        "tolerance": 0.01,
+        "unit": "mm",
+        "object_ids": [
+          "panel.left.001",
+          "panel.shelf.003"
+        ],
+        "note": ""
+      },
+      {
+        "check_id": "dado.shelf3.left.gap_above",
+        "status": "PASS",
+        "observed": 0.24999999999977263,
+        "expected": 0.25,
+        "tolerance": 0.01,
+        "unit": "mm",
+        "object_ids": [
+          "panel.left.001",
+          "panel.shelf.003"
+        ],
+        "note": ""
+      },
+      {
+        "check_id": "dado.shelf3.left.mating_unmodified",
+        "status": "PASS",
+        "observed": 6152176.800000039,
+        "expected": 6152176.8,
+        "tolerance": 6.1521767999999994,
+        "unit": "mm3",
+        "object_ids": [
+          "panel.left.001",
+          "panel.shelf.003"
+        ],
+        "note": "the cut must not touch the shelf"
+      },
+      {
+        "check_id": "dado.shelf3.left.probe.centre_empty",
+        "status": "PASS",
+        "observed": null,
+        "expected": null,
+        "tolerance": null,
+        "unit": "",
+        "object_ids": [
+          "panel.left.001"
+        ],
+        "note": "expected empty"
+      },
+      {
+        "check_id": "dado.shelf3.left.probe.front_open",
+        "status": "PASS",
+        "observed": null,
+        "expected": null,
+        "tolerance": null,
+        "unit": "",
+        "object_ids": [
+          "panel.left.001"
+        ],
+        "note": "expected empty"
+      },
+      {
+        "check_id": "dado.shelf3.left.probe.below_solid",
+        "status": "PASS",
+        "observed": null,
+        "expected": null,
+        "tolerance": null,
+        "unit": "",
+        "object_ids": [
+          "panel.left.001"
+        ],
+        "note": "expected material"
+      },
+      {
+        "check_id": "dado.shelf3.left.probe.above_solid",
+        "status": "PASS",
+        "observed": null,
+        "expected": null,
+        "tolerance": null,
+        "unit": "",
+        "object_ids": [
+          "panel.left.001"
+        ],
+        "note": "expected material"
+      },
+      {
+        "check_id": "dado.shelf3.left.probe.far_wall_solid",
+        "status": "PASS",
+        "observed": null,
+        "expected": null,
+        "tolerance": null,
+        "unit": "",
+        "object_ids": [
+          "panel.left.001"
+        ],
+        "note": "expected material"
+      },
+      {
+        "check_id": "dado.shelf3.left.probe.rear_wall_solid",
+        "status": "PASS",
+        "observed": null,
+        "expected": null,
+        "tolerance": null,
+        "unit": "",
+        "object_ids": [
+          "panel.left.001"
+        ],
+        "note": "expected material"
+      },
+      {
+        "check_id": "dado.shelf3.right.penetration",
+        "status": "PASS",
+        "observed": 5.699999999999932,
+        "expected": 5.700000000000001,
+        "tolerance": 0.01,
+        "unit": "mm",
+        "object_ids": [
+          "panel.right.001",
+          "panel.shelf.003"
+        ],
+        "note": ""
+      },
+      {
+        "check_id": "dado.shelf3.right.end_gap",
+        "status": "PASS",
+        "observed": 0.3000000000000682,
+        "expected": 0.3,
+        "tolerance": 0.01,
+        "unit": "mm",
+        "object_ids": [
+          "panel.right.001",
+          "panel.shelf.003"
+        ],
+        "note": ""
+      },
+      {
+        "check_id": "dado.shelf3.right.gap_below",
+        "status": "PASS",
+        "observed": 0.25,
+        "expected": 0.25,
+        "tolerance": 0.01,
+        "unit": "mm",
+        "object_ids": [
+          "panel.right.001",
+          "panel.shelf.003"
+        ],
+        "note": ""
+      },
+      {
+        "check_id": "dado.shelf3.right.gap_above",
+        "status": "PASS",
+        "observed": 0.24999999999977263,
+        "expected": 0.25,
+        "tolerance": 0.01,
+        "unit": "mm",
+        "object_ids": [
+          "panel.right.001",
+          "panel.shelf.003"
+        ],
+        "note": ""
+      },
+      {
+        "check_id": "dado.shelf3.right.mating_unmodified",
+        "status": "PASS",
+        "observed": 6152176.800000039,
+        "expected": 6152176.8,
+        "tolerance": 6.1521767999999994,
+        "unit": "mm3",
+        "object_ids": [
+          "panel.right.001",
+          "panel.shelf.003"
+        ],
+        "note": "the cut must not touch the shelf"
+      },
+      {
+        "check_id": "dado.shelf3.right.probe.centre_empty",
+        "status": "PASS",
+        "observed": null,
+        "expected": null,
+        "tolerance": null,
+        "unit": "",
+        "object_ids": [
+          "panel.right.001"
+        ],
+        "note": "expected empty"
+      },
+      {
+        "check_id": "dado.shelf3.right.probe.front_open",
+        "status": "PASS",
+        "observed": null,
+        "expected": null,
+        "tolerance": null,
+        "unit": "",
+        "object_ids": [
+          "panel.right.001"
+        ],
+        "note": "expected empty"
+      },
+      {
+        "check_id": "dado.shelf3.right.probe.below_solid",
+        "status": "PASS",
+        "observed": null,
+        "expected": null,
+        "tolerance": null,
+        "unit": "",
+        "object_ids": [
+          "panel.right.001"
+        ],
+        "note": "expected material"
+      },
+      {
+        "check_id": "dado.shelf3.right.probe.above_solid",
+        "status": "PASS",
+        "observed": null,
+        "expected": null,
+        "tolerance": null,
+        "unit": "",
+        "object_ids": [
+          "panel.right.001"
+        ],
+        "note": "expected material"
+      },
+      {
+        "check_id": "dado.shelf3.right.probe.far_wall_solid",
+        "status": "PASS",
+        "observed": null,
+        "expected": null,
+        "tolerance": null,
+        "unit": "",
+        "object_ids": [
+          "panel.right.001"
+        ],
+        "note": "expected material"
+      },
+      {
+        "check_id": "dado.shelf3.right.probe.rear_wall_solid",
+        "status": "PASS",
+        "observed": null,
+        "expected": null,
+        "tolerance": null,
+        "unit": "",
+        "object_ids": [
+          "panel.right.001"
+        ],
+        "note": "expected material"
+      },
+      {
+        "check_id": "interference.joined",
+        "status": "PASS",
+        "observed": 0.0,
+        "expected": 0.0,
+        "tolerance": 0.0,
+        "unit": "pairs",
+        "object_ids": [
+          "panel.left.001",
+          "panel.right.001",
+          "panel.shelf.001",
+          "panel.shelf.002",
+          "panel.shelf.003"
+        ],
+        "note": ""
+      },
+      {
+        "check_id": "entities.managed_ids",
+        "status": "PASS",
+        "observed": 9.0,
+        "expected": 9.0,
+        "tolerance": 0.0,
+        "unit": "entities",
+        "object_ids": [],
+        "note": ""
+      },
+      {
+        "check_id": "profile.tall.depth_range",
+        "status": "PASS",
+        "observed": 600.0,
+        "expected": null,
+        "tolerance": 0.01,
+        "unit": "mm",
+        "object_ids": [],
+        "note": "provisional fixture range 300.0-650.0 mm (not an engineering limit)",
+        "limit_min": 300.0,
+        "limit_max": 650.0
+      },
+      {
+        "check_id": "profile.tall.height_range",
+        "status": "PASS",
+        "observed": 1900.0,
+        "expected": null,
+        "tolerance": 0.01,
+        "unit": "mm",
+        "object_ids": [],
+        "note": "provisional fixture range 1400.0-2200.0 mm (not an engineering limit)",
+        "limit_min": 1400.0,
+        "limit_max": 2200.0
+      },
+      {
+        "check_id": "profile.tall.width_range",
+        "status": "PASS",
+        "observed": 600.0,
+        "expected": null,
+        "tolerance": 0.01,
+        "unit": "mm",
+        "object_ids": [],
+        "note": "provisional fixture range 300.0-900.0 mm (not an engineering limit)",
+        "limit_min": 300.0,
+        "limit_max": 900.0
+      }
+    ],
+    "diagnostics": []
+  },
+  "design_schema_version": "0.2",
+  "variant": "tall",
+  "profile_version": 1,
+  "hash_scheme": "g3-0.2-canonical-sha256",
+  "design_spec_hash": "4026125d3a279b956198cb9620ca30397bc88d6be4de9aef756687530a638eb0",
+  "assembly_legacy_spec_hash": "c4bd20328eda51a685a04ded6ea7d06ad4794490c21e455ac37bd81445eef811",
+  "migrated_in_memory": false,
+  "input_spec_raw_sha256": "4026125d3a279b956198cb9620ca30397bc88d6be4de9aef756687530a638eb0",
+  "stored_spec_raw_sha256": "4026125d3a279b956198cb9620ca30397bc88d6be4de9aef756687530a638eb0",
+  "design_spec_canonical_json": "{\"module\":\"cabinet@1\",\"parameters\":{\"back_mm\":6.0,\"cabinet_id\":\"cabinet.001\",\"dado_depth_mm\":6.0,\"depth_mm\":550.0,\"door_count\":1,\"end_clearance_mm\":0.3,\"gap_mm\":3.0,\"height_mm\":1900.0,\"material_ref\":\"ply_main\",\"ply_mm\":18.0,\"shelf_count\":3,\"slot_clearance_mm\":0.5,\"width_mm\":600.0},\"profile_version\":1,\"schema_version\":\"0.2\",\"variant\":\"tall\"}",
+  "profile_limits": {
+    "Cab_Width": [
+      300.0,
+      900.0
+    ],
+    "Cab_Height": [
+      1400.0,
+      2200.0
+    ],
+    "Cab_Depth": [
+      300.0,
+      650.0
+    ]
+  },
+  "design_counts": {
+    "user_parameters": 20,
+    "root_occurrences": 9,
+    "all_components": 10,
+    "timeline_items": 39
+  },
+  "stored_spec": {
+    "raw_sha256_before": "4026125d3a279b956198cb9620ca30397bc88d6be4de9aef756687530a638eb0",
+    "raw_sha256_after": "4026125d3a279b956198cb9620ca30397bc88d6be4de9aef756687530a638eb0",
+    "unchanged": true
+  }
+}
