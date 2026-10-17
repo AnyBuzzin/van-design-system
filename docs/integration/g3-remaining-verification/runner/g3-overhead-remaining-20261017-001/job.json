@@ -1,0 +1,206 @@
+{
+  "schema": "vandesign.runner.job/1",
+  "job_id": "g3-overhead-remaining-20261017-001",
+  "command": "run_test_batch",
+  "target": {
+    "design_id": "sha256:bfcb0256beff68debe934785d128d4eca4f4540e5139bac6caf49b641ca9e743",
+    "document_name": "VanDesign-G3-overhead-remaining-20261017"
+  },
+  "args": {
+    "stable_counts": true,
+    "steps": [
+      {
+        "command": "measure",
+        "args": {
+          "label": "baseline",
+          "expect": {
+            "verdict": "PASS",
+            "pass_count": 62,
+            "total": 62,
+            "fail_ids": [],
+            "params_mm": {
+              "Cab_Depth": 350,
+              "Cab_Height": 400
+            },
+            "design_spec_hash": "6c15b5e34fdedbff55f796d416f4c3dc89a3109b58b71d264df668a4d322c2b2",
+            "counts": {
+              "user_parameters": 16,
+              "root_occurrences": 8,
+              "all_components": 9,
+              "timeline_items": 28
+            }
+          }
+        }
+      },
+      {
+        "command": "set_parameter",
+        "args": {
+          "name": "Cab_Depth",
+          "value": 400,
+          "unit": "mm",
+          "label": "depth"
+        }
+      },
+      {
+        "command": "measure",
+        "args": {
+          "label": "depth-measure",
+          "expect": {
+            "verdict": "PASS",
+            "pass_count": 62,
+            "total": 62,
+            "fail_ids": [],
+            "params_mm": {
+              "Cab_Depth": 400
+            },
+            "design_spec_hash": "6c15b5e34fdedbff55f796d416f4c3dc89a3109b58b71d264df668a4d322c2b2",
+            "counts": {
+              "user_parameters": 16,
+              "root_occurrences": 8,
+              "all_components": 9,
+              "timeline_items": 28
+            }
+          }
+        }
+      },
+      {
+        "command": "restore_parameter",
+        "args": {
+          "name": "Cab_Depth",
+          "label": "depth-restore",
+          "expect": {
+            "verdict": "PASS",
+            "pass_count": 62,
+            "total": 62,
+            "fail_ids": [],
+            "params_mm": {
+              "Cab_Depth": 350,
+              "Cab_Height": 400
+            },
+            "design_spec_hash": "6c15b5e34fdedbff55f796d416f4c3dc89a3109b58b71d264df668a4d322c2b2",
+            "counts": {
+              "user_parameters": 16,
+              "root_occurrences": 8,
+              "all_components": 9,
+              "timeline_items": 28
+            }
+          }
+        }
+      },
+      {
+        "command": "set_parameter",
+        "args": {
+          "name": "Cab_Height",
+          "value": 450,
+          "unit": "mm",
+          "label": "height"
+        }
+      },
+      {
+        "command": "measure",
+        "args": {
+          "label": "height-measure",
+          "expect": {
+            "verdict": "PASS",
+            "pass_count": 62,
+            "total": 62,
+            "fail_ids": [],
+            "params_mm": {
+              "Cab_Height": 450
+            },
+            "design_spec_hash": "6c15b5e34fdedbff55f796d416f4c3dc89a3109b58b71d264df668a4d322c2b2",
+            "counts": {
+              "user_parameters": 16,
+              "root_occurrences": 8,
+              "all_components": 9,
+              "timeline_items": 28
+            }
+          }
+        }
+      },
+      {
+        "command": "restore_parameter",
+        "args": {
+          "name": "Cab_Height",
+          "label": "height-restore",
+          "expect": {
+            "verdict": "PASS",
+            "pass_count": 62,
+            "total": 62,
+            "fail_ids": [],
+            "params_mm": {
+              "Cab_Depth": 350,
+              "Cab_Height": 400
+            },
+            "design_spec_hash": "6c15b5e34fdedbff55f796d416f4c3dc89a3109b58b71d264df668a4d322c2b2",
+            "counts": {
+              "user_parameters": 16,
+              "root_occurrences": 8,
+              "all_components": 9,
+              "timeline_items": 28
+            }
+          }
+        }
+      },
+      {
+        "command": "set_parameter",
+        "args": {
+          "name": "Cab_Height",
+          "value": 800,
+          "unit": "mm",
+          "label": "negative-height"
+        }
+      },
+      {
+        "command": "measure",
+        "args": {
+          "label": "negative-height-measure",
+          "expect": {
+            "verdict": "FAIL",
+            "pass_count": 61,
+            "total": 62,
+            "fail_ids": [
+              "profile.overhead.height_range"
+            ],
+            "params_mm": {
+              "Cab_Height": 800
+            },
+            "design_spec_hash": "6c15b5e34fdedbff55f796d416f4c3dc89a3109b58b71d264df668a4d322c2b2",
+            "counts": {
+              "user_parameters": 16,
+              "root_occurrences": 8,
+              "all_components": 9,
+              "timeline_items": 28
+            }
+          }
+        }
+      },
+      {
+        "command": "restore_parameter",
+        "args": {
+          "name": "Cab_Height",
+          "label": "negative-height-restore",
+          "expect": {
+            "verdict": "PASS",
+            "pass_count": 62,
+            "total": 62,
+            "fail_ids": [],
+            "params_mm": {
+              "Cab_Depth": 350,
+              "Cab_Height": 400
+            },
+            "design_spec_hash": "6c15b5e34fdedbff55f796d416f4c3dc89a3109b58b71d264df668a4d322c2b2",
+            "counts": {
+              "user_parameters": 16,
+              "root_occurrences": 8,
+              "all_components": 9,
+              "timeline_items": 28
+            }
+          }
+        }
+      }
+    ]
+  },
+  "timeout_s": 120,
+  "created_utc": "2026-10-17T00:20:00.200+00:00"
+}
