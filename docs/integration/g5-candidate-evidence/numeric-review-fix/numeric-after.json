@@ -1,0 +1,222 @@
+{
+  "missing": {
+    "record": {
+      "check_id": "panel.left.001.volume",
+      "status": "PASS",
+      "observed": null,
+      "expected": 8294232.0,
+      "tolerance": 8.294232,
+      "unit": "mm3",
+      "object_ids": [
+        "panel.left.001"
+      ],
+      "note": "blank minus its own grooves only"
+    },
+    "result": {
+      "report_sha256": "c76d79c97467c89a3d1d0bf5552ecff7945c86efdb7a042db6772c3c56a0b7e8",
+      "status": "UNKNOWN",
+      "failures": [],
+      "unknowns": [
+        "missing/nonfinite numeric observation/expectation panel.left.001.volume"
+      ],
+      "scope": "historical report consistency only; not current Fusion state",
+      "parameter_tolerance_mm": 1e-06,
+      "bbox_tolerance_mm": 0.01,
+      "cut_ownership": "UNKNOWN",
+      "saved_document": "UNKNOWN",
+      "stored_spec_parameter_divergence": [],
+      "reported_document_name": "VanDesign-G4-base-shelf-count-20261017",
+      "reported_fusion_version": "2705.1.30",
+      "actual_parameter_snapshot": {
+        "Cab_Width": {
+          "expression": "1200 mm",
+          "value_mm": 1200.0
+        },
+        "Cab_Height": {
+          "expression": "850 mm",
+          "value_mm": 850.0
+        },
+        "Cab_Depth": {
+          "expression": "550 mm",
+          "value_mm": 550.0
+        },
+        "Cab_Ply": {
+          "expression": "18 mm",
+          "value_mm": 18.0
+        },
+        "Cab_Back": {
+          "expression": "6 mm",
+          "value_mm": 6.000000000000001
+        },
+        "Cab_Gap": {
+          "expression": "3 mm",
+          "value_mm": 3.0000000000000004
+        },
+        "Cab_Dado_Depth": {
+          "expression": "6 mm",
+          "value_mm": 6.000000000000001
+        },
+        "Cab_Slot_Clearance": {
+          "expression": "0.5 mm",
+          "value_mm": 0.5
+        },
+        "Cab_End_Clearance": {
+          "expression": "0.3 mm",
+          "value_mm": 0.3
+        },
+        "Cab_Inner_Depth": {
+          "expression": "( Cab_Depth - Cab_Back )",
+          "value_mm": 544.0
+        },
+        "Cab_Slot_Height": {
+          "expression": "( Cab_Ply + Cab_Slot_Clearance )",
+          "value_mm": 18.5
+        },
+        "Cab_Shelf_X": {
+          "expression": "( ( Cab_Ply - Cab_Dado_Depth ) + Cab_End_Clearance )",
+          "value_mm": 12.3
+        },
+        "Cab_Shelf_Length": {
+          "expression": "( ( ( Cab_Width - ( 2 * Cab_Ply ) ) + ( 2 * Cab_Dado_Depth ) ) - ( 2 * Cab_End_Clearance ) )",
+          "value_mm": 1175.4
+        },
+        "Cab_Compartment": {
+          "expression": "( ( Cab_Height - ( 4 * Cab_Ply ) ) / 3 )",
+          "value_mm": 259.3333333333333
+        },
+        "Cab_Shelf1_Z": {
+          "expression": "( ( Cab_Ply + ( 1 * Cab_Compartment ) ) + ( 0 * Cab_Ply ) )",
+          "value_mm": 277.33333333333337
+        },
+        "Cab_Slot1_Z": {
+          "expression": "( Cab_Shelf1_Z - ( Cab_Slot_Clearance / 2 ) )",
+          "value_mm": 277.08333333333337
+        },
+        "Cab_Shelf2_Z": {
+          "expression": "( ( Cab_Ply + ( 2 * Cab_Compartment ) ) + ( 1 * Cab_Ply ) )",
+          "value_mm": 554.6666666666666
+        },
+        "Cab_Slot2_Z": {
+          "expression": "( Cab_Shelf2_Z - ( Cab_Slot_Clearance / 2 ) )",
+          "value_mm": 554.4166666666666
+        }
+      },
+      "reported_counts": {
+        "user_parameters": 18,
+        "root_occurrences": 9,
+        "all_components": 10,
+        "timeline_items": 35
+      }
+    }
+  },
+  "contradictory": {
+    "record": {
+      "check_id": "panel.left.001.volume",
+      "status": "PASS",
+      "observed": 123,
+      "expected": 8294232.0,
+      "tolerance": 8.294232,
+      "unit": "mm3",
+      "object_ids": [
+        "panel.left.001"
+      ],
+      "note": "blank minus its own grooves only"
+    },
+    "result": {
+      "report_sha256": "8e7dad611bc71a940b5765e0cbc794c72858e9dace05a309165d7f5a3a3d8fe1",
+      "status": "FAIL",
+      "failures": [
+        "numeric observation contradicts expectation panel.left.001.volume"
+      ],
+      "unknowns": [],
+      "scope": "historical report consistency only; not current Fusion state",
+      "parameter_tolerance_mm": 1e-06,
+      "bbox_tolerance_mm": 0.01,
+      "cut_ownership": "UNKNOWN",
+      "saved_document": "UNKNOWN",
+      "stored_spec_parameter_divergence": [],
+      "reported_document_name": "VanDesign-G4-base-shelf-count-20261017",
+      "reported_fusion_version": "2705.1.30",
+      "actual_parameter_snapshot": {
+        "Cab_Width": {
+          "expression": "1200 mm",
+          "value_mm": 1200.0
+        },
+        "Cab_Height": {
+          "expression": "850 mm",
+          "value_mm": 850.0
+        },
+        "Cab_Depth": {
+          "expression": "550 mm",
+          "value_mm": 550.0
+        },
+        "Cab_Ply": {
+          "expression": "18 mm",
+          "value_mm": 18.0
+        },
+        "Cab_Back": {
+          "expression": "6 mm",
+          "value_mm": 6.000000000000001
+        },
+        "Cab_Gap": {
+          "expression": "3 mm",
+          "value_mm": 3.0000000000000004
+        },
+        "Cab_Dado_Depth": {
+          "expression": "6 mm",
+          "value_mm": 6.000000000000001
+        },
+        "Cab_Slot_Clearance": {
+          "expression": "0.5 mm",
+          "value_mm": 0.5
+        },
+        "Cab_End_Clearance": {
+          "expression": "0.3 mm",
+          "value_mm": 0.3
+        },
+        "Cab_Inner_Depth": {
+          "expression": "( Cab_Depth - Cab_Back )",
+          "value_mm": 544.0
+        },
+        "Cab_Slot_Height": {
+          "expression": "( Cab_Ply + Cab_Slot_Clearance )",
+          "value_mm": 18.5
+        },
+        "Cab_Shelf_X": {
+          "expression": "( ( Cab_Ply - Cab_Dado_Depth ) + Cab_End_Clearance )",
+          "value_mm": 12.3
+        },
+        "Cab_Shelf_Length": {
+          "expression": "( ( ( Cab_Width - ( 2 * Cab_Ply ) ) + ( 2 * Cab_Dado_Depth ) ) - ( 2 * Cab_End_Clearance ) )",
+          "value_mm": 1175.4
+        },
+        "Cab_Compartment": {
+          "expression": "( ( Cab_Height - ( 4 * Cab_Ply ) ) / 3 )",
+          "value_mm": 259.3333333333333
+        },
+        "Cab_Shelf1_Z": {
+          "expression": "( ( Cab_Ply + ( 1 * Cab_Compartment ) ) + ( 0 * Cab_Ply ) )",
+          "value_mm": 277.33333333333337
+        },
+        "Cab_Slot1_Z": {
+          "expression": "( Cab_Shelf1_Z - ( Cab_Slot_Clearance / 2 ) )",
+          "value_mm": 277.08333333333337
+        },
+        "Cab_Shelf2_Z": {
+          "expression": "( ( Cab_Ply + ( 2 * Cab_Compartment ) ) + ( 1 * Cab_Ply ) )",
+          "value_mm": 554.6666666666666
+        },
+        "Cab_Slot2_Z": {
+          "expression": "( Cab_Shelf2_Z - ( Cab_Slot_Clearance / 2 ) )",
+          "value_mm": 554.4166666666666
+        }
+      },
+      "reported_counts": {
+        "user_parameters": 18,
+        "root_occurrences": 9,
+        "all_components": 10,
+        "timeline_items": 35
+      }
+    }
+  }
+}
