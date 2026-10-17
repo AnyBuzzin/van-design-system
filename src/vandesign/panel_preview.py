@@ -166,6 +166,45 @@ def compare_report(design, assembly, report):
         required.update(("interference.joined", "entities.managed_ids"))
         if required - set(by_id):
             unknowns.append("missing validation checks: " + ", ".join(sorted(required - set(by_id))))
+        # Existing Check semantics: equality within tolerance for measurements,
+        # strict/non-strict inequalities for constraints. Probes are status-only.
+        numeric = {"param." + p.name: ("mm", []) for p in assembly.parameters.derived()}
+        numeric.update({p.stable_id + suffix: (unit, [p.stable_id])
+                        for p in assembly.panels for suffix, unit in ((".bbox", "mm"), (".volume", "mm3"))})
+        for operation in assembly.operations:
+            for suffix in ("penetration", "end_gap", "gap_below", "gap_above", "mating_unmodified"):
+                numeric[operation.operation_id + "." + suffix] = (
+                    "mm3" if suffix == "mating_unmodified" else "mm",
+                    [operation.target_panel_id, operation.mating_panel_id])
+        joined = sorted({o.target_panel_id for o in assembly.operations} |
+                        {o.mating_panel_id for o in assembly.operations})
+        numeric.update({"interference.joined": ("pairs", joined), "entities.managed_ids": ("entities", [])})
+        constraints = {"constraint." + c.constraint_id: c for c in assembly.constraints}
+        numeric.update({cid: ("mm", []) for cid in constraints})
+        for cid, (unit, ids) in numeric.items():
+            if cid not in by_id:
+                continue  # Missing required records are already UNKNOWN above.
+            check = by_id[cid]
+            if check.get("unit") != unit or check.get("object_ids") != ids:
+                failures.append("numeric record unit/identity incompatible " + cid)
+            observed, expected, tolerance = (check.get(k) for k in ("observed", "expected", "tolerance"))
+            if not _finite(observed) or not _finite(expected):
+                unknowns.append("missing/nonfinite numeric observation/expectation " + cid)
+                continue
+            if cid in constraints:
+                if tolerance is not None:
+                    failures.append("constraint tolerance incompatible " + cid)
+                consistent = observed > expected if constraints[cid].op == ">" else observed >= expected
+            else:
+                if not _finite(tolerance):
+                    unknowns.append("missing/nonfinite numeric tolerance " + cid)
+                    continue
+                if tolerance < 0:
+                    failures.append("negative numeric tolerance " + cid)
+                    continue
+                consistent = abs(observed - expected) <= tolerance
+            if not consistent:
+                failures.append("numeric observation contradicts expectation " + cid)
         expected_ids = {p.stable_id for p in assembly.panels}
         actual_ids = {c.get("check_id", "")[:-5] for c in checks
                       if c.get("check_id", "").endswith(".bbox")}

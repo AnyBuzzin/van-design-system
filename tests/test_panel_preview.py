@@ -103,6 +103,44 @@ class PanelPreviewTests(unittest.TestCase):
         report['validation']['counts']['PASS'] -= 1
         self.assertEqual(make_preview(spec, json.dumps(report).encode())['evidence']['status'], 'UNKNOWN')
 
+    def test_numeric_measurements_require_finite_fields(self):
+        spec, raw, _ = measured_case()
+        for cid in ('panel.left.001.volume', 'dado.shelf1.left.mating_unmodified',
+                    'param.Cab_Inner_Depth', 'interference.joined', 'entities.managed_ids'):
+            for field in ('observed', 'expected', 'tolerance'):
+                for value in (None, float('nan'), float('inf'), float('-inf'), True):
+                    with self.subTest(cid=cid, field=field, value=value):
+                        report = json.loads(raw)
+                        next(c for c in report['validation']['checks'] if c['check_id'] == cid)[field] = value
+                        self.assertEqual(make_preview(spec, json.dumps(report).encode())['evidence']['status'], 'UNKNOWN')
+
+    def test_contradictory_numeric_pass_records_fail(self):
+        spec, raw, _ = measured_case()
+        changes = [('panel.left.001.volume', 'observed', 123),
+                   ('panel.left.001.volume', 'unit', 'mm'),
+                   ('panel.left.001.volume', 'object_ids', ['panel.right.001']),
+                   ('panel.left.001.volume', 'tolerance', -1),
+                   ('param.Cab_Inner_Depth', 'observed', 1),
+                   ('dado.shelf1.left.penetration', 'observed', 123),
+                   ('interference.joined', 'observed', 1),
+                   ('entities.managed_ids', 'observed', 1),
+                   ('constraint.ply_positive', 'observed', 0)]
+        for cid, field, value in changes:
+            with self.subTest(cid=cid, field=field):
+                report = json.loads(raw)
+                next(c for c in report['validation']['checks'] if c['check_id'] == cid)[field] = value
+                self.assertEqual(make_preview(spec, json.dumps(report).encode())['evidence']['status'], 'FAIL')
+
+    def test_boolean_probes_keep_intentional_none_fields(self):
+        spec, raw, _ = measured_case()
+        probes = [c for c in json.loads(raw)['validation']['checks'] if '.probe.' in c['check_id']]
+        self.assertTrue(probes)
+        for check in probes:
+            self.assertTrue(all(check[k] is None for k in ('observed', 'expected', 'tolerance')))
+            self.assertEqual(check['status'], 'PASS')
+            self.assertIn(check['note'], ('expected material', 'expected empty'))
+        self.assertEqual(make_preview(spec, raw)['evidence']['status'], 'PASS')
+
     def test_reused_overhead_scalar_edit_is_explicit_divergence(self):
         directory = ROOT / 'docs/integration/g3-remaining-verification/runner/g3-overhead-remaining-20261017-001/evidence'
         raw = next((directory / '02_measure/reports').glob('*.json')).read_bytes()
