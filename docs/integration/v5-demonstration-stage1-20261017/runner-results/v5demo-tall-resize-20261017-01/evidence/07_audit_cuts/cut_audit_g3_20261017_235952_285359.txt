@@ -1,0 +1,53 @@
+VanDesign G3 cut participant audit
+Document: V5-Demo-Tall-20261017-01
+Read-only: no geometry, parameters or features changed
+NOTE: The history marker is temporarily repositioned during inspection.
+
+--- dado.shelf1.left ---
+Feature owner stable id: panel.left.001 (expected panel.left.001)
+Operation Cut: True
+Participant count: 1
+  Body: '01 Left Side'; stable id: 'panel.left.001'
+RESULT: PASS
+
+--- dado.shelf1.right ---
+Feature owner stable id: panel.right.001 (expected panel.right.001)
+Operation Cut: True
+Participant count: 1
+  Body: '02 Right Side'; stable id: 'panel.right.001'
+RESULT: PASS
+
+--- dado.shelf2.left ---
+Feature owner stable id: panel.left.001 (expected panel.left.001)
+Operation Cut: True
+Participant count: 1
+  Body: '01 Left Side'; stable id: 'panel.left.001'
+RESULT: PASS
+
+--- dado.shelf2.right ---
+Feature owner stable id: panel.right.001 (expected panel.right.001)
+Operation Cut: True
+Participant count: 1
+  Body: '02 Right Side'; stable id: 'panel.right.001'
+RESULT: PASS
+
+--- dado.shelf3.left ---
+Feature owner stable id: panel.left.001 (expected panel.left.001)
+Operation Cut: True
+Participant count: 1
+  Body: '01 Left Side'; stable id: 'panel.left.001'
+RESULT: PASS
+
+--- dado.shelf3.right ---
+Feature owner stable id: panel.right.001 (expected panel.right.001)
+Operation Cut: True
+Participant count: 1
+  Body: '02 Right Side'; stable id: 'panel.right.001'
+RESULT: PASS
+
+Timeline moved back to original position: True
+Counts before: {"root_occurrences": 9, "timeline_items": 39, "user_parameters": 20}
+Counts after:  {"root_occurrences": 9, "timeline_items": 39, "user_parameters": 20}
+Features passed: 6/6
+
+OVERALL: PASS

@@ -1,0 +1,120 @@
+{
+  "job_id": "v5demo-overhead-resize-20261017-01",
+  "command": "run_test_batch",
+  "target": {
+    "design_id": "redacted-sha256:4567c3a2e4d4bafb86005508ebe93ed0db13a4c67c44d9f860e1485e3a6bbb0c",
+    "document_name": "V5-Demo-Overhead-20261017-01"
+  },
+  "args": {
+    "label": "overhead raw scalar resize and restoration",
+    "stable_counts": true,
+    "steps": [
+      {
+        "command": "set_parameter",
+        "args": {
+          "name": "Cab_Depth",
+          "value": 400,
+          "unit": "mm"
+        }
+      },
+      {
+        "command": "measure",
+        "args": {
+          "label": "Cab_Depth changed",
+          "expect": {
+            "verdict": "PASS",
+            "pass_count": 62,
+            "total": 62,
+            "params_mm": {
+              "Cab_Depth": 400
+            }
+          }
+        }
+      },
+      {
+        "command": "audit_cuts",
+        "args": {
+          "expect": {
+            "features_passed": 2
+          }
+        }
+      },
+      {
+        "command": "restore_parameter",
+        "args": {
+          "name": "Cab_Depth",
+          "expect": {
+            "verdict": "PASS",
+            "pass_count": 62,
+            "total": 62,
+            "params_mm": {
+              "Cab_Depth": 350
+            }
+          }
+        }
+      },
+      {
+        "command": "audit_cuts",
+        "args": {
+          "expect": {
+            "features_passed": 2
+          }
+        }
+      },
+      {
+        "command": "set_parameter",
+        "args": {
+          "name": "Cab_Height",
+          "value": 450,
+          "unit": "mm"
+        }
+      },
+      {
+        "command": "measure",
+        "args": {
+          "label": "Cab_Height changed",
+          "expect": {
+            "verdict": "PASS",
+            "pass_count": 62,
+            "total": 62,
+            "params_mm": {
+              "Cab_Height": 450
+            }
+          }
+        }
+      },
+      {
+        "command": "audit_cuts",
+        "args": {
+          "expect": {
+            "features_passed": 2
+          }
+        }
+      },
+      {
+        "command": "restore_parameter",
+        "args": {
+          "name": "Cab_Height",
+          "expect": {
+            "verdict": "PASS",
+            "pass_count": 62,
+            "total": 62,
+            "params_mm": {
+              "Cab_Height": 400
+            }
+          }
+        }
+      },
+      {
+        "command": "audit_cuts",
+        "args": {
+          "expect": {
+            "features_passed": 2
+          }
+        }
+      }
+    ]
+  },
+  "schema": "vandesign.runner.job/1",
+  "created_utc": "2026-10-17T23:00:29.507+00:00"
+}

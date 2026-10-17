@@ -1,0 +1,249 @@
+{
+  "dimension_semantics": "nominal rectangular blanks; grooves listed separately; no grain or measured stock claim",
+  "evidence": {
+    "actual_parameter_snapshot": {
+      "Cab_Back": {
+        "expression": "6 mm",
+        "value_mm": 6.000000000000001
+      },
+      "Cab_Compartment": {
+        "expression": "( ( Cab_Height - ( 3 * Cab_Ply ) ) / 2 )",
+        "value_mm": 173.0
+      },
+      "Cab_Dado_Depth": {
+        "expression": "6 mm",
+        "value_mm": 6.000000000000001
+      },
+      "Cab_Depth": {
+        "expression": "350 mm",
+        "value_mm": 350.0
+      },
+      "Cab_End_Clearance": {
+        "expression": "0.3 mm",
+        "value_mm": 0.3
+      },
+      "Cab_Gap": {
+        "expression": "3 mm",
+        "value_mm": 3.0000000000000004
+      },
+      "Cab_Height": {
+        "expression": "400 mm",
+        "value_mm": 400.0
+      },
+      "Cab_Inner_Depth": {
+        "expression": "( Cab_Depth - Cab_Back )",
+        "value_mm": 344.0
+      },
+      "Cab_Ply": {
+        "expression": "18 mm",
+        "value_mm": 18.0
+      },
+      "Cab_Shelf1_Z": {
+        "expression": "( ( Cab_Ply + ( 1 * Cab_Compartment ) ) + ( 0 * Cab_Ply ) )",
+        "value_mm": 191.0
+      },
+      "Cab_Shelf_Length": {
+        "expression": "( ( ( Cab_Width - ( 2 * Cab_Ply ) ) + ( 2 * Cab_Dado_Depth ) ) - ( 2 * Cab_End_Clearance ) )",
+        "value_mm": 975.4000000000001
+      },
+      "Cab_Shelf_X": {
+        "expression": "( ( Cab_Ply - Cab_Dado_Depth ) + Cab_End_Clearance )",
+        "value_mm": 12.3
+      },
+      "Cab_Slot1_Z": {
+        "expression": "( Cab_Shelf1_Z - ( Cab_Slot_Clearance / 2 ) )",
+        "value_mm": 190.75000000000003
+      },
+      "Cab_Slot_Clearance": {
+        "expression": "0.5 mm",
+        "value_mm": 0.5
+      },
+      "Cab_Slot_Height": {
+        "expression": "( Cab_Ply + Cab_Slot_Clearance )",
+        "value_mm": 18.5
+      },
+      "Cab_Width": {
+        "expression": "1000 mm",
+        "value_mm": 1000.0
+      }
+    },
+    "bbox_tolerance_mm": 0.01,
+    "cut_ownership": "UNKNOWN",
+    "failures": [],
+    "parameter_tolerance_mm": 1e-06,
+    "report_sha256": "431da4db2ed049d5ce75e6a5f78e2b87d26ed4ec98565406e6e919fceccbed42",
+    "reported_counts": {
+      "all_components": 9,
+      "root_occurrences": 8,
+      "timeline_items": 28,
+      "user_parameters": 16
+    },
+    "reported_document_name": "V5-Demo-Overhead-20261017-01",
+    "reported_fusion_version": "2705.1.30",
+    "saved_document": "UNKNOWN",
+    "scope": "historical report consistency only; not current Fusion state",
+    "status": "PASS",
+    "stored_spec_parameter_divergence": [],
+    "unknowns": []
+  },
+  "format": "vandesign.panel-preview/1",
+  "generator": "vandesign.cabinet@0.5.0",
+  "grooves": [
+    {
+      "mating_panel_id": "panel.shelf.001",
+      "operation_id": "dado.shelf1.left",
+      "target_panel_id": "panel.left.001"
+    },
+    {
+      "mating_panel_id": "panel.shelf.001",
+      "operation_id": "dado.shelf1.right",
+      "target_panel_id": "panel.right.001"
+    }
+  ],
+  "notice": "ENGINEERING PREVIEW, NOT CERTIFIED CNC OUTPUT",
+  "package_version": "0.5.0",
+  "panels": [
+    {
+      "blank_1_mm": "964.000000",
+      "blank_2_mm": "364.000000",
+      "blank_axis_1": "X",
+      "blank_axis_2": "Z",
+      "label": "05 Back",
+      "material_ref": "ply_main",
+      "nominal_thickness_mm": "6.000000",
+      "notice": "ENGINEERING PREVIEW, NOT CERTIFIED CNC OUTPUT",
+      "panel_id": "panel.back.001",
+      "quantity": 1,
+      "role": "back",
+      "thickness_axis": "Y"
+    },
+    {
+      "blank_1_mm": "964.000000",
+      "blank_2_mm": "344.000000",
+      "blank_axis_1": "X",
+      "blank_axis_2": "Y",
+      "label": "03 Bottom",
+      "material_ref": "ply_main",
+      "nominal_thickness_mm": "18.000000",
+      "notice": "ENGINEERING PREVIEW, NOT CERTIFIED CNC OUTPUT",
+      "panel_id": "panel.bottom.001",
+      "quantity": 1,
+      "role": "bottom",
+      "thickness_axis": "Z"
+    },
+    {
+      "blank_1_mm": "495.500000",
+      "blank_2_mm": "394.000000",
+      "blank_axis_1": "X",
+      "blank_axis_2": "Z",
+      "label": "07 Door 1",
+      "material_ref": "ply_main",
+      "nominal_thickness_mm": "18.000000",
+      "notice": "ENGINEERING PREVIEW, NOT CERTIFIED CNC OUTPUT",
+      "panel_id": "panel.door.001",
+      "quantity": 1,
+      "role": "door",
+      "thickness_axis": "Y"
+    },
+    {
+      "blank_1_mm": "495.500000",
+      "blank_2_mm": "394.000000",
+      "blank_axis_1": "X",
+      "blank_axis_2": "Z",
+      "label": "07 Door 2",
+      "material_ref": "ply_main",
+      "nominal_thickness_mm": "18.000000",
+      "notice": "ENGINEERING PREVIEW, NOT CERTIFIED CNC OUTPUT",
+      "panel_id": "panel.door.002",
+      "quantity": 1,
+      "role": "door",
+      "thickness_axis": "Y"
+    },
+    {
+      "blank_1_mm": "350.000000",
+      "blank_2_mm": "400.000000",
+      "blank_axis_1": "Y",
+      "blank_axis_2": "Z",
+      "label": "01 Left Side",
+      "material_ref": "ply_main",
+      "nominal_thickness_mm": "18.000000",
+      "notice": "ENGINEERING PREVIEW, NOT CERTIFIED CNC OUTPUT",
+      "panel_id": "panel.left.001",
+      "quantity": 1,
+      "role": "left",
+      "thickness_axis": "X"
+    },
+    {
+      "blank_1_mm": "350.000000",
+      "blank_2_mm": "400.000000",
+      "blank_axis_1": "Y",
+      "blank_axis_2": "Z",
+      "label": "02 Right Side",
+      "material_ref": "ply_main",
+      "nominal_thickness_mm": "18.000000",
+      "notice": "ENGINEERING PREVIEW, NOT CERTIFIED CNC OUTPUT",
+      "panel_id": "panel.right.001",
+      "quantity": 1,
+      "role": "right",
+      "thickness_axis": "X"
+    },
+    {
+      "blank_1_mm": "975.400000",
+      "blank_2_mm": "344.000000",
+      "blank_axis_1": "X",
+      "blank_axis_2": "Y",
+      "label": "06 Shelf 1",
+      "material_ref": "ply_main",
+      "nominal_thickness_mm": "18.000000",
+      "notice": "ENGINEERING PREVIEW, NOT CERTIFIED CNC OUTPUT",
+      "panel_id": "panel.shelf.001",
+      "quantity": 1,
+      "role": "shelf",
+      "thickness_axis": "Z"
+    },
+    {
+      "blank_1_mm": "964.000000",
+      "blank_2_mm": "344.000000",
+      "blank_axis_1": "X",
+      "blank_axis_2": "Y",
+      "label": "04 Top",
+      "material_ref": "ply_main",
+      "nominal_thickness_mm": "18.000000",
+      "notice": "ENGINEERING PREVIEW, NOT CERTIFIED CNC OUTPUT",
+      "panel_id": "panel.top.001",
+      "quantity": 1,
+      "role": "top",
+      "thickness_axis": "Z"
+    }
+  ],
+  "resolved_nominal_parameters_mm": {
+    "Cab_Back": 6.0,
+    "Cab_Compartment": 173.0,
+    "Cab_Dado_Depth": 6.0,
+    "Cab_Depth": 350.0,
+    "Cab_End_Clearance": 0.3,
+    "Cab_Gap": 3.0,
+    "Cab_Height": 400.0,
+    "Cab_Inner_Depth": 344.0,
+    "Cab_Ply": 18.0,
+    "Cab_Shelf1_Z": 191.0,
+    "Cab_Shelf_Length": 975.4,
+    "Cab_Shelf_X": 12.3,
+    "Cab_Slot1_Z": 190.75,
+    "Cab_Slot_Clearance": 0.5,
+    "Cab_Slot_Height": 18.5,
+    "Cab_Width": 1000.0
+  },
+  "specification": {
+    "assembly_legacy_spec_hash": "3999e5aa43610b3c4048a9dc6e4eb46eaf0f52815ddb7e1c7ac6ec11721f570a",
+    "canonical_json": "{\"module\":\"cabinet@1\",\"parameters\":{\"back_mm\":6.0,\"cabinet_id\":\"cabinet.001\",\"dado_depth_mm\":6.0,\"depth_mm\":350.0,\"door_count\":2,\"end_clearance_mm\":0.3,\"gap_mm\":3.0,\"height_mm\":400.0,\"material_ref\":\"ply_main\",\"ply_mm\":18.0,\"shelf_count\":1,\"slot_clearance_mm\":0.5,\"width_mm\":1000.0},\"profile_version\":1,\"schema_version\":\"0.2\",\"variant\":\"overhead\"}",
+    "design_schema_version": "0.2",
+    "design_spec_hash": "6c15b5e34fdedbff55f796d416f4c3dc89a3109b58b71d264df668a4d322c2b2",
+    "hash_scheme": "g3-0.2-canonical-sha256",
+    "input_spec_raw_sha256": "6c15b5e34fdedbff55f796d416f4c3dc89a3109b58b71d264df668a4d322c2b2",
+    "migrated_in_memory": false,
+    "profile_version": 1,
+    "variant": "overhead"
+  },
+  "unit": "mm"
+}

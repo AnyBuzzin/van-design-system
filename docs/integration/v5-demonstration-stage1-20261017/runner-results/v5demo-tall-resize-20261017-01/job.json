@@ -1,0 +1,172 @@
+{
+  "job_id": "v5demo-tall-resize-20261017-01",
+  "command": "run_test_batch",
+  "target": {
+    "design_id": "redacted-sha256:5adf7d08cf0cd354df6e9923b94e65f74014667d91274c4bcd5c42e50de1fb62",
+    "document_name": "V5-Demo-Tall-20261017-01"
+  },
+  "args": {
+    "label": "tall raw scalar resize and restoration",
+    "stable_counts": true,
+    "steps": [
+      {
+        "command": "set_parameter",
+        "args": {
+          "name": "Cab_Width",
+          "value": 700,
+          "unit": "mm"
+        }
+      },
+      {
+        "command": "measure",
+        "args": {
+          "label": "Cab_Width changed",
+          "expect": {
+            "verdict": "PASS",
+            "pass_count": 112,
+            "total": 112,
+            "params_mm": {
+              "Cab_Width": 700
+            }
+          }
+        }
+      },
+      {
+        "command": "audit_cuts",
+        "args": {
+          "expect": {
+            "features_passed": 6
+          }
+        }
+      },
+      {
+        "command": "restore_parameter",
+        "args": {
+          "name": "Cab_Width",
+          "expect": {
+            "verdict": "PASS",
+            "pass_count": 112,
+            "total": 112,
+            "params_mm": {
+              "Cab_Width": 600
+            }
+          }
+        }
+      },
+      {
+        "command": "audit_cuts",
+        "args": {
+          "expect": {
+            "features_passed": 6
+          }
+        }
+      },
+      {
+        "command": "set_parameter",
+        "args": {
+          "name": "Cab_Depth",
+          "value": 600,
+          "unit": "mm"
+        }
+      },
+      {
+        "command": "measure",
+        "args": {
+          "label": "Cab_Depth changed",
+          "expect": {
+            "verdict": "PASS",
+            "pass_count": 112,
+            "total": 112,
+            "params_mm": {
+              "Cab_Depth": 600
+            }
+          }
+        }
+      },
+      {
+        "command": "audit_cuts",
+        "args": {
+          "expect": {
+            "features_passed": 6
+          }
+        }
+      },
+      {
+        "command": "restore_parameter",
+        "args": {
+          "name": "Cab_Depth",
+          "expect": {
+            "verdict": "PASS",
+            "pass_count": 112,
+            "total": 112,
+            "params_mm": {
+              "Cab_Depth": 550
+            }
+          }
+        }
+      },
+      {
+        "command": "audit_cuts",
+        "args": {
+          "expect": {
+            "features_passed": 6
+          }
+        }
+      },
+      {
+        "command": "set_parameter",
+        "args": {
+          "name": "Cab_Height",
+          "value": 2000,
+          "unit": "mm"
+        }
+      },
+      {
+        "command": "measure",
+        "args": {
+          "label": "Cab_Height changed",
+          "expect": {
+            "verdict": "PASS",
+            "pass_count": 112,
+            "total": 112,
+            "params_mm": {
+              "Cab_Height": 2000
+            }
+          }
+        }
+      },
+      {
+        "command": "audit_cuts",
+        "args": {
+          "expect": {
+            "features_passed": 6
+          }
+        }
+      },
+      {
+        "command": "restore_parameter",
+        "args": {
+          "name": "Cab_Height",
+          "expect": {
+            "verdict": "PASS",
+            "pass_count": 112,
+            "total": 112,
+            "params_mm": {
+              "Cab_Height": 1900
+            }
+          }
+        }
+      },
+      {
+        "command": "audit_cuts",
+        "args": {
+          "expect": {
+            "features_passed": 6
+          }
+        }
+      }
+    ]
+  },
+  "schema": "vandesign.runner.job/1",
+  "created_utc": "2026-10-17T22:59:51.043+00:00"
+}
