@@ -18,7 +18,8 @@ assert vandesign.SCHEMA_VERSION == '0.1'
 assert vandesign.GENERATOR_ID == 'vandesign.cabinet@0.5.0'
 for name in ('core.expr', 'core.frames', 'core.geometry', 'core.params', 'core.units',
              'components.model', 'components.ids', 'cad.protocol', 'schemas.design_spec',
-             'modules.variants', 'modules.interior_demo', 'verification.validate',
+             'modules.variants', 'modules.interior_demo', 'modules.bed_platform',
+             'schemas.bed_platform_spec', 'verification.validate',
              'verification.geometry_source', 'verification.report'):
     module = importlib.import_module('vandesign.' + name)
     assert Path(module.__file__).resolve().is_relative_to(origin.parent)

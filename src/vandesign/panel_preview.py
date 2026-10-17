@@ -21,7 +21,8 @@ NOTICE = "ENGINEERING PREVIEW, NOT CERTIFIED CNC OUTPUT"
 # blank axis 1, blank axis 2, thickness axis: cabinet coordinates, not grain.
 ROLE_AXES = {"left": (1, 2, 0), "right": (1, 2, 0),
              "bottom": (0, 1, 2), "top": (0, 1, 2), "shelf": (0, 1, 2),
-             "back": (0, 2, 1), "door": (0, 2, 1)}
+             "back": (0, 2, 1), "door": (0, 2, 1),
+             "bed_deck": (0, 1, 2), "bed_support": (0, 2, 1)}
 FIELDS = ("panel_id", "label", "role", "material_ref", "blank_axis_1",
           "blank_axis_2", "thickness_axis", "blank_1_mm", "blank_2_mm",
           "nominal_thickness_mm", "quantity", "notice")
@@ -226,7 +227,35 @@ def compare_report(design, assembly, report):
     return result
 
 
+def _bed_preview(spec_text, report_bytes):
+    from .schemas.bed_platform_spec import load_bed_spec, MODULE, SCHEMA, NOTICE as BED_NOTICE
+    from .modules.bed_platform import build_bed_platform
+    spec = load_bed_spec(spec_text)
+    assembly = build_bed_platform(spec)
+    if report_bytes is not None:
+        raise ValueError("Bed measured-report integration is not qualified in V6.1; omit --report")
+    return {
+        "format": "vandesign.panel-preview/1", "notice": NOTICE, "unit": "mm",
+        "qualification": BED_NOTICE,
+        "dimension_semantics": "nominal rectangular blanks; no grain or measured stock claim",
+        "generator": "vandesign.bed-platform@1", "package_version": __version__,
+        "specification": {"module": MODULE, "design_schema_version": SCHEMA,
+                          "canonical_json": spec.to_json(), "design_spec_hash": spec.spec_hash(),
+                          "hash_scheme": "bed-platform-1-canonical-sha256"},
+        "resolved_nominal_parameters_mm": assembly.parameters.resolve(),
+        "panels": panel_rows(assembly), "grooves": [],
+        "evidence": {"status": "UNKNOWN", "scope": "specification-only; no live bed qualification",
+                     "report_sha256": None, "failures": [],
+                     "unknowns": ["no qualified bed measurement report"],
+                     "cut_ownership": "UNKNOWN", "saved_document": "UNKNOWN"},
+    }
+
+
 def make_preview(spec_text, report_bytes=None):
+    # Dispatch only the explicit new module; cabinet loading/hashes stay unchanged.
+    raw = json.loads(spec_text)
+    if isinstance(raw, dict) and raw.get("module") == "bed-platform@1":
+        return _bed_preview(spec_text, report_bytes)
     design = load_design_spec(spec_text)
     assembly = build_variant(design.resolved_params, design.profile)
     report = json.loads(report_bytes) if report_bytes is not None else None

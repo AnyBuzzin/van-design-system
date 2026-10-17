@@ -1,0 +1,4 @@
+panel_id,label,role,material_ref,blank_axis_1,blank_axis_2,thickness_axis,blank_1_mm,blank_2_mm,nominal_thickness_mm,quantity,notice
+bed.deck.001,Bed deck,bed_deck,ply_18_nominal,X,Y,Z,1400.000000,1900.000000,18.000000,1,"ENGINEERING PREVIEW, NOT CERTIFIED CNC OUTPUT"
+bed.front.001,Front support,bed_support,ply_18_nominal,X,Z,Y,1400.000000,682.000000,18.000000,1,"ENGINEERING PREVIEW, NOT CERTIFIED CNC OUTPUT"
+bed.rear.001,Rear support,bed_support,ply_18_nominal,X,Z,Y,1400.000000,682.000000,18.000000,1,"ENGINEERING PREVIEW, NOT CERTIFIED CNC OUTPUT"
