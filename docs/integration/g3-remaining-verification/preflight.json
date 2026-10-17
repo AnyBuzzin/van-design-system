@@ -1,0 +1,499 @@
+{
+  "utc": "2026-10-17T00:14:39.377161+00:00",
+  "develop_commit": "7508f45840b5400da9ec0435d92f574e17969825",
+  "configuration_sha256": "70bf4288f224cef35efc1760aae594c54cf39d1676a298aa10956621d81d8378",
+  "configuration_matches_accepted_issue17": true,
+  "bundles": [
+    {
+      "config_key": "g3_script_dir",
+      "path": "%USERPROFILE%\\Documents\\VanDesign-Runner\\deployments\\vandesign-0.5.0\\VanCabinetJoineryV5",
+      "manifest_sha256": "9dca986105401b2b3c506b151d5d21684057a8f8cc2eece85752705ce66bcb2a",
+      "files": [
+        {
+          "path": "VanCabinetJoineryV5.manifest",
+          "expected": "50a6783abe5b3f46f53887bcc87132bd8840386248d6a58be4ea502292ba8dda",
+          "actual": "50a6783abe5b3f46f53887bcc87132bd8840386248d6a58be4ea502292ba8dda",
+          "match": true
+        },
+        {
+          "path": "VanCabinetJoineryV5.py",
+          "expected": "e66fecb714efc93ca30fed465a9b5752a5ae3e7c01277cf42f40e7a29ceb1b32",
+          "actual": "e66fecb714efc93ca30fed465a9b5752a5ae3e7c01277cf42f40e7a29ceb1b32",
+          "match": true
+        },
+        {
+          "path": "vandesign/__init__.py",
+          "expected": "f7d5f6479928f96a87f042f37c9e3cd015827549879087cc2cf80d69f93f57fd",
+          "actual": "f7d5f6479928f96a87f042f37c9e3cd015827549879087cc2cf80d69f93f57fd",
+          "match": true
+        },
+        {
+          "path": "vandesign/adapters/__init__.py",
+          "expected": "40043c7eccf4dbba97aa5d84c4866c14896ad9247b6828195045ef5ba7d53870",
+          "actual": "40043c7eccf4dbba97aa5d84c4866c14896ad9247b6828195045ef5ba7d53870",
+          "match": true
+        },
+        {
+          "path": "vandesign/cad/__init__.py",
+          "expected": "703824dc29bf256f5438a5b0397702e06c6821ca21a7755c27223ccc972ed398",
+          "actual": "703824dc29bf256f5438a5b0397702e06c6821ca21a7755c27223ccc972ed398",
+          "match": true
+        },
+        {
+          "path": "vandesign/cad/fusion/__init__.py",
+          "expected": "360d13dae8b2db83cc3d60be0628c4db8becaac794fc7e2508bf363f34dd5468",
+          "actual": "360d13dae8b2db83cc3d60be0628c4db8becaac794fc7e2508bf363f34dd5468",
+          "match": true
+        },
+        {
+          "path": "vandesign/cad/fusion/adapter.py",
+          "expected": "e4a739a49fd7062dab8f49f30426df5dc125824a0cd236d686e7a8e4ee14037a",
+          "actual": "e4a739a49fd7062dab8f49f30426df5dc125824a0cd236d686e7a8e4ee14037a",
+          "match": true
+        },
+        {
+          "path": "vandesign/cad/fusion/interior_demo.py",
+          "expected": "8766bfa5cf8b7a9a93678bc50d4e0d2bb9834f9e2be517b17cfe085c60f2b7ae",
+          "actual": "8766bfa5cf8b7a9a93678bc50d4e0d2bb9834f9e2be517b17cfe085c60f2b7ae",
+          "match": true
+        },
+        {
+          "path": "vandesign/cad/fusion/runner.py",
+          "expected": "41529f25bdfa55546db299da220b601d53c6789d995490fe4bf488fcd6e20b84",
+          "actual": "41529f25bdfa55546db299da220b601d53c6789d995490fe4bf488fcd6e20b84",
+          "match": true
+        },
+        {
+          "path": "vandesign/cad/protocol.py",
+          "expected": "c09af102cfa5d8fa9bfe5d59f1e59a8e18081def90493fa9a0d0ac6c11884524",
+          "actual": "c09af102cfa5d8fa9bfe5d59f1e59a8e18081def90493fa9a0d0ac6c11884524",
+          "match": true
+        },
+        {
+          "path": "vandesign/components/__init__.py",
+          "expected": "601c5f2f9af792b150c021c34d83f921c2142ed86aa0193c7a04aa28a3fbdd0e",
+          "actual": "601c5f2f9af792b150c021c34d83f921c2142ed86aa0193c7a04aa28a3fbdd0e",
+          "match": true
+        },
+        {
+          "path": "vandesign/components/ids.py",
+          "expected": "61cc0afa349d799d2d4ac1b728ddf54b6c46a9a856775e9f2f8e33a207a6231c",
+          "actual": "61cc0afa349d799d2d4ac1b728ddf54b6c46a9a856775e9f2f8e33a207a6231c",
+          "match": true
+        },
+        {
+          "path": "vandesign/components/model.py",
+          "expected": "f0f389d46f3c1b91c3961e1167150047c51f9fcb442b995fdb2f2163ecfa3869",
+          "actual": "f0f389d46f3c1b91c3961e1167150047c51f9fcb442b995fdb2f2163ecfa3869",
+          "match": true
+        },
+        {
+          "path": "vandesign/core/__init__.py",
+          "expected": "a70d0810f0e1d9d6081859ff8ba5c94c19d5bed75be248bb1bb066c9752ce25e",
+          "actual": "a70d0810f0e1d9d6081859ff8ba5c94c19d5bed75be248bb1bb066c9752ce25e",
+          "match": true
+        },
+        {
+          "path": "vandesign/core/expr.py",
+          "expected": "bdf5bfc6d4c6a8f1ca46ced7b68d27f05b4a91fe2affe9e57397a4a5aafc4e2b",
+          "actual": "bdf5bfc6d4c6a8f1ca46ced7b68d27f05b4a91fe2affe9e57397a4a5aafc4e2b",
+          "match": true
+        },
+        {
+          "path": "vandesign/core/frames.py",
+          "expected": "cce5e53d6b4565c3e8fb5c2ead3a4ed157e8acbfc7d5ff3d9cf7ec055b2750f7",
+          "actual": "cce5e53d6b4565c3e8fb5c2ead3a4ed157e8acbfc7d5ff3d9cf7ec055b2750f7",
+          "match": true
+        },
+        {
+          "path": "vandesign/core/geometry.py",
+          "expected": "0319a91e58ac3b21f71ededcd84480befa31118f9a13fe733af1b56f05068045",
+          "actual": "0319a91e58ac3b21f71ededcd84480befa31118f9a13fe733af1b56f05068045",
+          "match": true
+        },
+        {
+          "path": "vandesign/core/joinery.py",
+          "expected": "83a8850d9c1e45e0f417466590d378348c4ab651365fdf8cb9f174abb8a6db6b",
+          "actual": "83a8850d9c1e45e0f417466590d378348c4ab651365fdf8cb9f174abb8a6db6b",
+          "match": true
+        },
+        {
+          "path": "vandesign/core/params.py",
+          "expected": "2a67bb7cddc96191d920600b3154dfd7c54dfa72467cc5cf887cf4e24c650738",
+          "actual": "2a67bb7cddc96191d920600b3154dfd7c54dfa72467cc5cf887cf4e24c650738",
+          "match": true
+        },
+        {
+          "path": "vandesign/core/units.py",
+          "expected": "d6e17b17ccd9459c25df187b8c6d0f1302ffb9659ea3cf1dee8d2fbe4b421961",
+          "actual": "d6e17b17ccd9459c25df187b8c6d0f1302ffb9659ea3cf1dee8d2fbe4b421961",
+          "match": true
+        },
+        {
+          "path": "vandesign/modules/__init__.py",
+          "expected": "e4dd7b82bd0b5ea3cbdf6fac4469526e26ad1fef64b20a68cca9c769ed040f5e",
+          "actual": "e4dd7b82bd0b5ea3cbdf6fac4469526e26ad1fef64b20a68cca9c769ed040f5e",
+          "match": true
+        },
+        {
+          "path": "vandesign/modules/cabinet.py",
+          "expected": "db10f0ecea7b270b54288d559fc7a546939eaf397119675bcfd80848fbca66c5",
+          "actual": "db10f0ecea7b270b54288d559fc7a546939eaf397119675bcfd80848fbca66c5",
+          "match": true
+        },
+        {
+          "path": "vandesign/modules/interior_demo.py",
+          "expected": "f65097f4cfc6a9e9674b2111805edbb615d3188385c6634556dac90c885829c8",
+          "actual": "f65097f4cfc6a9e9674b2111805edbb615d3188385c6634556dac90c885829c8",
+          "match": true
+        },
+        {
+          "path": "vandesign/modules/variants.py",
+          "expected": "b263d8e7b2bd9bec36fbd22c09f5c31a3606080543f6ec15b0f39d5f6bd85ce7",
+          "actual": "b263d8e7b2bd9bec36fbd22c09f5c31a3606080543f6ec15b0f39d5f6bd85ce7",
+          "match": true
+        },
+        {
+          "path": "vandesign/schemas/__init__.py",
+          "expected": "8ae003ec476f0f7d952313fafaa3cd5794bf0139d121544230149e1461356609",
+          "actual": "8ae003ec476f0f7d952313fafaa3cd5794bf0139d121544230149e1461356609",
+          "match": true
+        },
+        {
+          "path": "vandesign/schemas/cabinet_spec.py",
+          "expected": "b73a7651a64159a3127024667a1c348feb06b8ef08478417c54dd0be1a367cff",
+          "actual": "b73a7651a64159a3127024667a1c348feb06b8ef08478417c54dd0be1a367cff",
+          "match": true
+        },
+        {
+          "path": "vandesign/schemas/design_spec.py",
+          "expected": "3816b2edcad608c2743ec23f84ff2e118803958dfcd68ad44180f936b462fc8f",
+          "actual": "3816b2edcad608c2743ec23f84ff2e118803958dfcd68ad44180f936b462fc8f",
+          "match": true
+        },
+        {
+          "path": "vandesign/verification/__init__.py",
+          "expected": "6519acfbda1c30aa4fc840352f3d54f6f5168a2c598018f1e1c3dab05a18b4a0",
+          "actual": "6519acfbda1c30aa4fc840352f3d54f6f5168a2c598018f1e1c3dab05a18b4a0",
+          "match": true
+        },
+        {
+          "path": "vandesign/verification/geometry_source.py",
+          "expected": "0d42d325606120ddaf079743e4401df3a44c1d8ee86920bda5256a5b6428d6c5",
+          "actual": "0d42d325606120ddaf079743e4401df3a44c1d8ee86920bda5256a5b6428d6c5",
+          "match": true
+        },
+        {
+          "path": "vandesign/verification/report.py",
+          "expected": "a162dd8b6fd05d20386cb47f95374e9b54f0df285367266fa55e6d81bea4bfbe",
+          "actual": "a162dd8b6fd05d20386cb47f95374e9b54f0df285367266fa55e6d81bea4bfbe",
+          "match": true
+        },
+        {
+          "path": "vandesign/verification/validate.py",
+          "expected": "5a1d0ae614c0e068beed15f0b09ee9392c093625a0efb1b1e205c873b3ce900a",
+          "actual": "5a1d0ae614c0e068beed15f0b09ee9392c093625a0efb1b1e205c873b3ce900a",
+          "match": true
+        }
+      ],
+      "all_match": true
+    },
+    {
+      "config_key": "demo_package_dir",
+      "path": "%USERPROFILE%\\Documents\\VanDesign-Runner\\deployments\\vandesign-0.5.0\\FirstInteriorDemo",
+      "manifest_sha256": "c5fee18088bf2518f6679df134c7f5eefa5dffbbd0057aad030639a717d1380e",
+      "files": [
+        {
+          "path": "FirstInteriorDemo.manifest",
+          "expected": "f47af94724c2763184477a78d5bd8ea50fa32ba43c73634278cd0a7cda8da988",
+          "actual": "f47af94724c2763184477a78d5bd8ea50fa32ba43c73634278cd0a7cda8da988",
+          "match": true
+        },
+        {
+          "path": "FirstInteriorDemo.py",
+          "expected": "b1e7447f48c4ca05e579de2882f7037ae98a48a136cddfeccb08611dc754212c",
+          "actual": "b1e7447f48c4ca05e579de2882f7037ae98a48a136cddfeccb08611dc754212c",
+          "match": true
+        },
+        {
+          "path": "vandesign/__init__.py",
+          "expected": "f7d5f6479928f96a87f042f37c9e3cd015827549879087cc2cf80d69f93f57fd",
+          "actual": "f7d5f6479928f96a87f042f37c9e3cd015827549879087cc2cf80d69f93f57fd",
+          "match": true
+        },
+        {
+          "path": "vandesign/adapters/__init__.py",
+          "expected": "40043c7eccf4dbba97aa5d84c4866c14896ad9247b6828195045ef5ba7d53870",
+          "actual": "40043c7eccf4dbba97aa5d84c4866c14896ad9247b6828195045ef5ba7d53870",
+          "match": true
+        },
+        {
+          "path": "vandesign/cad/__init__.py",
+          "expected": "703824dc29bf256f5438a5b0397702e06c6821ca21a7755c27223ccc972ed398",
+          "actual": "703824dc29bf256f5438a5b0397702e06c6821ca21a7755c27223ccc972ed398",
+          "match": true
+        },
+        {
+          "path": "vandesign/cad/fusion/__init__.py",
+          "expected": "360d13dae8b2db83cc3d60be0628c4db8becaac794fc7e2508bf363f34dd5468",
+          "actual": "360d13dae8b2db83cc3d60be0628c4db8becaac794fc7e2508bf363f34dd5468",
+          "match": true
+        },
+        {
+          "path": "vandesign/cad/fusion/adapter.py",
+          "expected": "e4a739a49fd7062dab8f49f30426df5dc125824a0cd236d686e7a8e4ee14037a",
+          "actual": "e4a739a49fd7062dab8f49f30426df5dc125824a0cd236d686e7a8e4ee14037a",
+          "match": true
+        },
+        {
+          "path": "vandesign/cad/fusion/interior_demo.py",
+          "expected": "8766bfa5cf8b7a9a93678bc50d4e0d2bb9834f9e2be517b17cfe085c60f2b7ae",
+          "actual": "8766bfa5cf8b7a9a93678bc50d4e0d2bb9834f9e2be517b17cfe085c60f2b7ae",
+          "match": true
+        },
+        {
+          "path": "vandesign/cad/fusion/runner.py",
+          "expected": "41529f25bdfa55546db299da220b601d53c6789d995490fe4bf488fcd6e20b84",
+          "actual": "41529f25bdfa55546db299da220b601d53c6789d995490fe4bf488fcd6e20b84",
+          "match": true
+        },
+        {
+          "path": "vandesign/cad/protocol.py",
+          "expected": "c09af102cfa5d8fa9bfe5d59f1e59a8e18081def90493fa9a0d0ac6c11884524",
+          "actual": "c09af102cfa5d8fa9bfe5d59f1e59a8e18081def90493fa9a0d0ac6c11884524",
+          "match": true
+        },
+        {
+          "path": "vandesign/components/__init__.py",
+          "expected": "601c5f2f9af792b150c021c34d83f921c2142ed86aa0193c7a04aa28a3fbdd0e",
+          "actual": "601c5f2f9af792b150c021c34d83f921c2142ed86aa0193c7a04aa28a3fbdd0e",
+          "match": true
+        },
+        {
+          "path": "vandesign/components/ids.py",
+          "expected": "61cc0afa349d799d2d4ac1b728ddf54b6c46a9a856775e9f2f8e33a207a6231c",
+          "actual": "61cc0afa349d799d2d4ac1b728ddf54b6c46a9a856775e9f2f8e33a207a6231c",
+          "match": true
+        },
+        {
+          "path": "vandesign/components/model.py",
+          "expected": "f0f389d46f3c1b91c3961e1167150047c51f9fcb442b995fdb2f2163ecfa3869",
+          "actual": "f0f389d46f3c1b91c3961e1167150047c51f9fcb442b995fdb2f2163ecfa3869",
+          "match": true
+        },
+        {
+          "path": "vandesign/core/__init__.py",
+          "expected": "a70d0810f0e1d9d6081859ff8ba5c94c19d5bed75be248bb1bb066c9752ce25e",
+          "actual": "a70d0810f0e1d9d6081859ff8ba5c94c19d5bed75be248bb1bb066c9752ce25e",
+          "match": true
+        },
+        {
+          "path": "vandesign/core/expr.py",
+          "expected": "bdf5bfc6d4c6a8f1ca46ced7b68d27f05b4a91fe2affe9e57397a4a5aafc4e2b",
+          "actual": "bdf5bfc6d4c6a8f1ca46ced7b68d27f05b4a91fe2affe9e57397a4a5aafc4e2b",
+          "match": true
+        },
+        {
+          "path": "vandesign/core/frames.py",
+          "expected": "cce5e53d6b4565c3e8fb5c2ead3a4ed157e8acbfc7d5ff3d9cf7ec055b2750f7",
+          "actual": "cce5e53d6b4565c3e8fb5c2ead3a4ed157e8acbfc7d5ff3d9cf7ec055b2750f7",
+          "match": true
+        },
+        {
+          "path": "vandesign/core/geometry.py",
+          "expected": "0319a91e58ac3b21f71ededcd84480befa31118f9a13fe733af1b56f05068045",
+          "actual": "0319a91e58ac3b21f71ededcd84480befa31118f9a13fe733af1b56f05068045",
+          "match": true
+        },
+        {
+          "path": "vandesign/core/joinery.py",
+          "expected": "83a8850d9c1e45e0f417466590d378348c4ab651365fdf8cb9f174abb8a6db6b",
+          "actual": "83a8850d9c1e45e0f417466590d378348c4ab651365fdf8cb9f174abb8a6db6b",
+          "match": true
+        },
+        {
+          "path": "vandesign/core/params.py",
+          "expected": "2a67bb7cddc96191d920600b3154dfd7c54dfa72467cc5cf887cf4e24c650738",
+          "actual": "2a67bb7cddc96191d920600b3154dfd7c54dfa72467cc5cf887cf4e24c650738",
+          "match": true
+        },
+        {
+          "path": "vandesign/core/units.py",
+          "expected": "d6e17b17ccd9459c25df187b8c6d0f1302ffb9659ea3cf1dee8d2fbe4b421961",
+          "actual": "d6e17b17ccd9459c25df187b8c6d0f1302ffb9659ea3cf1dee8d2fbe4b421961",
+          "match": true
+        },
+        {
+          "path": "vandesign/modules/__init__.py",
+          "expected": "e4dd7b82bd0b5ea3cbdf6fac4469526e26ad1fef64b20a68cca9c769ed040f5e",
+          "actual": "e4dd7b82bd0b5ea3cbdf6fac4469526e26ad1fef64b20a68cca9c769ed040f5e",
+          "match": true
+        },
+        {
+          "path": "vandesign/modules/cabinet.py",
+          "expected": "db10f0ecea7b270b54288d559fc7a546939eaf397119675bcfd80848fbca66c5",
+          "actual": "db10f0ecea7b270b54288d559fc7a546939eaf397119675bcfd80848fbca66c5",
+          "match": true
+        },
+        {
+          "path": "vandesign/modules/interior_demo.py",
+          "expected": "f65097f4cfc6a9e9674b2111805edbb615d3188385c6634556dac90c885829c8",
+          "actual": "f65097f4cfc6a9e9674b2111805edbb615d3188385c6634556dac90c885829c8",
+          "match": true
+        },
+        {
+          "path": "vandesign/modules/variants.py",
+          "expected": "b263d8e7b2bd9bec36fbd22c09f5c31a3606080543f6ec15b0f39d5f6bd85ce7",
+          "actual": "b263d8e7b2bd9bec36fbd22c09f5c31a3606080543f6ec15b0f39d5f6bd85ce7",
+          "match": true
+        },
+        {
+          "path": "vandesign/schemas/__init__.py",
+          "expected": "8ae003ec476f0f7d952313fafaa3cd5794bf0139d121544230149e1461356609",
+          "actual": "8ae003ec476f0f7d952313fafaa3cd5794bf0139d121544230149e1461356609",
+          "match": true
+        },
+        {
+          "path": "vandesign/schemas/cabinet_spec.py",
+          "expected": "b73a7651a64159a3127024667a1c348feb06b8ef08478417c54dd0be1a367cff",
+          "actual": "b73a7651a64159a3127024667a1c348feb06b8ef08478417c54dd0be1a367cff",
+          "match": true
+        },
+        {
+          "path": "vandesign/schemas/design_spec.py",
+          "expected": "3816b2edcad608c2743ec23f84ff2e118803958dfcd68ad44180f936b462fc8f",
+          "actual": "3816b2edcad608c2743ec23f84ff2e118803958dfcd68ad44180f936b462fc8f",
+          "match": true
+        },
+        {
+          "path": "vandesign/verification/__init__.py",
+          "expected": "6519acfbda1c30aa4fc840352f3d54f6f5168a2c598018f1e1c3dab05a18b4a0",
+          "actual": "6519acfbda1c30aa4fc840352f3d54f6f5168a2c598018f1e1c3dab05a18b4a0",
+          "match": true
+        },
+        {
+          "path": "vandesign/verification/geometry_source.py",
+          "expected": "0d42d325606120ddaf079743e4401df3a44c1d8ee86920bda5256a5b6428d6c5",
+          "actual": "0d42d325606120ddaf079743e4401df3a44c1d8ee86920bda5256a5b6428d6c5",
+          "match": true
+        },
+        {
+          "path": "vandesign/verification/report.py",
+          "expected": "a162dd8b6fd05d20386cb47f95374e9b54f0df285367266fa55e6d81bea4bfbe",
+          "actual": "a162dd8b6fd05d20386cb47f95374e9b54f0df285367266fa55e6d81bea4bfbe",
+          "match": true
+        },
+        {
+          "path": "vandesign/verification/validate.py",
+          "expected": "5a1d0ae614c0e068beed15f0b09ee9392c093625a0efb1b1e205c873b3ce900a",
+          "actual": "5a1d0ae614c0e068beed15f0b09ee9392c093625a0efb1b1e205c873b3ce900a",
+          "match": true
+        }
+      ],
+      "all_match": true
+    }
+  ],
+  "installed_runner_files": [
+    {
+      "path": "demo_workflow.py",
+      "sha256": "94d313bc5fb46a7b9f59eb31a341f6196eb90c17d0efa2d780bc7275262b011e",
+      "matches_issue17_backup": true
+    },
+    {
+      "path": "fusion_backend.py",
+      "sha256": "cb0c337ec05068d5e8625a167ab12ca1cdc2a385070005aed61a8e9efe5837cd",
+      "matches_issue17_backup": true
+    },
+    {
+      "path": "VanDesignRunner.manifest",
+      "sha256": "75aeae3f1afafebb694af58c088e814eca26645ca3cee0c84a89d453f0970c21",
+      "matches_issue17_backup": true
+    },
+    {
+      "path": "VanDesignRunner.py",
+      "sha256": "d458d03306d797f3bb8dd4131849feee0f47e1f266d12bcc484f47d6040bfbd5",
+      "matches_issue17_backup": true
+    },
+    {
+      "path": "vdrunner/__init__.py",
+      "sha256": "728e7f5c6306463e5858f8d417614c0a7bebfb3f33410bb20a084fd395417619",
+      "matches_issue17_backup": true
+    },
+    {
+      "path": "vdrunner/__main__.py",
+      "sha256": "13a1a5b340cdcfc1902b62be90e508c7c71886000d5bf087e7854aadf09fb35e",
+      "matches_issue17_backup": true
+    },
+    {
+      "path": "vdrunner/cli.py",
+      "sha256": "1909005543024d9ffff54e5fba24c16bb8ff61ef00c6a93d44210bd031d095f0",
+      "matches_issue17_backup": true
+    },
+    {
+      "path": "vdrunner/evidence.py",
+      "sha256": "ee4e7f7e9e1cd09c1b9a982366ec4d3ec549700b589f8753c58684f709683d26",
+      "matches_issue17_backup": true
+    },
+    {
+      "path": "vdrunner/executor.py",
+      "sha256": "5b6c3c247223fed1a9aa21ae458723f4a1daa7b69863267122066f94ce7f2156",
+      "matches_issue17_backup": true
+    },
+    {
+      "path": "vdrunner/expect.py",
+      "sha256": "6faa51b6b244714bde7c49a65e70852fb6c3b9323886ccb19bf9dcb5aa6a24bc",
+      "matches_issue17_backup": true
+    },
+    {
+      "path": "vdrunner/journal.py",
+      "sha256": "f68befec44c98d800aa72f727feb05869772c97175c08fe6af25f7499b03064e",
+      "matches_issue17_backup": true
+    },
+    {
+      "path": "vdrunner/policy.py",
+      "sha256": "f4b71ac95f27d63beb3dac06dba6d43c08340b77169d681b302bda5f757ec4c9",
+      "matches_issue17_backup": true
+    },
+    {
+      "path": "vdrunner/queue.py",
+      "sha256": "44a0ec927f41b82658194ea1a650efb35b1231e4aa98212b2659d0878834e768",
+      "matches_issue17_backup": true
+    },
+    {
+      "path": "vdrunner/schema.py",
+      "sha256": "6088cbdceec1a0eaec2de6c270d2e8830f1bd9b71e66ab169cce26f867a1cfd0",
+      "matches_issue17_backup": true
+    },
+    {
+      "path": "vdrunner/width_change.py",
+      "sha256": "bb1c07fe1d5938d1af762fd14df592444df02aa38aae8004b357abcaa3f1ac78",
+      "matches_issue17_backup": true
+    }
+  ],
+  "audit_path": "%USERPROFILE%\\Documents\\VanDesign-G3\\4d4345b\\VanDesignCutAuditG3\\VanDesignCutAuditG3.py",
+  "audit_sha256": "3f9426842a110768da0a0ca0ba6eecda27e4054fb7a20dd70867450efe59efb0",
+  "audit_matches_preserved_repository_bytes": false,
+  "accepted_archive_sha256": "3463781dc1c959652a2f83dee56c154da51e06944584b0e6c923cdf7bac5cf42",
+  "api_port_reachable": false,
+  "live_geometry_results": "UNKNOWN / NOT RUN",
+  "live_loaded_module_identity": "UNKNOWN until Fusion starts",
+  "writes_to_live_installation_or_queue": false,
+  "protected_design_operations": false,
+  "journal_file_summary": [
+    {
+      "sha256": "c984e0df6280f9680c8cada549e5d8270ab08929df3547cfa2f16a4691abc161",
+      "entry_count": 0
+    },
+    {
+      "sha256": "db41dbff9e476ee0a7ac6a3d8a7db3b65c09f9feaf96313c0b4e8a570645dcfb",
+      "entry_count": 0
+    }
+  ],
+  "audit_matches_immutable_git_blob": true,
+  "audit_matches_checkout_normalized_line_endings": true,
+  "audit_git_blob_sha256": "3f9426842a110768da0a0ca0ba6eecda27e4054fb7a20dd70867450efe59efb0",
+  "queue_counts": {
+    "inbox": 0,
+    "claimed": 0
+  }
+}

@@ -1,0 +1,36 @@
+{
+  "artifacts": [
+    {
+      "file": "lifecycle.json",
+      "original_sha256": "1cdf4e794b34767a2bc59475053df0cf963974034dd5373c69f973bfd12b39b9",
+      "published_sha256": "61c4f4bb78808893afb9c998882971bc7e47599c9b91903b1df86332f8d990da",
+      "transform": "API wrappers unwrapped where present; cloud IDs hashed; cache filename redacted"
+    },
+    {
+      "file": "native-preflight.json",
+      "original_sha256": "837ac0ec7c5607416e03744cbcdde6e02f63d525516f56c657031e72338fcc75",
+      "published_sha256": "db761943e27673856d8c07fa6fb9ddb3413f6e9c5cc92e7b8fd2cd2dcc1737b5",
+      "transform": "API wrappers unwrapped where present; cloud IDs hashed; cache filename redacted"
+    },
+    {
+      "file": "native-after.json",
+      "original_sha256": "837ac0ec7c5607416e03744cbcdde6e02f63d525516f56c657031e72338fcc75",
+      "published_sha256": "db761943e27673856d8c07fa6fb9ddb3413f6e9c5cc92e7b8fd2cd2dcc1737b5",
+      "transform": "API wrappers unwrapped where present; cloud IDs hashed; cache filename redacted"
+    },
+    {
+      "file": "postcheck.json",
+      "original_sha256": "da474d0574e1424b2bbe5d2634c6c8e0bf6649865a47f2e07e5a31e71c40dc13",
+      "published_sha256": "3d36f103b428062787e7b6b6a9e1d10ff79ecee8ab29e84287dcbe39f35cf464",
+      "transform": "API wrappers unwrapped where present; cloud IDs hashed; cache filename redacted"
+    },
+    {
+      "file": "guarded-lifecycle.py",
+      "original_sha256": "5618a9289588968b9ed6d391beb3ef28f342bfb5758ffbd97089e2209c2b9da9",
+      "published_sha256": "ca29840258e3738522eff0b6e53da8737e980700e389eb02813ac250318ad91c",
+      "transform": "cloud ID literal replaced with non-executable placeholder"
+    }
+  ],
+  "original_execution_api_sha256": "36d038316799c75c2f20c1fb83c1fe7df35872803b6cc38b9328ad60ddafa132",
+  "original_native_log_sha256": "544e1e828c489555eccd3cdebe4bd2b9866cf20f6eab5d17bcbe65bd4588a3f7"
+}
