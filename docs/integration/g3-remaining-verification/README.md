@@ -1,5 +1,7 @@
 # G3 remaining overhead verification — 2026-10-17
 
+**Latest follow-up:** the separately owner-approved [final guarded persistence safety test](final-guarded-persistence/README.md) passed with the existing fixture clean, saved and the sole open document, preserving identity/version2. Jack's independent review is pending. The original results below, including the safety FAIL, remain preserved; no geometry tests were repeated and G3 is not unilaterally closed.
+
 **G3 remains OPEN.** Depth, height, expected invalid-height detection/restoration and exact cut ownership PASS. Cabinet persistence comparison PASS, but the overall persistence safety test **FAILS**: after reopening the dedicated fixture, the previously open empty, unmodified `Untitled` document reference was invalid and only the dedicated fixture remained open. Do not call this full acceptance.
 
 ## Contract and scope
