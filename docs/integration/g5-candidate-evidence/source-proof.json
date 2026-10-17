@@ -1,0 +1,162 @@
+{
+  "source_commit": "1c0aa68f9410c68dc1b939b1f3c86a6fc9c6f7fa",
+  "comparison": "git source vs wheel: normalize CRLF to LF only",
+  "files": {
+    "vandesign/__init__.py": {
+      "git_sha256": "61bf7f179c1e5f1d06fc72f81a12e70c6c68ebce118b07456e3a2137f753fc28",
+      "wheel_sha256": "f7d5f6479928f96a87f042f37c9e3cd015827549879087cc2cf80d69f93f57fd",
+      "source_equal": true
+    },
+    "vandesign/panel_preview.py": {
+      "git_sha256": "0bc2dede6e4b99266dc44ac955049d07ff6341c1e5c8e4dab0257e9994d7ab3e",
+      "wheel_sha256": "0bc2dede6e4b99266dc44ac955049d07ff6341c1e5c8e4dab0257e9994d7ab3e",
+      "source_equal": true
+    },
+    "vandesign/adapters/__init__.py": {
+      "git_sha256": "38dcfc0c37e53d633dc997c18ca5a15216f976267e396961cac520642b6df088",
+      "wheel_sha256": "40043c7eccf4dbba97aa5d84c4866c14896ad9247b6828195045ef5ba7d53870",
+      "source_equal": true
+    },
+    "vandesign/cad/__init__.py": {
+      "git_sha256": "359a0bdb25c86b3ee76afcb9065d9d53c5cd02440383ed1da46a7ab445e5f005",
+      "wheel_sha256": "703824dc29bf256f5438a5b0397702e06c6821ca21a7755c27223ccc972ed398",
+      "source_equal": true
+    },
+    "vandesign/cad/protocol.py": {
+      "git_sha256": "599ba5d6fde225213c8294baa41751b83777e4fed86ee92663db5496628add59",
+      "wheel_sha256": "c09af102cfa5d8fa9bfe5d59f1e59a8e18081def90493fa9a0d0ac6c11884524",
+      "source_equal": true
+    },
+    "vandesign/cad/fusion/__init__.py": {
+      "git_sha256": "b9b84adf758630d063687cb0a2ef8f17dc26fadddab90dcc9a4c9979786f8c1b",
+      "wheel_sha256": "360d13dae8b2db83cc3d60be0628c4db8becaac794fc7e2508bf363f34dd5468",
+      "source_equal": true
+    },
+    "vandesign/cad/fusion/adapter.py": {
+      "git_sha256": "8103f0cc34577ec69b1430cb28e2bd9bf98f96270476d036449bc499e225de8f",
+      "wheel_sha256": "e4a739a49fd7062dab8f49f30426df5dc125824a0cd236d686e7a8e4ee14037a",
+      "source_equal": true
+    },
+    "vandesign/cad/fusion/interior_demo.py": {
+      "git_sha256": "877ffa09558341f2a0711b4e74a486abfd7ef483ea5a39bb7e49a7c7ff8dc89d",
+      "wheel_sha256": "8766bfa5cf8b7a9a93678bc50d4e0d2bb9834f9e2be517b17cfe085c60f2b7ae",
+      "source_equal": true
+    },
+    "vandesign/cad/fusion/runner.py": {
+      "git_sha256": "6499d9329e20f99a5b0c8d31e9be993724cd5df7b2350a9ebef32ab35eb38e3a",
+      "wheel_sha256": "41529f25bdfa55546db299da220b601d53c6789d995490fe4bf488fcd6e20b84",
+      "source_equal": true
+    },
+    "vandesign/cad/fusion/shelf_regeneration.py": {
+      "git_sha256": "0f1a3abdc023f1e261a1ab129967ecfde3585450d34ec0aaa7127af16858ee53",
+      "wheel_sha256": "0f1a3abdc023f1e261a1ab129967ecfde3585450d34ec0aaa7127af16858ee53",
+      "source_equal": true
+    },
+    "vandesign/components/__init__.py": {
+      "git_sha256": "adca9a372b9fb3c312c19e176008f26e138db1265626ad7de0d3317b5b4aafbf",
+      "wheel_sha256": "601c5f2f9af792b150c021c34d83f921c2142ed86aa0193c7a04aa28a3fbdd0e",
+      "source_equal": true
+    },
+    "vandesign/components/ids.py": {
+      "git_sha256": "8c93ea5b17d20b6e9d90edbbca586b17ad46b04823b11d7d32f651c9e75110af",
+      "wheel_sha256": "61cc0afa349d799d2d4ac1b728ddf54b6c46a9a856775e9f2f8e33a207a6231c",
+      "source_equal": true
+    },
+    "vandesign/components/model.py": {
+      "git_sha256": "277b915b703636301519c7f12c787cca826b8fdb4db4bba4eeb1f27e44d4f7b8",
+      "wheel_sha256": "f0f389d46f3c1b91c3961e1167150047c51f9fcb442b995fdb2f2163ecfa3869",
+      "source_equal": true
+    },
+    "vandesign/core/__init__.py": {
+      "git_sha256": "6649a99365e0aa0f95e1a8def00b8b8e21ddaa39af49169afa6f76a05ead06be",
+      "wheel_sha256": "a70d0810f0e1d9d6081859ff8ba5c94c19d5bed75be248bb1bb066c9752ce25e",
+      "source_equal": true
+    },
+    "vandesign/core/expr.py": {
+      "git_sha256": "46cb5a7a3cf71bf180271e65ffcc67a3d2ef9b7672b6b530beaff366ea40c5c6",
+      "wheel_sha256": "bdf5bfc6d4c6a8f1ca46ced7b68d27f05b4a91fe2affe9e57397a4a5aafc4e2b",
+      "source_equal": true
+    },
+    "vandesign/core/frames.py": {
+      "git_sha256": "dab98d278b74ca8c28f80cc96d27a346f1e8dcb9bdc1505e2f6761d80cdc401a",
+      "wheel_sha256": "cce5e53d6b4565c3e8fb5c2ead3a4ed157e8acbfc7d5ff3d9cf7ec055b2750f7",
+      "source_equal": true
+    },
+    "vandesign/core/geometry.py": {
+      "git_sha256": "68c14b72e7bb33f38a5c69f87b67053ad5346f1101eacfd0a50ae337df0a267e",
+      "wheel_sha256": "0319a91e58ac3b21f71ededcd84480befa31118f9a13fe733af1b56f05068045",
+      "source_equal": true
+    },
+    "vandesign/core/joinery.py": {
+      "git_sha256": "cc2934ea0da029c803d999d82bdc87e989ee9d7dbad07d2d5e2e34b97edacfd9",
+      "wheel_sha256": "83a8850d9c1e45e0f417466590d378348c4ab651365fdf8cb9f174abb8a6db6b",
+      "source_equal": true
+    },
+    "vandesign/core/params.py": {
+      "git_sha256": "50dd3ed905af4c96a1a501e10ccccf66c1cc52097e3c6a067bc6ddd39d855042",
+      "wheel_sha256": "2a67bb7cddc96191d920600b3154dfd7c54dfa72467cc5cf887cf4e24c650738",
+      "source_equal": true
+    },
+    "vandesign/core/units.py": {
+      "git_sha256": "331d80090c5ac4407aac1adb502327d7dbd11af0f89b8f43b0cb6bd1d85911ca",
+      "wheel_sha256": "d6e17b17ccd9459c25df187b8c6d0f1302ffb9659ea3cf1dee8d2fbe4b421961",
+      "source_equal": true
+    },
+    "vandesign/modules/__init__.py": {
+      "git_sha256": "ca104003fb5dd0c357012758e827110511967e067cc558beafbdd3c21530f512",
+      "wheel_sha256": "e4dd7b82bd0b5ea3cbdf6fac4469526e26ad1fef64b20a68cca9c769ed040f5e",
+      "source_equal": true
+    },
+    "vandesign/modules/cabinet.py": {
+      "git_sha256": "6762fde91df56e05c5c41e3b01a0851d3e1b3d037f394def62686fb9cfa10ec4",
+      "wheel_sha256": "db10f0ecea7b270b54288d559fc7a546939eaf397119675bcfd80848fbca66c5",
+      "source_equal": true
+    },
+    "vandesign/modules/interior_demo.py": {
+      "git_sha256": "29da5ca150d4e41c24a3ccf0434ddb463c4e6969faaf57243bb463a7f44a668a",
+      "wheel_sha256": "f65097f4cfc6a9e9674b2111805edbb615d3188385c6634556dac90c885829c8",
+      "source_equal": true
+    },
+    "vandesign/modules/variants.py": {
+      "git_sha256": "5a57490908e12ba52ba6a490838d31b1737ed1f180727a776e3036f3895dbb87",
+      "wheel_sha256": "b263d8e7b2bd9bec36fbd22c09f5c31a3606080543f6ec15b0f39d5f6bd85ce7",
+      "source_equal": true
+    },
+    "vandesign/schemas/__init__.py": {
+      "git_sha256": "b38bbecffff34be3e0b6f27bae9d413909e48f3df25446177212439f1c5826db",
+      "wheel_sha256": "8ae003ec476f0f7d952313fafaa3cd5794bf0139d121544230149e1461356609",
+      "source_equal": true
+    },
+    "vandesign/schemas/cabinet_spec.py": {
+      "git_sha256": "8b81bc212384ccbf3144ce29074125ad32420da07bca37b9c7c6a4cea68feb10",
+      "wheel_sha256": "b73a7651a64159a3127024667a1c348feb06b8ef08478417c54dd0be1a367cff",
+      "source_equal": true
+    },
+    "vandesign/schemas/design_spec.py": {
+      "git_sha256": "43b75e576b8025176aee8fb9d85298ce5408e256aeb91fc5ea38bf97b7e03210",
+      "wheel_sha256": "3816b2edcad608c2743ec23f84ff2e118803958dfcd68ad44180f936b462fc8f",
+      "source_equal": true
+    },
+    "vandesign/verification/__init__.py": {
+      "git_sha256": "64cbade0280efe37ad848ead7e993fba0540d69eacaa7303ef70f756e132392d",
+      "wheel_sha256": "6519acfbda1c30aa4fc840352f3d54f6f5168a2c598018f1e1c3dab05a18b4a0",
+      "source_equal": true
+    },
+    "vandesign/verification/geometry_source.py": {
+      "git_sha256": "26ada75ef37ba576ac15befd767b8811be1b831c16b2cc04a7c4b265b159c8bc",
+      "wheel_sha256": "0d42d325606120ddaf079743e4401df3a44c1d8ee86920bda5256a5b6428d6c5",
+      "source_equal": true
+    },
+    "vandesign/verification/report.py": {
+      "git_sha256": "3bf95328aed597cd9dde10cd18939919642d0b27f9b4e3c158e78fa6f083d01a",
+      "wheel_sha256": "a162dd8b6fd05d20386cb47f95374e9b54f0df285367266fa55e6d81bea4bfbe",
+      "source_equal": true
+    },
+    "vandesign/verification/validate.py": {
+      "git_sha256": "a37f7a94ab5cbc3c69028cbb5aa559adfcb5244d4f7bbe448403b808a0cdba59",
+      "wheel_sha256": "5a1d0ae614c0e068beed15f0b09ee9392c093625a0efb1b1e205c873b3ce900a",
+      "source_equal": true
+    }
+  },
+  "status": "PASS"
+}

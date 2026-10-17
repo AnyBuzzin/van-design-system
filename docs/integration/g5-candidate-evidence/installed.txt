@@ -1,0 +1,8 @@
+{
+  "installed_origin": "C:\\Users\\Buzz\\Documents\\vandesign-g5-offline-20261017\\wheel-env\\Lib\\site-packages\\vandesign\\__init__.py",
+  "distribution_version": "0.5.0",
+  "generator_id": "vandesign.cabinet@0.5.0",
+  "legacy_hash": "a0a43e005535b33f069dd786dc847682734819a09bd0803650688bb5e4b0a750",
+  "core_without_adsk": true,
+  "isolated": true
+}
