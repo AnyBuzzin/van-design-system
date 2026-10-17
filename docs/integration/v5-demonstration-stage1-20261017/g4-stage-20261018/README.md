@@ -1,0 +1,34 @@
+# V5 demonstration — approved G4 stage, 18 October 2026
+
+Astra — developer verification, pending Jack's independent assessment. Owner separately approved a fresh capacity check and one new structural fixture using the same backup/restoration procedure. This continues [stage one](../README.md) on the same evidence-only draft PR; no runtime code changes, merge, release, permanent installation or V6.
+
+| Capability | Expected and observed | Result | Evidence |
+|---|---|---|---|
+| Fresh capacity and protected-document check | 7/10 editable files, online, Runner running. All five existing documents exactly match previous saved identities/versions/dirty flags. | PASS | [Preflight](capacity-preflight.json), [protected before](protected-before.json) |
+| Exact candidate/source and backup | Current develop4c82a0a; five temporary Runner source files match reviewed develop;33/33 bundle files verified. Exact33-file original installation backed up before modification;7 original journals clear. | PASS | [Candidate hashes](candidate-files.json), [original hashes](original-installation-manifest.json), [active candidate proof](verify-candidate-api.json) |
+| Isolated one-shelf fixture | Only `V5-Demo-Shelves-20261017-01` created in the existing dedicated V5 demonstration project; unique name verified.59/59 actual geometry checks,2/2 correct cuts, ownership receipt. | PASS | [Baseline](baseline-build.json) |
+| Single first save | Saved once, version1, cloud-complete and clean. Exact new cloud ID is the sole temporary edit permission; all other configuration fields except approved cabinet source remain unchanged. | PASS | [Save](first-save.json), [temporary deployment hashes](temporary-deployment.json) |
+| Preview1→2 | Proposed structural change accepted before mutation. | PASS | [Preview](jobs/v5demo-g4-20261018-preview-two/result.json) |
+| Regenerate to2 shelves |85/85 measured geometry checks;4/4 explicit side-panel cut targets; inventory/census and ownership verified. | PASS | [Update/report/audit](jobs/v5demo-g4-20261018-to-two/result.json), [viewport](two-shelves.png) |
+| Preview2→1 and regenerate |59/59 geometry,2/2 cuts; original spec and measured inventory restored, added shelf absent. | PASS | [Preview](jobs/v5demo-g4-20261018-preview-one/result.json), [update/report/audit](jobs/v5demo-g4-20261018-to-one/result.json) |
+| Obsolete grooves/orphans | Exact baseline inventory equivalence, including body dimensions/volumes/topology, model/sketch signatures and census.108/108 material probes at all obsolete two-shelf groove locations confirm restoration. | PASS | [Restoration proof](restoration-extra-proof.json) |
+| No-op refusal | Requesting1 shelf when already at1 refused before mutation. Job outcome preserved as FAIL; exact measured state before/after identical. | PASS refusal; expected job FAIL | [Original failed result](jobs/v5demo-g4-20261018-no-op/result.json), [before/after proof](no-op-proof.json) |
+| Existing designs preserved | All five pre-existing documents unchanged, including original dirty G4v1 and all three dirty stage-one fixtures. Six documents remain open; no existing document saved, closed or discarded. | PASS | [Final document/source state](final-state.json) |
+| Original installation restored | Native stop/start; exact33 original files/config hashes restored;24 active original cabinet modules verified; Runner ping PASS;7 historical journals unchanged and all8 current journals clear. Temporary added files preserved outside installation. | PASS | [Restoration](installation-restored.json), [active source](final-state.json), [ping](restored-ping.txt) |
+| Final capacity |8/10 editable files, consistent with one new save after7/10 fresh preflight. Prior stage-one10→7 discrepancy remains unexplained; no editable-status manipulation occurred here. | PASS for this stage; prior cause UNKNOWN | [Final state](final-state.json) |
+| Save/reopen, fault injection, unrelated-component sentinel | Not authorized in this demonstration stage; not performed. Structural save/reopen persistence remains UNKNOWN. | NOT RUN | Accepted historic G4 recovery evidence reused, no new claim |
+| Earlier interior/layout/vehicle demonstrations | Not part of this stage; no further fixture/configuration operation. | NOT RUN | Separate bounded stage approval required |
+
+## State left and limitations
+
+The NEW shelf fixture remains active, saved at version1 with unsaved test changes after verified one-shelf restoration. No second save or reopen. Original G4 fixture and its unsaved changes are untouched. Screenshots are actual closed-door viewport checkpoints; internal shelf/groove correctness comes from measured reports and ownership audits, not visibility through doors. [Restored view](restored-one-shelf.png).
+
+The candidate used the accepted G5 wheel/bundle from stage one (wheel SHA25655d9530da10866d08a2e0c84e6c7083d9aef5044278648f62e78ef183eb10e50) and existing shelf-change architecture. Original Runner configuration SHA25670bf4288f224cef35efc1760aae594c54cf39d1676a298aa10956621d81d8378 restored. No production source changes or repeated broad regression campaign. This proves only the accepted default-base1→2→1 scope, not arbitrary reconciliation, crash recovery, manufacturing or vehicle fit.
+
+One initial read-only inventory helper used `Application.isOffline` instead of Fusion's `isOffLine`; it returned an API AttributeError before writing its report or performing any mutation. Correcting the property name allowed the actual capacity/safety checks to complete. [Original error preserved](capacity-preflight-api-name-error.json). A later local verification invocation had a path typo and never reached Fusion; corrected invocation passed. Neither error was a failed model/safety assertion. No unexpected document, geometry, ownership, recovery or configuration failure occurred.
+
+## Jack handover
+
+Review the actual85→59 measurements,4→2 owned cuts,108 restoration probes, retained no-op FAIL and exact Runner/protected-document restoration. Prior [stage-one cut-list results](../cut-list-crosscheck.json) and accepted [G5 regression evidence](../../g5-candidate-evidence/numeric-review-fix/README.md) remain unchanged. No new general persistence claim. Next recommended action: independent review of the two completed demonstration stages; separately plan/approve any earlier experimental demonstration before proceeding. No additional live work is implied by this report.
+
+[Publication manifest](PUBLICATION-MANIFEST.json) records original and sanitized published hashes. Original reports, backup, private configuration and journals remain locally preserved. Cloud IDs are redacted; numeric values and negative outcomes retained. Any embedded original report hashes refer to original bytes. No credential/session/config contents published.

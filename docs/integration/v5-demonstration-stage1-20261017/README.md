@@ -1,5 +1,7 @@
 # V5 hands-on demonstration — stage 1
 
+**Subsequent owner-approved stage:** [G4 demonstration completed on 18 October](g4-stage-20261018/README.md). The stage-one observations and stop boundary below remain preserved as recorded; the new report documents the separate approval and execution.
+
 Astra — developer verification for Jack's independent assessment. Validation only, from accepted develop `4c82a0ae3cf1e142c7d299e446629eb53d50864b`; no production code changes, new milestone, merge, release or V6. Owner approved backups, temporary Runner changes, one new project and three fixture saves, with an explicit stop before a new G4 fixture. Live work crossed midnight 17–18 October 2026 (Europe/Dublin); approved names retain 20261017.
 
 ## Evidence matrix
@@ -44,3 +46,4 @@ Stop before G4. Owner decision: whether to authorize the separate new G4 fixture
 ## Artifact integrity and privacy
 
 [Publication manifest](PUBLICATION-MANIFEST.json) records original and published SHA256 for every copied artifact. Originals, private exact backups/configuration and journals remain locally preserved. Cloud/project/folder identifiers are replaced with deterministic hashes in publication copies; numeric observations, statuses and negative outcomes are retained. JSON preview report hashes refer to original report bytes. Source paths describe the actual Windows installation. No credentials/session/configuration contents are published.
+
