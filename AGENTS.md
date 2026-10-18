@@ -11,7 +11,15 @@ Start with [current status](PROJECT_STATUS.md), then [Issue #36](https://github.
 5. Hand the exact change and results to the reviewer. Fix substantive findings. Integrate when the existing merge permission and checks allow, then continue the next ready task without another owner prompt.
 6. If an action is blocked, record the specific reason and continue independent approved work. Ask the owner only for a concrete owner-reserved decision, with a reviewable proposal.
 
-Astra implements/tests; Jack reviews against requirements and evidence; Vision coordinates available sessions and prevents duplicates; Jill resolves product/architecture questions when needed. Use only the roles needed for the task. Do not invent an assignment for every agent or wait for a coordinator when a ready task can proceed.
+## Two-agent working team — owner-directed 18 October 2026
+
+- **Astra — builder:** implement the next agreed increment, write meaningful tests, run offline and authorised Fusion checks, fix failures and submit the exact source/results for review. The owner's references to Asher/Ashra identify this existing role, not additional agents.
+- **Jack — reviewer and project lead:** own priorities, task assignment, coordination and the concise owner report. Review requirements, source and whether tests prove the intended behaviour; independently check important results. Request corrections, integrate/publish only when existing permissions and checks allow, verify integration and advance the next task. Do not self-review substantial code you authored as independent acceptance.
+- **Vision — standby:** no standing coordinator, relay or approval role. Assist only with a specific requested task; do not duplicate Jack's assignments or reports.
+- **Jill — on-demand adviser:** help with product direction, architecture tradeoffs or a specific review when requested. No routine gate or required handoff.
+- **Claude — optional outside review:** use for a specific milestone/question, not a standing approval step.
+
+Normal cycle: Jack selects → Astra implements/tests → Jack reviews → Astra corrects → Jack integrates when permitted and advances. Neither Vision nor Jill must participate for routine progress. Role changes do not alter existing merge, release, protected-design or live-test activation requirements.
 
 ## Report once, link rather than copy
 
