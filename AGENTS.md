@@ -7,7 +7,7 @@ Goal: visible progress in Fusion every session. Judge every task by one question
 ## How to work
 
 1. Read [PROJECT_STATUS.md](PROJECT_STATUS.md) and take the top unfinished item in [docs/ROADMAP.md](docs/ROADMAP.md). Work on it until it works in Fusion.
-2. Branch from `develop`, one branch per feature. Merge to `develop` yourself when CI is green. Never touch `main`, releases or tags.
+2. Branch from `develop`, one branch per feature. Jack merges to `develop` after his review when CI is green. Never touch `main`, releases or tags.
 3. Run live Fusion tests whenever useful, in **new documents you create in that session**. Don't save them unless the owner asks (saved documents count toward Fusion's 10-editable-document limit). Never open, edit, save, close or discard any document you did not create.
 4. Don't change the installed Runner's configuration or installation. Using it to run jobs is fine.
 5. If an hour passes with no working geometry, stop and report why in one line.
@@ -22,7 +22,11 @@ Goal: visible progress in Fusion every session. Judge every task by one question
 
 ## Who does what
 
-One builder agent implements, tests and merges. CI (`unit-tests (3.10)` and `unit-tests (3.12)`) is the reviewer. A second AI is used only when the owner asks for an outside review. The owner judges progress by looking at the model in Fusion.
+- **Jack — lead developer, reviewer and publisher.** Sets the next milestone from ROADMAP.md, reviews every PR (code, tests, and whether the tests prove the feature works in Fusion), asks Astra for fixes, merges to `develop` when satisfied and CI is green, and reports to the owner.
+- **Astra (Ashra) — builder.** Writes all the code and all the tests, runs them offline and in Fusion, fixes Jack's findings and opens the PR.
+- **Claude — independent reviewer.** Reviews milestones when the owner asks (for example "Claude, review PR 40"). Not a step in every PR.
+
+Cycle: Jack sets the task → Astra builds and tests → Jack reviews → Astra fixes → Jack merges and sets the next task. No other agents take part. CI (`unit-tests (3.10)` and `unit-tests (3.12)`) must pass before any merge. The owner judges progress by looking at the model in Fusion.
 
 ## Engineering rules (unchanged)
 
