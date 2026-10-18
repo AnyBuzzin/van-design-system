@@ -289,6 +289,8 @@ def composition_placement_sequence(design, assembly, guard, result=None):
     before_state = snapshot()
     refusal = dict(outcome='UNKNOWN', before=before, state_before=before_state)
     result['refusal'] = refusal
+    if before['outcome'] != 'PASS':
+        raise RuntimeError('Pre-refusal measurement failed; no placement request made')
     refused = move_composition(design, assembly, 100, 100, guard)
     refusal['preview'] = refused
     after = measure_composition(design, assembly, guard)
