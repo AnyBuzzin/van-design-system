@@ -64,7 +64,8 @@ def protected_manifest() -> dict:
             rel = os.path.relpath(full, PROTECTED_BASELINE_DIR).replace(os.sep, "/")
             with open(full, "rb") as fh:
                 baseline[rel] = _sha(fh.read())
-    with open(os.path.join(PKG, "cad", "fusion", "adapter.py"), "r", encoding="utf-8", newline="") as fh:
+    # Frozen source hashes protect the preserved adapter, not the evolving wheel.
+    with open(os.path.join(HISTORICAL_SCRIPT_DIR, "vandesign", "cad", "fusion", "adapter.py"), "r", encoding="utf-8", newline="") as fh:
         src = fh.read().replace("\r\n", "\n")
     tree = ast.parse(src)
     methods = {}

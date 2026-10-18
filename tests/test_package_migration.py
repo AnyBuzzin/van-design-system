@@ -27,6 +27,26 @@ class MigrationTests(unittest.TestCase):
         self.assertGreater(len(sources), 20)
         for source in sources:
             with self.subTest(file=str(source.relative_to(historical))):
+                if source.relative_to(historical).as_posix() == 'cad/fusion/adapter.py':
+                    # Issue #46 deliberately fixes zero-valued symbolic origins.
+                    # Only rectangle binding and its two dependency-forwarding
+                    # callers differ; all other adapter code stays historical.
+                    old = ast.parse(source.read_text(encoding='utf-8'))
+                    new = ast.parse((installed / source.relative_to(historical)).read_text(encoding='utf-8'))
+                    old_cls = next(n for n in old.body if isinstance(n, ast.ClassDef) and n.name == 'FusionAdapter')
+                    new_cls = next(n for n in new.body if isinstance(n, ast.ClassDef) and n.name == 'FusionAdapter')
+                    original = {n.name: n for n in old_cls.body if isinstance(n, ast.FunctionDef)}
+                    for i, node in enumerate(new_cls.body):
+                        if isinstance(node, ast.FunctionDef) and node.name == '_rectangle_profile':
+                            new_cls.body[i] = original[node.name]  # focused binding tests cover this intentional change
+                        elif isinstance(node, ast.FunctionDef) and node.name in ('_make_panel', '_make_dado'):
+                            calls = [n for n in ast.walk(node) if isinstance(n, ast.Call)
+                                     and isinstance(n.func, ast.Attribute) and n.func.attr == '_rectangle_profile']
+                            self.assertEqual(len(calls), 1)
+                            self.assertEqual([k.arg for k in calls[0].keywords], ['x_dynamic', 'y_dynamic'])
+                            calls[0].keywords = []
+                    self.assertEqual(ast.dump(old), ast.dump(new))
+                    continue
                 if source.relative_to(historical).as_posix() == 'cad/fusion/interior_demo.py':
                     # Issue #43 extends this adapter entry module. The original
                     # build/edit sequence remains identical; measure gains an
