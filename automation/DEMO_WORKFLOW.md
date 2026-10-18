@@ -86,3 +86,21 @@ No Windows permission changes are needed.
 Cloud save completion is distinct from reopen/persistence and engineering
 qualification. No measured van fit, structural, manufacturing or road-legal
 approval is implied by these demonstration checks.
+
+## Development-only Transit envelope (Issue #51)
+
+`TestTransitEnvelope` is a fixed compiled-in entry using only `demo_id` and
+`entry_point`. It builds the accepted three-panel bed and an explicitly specified
+1100 mm base cabinet, plus six separate reference objects. The 1784 x 3044 x
+2025 mm clear box is UNMEASURED; two 196 x 800 x 300 mm arches at Y600 are
+arbitrary test assumptions. Guides sit outside the clear box, with no roof.
+Reference roles/IDs are excluded from `furniture_rows()` and furniture-only
+interference; arches are checked separately against furniture material/space.
+One baseline measurement and one fixed refused bed +600 mm Y preview are checked
+for exact before/after geometry, parameter and timeline equality. There are no
+width-edit replays, saving, recovery injection or generic job-supplied placements.
+Run only after reviewed green integration, owner-approved backed-up installation
+and Jack's fresh baseline handoff. Capture then close only this new owned unsaved
+fixture. Stop on failure without retry/cleanup; prior failed fixtures stay protected.
+Offline tests prove intent, not Fusion solver success. Live qualification and
+screenshot remain NOT RUN until separately authorised deployment and execution.

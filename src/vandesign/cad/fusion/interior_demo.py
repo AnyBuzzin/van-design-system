@@ -363,3 +363,8 @@ def run_composition_demo(app, output_dir, guard):
         with open(path, 'w', encoding='utf-8') as handle:
             json.dump(payload, handle, indent=2)
     return path
+
+
+def run_test_envelope(app, output_dir, guard):
+    from .test_envelope import run_test_envelope as run
+    return run(app, output_dir, guard)

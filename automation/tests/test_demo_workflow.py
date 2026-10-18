@@ -341,3 +341,31 @@ class DemoTests(TmpDirCase):
             with self.assertRaises(PolicyError): self.run_cmd('save_demo_design',self.args)
         self.module.run_composition_demo.assert_called_once()
         self.doc.saveAs.assert_not_called()
+
+    def test_test_envelope_fixed_entry_and_fail_closed_report(self):
+        self.run_cmd('create_demo_design',{})
+        required=['test_clearances','furniture_interference','inventory',
+                  'reference.arch.left.interference','reference.arch.right.interference',
+                  'cabinet.001.dado.shelf1.left.ownership','cabinet.001.dado.shelf1.right.ownership',
+                  'entities.managed_ids']
+        bodies={'panel.'+str(i):{} for i in range(17)}
+        required += [sid+suffix for sid in bodies for suffix in ('.bbox','.volume')]
+        measured=dict(outcome='PASS',bodies=bodies,checks=[dict(check_id=k,status='PASS') for k in required])
+        report=dict(outcome='PASS',furniture_cut_list=[{}]*11,before=measured,after=copy.deepcopy(measured),
+                    refusal={'outcome':'REFUSED'},state_before={'timeline':55},state_after={'timeline':55})
+        self.assertTrue(workflow.verified_envelope(report))
+        for mutation in (lambda r:r['before']['checks'].pop(),
+                         lambda r:r.update(furniture_cut_list=[]),
+                         lambda r:r['after'].update(outcome='UNKNOWN'),
+                         lambda r:r['refusal'].update(outcome='PASS'),
+                         lambda r:r['state_after'].update(timeline=56)):
+            bad=copy.deepcopy(report);mutation(bad)
+            self.assertFalse(workflow.verified_envelope(bad))
+        with open(self.report_path,'w') as fh: json.dump(report,fh)
+        self.module.run_test_envelope=Mock(return_value=self.report_path)
+        with patch.object(workflow,'modules',return_value=self.module):
+            self.run_cmd('run_approved_demo',dict(demo_id='demo-001',entry_point='TestTransitEnvelope'))
+            with self.assertRaises(PolicyError): self.run_cmd('save_demo_design',self.args)
+            with self.assertRaises(PolicyError):
+                self.run_cmd('run_approved_demo',dict(demo_id='demo-001',entry_point='TestTransitEnvelope'))
+        self.doc.saveAs.assert_not_called()

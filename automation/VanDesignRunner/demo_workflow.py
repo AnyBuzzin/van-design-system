@@ -158,6 +158,26 @@ def verified(report, composition=False):
             and (not extra or extra[-1]['parameters_mm'] == stages[0]['parameters_mm']))
 
 
+def verified_envelope(report):
+    before=report.get('before'); after=report.get('after')
+    if not isinstance(before,dict) or before!=after or before.get('outcome')!='PASS':
+        return False
+    checks=before.get('checks',[])
+    required={'test_clearances','furniture_interference','inventory',
+              'reference.arch.left.interference','reference.arch.right.interference',
+              'cabinet.001.dado.shelf1.left.ownership','cabinet.001.dado.shelf1.right.ownership',
+              'entities.managed_ids'}
+    bodies=before.get('bodies',{})
+    if len(bodies)!=17 or len(report.get('furniture_cut_list',[]))!=11:
+        return False
+    required.update(sid+suffix for sid in bodies for suffix in ('.bbox','.volume'))
+    ids=[c.get('check_id') for c in checks]
+    return (report.get('outcome')=='PASS' and required<=set(ids) and len(ids)==len(set(ids))
+            and all(c.get('status')=='PASS' for c in checks)
+            and report.get('refusal',{}).get('outcome')=='REFUSED'
+            and report.get('state_before') is not None and report.get('state_before')==report.get('state_after'))
+
+
 def resolve_folder(app, project_id, folder_id):
     projects = app.data.dataProjects
     matches = [projects.item(i) for i in range(projects.count) if projects.item(i).id == project_id]
@@ -275,6 +295,19 @@ def execute(backend, command, args, out_dir, job_id):
                     closed_document=before, open_documents=remaining)
     design = adsk.fusion.Design.cast(app.activeProduct)
     if command == 'run_approved_demo':
+        if args['entry_point'] == 'TestTransitEnvelope':
+            if state['status'] != 'created' or set(args) != {'demo_id','entry_point'}:
+                raise PolicyError('Test envelope requires unused session and fixed arguments')
+            empty(design,doc); capacity(app)
+            module=modules(backend.cfg)
+            state['status']='build_attempted'
+            path=module.run_test_envelope(app,out_dir,lambda: session(args['demo_id']))
+            with open(path,encoding='utf-8') as fh: report=json.load(fh)
+            if not verified_envelope(report): raise PolicyError('Test envelope verification failed')
+            session(args['demo_id'])
+            state.update(status='verified',entry_point='TestTransitEnvelope')
+            return dict(outcome='PASS',demo_id=args['demo_id'],report_path=path,verification=report)
+
         if args['entry_point'] == 'BedCabinetComposition':
             if state['status'] != 'created' or set(args) != {'demo_id', 'entry_point'}:
                 raise PolicyError('Composition requires an unused session and fixed arguments')
@@ -320,7 +353,7 @@ def execute(backend, command, args, out_dir, job_id):
                     verification=report, identity=backend.identity(), existing_documents=unchanged(state))
 
     if command == 'save_demo_design':
-        if state.get('entry_point') == 'BedCabinetComposition':
+        if state.get('entry_point') in ('BedCabinetComposition','TestTransitEnvelope'):
             raise PolicyError('Composition demonstration is unsaved-only')
         if state['status'] != 'verified':
             raise PolicyError("Only a successfully verified build can be saved")
