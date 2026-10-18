@@ -1,0 +1,15 @@
+{
+  "helper_sha256": "c88a125707660640463e4b6bf0b721ec6afb7a7147c9a147c3dfaf363e671fdd",
+  "candidate_manifest_sha256": "f12c7ce95cf28ea8590b0036260be18b95c5e41ae712b459a1ddd0357ba79dab",
+  "wheel_sha256": "3765715307fec7db86ac183ab289b6d8e6445ca7172ccca8f460e9f2138b8c25",
+  "candidate_files_verified": 35,
+  "candidate_runtime_matches_wheel_and_develop": true,
+  "static_forbidden_calls_absent": true,
+  "single_document_creation_call": true,
+  "offline_alias_import_and_cleanup": "PASS",
+  "live_adsk_import_and_environment_restoration": "NOT RUN",
+  "helper_run_invoked": false,
+  "Fusion_connection": "NOT RUN",
+  "independent_review": "PENDING",
+  "owner_execution_approval": "REQUIRED"
+}

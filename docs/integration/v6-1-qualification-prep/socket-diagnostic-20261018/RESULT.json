@@ -1,0 +1,32 @@
+{
+  "request": {
+    "name": "fusion_mcp_read",
+    "arguments": {
+      "queryType": "document",
+      "operation": "open"
+    }
+  },
+  "request_count": 1,
+  "client": "existing VanDesign-V5-demonstration-preflight/call_existing.py socket/session client, unmodified",
+  "communication": "PASS",
+  "response_success": true,
+  "open_documents": 6,
+  "saved_documents": 6,
+  "dirty_documents": 5,
+  "read_only_documents": [
+    "V5-Demo-Base-20261017-01",
+    "V5-Demo-Tall-20261017-01",
+    "V5-Demo-Overhead-20261017-01"
+  ],
+  "both_G4_fixtures_dirty": true,
+  "bed_fixture_name_present": false,
+  "document_versions": "NOT PROVIDED by this query",
+  "editable_document_capacity": "NOT PROVIDED by this query",
+  "full_qualification_readiness": "UNKNOWN pending reviewed helper checks and independent assessment",
+  "helper_executed": false,
+  "other_live_requests": 0,
+  "runner_or_configuration_changes": false,
+  "document_mutations_requested": false,
+  "independent_confirmation": "REQUESTED",
+  "next_execution": "Requires new owner approval"
+}
