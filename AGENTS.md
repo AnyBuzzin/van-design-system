@@ -1,37 +1,39 @@
-# VanDesign — active AI engineering instructions
+# VanDesign agent workflow
 
-**Read first:** [owner-approved working plan, Issue #36](https://github.com/AnyBuzzin/van-design-system/issues/36) including newest comments, [current project status](PROJECT_STATUS.md), [roadmap](docs/ROADMAP.md), and [precision/cut-ownership standard](docs/standards/precision-and-ownership.md). **The current Issue #36 body supersedes its earlier, explicitly superseded task lists**; archived handovers are evidence, not instructions.
+Start with [current status](PROJECT_STATUS.md), then [Issue #36](https://github.com/AnyBuzzin/van-design-system/issues/36) and new feedback on the active task. Read implementation files and relevant evidence as needed. Do not reread the entire archive or roadmap every session. Latest explicit owner instructions take precedence; old handovers are historical.
 
-## Roles and workflow
+## Work continuously
 
-- **Owner:** product direction and owner-reserved safety/business decisions. Do not ask the owner to interpret routine Python tests or technical review verdicts.
-- **Vision:** coordinates active sessions and concise owner updates, prevents duplicate work; GitHub is authoritative.
-- **Jill:** technical direction, constrained priorities and architecture review.
-- **Astra:** one primary implementation, proportionate offline tests and clear draft PR/evidence.
-- **Jack:** independently reviews actual source/geometry evidence, requests corrections and records PASS/FAIL/UNKNOWN. Shared GitHub credentials do not make role-labelled comments independent GitHub account approvals.
+1. Pick the highest-priority ready task already approved in Issue #36. Check existing branches/PRs to avoid duplicate work. Use integrated develop and one focused PR per useful increment; avoid long dependent stacks.
+2. Put the goal and acceptance checks in the existing issue or PR. A few sentences suffice; no separate contract, planning document or handover file unless technically necessary.
+3. Implement the smallest useful change with the existing Python core, Fusion adapter and Runner. Do not add coordination frameworks or speculative features.
+4. Run checks proportionate to changed behaviour. Reuse verified evidence for unchanged components; repeat tests only for a change, failure or specific evidence gap. Documentation-only work needs factual/link/diff checks and existing required CI, not a new test campaign.
+5. Hand the exact change and results to the reviewer. Fix substantive findings. Integrate when the existing merge permission and checks allow, then continue the next ready task without another owner prompt.
+6. If an action is blocked, record the specific reason and continue independent approved work. Ask the owner only for a concrete owner-reserved decision, with a reviewable proposal.
 
-Use existing ChatGPT desktop messages where they actually reach active agents; use GitHub issues/PRs for substantive decisions. A posted comment **does not automatically wake or operate a dormant agent**. One primary implementation task and a separate independent review/planning task are usually enough. Avoid duplicated issues, big dependent PR stacks and paperwork solely to keep agents busy.
+Astra implements/tests; Jack reviews against requirements and evidence; Vision coordinates available sessions and prevents duplicates; Jill resolves product/architecture questions when needed. Use only the roles needed for the task. Do not invent an assignment for every agent or wait for a coordinator when a ready task can proceed.
 
-## Engineering invariants
+## Report once, link rather than copy
 
-- **src/vandesign is the only maintained Python runtime.** Historic V4 and prototypes/claude-v5 sources are evidence, never a second runtime or automatic import source. Keep CAD-neutral millimetre geometry outside the Fusion adapter; use adsk only at the adapter boundary.
-- Preserve versioned standalone specifications, deterministic stable component IDs, parametric expressions and explicit owned boolean-cut participants. Refuse ambiguous IDs, cuts or invalid/nonfinite parameters. Do not silently weaken adapter empty-root guards or reinterpret its singular stored cabinet specification as composition provenance.
-- Verify changed CAD behaviour with **actual Fusion BRep measurements** (bounds, net volumes, contacts, cuts/participants, interference), not only calculated boxes, mocks or screenshots. If a measurement is absent/invalid, record FAIL or UNKNOWN, never PASS.
-- Keep verified older data and negative reports. Do not rerun unchanged G3/G4 campaigns by default. Never delete historical evidence just to reduce file count.
-- Protect existing unsaved/dirty CAD fixtures, cloud IDs, installed Runner/configuration and queue. Do not save, close, discard or modify protected designs without explicit owner authority. Never publish credentials or raw private identifiers.
-- Do not claim CNC/manufacturing, structural load, anchoring, electrical, road legality or measured vehicle fit without separate physical/evidence qualification.
+- PR: what changed, actual PASS/FAIL/UNKNOWN/NOT RUN results, evidence links and material limits. That is also the technical handover.
+- Active issue: link the PR and give only the new decision, blocker or completion. No repeated narrative, routine acknowledgements or status-only PRs.
+- PROJECT_STATUS.md: the only current-status page; update briefly when accepted capability, active work or a blocker changes. Roadmap is future direction; changelog is history.
+- Keep one concise milestone summary with links to reproducible raw measurements/logs. Preserve failures and existing evidence; do not create parallel copies or delete useful records to meet a file quota.
+- Give the owner one brief end-of-session report. Escalate material blockers when needed; keep decision requests under about 150 words.
 
-## Operating permissions — see Issue #36 for activation state
+## Engineering rules
 
-1. **Active offline work:** within the owner's currently approved queue, agents may plan, implement, run offline tests, review and submit one focused draft PR per independent milestone without repeated owner prompts. Start from freshly checked integrated develop. State files/contracts, refusal cases, non-goals and rollback boundary in brief.
-2. **Delegated merges to develop:** **only after** the already approved branch protection, required Python 3.10/3.12 checks, credible independent reviewer identity/accepted approach and activation evidence are actually in place. Until then do not merge or direct-push. For an activated merge: verify exact reviewed head/scope, green required CI and current base, squash merge, then verify post-merge CI; no unrelated or status-only direct commits.
-3. **Disposable live Fusion:** **only after** the staged trusted-document baseline/pinned-helper/pilot/class requirements have been fulfilled. No live socket/API request (including diagnostics) is implied by an offline plan. For approved sessions, fail closed on source/hash, document inventory, capacity, Runner state or geometry ambiguity; never replay a consumed one-shot or touch protected fixtures.
-4. **Owner-reserved:** main/release/tag, security controls, Runner installation/configuration, protected CAD files, persistent saves/reopens and higher-risk product/architecture scope. Escalate a **specific blocker**, not repeated approvals for routine coding or testing.
+- src/vandesign is the sole maintained runtime. Preserve V4/prototype archives and unresolved original-source provenance. Keep CAD-neutral millimetres in core; isolate adsk imports and unit conversion at the Fusion boundary. Build deployment bundles from the reviewed installed wheel with verifiable hashes.
+- Preserve stable IDs, parametric expressions, backward-compatible parameter/schema identities and explicit exact cut participants. Refuse ambiguous ownership or invalid inputs. Composition provenance is not a cabinet stored specification.
+- Check changed CAD behaviour against actual BRep bounds/net volumes, contacts, cut participants and interference. Arithmetic, mocks and screenshots alone cannot qualify live CAD. Missing or invalid observations are FAIL/UNKNOWN.
+- Protect existing documents, unsaved changes, private identifiers, Runner/configuration and history. Never weaken tests or erase negative outcomes to obtain PASS. Manufacturing, loads, anchoring, vehicle fit and CNC require their own evidence.
 
-## Current technical priority
+## Authority
 
-Build and measure **one combined bed+base-cabinet model** with existing V6.2/V6.3 symbolic composition, initially **OFFLINE helper preparation** until Fusion gates activate. Default bed at X=0 and cabinet at X=1500 mm: 11 expected panel solids, 2 cabinet-side dado operations and a nominal 100 mm X gap. Preserve source and original geometry/cut ownership. The composition is **not yet live-qualified**. After live baseline PASS, combined edits/restoration are a separate focused increment. [Status](PROJECT_STATUS.md) · [Plan](https://github.com/AnyBuzzin/van-design-system/issues/36).
+Offline work in the approved queue proceeds now. Delegated develop merges and fresh disposable live Fusion tests require the existing [staged activation conditions](https://github.com/AnyBuzzin/van-design-system/issues/36#issuecomment-6250181462), as updated by the current Issue #36 body. Verify activation; do not add new approval layers. Shared-login role labels are not separate GitHub account approvals.
 
-## Review and reporting
+Main/releases, security settings, permanent Runner changes, protected-design changes and persistence operations retain their existing owner boundaries. No force push or sensitive-ID publication. Historical tab/capacity causes may stay UNKNOWN while a safe current baseline is established.
 
-One task → one focused PR. Run proportionate installed-wheel/unit/refusal tests plus CI; Jack checks meaningful deltas and evidence independently. Publish one short PR/milestone summary with observed PASS/FAIL/UNKNOWN/NOT RUN, hashes/links where needed, genuine blockers and next useful action. Vision gives the owner a single session recap rather than a stream of administrative handovers. **No merge or live permission is inferred from successful tests alone.**
+Use existing direct messages only where available; GitHub records decisions. Posts do not wake dormant agents or guarantee unattended execution. Stop the affected action on unexpected state; preserve evidence and continue safe work.
+
+For detailed geometry rules, read [precision and ownership](docs/standards/precision-and-ownership.md) when relevant.
