@@ -1,0 +1,39 @@
+{
+  "outcome": "BLOCKED BEFORE EXECUTION",
+  "helper_executions": 0,
+  "helper_sha256": "c88a125707660640463e4b6bf0b721ec6afb7a7147c9a147c3dfaf363e671fdd",
+  "reviewed_commit": "62795b62d8848550f6803b287cfdd75c3bda43d5",
+  "candidate_manifest_sha256": "f12c7ce95cf28ea8590b0036260be18b95c5e41ae712b459a1ddd0357ba79dab",
+  "candidate_files_verified": 35,
+  "candidate_mismatches": [],
+  "wheel_sha256": "3765715307fec7db86ac183ab289b6d8e6445ca7172ccca8f460e9f2138b8c25",
+  "original_installation_exact_match": true,
+  "original_installation_file_count": 33,
+  "queue_pending": 0,
+  "queue_claimed": 0,
+  "journal_count": 8,
+  "unresolved_journal_count": 0,
+  "runner_ping": "PASS",
+  "document_query": {
+    "tool": "fusion_mcp_read",
+    "arguments": {
+      "queryType": "document",
+      "operation": "open"
+    },
+    "transport": "PowerShell Invoke-RestMethod POST existing /mcp endpoint and existing session",
+    "outcome": "FAIL",
+    "error": "The response ended prematurely. (ResponseEnded)",
+    "service_response_received": false,
+    "cause": "UNKNOWN: client transport versus service not diagnosed; no retry"
+  },
+  "all_document_inventory": "UNKNOWN",
+  "fresh_capacity_hub_editability": "NOT RUN after transport failure",
+  "live_loaded_source_verification": "NOT RUN",
+  "bed_geometry_and_edits": "NOT RUN",
+  "python_import_restoration": "NOT RUN: helper not invoked; no candidate imports into Fusion requested",
+  "fixture_created": false,
+  "helper_output_path_exists": false,
+  "runner_installation_or_config_changed": false,
+  "save_close_discard_or_model_commands_submitted": false,
+  "recorded_utc": "2026-10-18T00:07:50.978003+00:00"
+}
