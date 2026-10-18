@@ -61,12 +61,38 @@ def queue_clear():
 
 
 def document_state(doc):
-    require(doc.isValid, 'Document invalidated')
+    require(doc.isValid is True, 'Document invalidated')
+    name, saved, modified = doc.name, doc.isSaved, doc.isModified
+    require(isinstance(name, str) and bool(name.strip()), 'Document name unavailable')
+    require(type(saved) is bool and type(modified) is bool, 'Document state unavailable')
     data = doc.dataFile
-    return dict(name=doc.name, saved=doc.isSaved, modified=doc.isModified,
-                identity_sha256=digest(data.id.encode()) if data else None,
-                version=data.versionNumber if data else None,
-                read_only=data.isReadOnly if data else None)
+    identity, version, read_only = None, None, None
+    if saved:
+        require(data is not None, 'Saved document has no data file')
+        identity, version, read_only = data.id, data.versionNumber, data.isReadOnly
+        require(isinstance(identity, str) and bool(identity.strip()), 'Saved identity unavailable')
+        require(type(version) is int and version > 0, 'Saved version invalid')
+        require(type(read_only) is bool, 'Saved editability unavailable')
+    else:
+        require(data is None, 'Unsaved document has contradictory saved identity')
+    return dict(name=name, saved=saved, modified=modified,
+                identity_sha256=digest(identity.encode()) if saved else None,
+                version=version, read_only=read_only)
+
+
+def capacity_state(app, documents):
+    limits = app.data.personalUseLimits
+    require(limits is not None, 'Editable capacity unavailable')
+    used, maximum = limits.editableFileCount, limits.maxEditableFileCount
+    require(type(used) is int and type(maximum) is int,
+            'Editable capacity must contain integer counts')
+    require(0 <= used <= maximum and maximum > 0, 'Editable capacity invalid')
+    identities = [d['identity_sha256'] for d in documents if d['saved']]
+    require(len(set(identities)) == len(identities), 'Duplicate saved document identity')
+    require(sum(d['saved'] and not d['read_only'] for d in documents) <= used,
+            'Editable capacity contradicts open saved documents')
+    # Full capacity is valid: this qualification never saves its new fixture.
+    return dict(used=used, maximum=maximum)
 
 
 def equivalent(left, right):
@@ -93,6 +119,7 @@ def run(context):
     original_bytecode = sys.dont_write_bytecode
     originals = [app.documents.item(i) for i in range(app.documents.count)]
     before = [document_state(d) for d in originals]
+    capacity = capacity_state(app, before)
     require(not any(d.name == NAME for d in originals), 'Fixture name already open')
     original_files = file_inventory(RUNNER)
     require(digest(json.dumps(original_files, sort_keys=True).encode()) == '3bb69fd87377d74543b59d1b003c54025f49186b75f747c6dc16b86330c16924', 'Original installation differs from reviewed preparation')
@@ -116,8 +143,7 @@ def run(context):
     OUTPUT.mkdir()  # exclusive one-shot marker; never removed
     report = dict(outcome='UNKNOWN', stages=[], before=before,
                   candidate_manifest_sha256=MANIFEST_SHA, runner_files=original_files,
-                  capacity=dict(used=app.data.personalUseLimits.editableFileCount,
-                                maximum=app.data.personalUseLimits.maxEditableFileCount),
+                  capacity=capacity,
                   capacity_discrepancy='UNKNOWN; no save or editability change proposed')
     doc = None
 
@@ -126,6 +152,7 @@ def run(context):
 
     def guard():
         require([document_state(d) for d in originals] == before, 'Protected document changed')
+        require(capacity_state(app, before) == capacity, 'Editable capacity changed')
         current = [app.documents.item(i) for i in range(app.documents.count)]
         require(current == originals + ([doc] if doc is not None else []), 'Unexpected document operation')
         queue_clear()

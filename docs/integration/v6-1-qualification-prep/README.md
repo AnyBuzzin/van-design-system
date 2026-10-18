@@ -1,8 +1,8 @@
-# V6.1 qualification helper — OFFLINE PREPARATION ONLY
+# V6.1 qualification helper â€” OFFLINE PREPARATION ONLY
 
-Owner authorized preparation and independent review, not execution. Based on develop078ae9f and accepted PR28 candidate. No Fusion connection, model operation, Runner replacement/configuration change or cabinet regression campaign performed.
+Current corrected helper: owner authorized offline correction and independent review only, not execution. Earlier approval applied only to the previous helper hash. Based on develop078ae9f and accepted PR28 candidate. No Fusion connection, model operation, Runner replacement/configuration change or cabinet regression campaign performed.
 
-Exact helper: [qualify_bed.py](qualify_bed.py), SHA256 **c88a125707660640463e4b6bf0b721ec6afb7a7147c9a147c3dfaf363e671fdd**. [Offline verification](PREPARATION.json). File bytes are pinned with local `.gitattributes`; any edit invalidates this approval candidate.
+Exact helper: [qualify_bed.py](qualify_bed.py), SHA256 **ab33983555aa7199d5fcf85d88b0297d5ca2aa0364917ffd680593250ed50710**. [Current correction verification](PREFLIGHT-CORRECTION.json); [original preparation evidence](PREPARATION.json) remains historical and unchanged. File bytes are pinned with local `.gitattributes`; any edit invalidates this approval candidate.
 
 ## Execution mechanism for independent review
 
@@ -19,7 +19,7 @@ After Jack approves the exact source/mechanism AND the owner separately authoriz
 
 New name `VanDesign-V6-1-bed-unsaved-20261018`; new report folder `C:\Users\Buzz\Documents\VanDesign-V6-1-live-qualification-20261018` (must not exist). Candidate path is Jack's existing staged `VanDesign-V6-1-offline-20261018/live-candidate-20261018/VanCabinetJoineryV5`;35 files verified against manifest f12c7ce95cf28ea8590b0036260be18b95c5e41ae712b459a1ddd0357ba79dab and accepted wheel3765715307fec7db86ac183ab289b6d8e6445ca7172ccca8f460e9f2138b8c25. Runtime source matches current develop after declared CRLF normalization. This folder's cabinet name does not authorize running its launcher.
 
-Seven measured states: baseline; width1400→1500→1400; length1900→2000→1900; height700→800→700. Three components/solids and stable IDs, actual BRep bounds/volumes, healthy features, zero interference, rectangular opposing contact faces/areas and restored expressions/geometry/component references. Default contact area25200mm² per support. Canonical initial spec remains separately recorded from actual edited parameters/expected changed spec hash. No cabinet-specific report validator or bed preview measured-report claim. On unavailable/failed measurement, stop with FAIL and preserve evidence rather than implying PASS.
+Seven measured states: baseline; width1400â†’1500â†’1400; length1900â†’2000â†’1900; height700â†’800â†’700. Three components/solids and stable IDs, actual BRep bounds/volumes, healthy features, zero interference, rectangular opposing contact faces/areas and restored expressions/geometry/component references. Default contact area25200mmÂ² per support. Canonical initial spec remains separately recorded from actual edited parameters/expected changed spec hash. No cabinet-specific report validator or bed preview measured-report claim. On unavailable/failed measurement, stop with FAIL and preserve evidence rather than implying PASS.
 
 ## Stop/recovery and remaining risks
 
@@ -32,3 +32,13 @@ No live save/capacity consumption, persistence, fault injection, rollback campai
 Jack: independently review exact helper, API invocation, source isolation/cleanup, actual measurement logic and stopping conditions. Post verdict/hash in this draft PR. Owner final execution approval remains required even after review PASS.
 
 API signatures checked against Autodesk [Features.count](https://help.autodesk.com/cloudhelp/ENU/Fusion-360-API/files/fusion_Features_count.htm), [getNormalAtPoint](https://help.autodesk.com/cloudhelp/ENU/Fusion-360-API/files/core_SurfaceEvaluator_getNormalAtPoint.htm) and [computeAll](https://help.autodesk.com/cloudhelp/ENU/Fusion-360-API/files/fusion_WorkingModel_computeAll.htm); computeAll success alone is not feature-health evidence.
+
+## Offline preflight correction — owner requested
+
+Saved documents now require a nonempty identity, positive integer version and boolean editability; document name/validity/saved/dirty observations must be complete. Unsaved documents retain null saved metadata and must not report a saved data file. Read-only and dirty documents are permitted and preserved as observed; they are never made editable, saved or closed. Duplicate saved identities fail closed.
+
+Capacity must provide integer counts (not booleans, strings, fractional or nonfinite values), with maximum > 0 and 0 <= used <= maximum. The used count cannot be lower than the number of distinct open saved editable documents. Full capacity remains valid for this unsaved-only test: no saving or slot consumption is authorised. Missing properties/API failures propagate as stops, without substitute values. Unknown/unlimited sentinel values are intentionally refused rather than guessed.
+
+Initial metadata/capacity checks occur before candidate imports, output-directory creation or document creation. Existing guards repeat document metadata and validated capacity equality before document/geometry mutations. A guard failure after creation stops further mutations and retains the fixture, as before. Failures in initial preflight propagate to the existing API caller; the helper output folder is not created, so preserve the API failure response privately. No fallback or retry is introduced.
+
+Offline test: `python -B docs/integration/v6-1-qualification-prep/test_preflight.py` (standard-library unittest; fake adsk only). Eight tests with invalid-input subcases pass on Python3.12. No Fusion evidence or full runtime safety is claimed. Exact source from document creation through measurements, edit/restoration sequence and final restoration is unchanged. Candidate package, installed Runner and historical evidence are unchanged. New helper hash requires Jack's independent review and fresh owner approval before execution.
