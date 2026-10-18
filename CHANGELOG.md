@@ -7,7 +7,6 @@
 - **V6.1 (PR #28 and #30):** nominal three-panel 18 mm bed; bounded seven-state live Fusion geometry and width/length/height restoration PASS; no load/stability/manufacturing qualification.
 - **V5 (PR #21, #22, #25, #27):** accepted bounded base/tall/overhead cabinet family, explicit side-panel dados, safe scoped width/shelf-count updates, deterministic CSV/JSON previews and sanitized practical Fusion demonstration evidence.
 - **Runner (PR #19):** owner-approved reviewed wheel-bundle migration with bounded live verification; no further installation/config changes delegated.
-- **Current next step:** source-pinned combined Fusion qualification helper preparation and focused live BRep proof after existing activation gates. See [status](PROJECT_STATUS.md) and [Issue #36](https://github.com/AnyBuzzin/van-design-system/issues/36).
 
 ## Historical V4
 
