@@ -8,7 +8,10 @@ Goal: visible progress in Fusion every session. Judge every task by one question
 
 1. Read [PROJECT_STATUS.md](PROJECT_STATUS.md) and take the top unfinished item in [docs/ROADMAP.md](docs/ROADMAP.md). Work on it until it works in Fusion.
 2. Branch from `develop`, one branch per feature. Jack merges to `develop` after his review when CI is green. Never touch `main`, releases or tags.
-3. Run live Fusion tests whenever useful, in **new documents you create in that session**. Don't save them unless the owner asks (saved documents count toward Fusion's 10-editable-document limit). Never open, edit, save, close or discard any document you did not create.
+3. Run live Fusion tests whenever useful, in **new documents you create in that session**. Never open, edit, save, close or discard any document you did not create.
+   - **Fusion personal-use limit: 10 editable documents.** At the end of every test, close the documents you created **without saving**; unsaved documents don't count toward the limit.
+   - If a document must be saved (only when the owner asks), mark it **read-only** before you finish. If you can't do that through the API, tell the owner the document name in one line so they can mark it.
+   - Before starting a test, check the editable-document count; if it is 9 or more, stop and tell the owner.
 4. Don't change the installed Runner's configuration or installation. Using it to run jobs is fine.
 5. If an hour passes with no working geometry, stop and report why in one line.
 
