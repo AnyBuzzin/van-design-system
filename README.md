@@ -1,46 +1,25 @@
 # VanDesign — AI-assisted parametric van engineering
 
-**Current state (2026-10-15): V5 engineering development integrated into `develop`; NOT manufacturing-ready.** [Complete project status](PROJECT_STATUS.md) · [Current roadmap](docs/ROADMAP.md).
+**Current state (18 October 2026):** V5 cabinet family and standalone bed have bounded real-Fusion evidence; V6.2 placement and V6.3 **combined bed + cabinet composition are accepted OFFLINE**, not yet qualified in a single live Fusion design. The project is **not manufacturing- or CNC-ready**.
 
-VanDesign aims to turn typed van/customer requirements into editable Autodesk Fusion 360 assemblies, with deterministic geometry, measured CAD validation and, at later approved stages, traceable manufacturing information. **AI proposes intent; the engineering core constructs and validates; humans approve fabrication.**
+[Current project status](PROJECT_STATUS.md) · [Next product capabilities](docs/ROADMAP.md) · [Owner-approved work plan](https://github.com/AnyBuzzin/van-design-system/issues/36) · [Engineering instructions](AGENTS.md)
 
-## Start here
+## What VanDesign does today
 
-- [Current status, completed work and exact gaps](PROJECT_STATUS.md)
-- [Authoritative V5 gates G0–G5 and later V6–V10 roadmap](docs/ROADMAP.md)
-- [Rules for AI development and milestone scope](AGENTS.md)
-- [Geometry precision and cut ownership](docs/standards/precision-and-ownership.md)
-- [Contributor guidance](CONTRIBUTING.md)
-- [Preserved original V4 provenance](legacy/v4-verified/README.md)
-- [Single-runtime migration details](docs/integration/ONE_PACKAGE_MIGRATION.md)
-- [Real-Fusion deployed-package checkpoint](docs/integration/pr14-checkpoint-evidence/live-20261015/FINAL_REVIEW.md)
+- Generates base, tall and overhead **parametric cabinet panels** using named Fusion parameters and explicit owned dado cuts.
+- Generates a standalone three-panel nominal 18 mm bed, with tested size edits in Fusion.
+- Uses **V6.2 CAD-neutral layout checks** to place one bed and one cabinet, refuse collisions and preserve independent panel identities.
+- Uses **V6.3 offline symbolic composition** to prepare an 11-panel, two-cabinet-dado combined assembly without duplicating source formulas. **This exact composition has not yet passed live Fusion BRep qualification.**
+- Produces deterministic nominal CSV/JSON panel previews; these are not CNC toolpaths or physically qualified cutting instructions.
 
-## Architecture and source of truth
+## Architecture
 
-```text
-typed millimetre specifications
-       |
-src/vandesign — CAD-neutral expressions, panels and geometry
-       |
-furniture and simplified vehicle-layout modules
-       |
-Fusion adapter and generated, hash-verified script bundles
-       |
-read-only BRep verification + exact boolean cut participants
-       |
-reviewed, scoped engineering evidence
-```
+The maintained Python runtime is **src/vandesign**: typed millimetre specs → CAD-neutral expressions/panels/joints → Fusion adapter → measured BRep verification for supported live tests. The existing Fusion Runner can execute specifically authorised bounded jobs. Historical V4/V5 prototypes remain as evidence, **not a second maintained runtime**. No additional orchestration platform is required.
 
-**`src/vandesign` is the sole maintained Python runtime.** The former `prototypes/claude-v5` package is retained as historical source and test evidence, **not** a second runtime. The installed wheel provides legacy `DadoShelf` and the V5 component/model/Fusion-adapter interfaces. No code outside the CAD adapter may depend on `adsk`.
+## Engineering and business boundaries
 
-The original V4 final executed source identity is still under investigation; the V5 G2 base fixture and the deployed PR14 `base@1` checkpoint have documented real-Fusion geometry and exclusive cut-ownership PASS results. This does **not** prove arbitrary variants, measured vehicle fit, production structures or CNC safety.
+Start from integrated **develop**; leave **main** for a separate release decision. Make focused PRs with actual PASS/FAIL/UNKNOWN results, preserve existing Fusion designs and evidence, and follow [precision/cut ownership rules](docs/standards/precision-and-ownership.md). Branch protection and live-Fusion activation remain to be verified; see [Issue #16](https://github.com/AnyBuzzin/van-design-system/issues/16) and [Issue #36](https://github.com/AnyBuzzin/van-design-system/issues/36).
 
-## Development and testing
+Current software output is **not validated** for structural load, vehicle mounting, measured fit, CNC tooling or commercial manufacturing. The exact original executed V4 source is still [unresolved](https://github.com/AnyBuzzin/van-design-system/issues/1). A separate licence decision is needed before commercial Fusion use.
 
-- Use `develop` as the starting baseline and create **one focused feature branch/PR per milestone**. `main` is reserved for separately authorised stable/release changes.
-- Offline tests use the installed Python package and GitHub Actions on Python 3.10 and 3.12. The development-only integration of [PR #14](https://github.com/AnyBuzzin/van-design-system/pull/14) (including the PR #13 stack) passed post-merge CI.
-- For changed CAD behaviour, collect focused real-Fusion BRep/owned-cut/edit-restore or persistence evidence; don't restart unrelated historical regression campaigns.
-- Existing live Fusion runner installations may still point to historical package folders; **do not silently replace them**. Migrate through a separate approved backup/rollback procedure.
-- Treat any actual product release, manufacturing/CAM/CNC operation and physical van installation as **unqualified** until formal future acceptance.
-
-VanDesign source is not offered under a redistribution licence.
+**No redistribution licence is currently offered.** The repository's public visibility does not mean its content is approved for unrestricted reuse.
