@@ -46,10 +46,10 @@ def measure_test(design, assembly, guard):
             (c.features.extrudeFeatures.item(i) for i in range(c.features.extrudeFeatures.count))
             if f.operation==adsk.fusion.FeatureOperations.CutFeatureOperation]
     counts = _design_counts(design)
-    check('inventory', sum(c.bRepBodies.count for c in components)==17
+    check('inventory', sum(c.bRepBodies.count for c in components)==16
           and design.rootComponent.bRepBodies.count==0
-          and counts['root_occurrences']==17 and counts['all_components']==18
-          and counts['timeline_items']==55 and counts['user_parameters']==len(assembly.parameters.params)
+          and counts['root_occurrences']==16 and counts['all_components']==17
+          and counts['timeline_items']==52 and counts['user_parameters']==len(assembly.parameters.params)
           and all(c.bRepBodies.item(i).isSolid for c in components for i in range(c.bRepBodies.count))
           and all(f.healthState==adsk.fusion.FeatureHealthStates.HealthyFeatureHealthState
                   and not f.isSuppressed for c in components for f in

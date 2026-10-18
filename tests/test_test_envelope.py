@@ -14,7 +14,7 @@ class TestEnvelopeTests(unittest.TestCase):
 
     def test_nominal_layout_dimensions_clearances_and_determinism(self):
         self.assertEqual(self.a,build_test_envelope())
-        self.assertEqual(len(self.a.panels),17)
+        self.assertEqual(len(self.a.panels),16)
         self.assertEqual(self.boxes[ARCHES[0]],Box((0,600,0),(196,1400,300)))
         self.assertEqual(self.boxes[ARCHES[1]],Box((1588,600,0),(1784,1400,300)))
         self.assertEqual(self.boxes['bed.001.bed.deck.001'],Box((192,50,682),(1592,1950,700)))
@@ -75,3 +75,23 @@ class TestEnvelopeTests(unittest.TestCase):
         compiled=compose_layout(changed,cabinet_spec_json=CABINET_SPEC).assembly
         self.assertEqual(compiled.parameters.resolve()['Cab_Width'],1100)
         self.assertEqual(len(compiled.panels),11)
+
+    def test_optional_left_sill_absent_but_reference_bbox_checks_still_strict(self):
+        from types import SimpleNamespace as NS
+        from vandesign.verification.geometry_source import MeasuredBody
+        from vandesign.verification.validate import validate
+        ids={p.stable_id for p in self.a.panels if p.stable_id.startswith('reference.')}
+        self.assertEqual(ids, {'reference.floor','reference.right','reference.front',*ARCHES})
+        self.assertNotIn('reference.left',self.boxes)
+        original=self.boxes['reference.right']
+        shifted=Box(tuple(v+20 if i==0 else v for i,v in enumerate(original.lo)),
+                    tuple(v+20 if i==0 else v for i,v in enumerate(original.hi)))
+        source=NS(parameter_value=lambda n:self.env[n],
+                  body=lambda sid:MeasuredBody(shifted,original.volume) if sid=='reference.right' else None,
+                  point_in_material=lambda *args:None,interference_count=lambda ids:None,
+                  managed_ids=lambda:{p.stable_id:1 for p in self.a.panels},diagnostics=[])
+        report=validate(self.a,source)
+        check=next(c for c in report.checks if c.check_id=='reference.right.bbox')
+        self.assertEqual(check.status,'FAIL')
+        self.assertEqual(check.observed,20)
+        self.assertEqual(check.tolerance,0.01)

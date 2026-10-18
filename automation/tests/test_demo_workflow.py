@@ -348,17 +348,17 @@ class DemoTests(TmpDirCase):
                   'reference.arch.left.interference','reference.arch.right.interference',
                   'cabinet.001.dado.shelf1.left.ownership','cabinet.001.dado.shelf1.right.ownership',
                   'entities.managed_ids']
-        bodies={'panel.'+str(i):{} for i in range(17)}
+        bodies={'panel.'+str(i):{} for i in range(16)}
         required += [sid+suffix for sid in bodies for suffix in ('.bbox','.volume')]
         measured=dict(outcome='PASS',bodies=bodies,checks=[dict(check_id=k,status='PASS') for k in required])
         report=dict(outcome='PASS',furniture_cut_list=[{}]*11,before=measured,after=copy.deepcopy(measured),
-                    refusal={'outcome':'REFUSED'},state_before={'timeline':55},state_after={'timeline':55})
+                    refusal={'outcome':'REFUSED'},state_before={'timeline':52},state_after={'timeline':52})
         self.assertTrue(workflow.verified_envelope(report))
         for mutation in (lambda r:r['before']['checks'].pop(),
                          lambda r:r.update(furniture_cut_list=[]),
                          lambda r:r['after'].update(outcome='UNKNOWN'),
                          lambda r:r['refusal'].update(outcome='PASS'),
-                         lambda r:r['state_after'].update(timeline=56)):
+                         lambda r:r['state_after'].update(timeline=53)):
             bad=copy.deepcopy(report);mutation(bad)
             self.assertFalse(workflow.verified_envelope(bad))
         with open(self.report_path,'w') as fh: json.dump(report,fh)
