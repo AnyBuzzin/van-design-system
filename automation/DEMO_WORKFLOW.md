@@ -91,9 +91,10 @@ approval is implied by these demonstration checks.
 
 `TestTransitEnvelope` is a fixed compiled-in entry using only `demo_id` and
 `entry_point`. It builds the accepted three-panel bed and an explicitly specified
-1100 mm base cabinet, plus six separate reference objects. The 1784 x 3044 x
+1100 mm base cabinet, plus five separate reference objects. The 1784 x 3044 x
 2025 mm clear box is UNMEASURED; two 196 x 800 x 300 mm arches at Y600 are
-arbitrary test assumptions. Guides sit outside the clear box, with no roof.
+arbitrary test assumptions. Floor, right sill and front guide sit outside the
+clear box, with no roof or decorative left sill; clear bounds remain unchanged.
 Reference roles/IDs are excluded from `furniture_rows()` and furniture-only
 interference; arches are checked separately against furniture material/space.
 One baseline measurement and one fixed refused bed +600 mm Y preview are checked

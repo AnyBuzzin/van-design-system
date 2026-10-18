@@ -24,7 +24,7 @@ class EnvelopeRunnerTests(unittest.TestCase):
     def run_with(self, reports, states=None):
         with tempfile.TemporaryDirectory() as out, patch.object(self.m,'FusionAdapter') as adapter, \
              patch.object(self.m,'measure_test',side_effect=reports), \
-             patch.object(self.m,'snapshot',side_effect=states or [{'timeline':55},{'timeline':55}]):
+             patch.object(self.m,'snapshot',side_effect=states or [{'timeline':52},{'timeline':52}]):
             try:
                 self.m.run_test_envelope(self.app,out,self.guard)
             except RuntimeError:
@@ -57,7 +57,7 @@ class EnvelopeRunnerTests(unittest.TestCase):
         adapter.return_value.compile.assert_called_once()
 
     def test_refusal_state_or_geometry_change_stops(self):
-        payload,_=self.run_with([self.report,self.report],[{'timeline':55},{'timeline':56}])
+        payload,_=self.run_with([self.report,self.report],[{'timeline':52},{'timeline':53}])
         self.assertEqual(payload['outcome'],'FAIL')
         changed=dict(self.report,unexpected='measurement changed')
         payload,_=self.run_with([self.report,changed])
@@ -89,7 +89,7 @@ class EnvelopeRunnerTests(unittest.TestCase):
         self.assertEqual(payload['notice'], self.m.NOTICE)
         assembly = adapter.return_value.compile.call_args.args[0]
         references = [p for p in assembly.panels if p.stable_id.startswith('reference.')]
-        self.assertEqual(len(references), 6)
+        self.assertEqual(len(references), 5)
         self.assertTrue(all(self.m.NOTICE in p.display_name for p in references))
         self.assertTrue(all(self.m.NOTICE in p.comment for p in assembly.parameters.params
                             if p.name.startswith('Test_')))

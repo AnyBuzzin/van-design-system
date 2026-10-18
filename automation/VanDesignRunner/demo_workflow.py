@@ -168,7 +168,7 @@ def verified_envelope(report):
               'cabinet.001.dado.shelf1.left.ownership','cabinet.001.dado.shelf1.right.ownership',
               'entities.managed_ids'}
     bodies=before.get('bodies',{})
-    if len(bodies)!=17 or len(report.get('furniture_cut_list',[]))!=11:
+    if len(bodies)!=16 or len(report.get('furniture_cut_list',[]))!=11:
         return False
     required.update(sid+suffix for sid in bodies for suffix in ('.bbox','.volume'))
     ids=[c.get('check_id') for c in checks]

@@ -37,12 +37,12 @@ def build_test_envelope():
                           BoxExpr(origin,size)))
     # Guides lie OUTSIDE the clear envelope. No roof or rear-threshold wall.
     ref("floor", "nominal floor", (zero,zero,-guide), (w,l,guide))
-    ref("left", "left sill", (-guide,zero,zero), (guide,l,Mm(150)))
     ref("right", "right sill", (w,zero,zero), (guide,l,Mm(150)))
     ref("front", "front height guide", (zero,l,zero), (w,guide,h))
     ref("arch.left", "ASSUMED arch 196 x 800 x 300; Y600", (zero,ay,zero), (aw,al,ah), "reference_obstruction")
     ref("arch.right", "ASSUMED arch 196 x 800 x 300; Y600", (w-aw,ay,zero), (aw,al,ah), "reference_obstruction")
-    identity = canonical_json(dict(furniture=furniture.spec_hash, reference=DEFAULTS, notice=NOTICE))
+    identity = canonical_json(dict(furniture=furniture.spec_hash, reference=DEFAULTS,
+                                   reference_ids=[p.stable_id for p in refs], notice=NOTICE))
     assembly = replace(furniture, assembly_id="test.transit_l2h3.001",
                        spec_hash=hashlib.sha256(identity.encode()).hexdigest(),
                        parameters=params, panels=furniture.panels+tuple(refs))
