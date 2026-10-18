@@ -97,7 +97,6 @@ def run_test_envelope(app, output_dir, guard):
         preview_fit(assembly,assembly.parameters.resolve())
         guard()
         FusionAdapter(design).compile(assembly)
-        design.rootComponent.name=NOTICE+' - Transit L2H3; ASSUMED arches'
         payload.update(assembly_id=assembly.assembly_id,spec_hash=assembly.spec_hash,
                        furniture_cut_list=furniture_rows(assembly))
         payload['before']=measure_test(design,assembly,guard)
