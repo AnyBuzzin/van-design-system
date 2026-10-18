@@ -50,7 +50,7 @@ def _check_box(box, expected):
              'Composed bounds/volume differ from validated layout')
 
 
-def compose_layout(snapshot, *, editable_placement=False):
+def compose_layout(snapshot, *, editable_placement=False, cabinet_spec_json=None):
     """Fail closed on changed/incomplete V6.2 data; return no CAD side effects."""
     _require(type(editable_placement) is bool, 'editable_placement must be boolean')
     _require(isinstance(snapshot, dict), 'V6.2 snapshot must be an object')
@@ -59,7 +59,7 @@ def compose_layout(snapshot, *, editable_placement=False):
     _require(all(isinstance(i, dict) and 'instance_id' in i and 'translation_mm' in i
                  for i in entries), 'Incomplete instance placement')
     layout = make_layout([{'instance_id': i['instance_id'], 'translation_mm': i['translation_mm']}
-                          for i in entries])
+                          for i in entries], cabinet_spec_json=cabinet_spec_json)
     _require(canonical_json(snapshot) == canonical_json(layout),
              'Snapshot/source specification, hash or geometry mismatch')
 

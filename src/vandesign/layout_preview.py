@@ -67,13 +67,17 @@ def _translate(box, xyz):
     return moved
 
 
-def make_layout(placements):
+def make_layout(placements, *, cabinet_spec_json=None):
     """Return independent module snapshots; refuse unsafe nominal placements."""
     translations = _placements(placements)
     bed = BedPlatformSpec()
-    cabinet = load_design_spec(
+    cabinet = load_design_spec(cabinet_spec_json if cabinet_spec_json is not None else
         '{"schema_version":"0.2","module":"cabinet@1",'
         '"variant":"base","profile_version":1,"parameters":{}}')
+    if cabinet_spec_json is not None:
+        cabinet = load_design_spec(cabinet.canonical_stored_spec_json)
+    if cabinet.variant != "base":
+        raise ValueError("Fixed layout requires a base cabinet")
     modules = (
         ("bed.001", bed.to_json(), build_bed_platform(bed)),
         ("cabinet.001", cabinet.canonical_stored_spec_json,
