@@ -2,8 +2,8 @@
   "sanitization": "Cloud document IDs replaced by SHA-256 digests in published ping; originals preserved. No cloud IDs in remaining publication.",
   "original_ping_sha256": "1fcc85a82b74299d672869fba4b54f1af2c8f816800449b9c19e1d98db61a538",
   "files": {
-    "preflight.json": "7c652d2a8d4099f3e0a76395c84364f7e70cef8f6f24a1096113485a4aa3638e",
-    "README.md": "11ef7cf311ba57d6caf128a84318aeb087e2b183ab2a66f8c453b849f0c00fad",
-    "runner-ping.sanitized.json": "2049a390922697aa85ec7f9b86b9e8418175a5fd872b5c57aec6f74c9b624d1b"
+    "preflight.json": "bf426c7dc9e5df4eb59910cc17ece5dd78a72ab628722276c6ecba7da7bf80db",
+    "README.md": "f613e7fb63016bc6b9390306c0298ffc0530f4d0d6b81d28f4facb3c8193f50f",
+    "runner-ping.sanitized.json": "8dcac97e026ceec7104e5be6256c1a1e865a6ed749832b3b4a32c1bf578cc12e"
   }
 }
