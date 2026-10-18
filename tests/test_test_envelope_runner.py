@@ -68,3 +68,28 @@ class EnvelopeRunnerTests(unittest.TestCase):
         payload,adapter=self.run_with([])
         adapter.assert_not_called()
         self.assertIn('protected inventory',payload['error'])
+
+    def test_read_only_root_name_reaches_measurement_and_refusal(self):
+        class Root:
+            occurrences = NS(count=0)
+            bRepBodies = NS(count=0)
+            @property
+            def name(self):
+                return 'Untitled'
+            @name.setter
+            def name(self, value):
+                raise RuntimeError('root component name cannot be changed')
+        self.design.rootComponent = Root()
+        payload, adapter = self.run_with([self.report, self.report])
+        self.assertEqual(payload['outcome'], 'PASS')
+        self.assertEqual(payload['before'], self.report)
+        self.assertEqual(payload['after'], self.report)
+        self.assertEqual(payload['refusal']['outcome'], 'REFUSED')
+        self.assertEqual(self.design.rootComponent.name, 'Untitled')
+        self.assertEqual(payload['notice'], self.m.NOTICE)
+        assembly = adapter.return_value.compile.call_args.args[0]
+        references = [p for p in assembly.panels if p.stable_id.startswith('reference.')]
+        self.assertEqual(len(references), 6)
+        self.assertTrue(all(self.m.NOTICE in p.display_name for p in references))
+        self.assertTrue(all(self.m.NOTICE in p.comment for p in assembly.parameters.params
+                            if p.name.startswith('Test_')))
