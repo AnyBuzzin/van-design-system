@@ -1,19 +1,27 @@
 # VanDesign current status
 
-**18 October 2026.** Integrated baseline: develop at 6f942c3 ([V6.3 merge](https://github.com/AnyBuzzin/van-design-system/pull/35)). Main remains separate. [Owner direction / active queue](https://github.com/AnyBuzzin/van-design-system/issues/36) · [Agent workflow](AGENTS.md).
+**18 October 2026.** `develop` includes V6.3 and the simplified workflow. `main` is unchanged. Rules: [AGENTS.md](AGENTS.md). Next work: [ROADMAP.md](docs/ROADMAP.md).
 
-| Capability | Evidence and limit |
+## Works today
+
+| Capability | Where it was proven |
 | --- | --- |
-| Base/tall/overhead cabinets; bounded parametric edits and owned dados | Scoped live Fusion acceptance: [G3](https://github.com/AnyBuzzin/van-design-system/issues/4), [G4](https://github.com/AnyBuzzin/van-design-system/pull/22), [G5](https://github.com/AnyBuzzin/van-design-system/pull/25) |
-| Standalone three-panel bed | [Offline](https://github.com/AnyBuzzin/van-design-system/pull/28) and [seven-state live edit/restore PASS](https://github.com/AnyBuzzin/van-design-system/pull/30) |
-| Fixed bed/cabinet placement and 11-panel composition | [V6.2](https://github.com/AnyBuzzin/van-design-system/pull/32) / [V6.3](https://github.com/AnyBuzzin/van-design-system/pull/35): accepted offline; combined live Fusion NOT RUN |
+| Base, tall and overhead cabinets; width and shelf-count edits; shelves sit in side-panel grooves | Live Fusion: [G3](https://github.com/AnyBuzzin/van-design-system/issues/4), [G4](https://github.com/AnyBuzzin/van-design-system/pull/22), [G5](https://github.com/AnyBuzzin/van-design-system/pull/25) |
+| Three-panel bed, resizable in width, length and height | Live Fusion: [PR #30](https://github.com/AnyBuzzin/van-design-system/pull/30) |
+| Bed and cabinet placed together as one 11-panel assembly | Offline only: [PR #32](https://github.com/AnyBuzzin/van-design-system/pull/32), [PR #35](https://github.com/AnyBuzzin/van-design-system/pull/35) |
+| Nominal cut lists (CSV/JSON) | Offline; not CNC toolpaths |
 
-**Now:** finish [workflow simplification PR #37](https://github.com/AnyBuzzin/van-design-system/pull/37); prepare/review the combined Fusion helper offline. No duplicate documentation task.
+## Now
 
-**Next visible result:** one fresh combined model: bed at (0,0,0), cabinet at (1500,0,0) mm; 11 measured solids, 2 cabinet-owned dados and 100 mm nominal X gap. Verify live baseline first, then focused edits/restoration.
+Build the bed and cabinet together in Fusion: bed at (0,0,0), cabinet at (1500,0,0) mm, resizable in Fusion, no overlap.
 
-**Blockers:** delegated merge and live-test activation are not yet evidenced in [Issue #36](https://github.com/AnyBuzzin/van-design-system/issues/36). Last recorded GitHub check found no branch protection and a shared reviewer login ([#16](https://github.com/AnyBuzzin/van-design-system/issues/16)). Current Fusion baseline still needs authorised verification; preserve both dirty G4 fixtures and the unsaved bed.
+## Owner to-do
 
-**Open limits:** historical tab/capacity cause, [G0 provenance](https://github.com/AnyBuzzin/van-design-system/issues/1) and earlier public-ID exposure remain unresolved. No qualified combined persistence, measured vehicle fit, load/anchoring or CNC output. Old interior demos do not qualify the new composition. Raw evidence remains in linked PRs and integration folders.
+- Turn on branch protection for `develop` requiring `unit-tests (3.10)` and `unit-tests (3.12)` ([#16](https://github.com/AnyBuzzin/van-design-system/issues/16)).
+- In Fusion, save or discard the old open test documents and restart Fusion.
+- Decide whether the repository should be private.
+- Check which Fusion licence is needed for commercial use.
 
-[Future capabilities](docs/ROADMAP.md). Update this page only when capability, active work or a material blocker changes.
+## Not yet proven
+
+Combined model in live Fusion, save/reopen, measured vehicle fit, loads and anchoring, CNC output. The exact V4 source file ([#1](https://github.com/AnyBuzzin/van-design-system/issues/1)) is unknown and blocks nothing.

@@ -1,6 +1,6 @@
 # VanDesign product direction
 
-Present capability and blockers belong in [PROJECT_STATUS.md](../PROJECT_STATUS.md); execution and authority belong in [Issue #36](https://github.com/AnyBuzzin/van-design-system/issues/36).
+Present capability and blockers belong in [PROJECT_STATUS.md](../PROJECT_STATUS.md); working rules belong in [AGENTS.md](../AGENTS.md). Work top to bottom; each item is done when it works in Fusion.
 
 Deliver these outcomes through small verified increments:
 
