@@ -6,14 +6,17 @@ Goal: visible progress in Fusion every session. Judge every task by one question
 
 ## How to work
 
-1. Read [PROJECT_STATUS.md](PROJECT_STATUS.md) and take the top unfinished item in [docs/ROADMAP.md](docs/ROADMAP.md). Work on it until it works in Fusion.
-2. Branch from `develop`, one branch per feature. Jack merges to `develop` after his review when CI is green. Never touch `main`, releases or tags.
-3. Run live Fusion tests whenever useful, in **new documents you create in that session**. Never open, edit, save, close or discard any document you did not create.
+1. **Task board = GitHub labels.** Jack labels the next task issue `ready`. Astra takes the oldest `ready` issue, switches it to `in-progress`, and to `review` when the PR is open. `blocked` means the owner or an outside fix is needed. One `in-progress` task at a time.
+2. **Done criteria first.** Before labelling a task `ready`, Jack writes 3–5 checkable done criteria in the issue (for example "bed and cabinet both resize from Fusion's parameter table with no overlap"). Jack reviews against those criteria only.
+3. Branch from `develop`, one branch per task. **Only Astra pushes to her branch;** Jack reviews and comments but never edits it. Jack merges to `develop` after his review when CI is green. Never touch `main`, releases or tags.
+4. **Two review rounds maximum.** After the second round, anything minor becomes a new issue instead of blocking the merge.
+5. Run live Fusion tests whenever useful, in **new documents you create in that session**. Never open, edit, save, close or discard any document you did not create.
+   - **One live Fusion job at a time.** Run live tests through the Runner (once it exists, the one-command test job). Before starting, confirm no other Runner job is running; if one is, wait for it.
    - **Fusion personal-use limit: 10 editable documents.** At the end of every test, close the documents you created **without saving**; unsaved documents don't count toward the limit.
    - If a document must be saved (only when the owner asks), mark it **read-only** before you finish. If you can't do that through the API, tell the owner the document name in one line so they can mark it.
    - Before starting a test, check the editable-document count; if it is 9 or more, stop and tell the owner.
-4. Don't change the installed Runner's configuration or installation. Using it to run jobs is fine.
-5. If an hour passes with no working geometry, stop and report why in one line.
+6. The installed Runner may be updated only from code Jack has merged to `develop` with green CI. Back up the current installation first so it can be rolled back, and deploy only between tests. Don't change its configuration otherwise.
+7. If an hour passes with no working geometry, stop and report why in one line.
 
 ## Writing rules
 
@@ -29,7 +32,7 @@ Goal: visible progress in Fusion every session. Judge every task by one question
 - **Astra (Ashra) — builder.** Writes all the code and all the tests, runs them offline and in Fusion, fixes Jack's findings and opens the PR.
 - **Claude — independent reviewer.** Reviews milestones when the owner asks (for example "Claude, review PR 40"). Not a step in every PR.
 
-Cycle: Jack sets the task → Astra builds and tests → Jack reviews → Astra fixes → Jack merges and sets the next task. No other agents take part. CI (`unit-tests (3.10)` and `unit-tests (3.12)`) must pass before any merge. The owner judges progress by looking at the model in Fusion.
+Cycle: Jack writes done criteria and labels `ready` → Astra builds and tests → Jack reviews (two rounds max) → Jack merges and labels the next task `ready`. No other agents take part. CI (`unit-tests (3.10)` and `unit-tests (3.12)`) must pass before any merge. The owner judges progress by looking at the model in Fusion.
 
 ## Engineering rules (unchanged)
 
