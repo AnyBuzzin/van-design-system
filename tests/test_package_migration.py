@@ -1,5 +1,6 @@
 """Installed runtime compatibility, source parity and generated deployment tests."""
 from dataclasses import FrozenInstanceError, fields
+import ast
 import hashlib
 import importlib.util
 import json
@@ -26,6 +27,36 @@ class MigrationTests(unittest.TestCase):
         self.assertGreater(len(sources), 20)
         for source in sources:
             with self.subTest(file=str(source.relative_to(historical))):
+                if source.relative_to(historical).as_posix() == 'cad/fusion/interior_demo.py':
+                    # Issue #43 extends this adapter entry module. The original
+                    # build/edit sequence remains identical; measure gains an
+                    # explicit composition mode, covered by Runner readback tests.
+                    old = ast.parse(source.read_text(encoding='utf-8'))
+                    new = ast.parse((installed / source.relative_to(historical)).read_text(encoding='utf-8'))
+                    functions = {n.name: n for n in new.body if isinstance(n, ast.FunctionDef)}
+                    for node in old.body:
+                        if isinstance(node, ast.FunctionDef) and node.name != 'measure':
+                            self.assertEqual(ast.dump(node), ast.dump(functions[node.name]))
+                    # Strip ONLY the three documented opt-in measurement changes
+                    # before comparing the original measurement function's AST.
+                    original = next(n for n in old.body if isinstance(n, ast.FunctionDef) and n.name == 'measure')
+                    modified = functions['measure']
+                    self.assertEqual(modified.args.args[-1].arg, 'composition')
+                    self.assertEqual(ast.dump(modified.args.defaults[-1]), 'Constant(value=False)')
+                    modified.args.args.pop(); modified.args.defaults.pop()
+                    for node in ast.walk(modified):
+                        if isinstance(node, ast.If) and isinstance(node.test, ast.BoolOp) and ast.unparse(node.test).startswith('not composition and'):
+                            node.test = node.test.values[1]
+                        if isinstance(node, ast.Assign) and any(isinstance(t, ast.Name) and t.id == 'expected' for t in node.targets):
+                            self.assertIsInstance(node.value, ast.IfExp)
+                            self.assertEqual(ast.unparse(node.value.test), 'composition')
+                            node.value = node.value.orelse
+                        if isinstance(node, ast.Assign) and any(isinstance(t, ast.Name) and t.id == 'ok' for t in node.targets):
+                            # New finite-measurement guard strengthens both modes.
+                            self.assertIn('math.isfinite', ast.unparse(node.value.values[1]))
+                            node.value.values.pop(1)
+                    self.assertEqual(ast.dump(original), ast.dump(modified))
+                    continue
                 self.assertEqual(source.read_bytes().replace(b'\r\n', b'\n'),
                                  (installed / source.relative_to(historical)).read_bytes().replace(b'\r\n', b'\n'))
 

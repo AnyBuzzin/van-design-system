@@ -1,6 +1,7 @@
 """Manual, new-document-only interior build and real BRep edit verification."""
 import datetime
 import json
+import math
 import os
 
 import adsk.core
@@ -11,12 +12,12 @@ from .adapter import FusionAdapter
 from .runner import _design_counts
 
 
-def measure(design, assembly):
+def measure(design, assembly, composition=False):
     adapter = FusionAdapter(design)
     source = adapter.geometry_source()
     # Read-only reconstruction for persistence of earlier configured documents.
     # Existing default documents retain their original parameter set.
-    if (('Bed_Width' not in assembly.parameters.names() and source.parameter_value('Bed_Width') is not None)
+    if not composition and (('Bed_Width' not in assembly.parameters.names() and source.parameter_value('Bed_Width') is not None)
             or ('Arch_Width' not in assembly.parameters.names() and source.parameter_value('Arch_Width') is not None)):
         layout = ({k: source.parameter_value(k) for k in LAYOUT_KEYS if source.parameter_value(k) is not None}
                   if source.parameter_value('Bed_Width') is not None else None)
@@ -25,7 +26,8 @@ def measure(design, assembly):
         assembly = build_interior(layout, vehicle)
     env = assembly.parameters.resolve({p.name: source.parameter_value(p.name)
                                        for p in assembly.parameters.base()})
-    expected = check_layout(assembly, env)
+    expected = ({p.stable_id: p.box.resolve(env) for p in assembly.panels} if composition
+                else check_layout(assembly, env))
     checks = []
     measured_boxes = {}
     for panel in assembly.panels:
@@ -35,7 +37,8 @@ def measure(design, assembly):
         volume = expected[panel.stable_id].volume - sum(
             o.cut.resolve(env).volume for o in assembly.operations
             if o.target_panel_id == panel.stable_id)
-        ok = (body is not None and expected[panel.stable_id].max_deviation(body.box)[0] < 0.05
+        ok = (body is not None and all(math.isfinite(v) for v in body.box.lo + body.box.hi + (body.volume_mm3,))
+              and expected[panel.stable_id].max_deviation(body.box)[0] < 0.05
               and abs(body.volume_mm3-volume) < max(1, volume*1e-5))
         checks.append(dict(id=panel.stable_id, status="PASS" if ok else "FAIL",
                            expected_volume_mm3=volume,
@@ -124,6 +127,147 @@ def run_demo(app, output_dir, layout_mm=None, vehicle_mm=None):
     except Exception as exc:
         payload['outcome'] = 'FAIL'
         payload['error'] = str(exc)
+        raise
+    finally:
+        with open(path, 'w', encoding='utf-8') as handle:
+            json.dump(payload, handle, indent=2)
+    return path
+
+
+def composition_assembly():
+    from ...composition import compose_layout
+    from ...layout_preview import make_layout
+    return compose_layout(make_layout([
+        dict(instance_id='bed.001', translation_mm=[0, 0, 0]),
+        dict(instance_id='cabinet.001', translation_mm=[1500, 0, 0]),
+    ])).assembly
+
+
+def measure_composition(design, assembly, guard):
+    """Actual solids plus exact cut participants; no cabinet-spec reinterpretation."""
+    from .adapter import ATTR_GROUP, ATTR_ID
+    guard()
+    result = measure(design, assembly, composition=True)
+    checks = result['checks']
+    root = design.rootComponent
+    components = [design.allComponents.item(i) for i in range(design.allComponents.count)]
+    cuts = [f for comp in components for f in
+            (comp.features.extrudeFeatures.item(i) for i in range(comp.features.extrudeFeatures.count))
+            if f.operation == adsk.fusion.FeatureOperations.CutFeatureOperation]
+    expected = {o.operation_id: o.target_panel_id for o in assembly.operations}
+    counts = result['counts']
+    body_count = sum(c.bRepBodies.count for c in components)
+    inventory_ok = (body_count == 11 and root.bRepBodies.count == 0
+                    and all(c.bRepBodies.item(i).isSolid for c in components for i in range(c.bRepBodies.count))
+                    and counts['root_occurrences'] == 11 and counts['all_components'] == 12
+                    and counts['timeline_items'] == 37
+                    and counts['user_parameters'] == len(assembly.parameters.params)
+                    and sorted(f.name for f in cuts) == sorted(expected)
+                    and all(f.healthState == adsk.fusion.FeatureHealthStates.HealthyFeatureHealthState
+                            and not f.isSuppressed for c in components for f in
+                            (c.features.extrudeFeatures.item(i) for i in range(c.features.extrudeFeatures.count))))
+    checks.append(dict(id='composition_inventory', status='PASS' if inventory_ok else 'FAIL',
+                       body_count=body_count, cut_names=[f.name for f in cuts]))
+    timeline = design.timeline
+    marker = timeline.markerPosition
+    if marker != timeline.count:
+        raise RuntimeError('Unexpected rolled-back timeline; stopped')
+    for name, owner in expected.items():
+        observation = dict(id=name+'.ownership', status='UNKNOWN', participants=None)
+        matches = [f for f in cuts if f.name == name]
+        try:
+            guard()
+            if len(matches) != 1:
+                observation['status'] = 'FAIL'
+            else:
+                feature = matches[0]
+                if not feature.timelineObject.rollTo(True):
+                    raise RuntimeError('Cannot position timeline for participant readback')
+                parts = feature.participantBodies
+                ids = []
+                for body in parts:
+                    attr = body.parentComponent.attributes.itemByName(ATTR_GROUP, ATTR_ID)
+                    ids.append(attr.value if attr else None)
+                attr = feature.parentComponent.attributes.itemByName(ATTR_GROUP, ATTR_ID)
+                observation.update(participants=ids, owner_id=attr.value if attr else None)
+                observation['status'] = 'PASS' if ids == [owner] and observation['owner_id'] == owner else 'FAIL'
+        except Exception as exc:
+            observation['error'] = str(exc)
+        finally:
+            # Restore only this owned fixture's timeline, not CAD geometry or other documents.
+            guard()
+            timeline.markerPosition = marker
+            if timeline.markerPosition != marker or timeline.count != marker:
+                raise RuntimeError('Timeline restoration failed; stopped')
+        checks.append(observation)
+        if observation['status'] != 'PASS':
+            break
+    # Measure after timeline restoration, using the assembly-context bodies.
+    source = FusionAdapter(design).geometry_source()
+    bed = [source.body(p.stable_id) for p in assembly.panels if p.stable_id.startswith('bed.001.')]
+    cabinet = [source.body(p.stable_id) for p in assembly.panels if p.stable_id.startswith('cabinet.001.')]
+    gap = None if any(b is None for b in bed+cabinet) else min(b.box.lo[0] for b in cabinet)-max(b.box.hi[0] for b in bed)
+    expected_gap = 1500-result['parameters_mm']['Bed_Width']
+    checks.append(dict(id='composition_gap', measured_mm=gap, expected_mm=expected_gap,
+                       status='UNKNOWN' if gap is None else 'PASS' if math.isfinite(gap)
+                       and gap > 0 and abs(gap-expected_gap) < 0.05 else 'FAIL'))
+    guard()
+    result['outcome'] = 'PASS' if len(checks) == 19 and all(c['status'] == 'PASS' for c in checks) else 'FAIL'
+    return result
+
+
+def run_composition_demo(app, output_dir, guard):
+    """Fixed Runner entry point. Stop on failure, leaving the unsaved fixture intact."""
+    guard()
+    doc = app.activeDocument
+    design = adsk.fusion.Design.cast(app.activeProduct)
+    from .shelf_regeneration import require_empty
+    require_empty(design)
+    if doc.isSaved or doc.isModified or design.designType != adsk.fusion.DesignTypes.ParametricDesignType:
+        raise RuntimeError('Composition requires an empty unsaved parametric design')
+    assembly = composition_assembly()
+    path = os.path.join(output_dir, 'composition.json')
+    if os.path.exists(path):
+        raise RuntimeError('Composition result already exists; no retry')
+    payload = dict(assembly_id=assembly.assembly_id, spec_hash=assembly.spec_hash,
+                   fusion_version=app.version, stages=[], outcome='UNKNOWN')
+    try:
+        guard()
+        FusionAdapter(design).compile(assembly)
+        baseline = None
+        for name, value in [(None, None), ('Bed_Width', 1300), ('Bed_Width', None),
+                            ('Cab_Width', 1100), ('Cab_Width', None)]:
+            guard()
+            label = 'baseline'
+            if name:
+                param = design.userParameters.itemByName(name)
+                label = ('restore_' if value is None else 'edit_')+name
+                param.expression = baseline['expressions'][name] if value is None else '%s mm' % value
+                adsk.doEvents()
+                guard()
+            stage = measure_composition(design, assembly, guard)
+            stage['label'] = label
+            stage['expressions'] = {n: design.userParameters.itemByName(n).expression for n in ('Bed_Width', 'Cab_Width')}
+            payload['stages'].append(stage)
+            if baseline is None:
+                baseline = stage
+                expected_params = assembly.parameters.resolve()
+            else:
+                overrides = {} if value is None else {name: value}
+                expected_params = assembly.parameters.resolve(overrides)
+            actual = stage['parameters_mm']
+            if (actual.keys() != expected_params.keys()
+                    or any(not math.isfinite(actual[n]) or abs(actual[n]-v) > 0.001 for n,v in expected_params.items())
+                    or stage['counts'] != baseline['counts']
+                    or (name and value is None and stage['expressions'] != baseline['expressions'])):
+                stage.update(outcome='FAIL', error='Parameter readback or counts differ')
+            if stage['outcome'] != 'PASS':
+                raise RuntimeError('Composition verification failed at '+label+'; no automatic restoration')
+        guard()
+        app.activeViewport.fit()
+        payload['outcome'] = 'PASS'
+    except Exception as exc:
+        payload.update(outcome='FAIL', error=str(exc))
         raise
     finally:
         with open(path, 'w', encoding='utf-8') as handle:

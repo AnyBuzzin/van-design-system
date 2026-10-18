@@ -16,26 +16,71 @@ import adsk.fusion
 from vdrunner.policy import PolicyError
 
 SESSIONS = {}
+BASELINE = None
 
+
+def document_state(doc):
+    state = dict(name=doc.name, is_saved=doc.isSaved, is_modified=doc.isModified, is_valid=doc.isValid)
+    if (not isinstance(state['name'], str) or not state['name'] or not state['is_valid']
+            or any(type(state[k]) is not bool for k in ('is_saved', 'is_modified', 'is_valid'))):
+        raise PolicyError("Incomplete document state")
+    if doc.isSaved:
+        df = doc.dataFile
+        if (not df or not isinstance(df.id, str) or not df.id
+                or type(df.versionNumber) is not int or df.versionNumber < 1):
+            raise PolicyError("Saved document identity/version unavailable")
+        state.update(design_id=df.id, version_number=df.versionNumber)
+    return state
+
+
+def documents(app):
+    return [app.documents.item(i) for i in range(app.documents.count)]
+
+
+def inventory(app):
+    """Explicit inspect establishes a memory-only baseline; never adopts documents."""
+    global BASELINE
+    available = capacity(app, enforce=False)
+    current = [(d, document_state(d)) for d in documents(app)]
+    if BASELINE is None:
+        BASELINE = dict(app=app, existing=current)
+    else:
+        owned = [s['document'] for s in SESSIONS.values()
+                 if s.get('app') == app and s['status'] != 'closed' and s['document'].isValid]
+        expected = [d for d, _ in BASELINE['existing']] + owned
+        if len(current) != len(expected) or any(d not in expected for d, _ in current):
+            raise PolicyError('Open-document inventory changed; stop for owner')
+        unchanged(dict(existing=BASELINE['existing']))
+    return dict(open_documents=[s for d, s in current], capacity=available)
 
 def unchanged(state):
+    if 'app' in state:
+        expected = [d for d, _ in state['existing']]
+        if state.get('status') != 'closed' and 'document' in state:
+            expected.append(state['document'])
+        current = documents(state['app'])
+        if len(current) != len(expected) or any(d not in current for d in expected):
+            raise PolicyError("Open-document inventory changed; stop for owner")
     observed = []
     for doc, before in state.get('existing', []):
-        now = dict(name=doc.name, is_saved=doc.isSaved, is_modified=doc.isModified, is_valid=doc.isValid)
+        now = document_state(doc)
         if now != before:
             raise PolicyError("An existing document changed; stopping demo workflow")
         observed.append(now)
     return observed
 
 
-def capacity(app):
+def capacity(app, enforce=True):
     limits = app.data.personalUseLimits
     if limits is None:
-        return {"personal_use": False}
+        raise PolicyError("Editable-document capacity unavailable")
     result = dict(personal_use=True, editable=limits.editableFileCount,
                   limit=limits.maxEditableFileCount)
-    if result['editable'] >= result['limit']:
-        raise PolicyError("No editable-document capacity; no existing file was changed")
+    count, limit = result['editable'], result['limit']
+    if type(count) is not int or type(limit) is not int or not 0 <= count <= limit or limit <= 0:
+        raise PolicyError("Invalid editable-document capacity")
+    if enforce and count >= min(9, limit):
+        raise PolicyError("Editable-document count is at capacity safety threshold; stop for owner")
     return result
 
 
@@ -82,11 +127,13 @@ def modules(cfg):
     return module
 
 
-def verified(report):
+def verified(report, composition=False):
     stages = report.get('stages', [])
     labels = ['baseline', 'edit_Bed_Length', 'restore_Bed_Length', 'edit_Cab_Width', 'restore_Cab_Width']
+    if composition:
+        labels = ['baseline', 'edit_Bed_Width', 'restore_Bed_Width', 'edit_Cab_Width', 'restore_Cab_Width']
     extra = report.get('layout_edit_stages', [])
-    expected_count = 22 if report.get('vehicle_mm') is not None else 19
+    expected_count = 19 if composition else 22 if report.get('vehicle_mm') is not None else 19
     if report.get('layout_mm') is not None and [s.get('label') for s in extra] != [
             'edit_Kitchen_X','restore_Kitchen_X','edit_Kitchen_Y','restore_Kitchen_Y']:
         return False
@@ -137,7 +184,7 @@ def persistence(backend, design_id, out_dir):
     module = modules(cfg)
     before = module.measure(design, module.build_interior())
     identity = backend.identity()
-    other = dict(existing=[(d, dict(name=d.name, is_saved=d.isSaved, is_modified=d.isModified, is_valid=d.isValid))
+    other = dict(existing=[(d, document_state(d))
                           for d in (app.documents.item(i) for i in range(app.documents.count)) if not d.isActive])
     payload = dict(outcome='UNKNOWN', before=before, identity_before=identity)
     path = os.path.join(out_dir, 'persistence.json')
@@ -183,25 +230,55 @@ def execute(backend, command, args, out_dir, job_id):
     if command == 'verify_demo_persistence':
         return persistence(backend, args['design_id'], out_dir)
     if command == 'create_demo_design':
+        if BASELINE is None or BASELINE['app'] != app:
+            raise PolicyError('Run inspect to establish complete session baseline first')
+        unchanged(BASELINE)
         available = capacity(app)
         # Read cloud metadata before opening a tab; unavailable evidence fails closed.
         folders = destinations(app)
         if job_id in SESSIONS:
             raise PolicyError("Demo session already exists")
-        existing = [(d, dict(name=d.name, is_saved=d.isSaved, is_modified=d.isModified, is_valid=d.isValid))
-                    for d in (app.documents.item(i) for i in range(app.documents.count))]
+        existing = [(d, document_state(d)) for d in documents(app)]
         doc = app.documents.add(adsk.core.DocumentTypes.FusionDesignDocumentType)
         if not doc or not doc.isActive:
             raise PolicyError("New demo document was not activated")
         design = adsk.fusion.Design.cast(app.activeProduct)
+        SESSIONS[job_id] = dict(app=app, document=doc, status='created', existing=existing)
         empty(design, doc)
-        SESSIONS[job_id] = dict(document=doc, status='created', existing=existing)
         return dict(outcome='PASS', demo_id=job_id, identity=backend.identity(),
                     capacity=available, destinations=folders, existing_documents=unchanged(SESSIONS[job_id]))
 
     state, doc = session(args['demo_id'], allow_saved=command == 'capture_demo_viewport')
+    if command == 'close_demo_design':
+        if state['status'] in ('close_attempted', 'closed'):
+            raise PolicyError('Close already attempted; no retry')
+        before = document_state(doc)
+        state['status'] = 'close_attempted'
+        if not doc.close(False):
+            raise PolicyError('Close failed; no automatic retry')
+        state['status'] = 'closed'
+        remaining = unchanged(state)
+        unchanged(BASELINE)
+        return dict(outcome='PASS', demo_id=args['demo_id'], closed_without_saving=True,
+                    closed_document=before, open_documents=remaining)
     design = adsk.fusion.Design.cast(app.activeProduct)
     if command == 'run_approved_demo':
+        if args['entry_point'] == 'BedCabinetComposition':
+            if state['status'] != 'created' or set(args) != {'demo_id', 'entry_point'}:
+                raise PolicyError('Composition requires an unused session and fixed arguments')
+            empty(design, doc)
+            capacity(app)
+            module = modules(backend.cfg)
+            state['status'] = 'build_attempted'
+            path = module.run_composition_demo(app, out_dir, lambda: session(args['demo_id']))
+            with open(path, encoding='utf-8') as fh:
+                report = json.load(fh)
+            if not verified(report, composition=True):
+                raise PolicyError('Composition verification failed')
+            session(args['demo_id'])
+            state.update(status='verified', entry_point='BedCabinetComposition')
+            return dict(outcome='PASS', demo_id=args['demo_id'], report_path=path, verification=report)
+
         if args['entry_point'] != 'FirstInteriorDemo' or state['status'] != 'created':
             raise PolicyError("Only FirstInteriorDemo in an unused runner session is approved")
         empty(design, doc)
@@ -231,6 +308,8 @@ def execute(backend, command, args, out_dir, job_id):
                     verification=report, identity=backend.identity(), existing_documents=unchanged(state))
 
     if command == 'save_demo_design':
+        if state.get('entry_point') == 'BedCabinetComposition':
+            raise PolicyError('Composition demonstration is unsaved-only')
         if state['status'] != 'verified':
             raise PolicyError("Only a successfully verified build can be saved")
         capacity(app)
