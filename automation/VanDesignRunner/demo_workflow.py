@@ -132,8 +132,20 @@ def verified(report, composition=False):
     labels = ['baseline', 'edit_Bed_Length', 'restore_Bed_Length', 'edit_Cab_Width', 'restore_Cab_Width']
     if composition:
         labels = ['baseline', 'edit_Bed_Width', 'restore_Bed_Width', 'edit_Cab_Width', 'restore_Cab_Width']
+        placement = report.get('placement', {})
+        moved = placement.get('stages', [])
+        refusal = placement.get('refusal') or {}
+        if ([s.get('label') for s in moved] != ['edit_cabinet_position', 'restore_cabinet_position']
+                or refusal.get('outcome') != 'PASS' or refusal.get('preview', {}).get('outcome') != 'REFUSED'
+                or refusal.get('before') is None or refusal.get('before') != refusal.get('after')
+                or refusal['before'].get('outcome') != 'PASS'
+                or refusal.get('state_before') is None or refusal.get('state_before') != refusal.get('state_after')
+                or not stages or moved[-1].get('parameters_mm') != stages[0].get('parameters_mm')):
+            return False
     extra = report.get('layout_edit_stages', [])
-    expected_count = 19 if composition else 22 if report.get('vehicle_mm') is not None else 19
+    if composition:
+        extra = moved
+    expected_count = 20 if composition else 22 if report.get('vehicle_mm') is not None else 19
     if report.get('layout_mm') is not None and [s.get('label') for s in extra] != [
             'edit_Kitchen_X','restore_Kitchen_X','edit_Kitchen_Y','restore_Kitchen_Y']:
         return False

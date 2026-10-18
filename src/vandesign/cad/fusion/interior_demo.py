@@ -134,13 +134,13 @@ def run_demo(app, output_dir, layout_mm=None, vehicle_mm=None):
     return path
 
 
-def composition_assembly():
+def composition_assembly(editable_placement=False):
     from ...composition import compose_layout
     from ...layout_preview import make_layout
     return compose_layout(make_layout([
         dict(instance_id='bed.001', translation_mm=[0, 0, 0]),
         dict(instance_id='cabinet.001', translation_mm=[1500, 0, 0]),
-    ])).assembly
+    ]), editable_placement=editable_placement).assembly
 
 
 def measure_composition(design, assembly, guard):
@@ -207,12 +207,97 @@ def measure_composition(design, assembly, guard):
     bed = [source.body(p.stable_id) for p in assembly.panels if p.stable_id.startswith('bed.001.')]
     cabinet = [source.body(p.stable_id) for p in assembly.panels if p.stable_id.startswith('cabinet.001.')]
     gap = None if any(b is None for b in bed+cabinet) else min(b.box.lo[0] for b in cabinet)-max(b.box.hi[0] for b in bed)
-    expected_gap = 1500-result['parameters_mm']['Bed_Width']
+    expected_gap = result['parameters_mm'].get('Cab_Pos_X', 1500)-result['parameters_mm']['Bed_Width']
     checks.append(dict(id='composition_gap', measured_mm=gap, expected_mm=expected_gap,
                        status='UNKNOWN' if gap is None else 'PASS' if math.isfinite(gap)
-                       and gap > 0 and abs(gap-expected_gap) < 0.05 else 'FAIL'))
+                       and ('Cab_Pos_X' in result['parameters_mm'] or gap > 0)
+                       and abs(gap-expected_gap) < 0.05 else 'FAIL'))
+    if 'Cab_Pos_X' in result['parameters_mm']:
+        # Reuse established BRep groove boundary/solid probes and joinery checks.
+        from ...verification.validate import validate
+        from ...composition import preview_cabinet_placement
+        joinery = validate(assembly, source)
+        env = result['parameters_mm']
+        preview = preview_cabinet_placement(assembly, {p.name: env[p.name] for p in assembly.parameters.base()},
+                                            env['Cab_Pos_X'], env['Cab_Pos_Y'])
+        checks.append(dict(id='translated_joinery', status=joinery.verdict if preview['outcome'] == 'PASS' else 'FAIL',
+                           occupied_envelopes=preview,
+                           checks=[c.to_dict() for c in joinery.checks]))
     guard()
-    result['outcome'] = 'PASS' if len(checks) == 19 and all(c['status'] == 'PASS' for c in checks) else 'FAIL'
+    expected_checks = 20 if 'Cab_Pos_X' in result['parameters_mm'] else 19
+    result['outcome'] = 'PASS' if len(checks) == expected_checks and all(c['status'] == 'PASS' for c in checks) else 'FAIL'
+    return result
+
+
+def move_composition(design, assembly, x_mm, y_mm, guard, restore_expressions=None):
+    """Preview before any setter. Only the existing session guard grants access."""
+    from ...composition import preview_cabinet_placement
+    guard()
+    source = FusionAdapter(design).geometry_source()
+    current = {p.name: source.parameter_value(p.name) for p in assembly.parameters.base()}
+    preview = preview_cabinet_placement(assembly, current, x_mm, y_mm)
+    if preview['outcome'] != 'PASS':
+        return preview
+    intermediate = preview_cabinet_placement(assembly, current, x_mm, current['Cab_Pos_Y'])
+    if intermediate['outcome'] != 'PASS':
+        return dict(intermediate, reason='X-first intermediate placement overlaps; no parameters changed')
+    # Validate restore expressions before either setter; never accept arbitrary job expressions.
+    if restore_expressions is not None and set(restore_expressions) != {'Cab_Pos_X', 'Cab_Pos_Y'}:
+        raise RuntimeError('Incomplete original placement expressions')
+    for name, value in (('Cab_Pos_X', x_mm), ('Cab_Pos_Y', y_mm)):
+        guard()
+        param = design.userParameters.itemByName(name)
+        param.expression = restore_expressions[name] if restore_expressions else '%s mm' % value
+        adsk.doEvents()
+        guard()
+        if not math.isfinite(param.value) or abs(param.value*10-value) > 0.001:
+            raise RuntimeError('Placement readback mismatch; no automatic rollback')
+    return preview
+
+
+def composition_placement_sequence(design, assembly, guard, result=None):
+    """One valid move/restore and one occupied-envelope refusal; no fault injection."""
+    def snapshot():
+        guard()
+        ups = design.userParameters
+        return dict(parameters={ups.item(i).name: (ups.item(i).expression, ups.item(i).value)
+                                for i in range(ups.count)},
+                    timeline=(design.timeline.count, design.timeline.markerPosition))
+    original = snapshot()
+    baseline = measure_composition(design, assembly, guard)
+    if baseline['outcome'] != 'PASS':
+        raise RuntimeError('Placement baseline is not verified')
+    initial = baseline['parameters_mm']
+    expressions = {n: original['parameters'][n][0] for n in ('Cab_Pos_X', 'Cab_Pos_Y')}
+    if result is None:
+        result = dict(stages=[], refusal=None)
+    for label, x, y, restore in [('edit_cabinet_position',1600,100,None),
+                               ('restore_cabinet_position',initial['Cab_Pos_X'],initial['Cab_Pos_Y'],expressions)]:
+        preview = move_composition(design, assembly, x, y, guard, restore)
+        stage = dict(label=label, preview=preview, outcome='UNKNOWN')
+        result['stages'].append(stage)
+        if preview['outcome'] != 'PASS':
+            raise RuntimeError('Valid placement unexpectedly refused')
+        stage.update(measure_composition(design, assembly, guard))
+        actual = stage['parameters_mm']
+        if (stage['outcome'] != 'PASS' or stage['counts'] != baseline['counts']
+                or any(abs(actual[n]-v) > 0.001 for n,v in preview['parameters_mm'].items())):
+            raise RuntimeError('Translated geometry/counts/parameters failed; stopped')
+    if snapshot() != original:
+        raise RuntimeError('Original parameter expressions/timeline did not restore')
+    before = measure_composition(design, assembly, guard)
+    before_state = snapshot()
+    refusal = dict(outcome='UNKNOWN', before=before, state_before=before_state)
+    result['refusal'] = refusal
+    refused = move_composition(design, assembly, 100, 100, guard)
+    refusal['preview'] = refused
+    after = measure_composition(design, assembly, guard)
+    unchanged = (before['outcome'] == after['outcome'] == 'PASS'
+                 and snapshot() == before_state and before == after)
+    refusal.update(after=after, state_after=snapshot(),
+                   outcome='PASS' if refused['outcome'] == 'REFUSED' and unchanged else 'FAIL')
+    if result['refusal']['outcome'] != 'PASS':
+        raise RuntimeError('Overlap refusal changed the fixture or did not refuse')
     return result
 
 
@@ -225,7 +310,7 @@ def run_composition_demo(app, output_dir, guard):
     require_empty(design)
     if doc.isSaved or doc.isModified or design.designType != adsk.fusion.DesignTypes.ParametricDesignType:
         raise RuntimeError('Composition requires an empty unsaved parametric design')
-    assembly = composition_assembly()
+    assembly = composition_assembly(editable_placement=True)
     path = os.path.join(output_dir, 'composition.json')
     if os.path.exists(path):
         raise RuntimeError('Composition result already exists; no retry')
@@ -263,6 +348,9 @@ def run_composition_demo(app, output_dir, guard):
                 stage.update(outcome='FAIL', error='Parameter readback or counts differ')
             if stage['outcome'] != 'PASS':
                 raise RuntimeError('Composition verification failed at '+label+'; no automatic restoration')
+        guard()
+        payload['placement'] = dict(stages=[], refusal=None)
+        composition_placement_sequence(design, assembly, guard, payload['placement'])
         guard()
         app.activeViewport.fit()
         payload['outcome'] = 'PASS'

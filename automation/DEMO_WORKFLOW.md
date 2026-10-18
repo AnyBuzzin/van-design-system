@@ -30,6 +30,21 @@ restoration or close. Preserve the unsaved fixture/result for investigation.
 Offline fake-API tests prove control flow, not real Fusion geometry. No live
 PASS or screenshot exists until the approved installed Runner executes it.
 
+Issue #46 candidate adds `Cab_Pos_X` / `Cab_Pos_Y` only to the Runner's composed
+assembly (defaults 1500/0 mm); standalone generators and the fixed composition
+API default are unchanged. The same build job previews and applies 1600/100 mm,
+measures translated panels, net volumes and the established groove-boundary
+probes, then restores the exact original expressions. A requested 100/100 mm
+placement must be refused before either setter, with complete parameter,
+timeline and measured-geometry snapshots unchanged. Occupied envelopes reserve
+the empty bed underside. Coordinates are finite and bounded to ±10000 mm;
+an unsafe X-first intermediate position is also refused without a setter.
+The original width sequence remains part of this bounded qualification.
+Raw manual parameter edits are not continuously guarded; no access/vehicle-fit
+or manufacturing claim follows. Stop on failure; retain partial job results and
+the unsaved fixture rather than automatically rolling back or retrying. Candidate
+deployment still requires fresh owner approval after review/green integration.
+
 Jobs use the existing `submit <file> --wait` command:
 
 1. `inspect_design {}` lists `cloud_destinations` (accessible projects, root
