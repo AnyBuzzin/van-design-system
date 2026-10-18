@@ -2,7 +2,7 @@
 
 Python and Fusion tools for editable van furniture and, eventually, individual CNC panel exports.
 
-[Current capability and next task](PROJECT_STATUS.md) · [Agent workflow](AGENTS.md) · [Product direction](docs/ROADMAP.md) · [Owner work plan](https://github.com/AnyBuzzin/van-design-system/issues/36)
+[Current capability and next task](PROJECT_STATUS.md) · [Agent workflow](AGENTS.md) · [Product direction](docs/ROADMAP.md)
 
 ## Architecture
 
