@@ -1,0 +1,8 @@
+{
+  ".gitattributes": "705fd4d6451a31d36b3df7de96f83f30ac976c9b4a6d1e51671d8e2f33e2d0da",
+  "composition-manifest.json": "7054c30a6a40414019d726ccf5fcf5bc3543e25b034e8096c335c5cdf1bafd1d",
+  "core-tests.txt": "4ba5c8804ac13c350750cd98190f3f362b866041caa1b78370fbae228921604e",
+  "prototype-tests.txt": "dc2fde3972dbbdca43933df694cf62ec0ed87351dbe57ceb3fefd57dde66b77b",
+  "runner-offline-tests.txt": "a61f4a8264484b39e97f92b82355187f3c1d0682352d40990d75e00119d7ed52",
+  "verification.json": "4142f7e68a2261c0259a8a11c7339c28cbc0abfd6cd4beaed2be543e8e2a8ea5"
+}
