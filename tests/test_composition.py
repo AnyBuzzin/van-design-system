@@ -6,7 +6,7 @@ import unittest
 from unittest.mock import patch
 
 from vandesign.cad.protocol import preflight
-from vandesign.composition import compose_layout
+from vandesign.composition import compose_layout, preview_cabinet_placement
 from vandesign.components.ids import make_id
 from vandesign.core.params import ParameterSet
 from vandesign.layout_preview import make_layout
@@ -28,6 +28,45 @@ def sources(snapshot):
 
 
 class CompositionTests(unittest.TestCase):
+    def test_opt_in_placement_preserves_sources_and_translates_panels_and_cuts(self):
+        fixed = compose_layout(layout())
+        editable = compose_layout(layout(), editable_placement=True)
+        a = editable.assembly
+        self.assertNotEqual(a.spec_hash, fixed.assembly.spec_hash)
+        self.assertEqual(a, compose_layout(layout(), editable_placement=True).assembly)
+        self.assertEqual(a.parameters.names(), fixed.assembly.parameters.names()+('Cab_Pos_X', 'Cab_Pos_Y'))
+        initial = a.parameters.resolve()
+        moved = a.parameters.resolve({'Cab_Pos_X':1600, 'Cab_Pos_Y':100})
+        for panel, old in zip(a.panels, fixed.assembly.panels):
+            self.assertEqual(panel.stable_id, old.stable_id)
+            self.assertEqual(panel.box.resolve(initial), old.box.resolve(initial))
+            delta = (100,100,0) if panel.stable_id.startswith('cabinet.001.') else (0,0,0)
+            self.assertEqual(panel.box.resolve(moved).lo,
+                             tuple(v+d for v,d in zip(panel.box.resolve(initial).lo,delta)))
+            self.assertAlmostEqual(panel.box.resolve(moved).volume, panel.box.resolve(initial).volume)
+        for cut in a.operations:
+            self.assertEqual(cut.cut.resolve(moved).lo,
+                             tuple(v+d for v,d in zip(cut.cut.resolve(initial).lo,(100,100,0))))
+        self.assertEqual(a.parameters.resolve(), initial)
+
+    def test_placement_preview_refuses_overlap_missing_nonfinite_and_reserves_bed_void(self):
+        a = compose_layout(layout(), editable_placement=True).assembly
+        base = {p.name:p.value_mm for p in a.parameters.base()}
+        saved = copy.deepcopy(base)
+        for xy in ((1600,100),(1500,0),(0,2000),(1400,0)):
+            self.assertEqual(preview_cabinet_placement(a,base,*xy)['outcome'],'PASS')
+        self.assertEqual(preview_cabinet_placement(a,base,100,100)['outcome'],'REFUSED')
+        # Cabinet can fit below a raised deck without touching bed panels;
+        # its placement is still refused by the conservative full bed envelope.
+        raised = dict(base, Bed_Height=1100, Bed_Width=1600, Bed_Length=2200,
+                      Cab_Width=600, Cab_Height=600, Cab_Depth=300)
+        self.assertEqual(preview_cabinet_placement(a,raised,100,100)['outcome'],'REFUSED')
+        for x in (True,None,'1600',float('nan'),float('inf'),10001):
+            with self.subTest(x=x), self.assertRaises(ValueError): preview_cabinet_placement(a,base,x,0)
+        missing=dict(base);missing.pop('Cab_Pos_Y')
+        with self.assertRaises(ValueError): preview_cabinet_placement(a,missing,1600,100)
+        self.assertEqual(base,saved)
+
     def test_eleven_panels_two_owned_cuts_preflight_and_distinct_hash(self):
         snapshot = layout()
         result = compose_layout(snapshot)

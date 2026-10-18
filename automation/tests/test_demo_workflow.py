@@ -320,6 +320,18 @@ class DemoTests(TmpDirCase):
         report = copy.deepcopy(self.report)
         for stage in report['stages']:
             stage['label'] = stage['label'].replace('Bed_Length','Bed_Width')
+            stage['checks'].append(dict(id='translated_joinery',status='PASS'))
+        moved = [dict(copy.deepcopy(report['stages'][-1]), label=label)
+                 for label in ('edit_cabinet_position','restore_cabinet_position')]
+        report['placement'] = dict(stages=moved,refusal=dict(outcome='PASS',preview={'outcome':'REFUSED'},
+            before=report['stages'][-1],after=report['stages'][-1],state_before={'timeline':37},state_after={'timeline':37}))
+        self.assertTrue(workflow.verified(report,composition=True))
+        for mutation in (lambda r:r.pop('placement'),
+                         lambda r:r['placement']['refusal'].update(outcome='UNKNOWN'),
+                         lambda r:r['placement']['refusal'].update(state_after={'timeline':38}),
+                         lambda r:r['placement']['stages'][0]['checks'][0].update(status='FAIL')):
+            bad=copy.deepcopy(report);mutation(bad)
+            self.assertFalse(workflow.verified(bad,composition=True))
         with open(self.report_path,'w') as fh: json.dump(report,fh)
         self.module.run_composition_demo = Mock(return_value=self.report_path)
         with patch.object(workflow,'modules',return_value=self.module):

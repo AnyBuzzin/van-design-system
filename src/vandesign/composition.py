@@ -10,9 +10,9 @@ import math
 from .cad.protocol import preflight
 from .components.ids import make_id
 from .components.model import AssemblyDefinition
-from .core.expr import Mm
+from .core.expr import Expr, Mm, Param
 from .core.geometry import Box, BoxExpr
-from .core.params import ParameterSet
+from .core.params import ParamDef, ParameterSet
 from .layout_preview import make_layout
 from .modules.bed_platform import build_bed_platform
 from .modules.variants import build_variant
@@ -36,7 +36,8 @@ def _require(condition, message):
 
 
 def _shift(box, xyz):
-    return BoxExpr(tuple(origin + Mm(offset) for origin, offset in zip(box.origin, xyz)),
+    return BoxExpr(tuple(origin + (offset if isinstance(offset, Expr) else Mm(offset))
+                         for origin, offset in zip(box.origin, xyz)),
                    box.size)
 
 
@@ -49,8 +50,9 @@ def _check_box(box, expected):
              'Composed bounds/volume differ from validated layout')
 
 
-def compose_layout(snapshot):
+def compose_layout(snapshot, *, editable_placement=False):
     """Fail closed on changed/incomplete V6.2 data; return no CAD side effects."""
+    _require(type(editable_placement) is bool, 'editable_placement must be boolean')
     _require(isinstance(snapshot, dict), 'V6.2 snapshot must be an object')
     entries = snapshot.get('instances')
     _require(isinstance(entries, list) and len(entries) == 2, 'Fixed pair required')
@@ -77,6 +79,12 @@ def compose_layout(snapshot):
         _require(env == entry['parameters_mm'], 'Source parameters mismatch')
         parameters.extend(source.parameters.params)
         xyz = entry['translation_mm']
+        offsets = xyz
+        if editable_placement and instance == 'cabinet.001':
+            parameters.extend((ParamDef('Cab_Pos_X', value_mm=xyz[0]),
+                               ParamDef('Cab_Pos_Y', value_mm=xyz[1])))
+            env.update(Cab_Pos_X=xyz[0], Cab_Pos_Y=xyz[1])
+            offsets = (Param('Cab_Pos_X'), Param('Cab_Pos_Y'), xyz[2])
         expected_panels = {p['local_panel_id']: p for p in entry['panels']}
         _require({p.stable_id for p in source.panels} == set(expected_panels), 'Panel inventory mismatch')
         panel_map = {p.stable_id: make_id(instance, p.stable_id) for p in source.panels}
@@ -84,7 +92,7 @@ def compose_layout(snapshot):
         for panel in source.panels:
             expected = expected_panels[panel.stable_id]
             _check_box(panel.box.resolve(env), expected['local_box'])
-            moved = replace(panel, stable_id=panel_map[panel.stable_id], box=_shift(panel.box, xyz))
+            moved = replace(panel, stable_id=panel_map[panel.stable_id], box=_shift(panel.box, offsets))
             _check_box(moved.box.resolve(env), expected['world_box'])
             panels.append(moved)
             panel_records.append({'local_id': panel.stable_id, 'composed_id': moved.stable_id,
@@ -103,7 +111,7 @@ def compose_layout(snapshot):
             _check_box(op.cut.resolve(env), expected['local_cut'])
             moved = replace(op, operation_id=make_id(instance, op.operation_id),
                             target_panel_id=panel_map[op.target_panel_id],
-                            mating_panel_id=panel_map[op.mating_panel_id], cut=_shift(op.cut, xyz))
+                            mating_panel_id=panel_map[op.mating_panel_id], cut=_shift(op.cut, offsets))
             _require(moved.target_panel_id == instance + '.' + op.target_panel_id
                      and moved.mating_panel_id == instance + '.' + op.mating_panel_id,
                      'Cross-instance/remapped cut ownership mismatch')
@@ -149,3 +157,34 @@ def compose_layout(snapshot):
                                   params, tuple(panels), tuple(operations), tuple(constraints))
     preflight(assembly)
     return Composition(assembly, manifest_json)
+
+
+def preview_cabinet_placement(assembly, base_values, x_mm, y_mm):
+    """Pure bounded preview. Occupied envelopes include the bed's empty underside.
+
+    This is a guarded Runner move, not a watcher for raw Fusion parameter edits.
+    No changes are applied here; rejected/missing inputs cannot authorise a move.
+    """
+    for value in (x_mm, y_mm):
+        _require(type(value) in (int, float) and math.isfinite(value)
+                 and abs(value) <= 10000, 'Placement must be finite millimetres within ±10000')
+    names = {p.name for p in assembly.parameters.base()}
+    _require({'Cab_Pos_X', 'Cab_Pos_Y'} <= names, 'Composition has no editable placement')
+    _require(set(base_values) == names, 'Complete current base parameters required')
+    _require(all(type(v) in (int, float) and math.isfinite(v) for v in base_values.values()),
+             'Invalid current parameter observation')
+    proposed = dict(base_values, Cab_Pos_X=x_mm, Cab_Pos_Y=y_mm)
+    env = assembly.parameters.resolve(proposed)
+    _require(all(ok for _, ok, _, _ in assembly.check_constraints(env)), 'Invalid proposed dimensions')
+    envelopes = {}
+    for instance in ('bed.001', 'cabinet.001'):
+        boxes = [p.box.resolve(env) for p in assembly.panels if p.stable_id.startswith(instance+'.')]
+        _require(bool(boxes), 'Missing occupied-envelope panels')
+        _require(all(math.isfinite(v) for b in boxes for v in b.lo+b.hi), 'Invalid occupied bounds')
+        envelopes[instance] = Box(tuple(min(b.lo[i] for b in boxes) for i in range(3)),
+                                  tuple(max(b.hi[i] for b in boxes) for i in range(3)))
+    overlap = envelopes['bed.001'].overlap_volume(envelopes['cabinet.001'])
+    return dict(outcome='REFUSED' if overlap > 0 else 'PASS',
+                reason='Occupied envelopes overlap' if overlap > 0 else 'Occupied envelopes clear',
+                overlap_mm3=overlap, parameters_mm=env,
+                envelopes_mm={k: dict(min=v.lo, max=v.hi) for k,v in envelopes.items()})
