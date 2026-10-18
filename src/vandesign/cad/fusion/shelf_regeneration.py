@@ -35,7 +35,9 @@ class ShelfFixtureAdapter(FusionAdapter):
         comp.name = panel.display_name
         ox, oy, oz = (e.render() for e in panel.box.origin)
         sx, sy, sz = (e.render() for e in panel.box.size)
-        sketch = self._rectangle_profile(comp, panel.display_name, ox, oy, sx, sy)
+        sketch = self._rectangle_profile(comp, panel.display_name, ox, oy, sx, sy,
+                                         x_dynamic=bool(panel.box.origin[0].refs()),
+                                         y_dynamic=bool(panel.box.origin[1].refs()))
         feat = self._extrude(comp, sketch, panel.display_name + " - solid", oz, sz,
                              adsk.fusion.FeatureOperations.NewBodyFeatureOperation)
         feat.bodies.item(0).name = panel.display_name

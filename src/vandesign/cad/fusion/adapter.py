@@ -104,7 +104,8 @@ class FusionAdapter:
     def _eval_cm(self, expr: str) -> float:
         return self.design.unitsManager.evaluateExpression(expr, "mm")
 
-    def _rectangle_profile(self, comp, name: str, x: str, y: str, width: str, depth: str):
+    def _rectangle_profile(self, comp, name: str, x: str, y: str, width: str, depth: str,
+                           *, x_dynamic=False, y_dynamic=False):
         px, py = self._eval_cm(x), self._eval_cm(y)
         pw, pd = self._eval_cm(width), self._eval_cm(depth)
         if min(pw, pd) <= 0:
@@ -126,19 +127,29 @@ class FusionAdapter:
         H = adsk.fusion.DimensionOrientations.HorizontalDimensionOrientation
         V = adsk.fusion.DimensionOrientations.VerticalDimensionOrientation
 
-        if abs(px) < 1e-7 and abs(py) < 1e-7:
+        fixed_x = abs(px) < 1e-7 and not x_dynamic
+        fixed_y = abs(py) < 1e-7 and not y_dynamic
+        # A zero-valued parameter is not a fixed axis. Bind the opposite corner
+        # to origin + size so its driving dimension starts nonzero; the size
+        # dimensions below preserve the requested lower-corner expression.
+        far = right.endSketchPoint
+        if fixed_x and fixed_y:
             cons.addCoincident(corner, origin)
         else:
-            if abs(px) < 1e-7:
+            if fixed_x:
                 cons.addVerticalPoints(origin, corner)
             else:
-                d = dims.addDistanceDimension(origin, corner, H, adsk.core.Point3D.create(px / 2, py - 2, 0))
-                d.parameter.expression = x
-            if abs(py) < 1e-7:
+                zero = abs(px) < 1e-7
+                d = dims.addDistanceDimension(origin, far if zero else corner, H,
+                                              adsk.core.Point3D.create(px / 2, py - 2, 0))
+                d.parameter.expression = "(%s + %s)" % (x, width) if zero else x
+            if fixed_y:
                 cons.addHorizontalPoints(origin, corner)
             else:
-                d = dims.addDistanceDimension(origin, corner, V, adsk.core.Point3D.create(px - 2, py / 2, 0))
-                d.parameter.expression = y
+                zero = abs(py) < 1e-7
+                d = dims.addDistanceDimension(origin, far if zero else corner, V,
+                                              adsk.core.Point3D.create(px - 2, py / 2, 0))
+                d.parameter.expression = "(%s + %s)" % (y, depth) if zero else y
 
         wd = dims.addDistanceDimension(bottom.startSketchPoint, bottom.endSketchPoint, H,
                                        adsk.core.Point3D.create(px + pw / 2, py - 2, 0))
@@ -171,7 +182,9 @@ class FusionAdapter:
         comp.name = panel.display_name
         ox, oy, oz = (e.render() for e in panel.box.origin)
         sx, sy, sz = (e.render() for e in panel.box.size)
-        sketch = self._rectangle_profile(comp, panel.display_name, ox, oy, sx, sy)
+        sketch = self._rectangle_profile(comp, panel.display_name, ox, oy, sx, sy,
+                                         x_dynamic=bool(panel.box.origin[0].refs()),
+                                         y_dynamic=bool(panel.box.origin[1].refs()))
         feat = self._extrude(comp, sketch, panel.display_name + " - solid", oz, sz,
                              adsk.fusion.FeatureOperations.NewBodyFeatureOperation)
         feat.bodies.item(0).name = panel.display_name
@@ -183,7 +196,9 @@ class FusionAdapter:
     def _make_dado(self, op: DadoOperation, target_comp):
         ox, oy, oz = (e.render() for e in op.cut.origin)
         sx, sy, sz = (e.render() for e in op.cut.size)
-        sketch = self._rectangle_profile(target_comp, op.operation_id, ox, oy, sx, sy)
+        sketch = self._rectangle_profile(target_comp, op.operation_id, ox, oy, sx, sy,
+                                         x_dynamic=bool(op.cut.origin[0].refs()),
+                                         y_dynamic=bool(op.cut.origin[1].refs()))
         # Only the target panel's own body may be cut - never the mating shelf.
         return self._extrude(target_comp, sketch, op.operation_id, oz, sz,
                              adsk.fusion.FeatureOperations.CutFeatureOperation,
