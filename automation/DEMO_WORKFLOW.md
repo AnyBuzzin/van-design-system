@@ -2,8 +2,33 @@
 
 Extends the existing queue/add-in; no new service or UI. Requires runner 0.2.0
 (0.3.0 for [configurable layouts and targeted persistence](CONFIGURABLE_LAYOUTS.md)).
-FirstInteriorDemo is the only compiled-in approved entry point. Its trusted
+FirstInteriorDemo and BedCabinetComposition are the compiled-in approved entry points. Their trusted
 package folder is configured by the installer, never supplied in a job.
+
+Issue #43 adds the unsaved-only `BedCabinetComposition` entry point using the
+accepted V6.3 assembly and the same configured package. After the reviewed code
+is integrated with green CI, installation/configuration still requires owner
+approval and an exact backup. These instructions do not authorise deployment.
+
+For this entry point: `inspect_design {}` first records all open documents and
+editable capacity. Jack posts this session baseline before creation. Missing
+metadata or capacity, count >= 9, or an unexpected document inventory change
+blocks creation. Then use `create_demo_design`, `run_approved_demo` with only
+`demo_id` and `entry_point: "BedCabinetComposition"`, `capture_demo_viewport`,
+and `close_demo_design {"demo_id":"<create job ID>"}`. Close refuses unknown,
+saved, inactive, invalid or previously attempted sessions; it calls close(False)
+only on the owned object and verifies the original document census/states.
+Restart loses ownership; do not restart to bypass a changed baseline.
+
+The build checks 11 actual solids/net volumes, two exact side-panel cut targets,
+empty groove probes, interference and X clearance. Independent width sequences
+are Bed_Width 1400→1300→1400 (gap 100→200→100 mm) and Cab_Width
+1200→1100→1200 (gap 100 mm). Original parameter expressions are restored.
+Participant readback temporarily moves/restores only the owned fixture's
+timeline. Each stage is measured; any failure stops without automatic geometry
+restoration or close. Preserve the unsaved fixture/result for investigation.
+Offline fake-API tests prove control flow, not real Fusion geometry. No live
+PASS or screenshot exists until the approved installed Runner executes it.
 
 Jobs use the existing `submit <file> --wait` command:
 

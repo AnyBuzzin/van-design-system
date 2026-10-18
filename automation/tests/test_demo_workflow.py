@@ -34,8 +34,10 @@ class DemoTests(TmpDirCase):
     def setUp(self):
         super().setUp()
         workflow.SESSIONS.clear()
+        workflow.BASELINE = None
         self.protected = NS(name='protected', isValid=True, isSaved=True, isModified=True, isActive=True, saveAs=Mock(), close=Mock())
-        self.doc = NS(isSaved=False, isModified=False, isValid=True, isActive=False, saveAs=Mock(), close=Mock())
+        self.protected.dataFile = NS(id='protected-id', versionNumber=1)
+        self.doc = NS(name='new-demo', isSaved=False, isModified=False, isValid=True, isActive=False, saveAs=Mock(), close=Mock())
         root = NS(occurrences=Collection(), bRepBodies=Collection(), sketches=Collection())
         self.design = NS(rootComponent=root, userParameters=Collection(), timeline=Collection())
         self.folder = NS(id='folder-1', name='root', dataFiles=Collection(), dataFolders=Collection())
@@ -43,6 +45,9 @@ class DemoTests(TmpDirCase):
         self.app = NS(data=NS(personalUseLimits=NS(editableFileCount=3, maxEditableFileCount=10),
                               dataProjects=Collection([project])), activeProduct=self.design,
                       documents=NS(add=Mock(side_effect=self.create), count=1, item=lambda i: self.protected), activeViewport=NS(saveAsImageFile=Mock()))
+        self.app.documents = Collection([self.protected])
+        self.app.documents.add = Mock(side_effect=self.create)
+        workflow.inventory(self.app)
         self.backend = NS(app=self.app, cfg={}, identity=lambda: {'is_saved': self.doc.isSaved})
         path = os.path.join(AUTOMATION, '..', 'demos', 'evidence', 'interior_20261015_005947.json')
         with open(path, encoding='utf-8') as fh:
@@ -57,6 +62,8 @@ class DemoTests(TmpDirCase):
     def create(self, kind):
         self.protected.isActive = False
         self.doc.isActive = True
+        if self.doc not in self.app.documents.values:
+            self.app.documents.values.append(self.doc)
         return self.doc
 
     def run_cmd(self, cmd, args=None):
@@ -139,6 +146,7 @@ class DemoTests(TmpDirCase):
         with self.assertRaises(PolicyError): self.run_cmd('save_demo_design', self.args)
         self.doc.saveAs.assert_not_called()
         workflow.SESSIONS.clear(); self.doc.isActive = False
+        self.app.documents.values = [self.protected]
         self.module.measure.side_effect = None
         self.build(); self.doc.saveAs.return_value = False
         with patch.object(workflow, 'modules', return_value=self.module), self.assertRaises(PolicyError):
@@ -227,3 +235,97 @@ class DemoTests(TmpDirCase):
         self.module.measure.side_effect = [copy.deepcopy(self.report['stages'][0]), after]
         with patch.object(workflow, 'modules', return_value=self.module), self.assertRaises(PolicyError):
             workflow.persistence(self.backend, 'saved-demo', self.tmp)
+
+    def test_capacity_invalid_missing_and_threshold_refuse_before_creation(self):
+        for count in (None, True, -1, 9, 10, 11, float('nan')):
+            with self.subTest(count=count):
+                self.app.data.personalUseLimits.editableFileCount = count
+                with self.assertRaises(PolicyError): self.run_cmd('create_demo_design')
+        self.app.data.personalUseLimits = None
+        with self.assertRaises(PolicyError): self.run_cmd('create_demo_design')
+        self.app.documents.add.assert_not_called()
+
+    def test_inventory_missing_metadata_or_new_tab_refuses(self):
+        self.protected.dataFile.versionNumber = None
+        with self.assertRaises(PolicyError): workflow.inventory(self.app)
+        self.protected.dataFile.versionNumber = 1
+        self.app.documents.values.append(NS(name='unexpected'))
+        with self.assertRaises(PolicyError): self.run_cmd('create_demo_design')
+        self.app.documents.add.assert_not_called()
+
+    def test_no_baseline_no_creation(self):
+        workflow.BASELINE = None
+        with self.assertRaises(PolicyError): self.run_cmd('create_demo_design')
+        self.app.documents.add.assert_not_called()
+
+    def test_close_owned_unsaved_only_and_verify_baseline(self):
+        self.run_cmd('create_demo_design')
+        def close(save):
+            self.assertIs(save, False)
+            self.app.documents.values.remove(self.doc)
+            self.doc.isValid = False
+            return True
+        self.doc.close.side_effect = close
+        result = self.run_cmd('close_demo_design', {'demo_id':'demo-001'})
+        self.assertEqual(result['outcome'], 'PASS')
+        self.assertEqual(result['open_documents'], [workflow.document_state(self.protected)])
+        self.protected.close.assert_not_called(); self.protected.saveAs.assert_not_called()
+        with self.assertRaises(PolicyError): self.run_cmd('close_demo_design', {'demo_id':'demo-001'})
+        self.doc.close.assert_called_once_with(False)
+
+    def test_close_refuses_saved_unknown_and_changed_inventory(self):
+        with self.assertRaises(PolicyError): self.run_cmd('close_demo_design', {'demo_id':'owner-title'})
+        self.run_cmd('create_demo_design')
+        self.doc.isSaved = True
+        with self.assertRaises(PolicyError): self.run_cmd('close_demo_design', {'demo_id':'demo-001'})
+        self.doc.isSaved = False
+        self.app.documents.values.remove(self.protected)
+        with self.assertRaises(PolicyError): self.run_cmd('close_demo_design', {'demo_id':'demo-001'})
+        self.doc.close.assert_not_called()
+
+    def test_close_failure_not_retried_and_wrong_inventory_not_pass(self):
+        self.run_cmd('create_demo_design')
+        self.doc.close.return_value = False
+        with self.assertRaises(PolicyError): self.run_cmd('close_demo_design', {'demo_id':'demo-001'})
+        with self.assertRaises(PolicyError): self.run_cmd('close_demo_design', {'demo_id':'demo-001'})
+        self.doc.close.assert_called_once_with(False)
+
+    def test_close_api_success_without_document_removal_is_not_pass(self):
+        self.run_cmd('create_demo_design')
+        self.doc.close.return_value = True
+        with self.assertRaises(PolicyError): self.run_cmd('close_demo_design', {'demo_id':'demo-001'})
+        self.doc.close.assert_called_once_with(False)
+        self.protected.close.assert_not_called()
+
+    def test_inventory_can_read_owned_doc_but_not_adopt_new_owner_doc(self):
+        self.run_cmd('create_demo_design')
+        self.doc.isModified = True
+        result = workflow.inventory(self.app)
+        self.assertEqual(len(result['open_documents']), 2)
+        self.assertTrue(result['open_documents'][1]['is_modified'])
+        extra = NS(name='other', isSaved=False, isModified=False, isValid=True)
+        self.app.documents.values.append(extra)
+        with self.assertRaises(PolicyError): workflow.inventory(self.app)
+        self.assertEqual(len(workflow.BASELINE['existing']), 1)
+
+    def test_composition_schema_fixed_entry_and_close_no_target(self):
+        validate_job(job('run_approved_demo', dict(demo_id='demo-001',entry_point='BedCabinetComposition'), target=None))
+        validate_job(job('close_demo_design',dict(demo_id='demo-001'),target=None))
+        with self.assertRaises(JobSchemaError):
+            validate_job(job('run_approved_demo',dict(demo_id='demo-001',entry_point='BedCabinetComposition',layout_mm={}),target=None))
+        with self.assertRaises(JobSchemaError): validate_job(job('close_demo_design',dict(demo_id='demo-001')))
+
+    def test_composition_dispatch_single_attempt_and_save_refusal(self):
+        self.run_cmd('create_demo_design')
+        report = copy.deepcopy(self.report)
+        for stage in report['stages']:
+            stage['label'] = stage['label'].replace('Bed_Length','Bed_Width')
+        with open(self.report_path,'w') as fh: json.dump(report,fh)
+        self.module.run_composition_demo = Mock(return_value=self.report_path)
+        with patch.object(workflow,'modules',return_value=self.module):
+            self.run_cmd('run_approved_demo',dict(demo_id='demo-001',entry_point='BedCabinetComposition'))
+            with self.assertRaises(PolicyError):
+                self.run_cmd('run_approved_demo',dict(demo_id='demo-001',entry_point='BedCabinetComposition'))
+            with self.assertRaises(PolicyError): self.run_cmd('save_demo_design',self.args)
+        self.module.run_composition_demo.assert_called_once()
+        self.doc.saveAs.assert_not_called()

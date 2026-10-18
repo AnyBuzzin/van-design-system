@@ -115,7 +115,7 @@ class FusionBackend:
         stored = adapter.stored_spec_json()
         tl = design.timeline
         src = adapter.geometry_source()
-        from demo_workflow import destinations
+        from demo_workflow import destinations, inventory
         return {
             "cloud_destinations": destinations(self.app),
             "identity": self.identity(),
@@ -126,6 +126,7 @@ class FusionBackend:
             "timeline": {"count": tl.count, "marker_position": tl.markerPosition},
             "managed_ids": src.managed_ids(),
             "user_parameters": params,
+            "session": inventory(self.app),
         }
 
     # ------------------------------------------------------------ measurement (G3 logic, measure path only)
