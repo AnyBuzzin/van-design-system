@@ -172,4 +172,3 @@ class CompositionRunnerTests(unittest.TestCase):
             self.assertEqual(params['Bed_Width'].expression, '1300 mm')
             with open(out+'/composition.json') as fh: report=json.load(fh)
             self.assertEqual(report['outcome'],'FAIL')
-
