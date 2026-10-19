@@ -12,8 +12,9 @@ from ...modules.test_envelope import furniture_rows, NOTICE
 from ...modules.storage_box import restored_storage_measurements
 
 
-def measure_storage(design, assembly, guard, width, *, expected_timeline=67):
-    report = measure_test(design,assembly,guard,expected_panels=21,expected_timeline=expected_timeline)
+def measure_storage(design, assembly, guard, width, *, expected_timeline=67, read_only_ownership=False):
+    report = measure_test(design,assembly,guard,expected_panels=21,expected_timeline=expected_timeline,
+                          read_only_ownership=read_only_ownership)
     env = report['parameters_mm']
     boxes = {k:Box(tuple(v['min']),tuple(v['max'])) for k,v in report['bodies'].items()}
     gaps = preview_storage(assembly,env,boxes)

@@ -245,7 +245,8 @@ def phase_a_persistence(backend, state, args, out_dir):
     app=backend.app
     path=os.path.join(out_dir,'phase_a_persistence.json')
     if os.path.exists(path): raise PolicyError('Persistence evidence exists; no retry')
-    payload=dict(outcome='FAIL')
+    payload=dict(outcome='FAIL',verification_scope='clean reopen, geometry and affected-body ownership',
+                 participant_list_persistence='UNKNOWN')
     try:
         sole_owned(app,state)
         empty(adsk.fusion.Design.cast(app.activeProduct),state['document'])
@@ -289,9 +290,13 @@ def phase_a_persistence(backend, state, args, out_dir):
         if not reopened: raise PolicyError('Reopen failed; no retry')
         state['document']=reopened
         if sole_owned(app,state,saved=True)!=saved: raise PolicyError('Reopened saved identity/version differs')
-        after,after_state=module.measure_phase_a_combined(app,guard)
+        def clean_guard():
+            if sole_owned(app,state,saved=True)!=saved:
+                raise PolicyError('Clean saved identity/version changed during read-only verification')
+        after,after_state=module.measure_phase_a_reopened(app,clean_guard)
         payload.update(after=after,shape_state_after=after_state,identity_after=document_state(reopened))
-        if (not restored_storage_measurements(before,after) or shape_state!=after_state
+        from vandesign.modules.storage_box import phase_a_persistence_matches
+        if (not phase_a_persistence_matches(before,after) or shape_state!=after_state
                 or sole_owned(app,state,saved=True)!=saved):
             raise PolicyError('Reopened geometry/state or clean identity differs')
         payload['capacity_after']=capacity(app)

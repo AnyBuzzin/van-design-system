@@ -151,3 +151,30 @@ def preview_invalid_storage(assembly, env):
     except ValueError as exc:
         return dict(outcome='REFUSED', reason=str(exc), proposed_storage_delta_x_mm=500)
     return dict(outcome='FAIL', reason='Unsafe storage move was not refused')
+
+
+def phase_a_persistence_matches(before, after):
+    """Compare geometry with distinct pre-save participant/post-reopen affected-body proofs.
+
+    Does not establish persistence of the configured participant list.
+    Original reports are retained; the unchanged volume epsilon comparator is reused.
+    """
+    operations=build_storage_scene().operations
+    if len(operations)!=2: return False
+    def geometry(report, reopened):
+        if not isinstance(report,dict) or report.get('outcome')!='PASS': return None
+        checks=report.get('checks')
+        if not isinstance(checks,list): return None
+        suffix='.affected_body_ownership' if reopened else '.ownership'
+        expected={op.operation_id+suffix:op.target_panel_id for op in operations}
+        found=[c for c in checks if isinstance(c,dict) and c.get('check_id') in expected]
+        if len(found)!=2 or {c['check_id'] for c in found}!=set(expected):return None
+        for c in found:
+            target=expected[c['check_id']]
+            if c.get('status')!='PASS':return None
+            if reopened:
+                if c.get('affected_bodies')!=[target] or c.get('feature_parent')!=target:return None
+            elif c.get('participants')!=[target]:return None
+        return dict(report,checks=[c for c in checks if c not in found])
+    a,b=geometry(before,False),geometry(after,True)
+    return a is not None and b is not None and restored_storage_measurements(a,b)

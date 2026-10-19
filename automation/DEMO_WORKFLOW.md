@@ -136,7 +136,20 @@ It stops on failure without automatic restoration and remains unsaved-only.
 It compiles/measures the accepted combined scene once (no storage resize replay),
 saves once to the uniquely resolved existing folder/name, closes and reopens only
 that saved session-owned object, then compares measurements and state. Only the
-reviewed absolute1e-6 mm3 volume noise is allowed; all other fields remain exact.
+reviewed absolute1e-6 mm3 volume noise is allowed; all geometric/state fields remain exact.
+Owner's revised criterion (19 October): retain exact configured-participant audit
+BEFORE saving. AFTER reopening use only read-only `Feature.bodies` and feature
+parent stable IDs for exactly two healthy unsuppressed cuts, plus all existing
+BRep bounds/net-volume/groove/contact/interference and state checks. No timeline
+roll or marker setter occurs on this path. Require clean complete identity/version
+before, throughout and after read-only measurement; any dirty state still stops.
+Reports label this scoped clean-reopen/geometry/affected-body verification; the
+separate `participant_list_persistence` result is explicitly UNKNOWN even on PASS.
+Affected bodies are not configured participants: extra non-intersecting participants
+cannot be excluded by this check. Preserve both distinct raw ownership reports.
+The failed version1 fixture and dirty state are protected: never reuse, save, close,
+discard or change its read-only status. No permission for deployment or another
+live execution follows from this offline correction; obtain new owner approval.
 The saved fixture is left open; the report gives its exact name for the owner to
 mark read-only. No API read-only transition is claimed or silently attempted.
 
