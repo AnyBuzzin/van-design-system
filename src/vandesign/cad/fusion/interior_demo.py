@@ -384,3 +384,8 @@ def measure_phase_a_combined(app, guard):
     from .phase_a import phase_a_measure
     from .test_envelope import snapshot
     return phase_a_measure(app,guard,True), snapshot(adsk.fusion.Design.cast(app.activeProduct))
+
+
+def run_dimensioned_cutaway(app, output_dir, guard):
+    from .dimensioned_cutaway import run_dimensioned_cutaway as run
+    return run(app, output_dir, guard)
