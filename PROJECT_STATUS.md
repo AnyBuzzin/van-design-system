@@ -23,7 +23,6 @@ Jack independently accepted and closed #60 under the revised owner-approved crit
 ## Owner to-do
 
 - Mark **VanDesign-PhaseA-Combined-Persistence-20261019-R2** read-only in **VanDesign-V5-Demonstration-20261017-01**; leave the earlier failed fixture untouched.
-- Turn on branch protection for `develop` requiring `unit-tests (3.10)` and `unit-tests (3.12)` ([#16](https://github.com/AnyBuzzin/van-design-system/issues/16)).
 - Decide whether the repository should be private.
 - Check which Fusion licence is needed for commercial use.
 
