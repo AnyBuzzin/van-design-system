@@ -136,7 +136,20 @@ It stops on failure without automatic restoration and remains unsaved-only.
 It compiles/measures the accepted combined scene once (no storage resize replay),
 saves once to the uniquely resolved existing folder/name, closes and reopens only
 that saved session-owned object, then compares measurements and state. Only the
-reviewed absolute1e-6 mm3 volume noise is allowed; all other fields remain exact.
+reviewed absolute1e-6 mm3 volume noise is allowed; all geometric/state fields remain exact.
+Owner's revised criterion (19 October): retain exact configured-participant audit
+BEFORE saving. AFTER reopening use only read-only `Feature.bodies` and feature
+parent stable IDs for exactly two healthy unsuppressed cuts, plus all existing
+BRep bounds/net-volume/groove/contact/interference and state checks. No timeline
+roll or marker setter occurs on this path. Require clean complete identity/version
+before, throughout and after read-only measurement; any dirty state still stops.
+Reports label this scoped clean-reopen/geometry/affected-body verification; the
+separate `participant_list_persistence` result is explicitly UNKNOWN even on PASS.
+Affected bodies are not configured participants: extra non-intersecting participants
+cannot be excluded by this check. Preserve both distinct raw ownership reports.
+The failed version1 fixture and dirty state are protected: never reuse, save, close,
+discard or change its read-only status. No permission for deployment or another
+live execution follows from this offline correction; obtain new owner approval.
 The saved fixture is left open; the report gives its exact name for the owner to
 mark read-only. No API read-only transition is claimed or silently attempted.
 
@@ -153,3 +166,26 @@ failure; preserve reports/fixtures, with no retry, second save or rollback.
 Editable capacity must remain below9 including the new save. Inspect destination
 read-only first and obtain clarification if the approved existing folder is not
 unique. New installation/configuration changes require separate owner approval.
+
+
+## Issue #60 owner-priority dimensioned cutaway
+
+`DimensionedCutaway` accepts only a fresh owned `demo_id` and this fixed entry.
+It reuses the accepted storage scene, changing only the outside right reference
+sill into a full-height wall. Front wall and floor stay outside the clear volume;
+a roof sketch outlines 1784 x 3044 at Z2025. Left/rear/roof remain open for viewing.
+No negative-X solid guide, added furniture, parameter edit or resize campaign.
+The two reference sketches and roof plane add three timeline items (70 total).
+Nominal furniture cut-list rows and IDs stay unchanged (16 furniture panels).
+A 28 mm sketch-text legend outside the model uses complete PASS BRep observations;
+clear-volume values are explicitly specification, arches ASSUMED, vehicle UNMEASURED.
+Labels are a static measured snapshot, not continuously updating dimensions.
+Sketch text uses Autodesk createInput3/setAsMultiLine; unavailable API or mismatched
+text/roof readback stops, preserving partial evidence. No fallback script or retry.
+The fixed helper captures cutaway and plan views. Text legibility stays UNKNOWN
+until image review; screenshots never replace bounds/volume/ownership checks.
+The existing full baseline/capacity and session guards apply with protected tabs
+allowed. Save is refused. Capture/close only this new unsaved receipt and compare
+final baseline. This does not bypass or resolve the separate persistence blocker.
+Reviewed merged green code and NEW owner installation approval are required before
+live execution. Failure retains the owned fixture; no automatic cleanup/rollback.
