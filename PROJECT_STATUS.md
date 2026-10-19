@@ -18,12 +18,12 @@
 
 Issue #56 bounded storage qualification is complete; Jack independently verified the measurements and exact final baseline. The first live run FAILED exact restoration on 2.65e-8 mm³ volume readback noise; the fix ([PR #58](https://github.com/AnyBuzzin/van-design-system/pull/58)) was rerun to 452/452. The box uses nominal 18 mm panels within an unmeasured test envelope; withdrawal/access, loads and real vehicle fit remain unqualified. Preserve the failed storage fixture, owner edits and original failure evidence.
 
-Phase A close-out, Issue [#60](https://github.com/AnyBuzzin/van-design-system/issues/60): offline adapter regression and guarded persistence merged ([PR #63](https://github.com/AnyBuzzin/van-design-system/pull/63)). Live save/reopen is BLOCKED safely: it needs a Fusion session with no other documents open, and one clean unsaved Untitled was present. Phase B ([#61](https://github.com/AnyBuzzin/van-design-system/issues/61)) stays queued.
+Phase A close-out, Issue [#60](https://github.com/AnyBuzzin/van-design-system/issues/60): offline adapter regression and guarded persistence merged ([PR #63](https://github.com/AnyBuzzin/van-design-system/pull/63)). Live base checkpoint PASS 189/189 after the PR #49 adapter change. Combined save/reopen FAILED safely (geometry 113/113 identical, but the reopened document was flagged modified by the verification's timeline roll); fix merged ([PR #65](https://github.com/AnyBuzzin/van-design-system/pull/65)), live rerun UNKNOWN pending owner approval. The saved fixture `VanDesign-PhaseA-Combined-Persistence-20261019` (v1, unsaved changes) stays untouched. Phase B ([#61](https://github.com/AnyBuzzin/van-design-system/issues/61)) stays queued.
 
 ## Owner to-do
 
-- For #60: start a fresh Fusion and Runner session with no documents open, or decide how agents treat Fusion's automatic blank document.
-- Measure the finished lined interior of the current van once lining is complete (ROADMAP Phase C).
+- For #60: approve the PR #65 Runner redeploy and live rerun; decide whether to keep or close (without saving) the open persistence fixture.
+- When the target van is acquired and lined, measure its finished interior (ROADMAP Phase C). Until then, work uses the published Ford Transit L2H3 reference van.
 - Decide whether the repository should be private.
 - Check which Fusion licence is needed for commercial use.
 

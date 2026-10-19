@@ -18,9 +18,11 @@ Done when every existing module resizes, moves, restores and validates in Fusion
 
 Generalise the Issue #51 test envelope into a measured-envelope spec, in two steps: B1 ([#61](https://github.com/AnyBuzzin/van-design-system/issues/61)) flat planes and keep-outs; B2 angled upper-wall planes, which need non-axis-aligned reference bodies in the adapter. Contents: floor plane, lower walls, angled upper-wall planes (B2), flat or segmented ceiling, front/rear limits, wheel arches and obstructions as boxes, door openings with clearance keep-out volumes, an installation tolerance inset, and mounting points/rails as geometric data only. Editable `Env_*` Fusion parameters; reference-only bodies never enter cut lists. Fit check: every furniture panel corner inside all planes (exact for the convex usable space) and no positive-volume overlap between any panel box and any keep-out box; violations refused before CAD mutation.
 
-## Phase C — Real vehicle qualification
+**Reference van (owner decision, 19 October 2026):** until the target van is acquired, build and test every feature against published dimensions: Ford Transit L2H3 load space 1784 W × 3044 L × 2025 H mm, 1392 mm between arches (arch length, height and position remain assumed). A lining-allowance parameter derives the lined interior from the bare load space. Every value stays an editable parameter labelled PUBLISHED-NOMINAL, so retargeting to the acquired van is a data change, not new code.
 
-Owner measures the finished lined interior of the current van. Enter it as an envelope spec, build bed + cabinet + storage inside it in Fusion, and confirm 3–5 physical tape checks match the model within tolerance. First real fit claim; still no load claim.
+## Phase C — Real vehicle qualification (when the van is acquired)
+
+Phases D–G proceed on the reference van; Phase C must be complete before Phase H. Owner measures the finished lined interior of the acquired van. Enter it as an envelope spec, build bed + cabinet + storage inside it in Fusion, and confirm 3–5 physical tape checks match the model within tolerance. First real fit claim; still no load claim.
 
 ## Phase D — Essential furniture library
 
