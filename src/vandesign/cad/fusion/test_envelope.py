@@ -18,7 +18,7 @@ def snapshot(design):
                 timeline=[design.timeline.count,design.timeline.markerPosition], counts=_design_counts(design))
 
 
-def measure_test(design, assembly, guard):
+def measure_test(design, assembly, guard, *, expected_panels=16, expected_timeline=52):
     guard()
     source = FusionAdapter(design).geometry_source()
     env = {p.name:source.parameter_value(p.name) for p in assembly.parameters.params}
@@ -46,10 +46,10 @@ def measure_test(design, assembly, guard):
             (c.features.extrudeFeatures.item(i) for i in range(c.features.extrudeFeatures.count))
             if f.operation==adsk.fusion.FeatureOperations.CutFeatureOperation]
     counts = _design_counts(design)
-    check('inventory', sum(c.bRepBodies.count for c in components)==16
+    check('inventory', sum(c.bRepBodies.count for c in components)==expected_panels
           and design.rootComponent.bRepBodies.count==0
-          and counts['root_occurrences']==16 and counts['all_components']==17
-          and counts['timeline_items']==52 and counts['user_parameters']==len(assembly.parameters.params)
+          and counts['root_occurrences']==expected_panels and counts['all_components']==expected_panels+1
+          and counts['timeline_items']==expected_timeline and counts['user_parameters']==len(assembly.parameters.params)
           and all(c.bRepBodies.item(i).isSolid for c in components for i in range(c.bRepBodies.count))
           and all(f.healthState==adsk.fusion.FeatureHealthStates.HealthyFeatureHealthState
                   and not f.isSuppressed for c in components for f in

@@ -5,6 +5,7 @@ Jobs never supply Python, module names or local filesystem paths.
 """
 import importlib
 import json
+import math
 import os
 import sys
 import time
@@ -158,7 +159,7 @@ def verified(report, composition=False):
             and (not extra or extra[-1]['parameters_mm'] == stages[0]['parameters_mm']))
 
 
-def verified_envelope(report):
+def verified_envelope(report, *, panel_count=16, row_count=11):
     before=report.get('before'); after=report.get('after')
     if not isinstance(before,dict) or before!=after or before.get('outcome')!='PASS':
         return False
@@ -168,7 +169,7 @@ def verified_envelope(report):
               'cabinet.001.dado.shelf1.left.ownership','cabinet.001.dado.shelf1.right.ownership',
               'entities.managed_ids'}
     bodies=before.get('bodies',{})
-    if len(bodies)!=16 or len(report.get('furniture_cut_list',[]))!=11:
+    if len(bodies)!=panel_count or len(report.get('furniture_cut_list',[]))!=row_count:
         return False
     required.update(sid+suffix for sid in bodies for suffix in ('.bbox','.volume'))
     ids=[c.get('check_id') for c in checks]
@@ -176,6 +177,33 @@ def verified_envelope(report):
             and all(c.get('status')=='PASS' for c in checks)
             and report.get('refusal',{}).get('outcome')=='REFUSED'
             and report.get('state_before') is not None and report.get('state_before')==report.get('state_after'))
+
+
+def verified_storage(report):
+    if not verified_envelope(report, panel_count=21, row_count=16):
+        return False
+    stages=report.get('stages',[])
+    if len(stages)!=3 or stages[0]!=stages[-1] or stages[-1]!=report['before']:
+        return False
+    if report.get('baseline_state') is None or report['baseline_state']!=report.get('restored_state'):
+        return False
+    required={'storage.parameters','storage.clearances'}
+    required.update('storage.contact.bottom.'+n for n in ('left','right','front','rear'))
+    required.update('storage.contact.'+a+'.'+b for a,b in (
+        ('left','front'),('left','rear'),('front','right'),('rear','right')))
+    for stage,width in zip(stages,(600,700,600)):
+        checks=stage.get('checks',[])
+        ids=[c.get('check_id') for c in checks]
+        measured_width=stage.get('parameters_mm',{}).get('Storage_Width')
+        stage_report=dict(report,before=stage,after=stage)
+        if (stage.get('outcome')!='PASS' or not required<=set(ids) or len(ids)!=len(set(ids))
+                or any(c.get('status')!='PASS' for c in checks)
+                or type(measured_width) not in (int,float) or not math.isfinite(measured_width)
+                or abs(measured_width-width)>0.001
+                or not verified_envelope(stage_report,panel_count=21,row_count=16)
+                or stage.get('counts')!=stages[0].get('counts')):
+            return False
+    return True
 
 
 def resolve_folder(app, project_id, folder_id):
@@ -295,17 +323,19 @@ def execute(backend, command, args, out_dir, job_id):
                     closed_document=before, open_documents=remaining)
     design = adsk.fusion.Design.cast(app.activeProduct)
     if command == 'run_approved_demo':
-        if args['entry_point'] == 'TestTransitEnvelope':
+        if args['entry_point'] in ('TestTransitEnvelope','TestStorageBox'):
             if state['status'] != 'created' or set(args) != {'demo_id','entry_point'}:
                 raise PolicyError('Test envelope requires unused session and fixed arguments')
             empty(design,doc); capacity(app)
             module=modules(backend.cfg)
             state['status']='build_attempted'
-            path=module.run_test_envelope(app,out_dir,lambda: session(args['demo_id']))
+            run = module.run_storage_box if args['entry_point']=='TestStorageBox' else module.run_test_envelope
+            path=run(app,out_dir,lambda: session(args['demo_id']))
             with open(path,encoding='utf-8') as fh: report=json.load(fh)
-            if not verified_envelope(report): raise PolicyError('Test envelope verification failed')
+            verify = verified_storage if args['entry_point']=='TestStorageBox' else verified_envelope
+            if not verify(report): raise PolicyError('Test envelope verification failed')
             session(args['demo_id'])
-            state.update(status='verified',entry_point='TestTransitEnvelope')
+            state.update(status='verified',entry_point=args['entry_point'])
             return dict(outcome='PASS',demo_id=args['demo_id'],report_path=path,verification=report)
 
         if args['entry_point'] == 'BedCabinetComposition':
@@ -353,7 +383,7 @@ def execute(backend, command, args, out_dir, job_id):
                     verification=report, identity=backend.identity(), existing_documents=unchanged(state))
 
     if command == 'save_demo_design':
-        if state.get('entry_point') in ('BedCabinetComposition','TestTransitEnvelope'):
+        if state.get('entry_point') in ('BedCabinetComposition','TestTransitEnvelope','TestStorageBox'):
             raise PolicyError('Composition demonstration is unsaved-only')
         if state['status'] != 'verified':
             raise PolicyError("Only a successfully verified build can be saved")
