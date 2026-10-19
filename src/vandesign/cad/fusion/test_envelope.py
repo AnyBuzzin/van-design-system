@@ -18,7 +18,25 @@ def snapshot(design):
                 timeline=[design.timeline.count,design.timeline.markerPosition], counts=_design_counts(design))
 
 
-def measure_test(design, assembly, guard, *, expected_panels=16, expected_timeline=52, base_profile=None):
+def affected_body_check(feature, op):
+    """Affected bodies only: deliberately NOT configured participant-list evidence."""
+    bodies=feature.bodies
+    owners=[]
+    for i in range(bodies.count):
+        body=bodies.item(i)
+        if body is None or not body.isValid or not body.isSolid:
+            raise RuntimeError('Invalid affected body')
+        attr=body.parentComponent.attributes.itemByName(ATTR_GROUP,ATTR_ID)
+        owners.append(attr.value if attr else None)
+    parent=feature.parentComponent.attributes.itemByName(ATTR_GROUP,ATTR_ID)
+    ok=(owners==[op.target_panel_id] and parent is not None and parent.value==op.target_panel_id
+        and feature.healthState==adsk.fusion.FeatureHealthStates.HealthyFeatureHealthState
+        and not feature.isSuppressed)
+    return dict(check_id=op.operation_id+'.affected_body_ownership',status='PASS' if ok else 'FAIL',
+                affected_bodies=owners,feature_parent=parent.value if parent else None)
+
+
+def measure_test(design, assembly, guard, *, expected_panels=16, expected_timeline=52, base_profile=None, read_only_ownership=False):
     guard()
     source = FusionAdapter(design).geometry_source()
     env = {p.name:source.parameter_value(p.name) for p in assembly.parameters.params}
@@ -69,6 +87,12 @@ def measure_test(design, assembly, guard, *, expected_panels=16, expected_timeli
         found=[f for f in cuts if f.name==op.operation_id]
         if len(found)!=1: raise RuntimeError("Ambiguous cut ownership")
         feature=found[0]
+        if read_only_ownership:
+            guard()
+            checks.append(affected_body_check(feature, op))
+            if design.timeline.markerPosition!=marker or design.timeline.count!=marker:
+                raise RuntimeError('Timeline changed during read-only ownership check')
+            continue
         try:
             guard()
             if not feature.timelineObject.rollTo(True): raise RuntimeError("Cut readback failed")

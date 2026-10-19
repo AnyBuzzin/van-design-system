@@ -453,7 +453,17 @@ class DemoTests(TmpDirCase):
             bodies={'panel':dict(min=[0,0,0],max=[1,1,1],volume_mm3=1)},
             checks=[dict(check_id='panel.volume',status='PASS',observed=1,expected=1,tolerance=1e-6,
                          unit='mm3',object_ids=['panel'])])
+        from vandesign.modules.storage_box import build_storage_scene
+        for op in build_storage_scene().operations:
+            measured['checks'].append(dict(check_id=op.operation_id+'.ownership',status='PASS',participants=[op.target_panel_id]))
+        reopened_measure=copy.deepcopy(measured)
+        for c in reopened_measure['checks']:
+            if c['check_id'].endswith('.ownership'):
+                target=c.pop('participants')[0]
+                c.update(check_id=c['check_id'].replace('.ownership','.affected_body_ownership'),
+                         affected_bodies=[target],feature_parent=target)
         state={'parameters':{'width':['600 mm',60]},'timeline':[67,67]}
+        self.module.measure_phase_a_reopened=Mock(return_value=(reopened_measure,state))
         self.module.run_phase_a=Mock(return_value=dict(outcome='PASS',stages=[copy.deepcopy(measured)]))
         self.module.measure_phase_a_combined=Mock(return_value=(measured,state))
         def save(name,folder,*unused):
@@ -478,11 +488,25 @@ class DemoTests(TmpDirCase):
         with patch.object(workflow,'modules',return_value=self.module):
             r=self.run_cmd('run_approved_demo',args)
             self.assertEqual(r['outcome'],'PASS');self.assertEqual(r['identity_before'],r['identity_after'])
+            self.assertEqual(r['participant_list_persistence'],'UNKNOWN')
             self.assertEqual(r['owner_read_only_action'],args['name'])
             with self.assertRaises(PolicyError):self.run_cmd('run_approved_demo',args)
             with self.assertRaises(PolicyError):self.run_cmd('close_demo_design',{'demo_id':'demo-001'})
         self.doc.saveAs.assert_called_once();self.doc.close.assert_called_once_with(False)
         self.app.documents.open.assert_called_once();self.protected.close.assert_not_called()
+
+    def test_phase_a_readonly_measure_dirty_or_identity_change_cannot_pass(self):
+        args=self.phase_a_setup()
+        def dirty(app,guard):
+            self.reopened.isModified=True
+            guard()
+            self.fail('Guard must refuse')
+        self.module.measure_phase_a_reopened.side_effect=dirty
+        with patch.object(workflow,'modules',return_value=self.module),self.assertRaises(PolicyError):
+            self.run_cmd('run_approved_demo',args)
+        self.doc.saveAs.assert_called_once();self.doc.close.assert_called_once()
+        with open(os.path.join(self.tmp,'phase_a_persistence.json'),encoding='utf-8') as f:r=json.load(f)
+        self.assertEqual(r['outcome'],'FAIL');self.assertEqual(r['participant_list_persistence'],'UNKNOWN')
 
     def test_phase_a_other_document_refuses_before_geometry_or_save(self):
         self.run_cmd('create_demo_design');self.app.activeDocument=self.doc
