@@ -1,6 +1,6 @@
 # VanDesign current status
 
-**19 October 2026.** Issue #51 development-only envelope qualification passed; approved Runner correction installed. `main` is unchanged. Rules: [AGENTS.md](AGENTS.md). Next work: [ROADMAP.md](docs/ROADMAP.md).
+**19 October 2026.** Adopted strategy: design to a measured plywood-lined interior ([ADR-0002](docs/decisions/ADR-0002-lined-interior-envelope.md)). `main` is unchanged. Rules: [AGENTS.md](AGENTS.md). Next work: [ROADMAP.md](docs/ROADMAP.md) Phase A.
 
 ## Works today
 
@@ -15,11 +15,11 @@
 
 ## Now
 
-Issue #51 bounded development-only test is complete and [independently accepted](https://github.com/AnyBuzzin/van-design-system/issues/51#issuecomment-6257222265). These assumed dimensions do not establish real vehicle fit. Preserve all three failed fixtures and original evidence; no further live work is assigned. Measured vehicle geometry remains necessary for fit qualification.
+Phase A. Issue [#56](https://github.com/AnyBuzzin/van-design-system/issues/56) storage box: offline merged ([PR #57](https://github.com/AnyBuzzin/van-design-system/pull/57)). The live run passed 339/339 stage checks but FAILED exact restoration on 2.65e-8 mm³ volume readback noise; fix in draft [PR #58](https://github.com/AnyBuzzin/van-design-system/pull/58). Redeploy and live rerun need owner approval. The Issue #51 envelope ([accepted](https://github.com/AnyBuzzin/van-design-system/issues/51#issuecomment-6257222265)) remains an unmeasured development fixture, not real vehicle fit.
 
 ## Owner to-do
 
-- Turn on branch protection for `develop` requiring `unit-tests (3.10)` and `unit-tests (3.12)` ([#16](https://github.com/AnyBuzzin/van-design-system/issues/16)).
+- Measure the finished lined interior of the current van once lining is complete (ROADMAP Phase C).
 - Decide whether the repository should be private.
 - Check which Fusion licence is needed for commercial use.
 
