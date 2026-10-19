@@ -9,6 +9,7 @@ from .adapter import FusionAdapter
 from ...core.geometry import Box
 from ...modules.storage_box import build_storage_scene, preview_storage, storage_contacts, preview_invalid_storage
 from ...modules.test_envelope import furniture_rows, NOTICE
+from ...modules.storage_box import restored_storage_measurements
 
 
 def measure_storage(design, assembly, guard, width):
@@ -66,7 +67,7 @@ def run_storage_box(app, output_dir, guard):
             if len(payload['stages'])==1:
                 payload['baseline_state']=snapshot(design)
         payload['restored_state']=snapshot(design)
-        if payload['stages'][0]!=payload['stages'][-1] or payload['baseline_state']!=payload['restored_state']:
+        if not restored_storage_measurements(payload['stages'][0],payload['stages'][-1]) or payload['baseline_state']!=payload['restored_state']:
             raise RuntimeError('Storage restoration differs')
         payload['before']=payload['stages'][-1]
         payload['state_before']=snapshot(design)

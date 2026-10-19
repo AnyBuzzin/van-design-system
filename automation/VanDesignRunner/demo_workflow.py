@@ -180,10 +180,11 @@ def verified_envelope(report, *, panel_count=16, row_count=11):
 
 
 def verified_storage(report):
+    from vandesign.modules.storage_box import restored_storage_measurements
     if not verified_envelope(report, panel_count=21, row_count=16):
         return False
     stages=report.get('stages',[])
-    if len(stages)!=3 or stages[0]!=stages[-1] or stages[-1]!=report['before']:
+    if len(stages)!=3 or not restored_storage_measurements(stages[0],stages[-1]) or stages[-1]!=report['before']:
         return False
     if report.get('baseline_state') is None or report['baseline_state']!=report.get('restored_state'):
         return False
