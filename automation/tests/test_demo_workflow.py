@@ -429,3 +429,109 @@ class DemoTests(TmpDirCase):
             with self.assertRaises(PolicyError): self.run_cmd('run_approved_demo',args)
         self.module.run_storage_box.assert_called_once()
         self.doc.saveAs.assert_not_called(); self.protected.close.assert_not_called()
+
+
+    def phase_a_setup(self):
+        # Fresh empty session only; production inventory never resets a baseline.
+        workflow.BASELINE=None;self.app.documents.values=[];self.app.activeDocument=None
+        workflow.inventory(self.app);self.run_cmd('create_demo_design');self.app.activeDocument=self.doc
+        measured=dict(outcome='PASS',parameters_mm={'Storage_Width':600},counts={'timeline':67},
+            bodies={'panel':dict(min=[0,0,0],max=[1,1,1],volume_mm3=1)},
+            checks=[dict(check_id='panel.volume',status='PASS',observed=1,expected=1,tolerance=1e-6,
+                         unit='mm3',object_ids=['panel'])])
+        state={'parameters':{'width':['600 mm',60]},'timeline':[67,67]}
+        self.module.run_phase_a=Mock(return_value=dict(outcome='PASS',stages=[copy.deepcopy(measured)]))
+        self.module.measure_phase_a_combined=Mock(return_value=(measured,state))
+        def save(name,folder,*unused):
+            self.doc.name=name;self.doc.isSaved=True
+            self.doc.dataFile=NS(id='fresh-saved-id',versionNumber=1,isComplete=True,name=name,parentFolder=folder)
+            return True
+        self.doc.saveAs.side_effect=save
+        def close(save):
+            self.assertIs(save,False);self.app.documents.values=[];self.app.activeDocument=None;self.doc.isValid=False
+            return True
+        self.doc.close.side_effect=close
+        def reopen(df,active):
+            self.reopened=NS(name=df.name,isSaved=True,isModified=False,isValid=True,isActive=True,dataFile=df)
+            self.app.documents.values=[self.reopened];self.app.activeDocument=self.reopened
+            return self.reopened
+        self.app.documents.open=Mock(side_effect=reopen)
+        return dict(self.args,entry_point='PhaseACombinedPersistence')
+
+    def test_phase_a_sole_owned_save_reopen_and_no_repeat(self):
+        args=self.phase_a_setup()
+        validate_job(job('run_approved_demo',args,target=None))
+        with patch.object(workflow,'modules',return_value=self.module):
+            r=self.run_cmd('run_approved_demo',args)
+            self.assertEqual(r['outcome'],'PASS');self.assertEqual(r['identity_before'],r['identity_after'])
+            self.assertEqual(r['owner_read_only_action'],args['name'])
+            with self.assertRaises(PolicyError):self.run_cmd('run_approved_demo',args)
+            with self.assertRaises(PolicyError):self.run_cmd('close_demo_design',{'demo_id':'demo-001'})
+        self.doc.saveAs.assert_called_once();self.doc.close.assert_called_once_with(False)
+        self.app.documents.open.assert_called_once();self.protected.close.assert_not_called()
+
+    def test_phase_a_other_document_refuses_before_geometry_or_save(self):
+        self.run_cmd('create_demo_design');self.app.activeDocument=self.doc
+        with patch.object(workflow,'modules') as module,self.assertRaises(PolicyError):
+            self.run_cmd('run_approved_demo',dict(self.args,entry_point='PhaseACombinedPersistence'))
+        module.assert_not_called();self.doc.saveAs.assert_not_called();self.protected.close.assert_not_called()
+
+    def test_phase_a_duplicate_name_and_capacity_refuse_before_save(self):
+        args=self.phase_a_setup();self.folder.dataFiles.values=[NS(name=args['name'])]
+        with self.assertRaises(PolicyError):self.run_cmd('run_approved_demo',args)
+        self.doc.saveAs.assert_not_called()
+        self.folder.dataFiles.values=[];self.app.data.personalUseLimits.editableFileCount=8
+        with self.assertRaises(PolicyError):self.run_cmd('run_approved_demo',args)
+        self.doc.saveAs.assert_not_called()
+
+    def test_phase_a_unexpected_tab_after_close_blocks_reopen(self):
+        args=self.phase_a_setup()
+        def close(save):self.app.documents.values=[self.protected];return True
+        self.doc.close.side_effect=close
+        with patch.object(workflow,'modules',return_value=self.module),self.assertRaises(PolicyError):
+            self.run_cmd('run_approved_demo',args)
+        self.app.documents.open.assert_not_called();self.protected.close.assert_not_called()
+
+    def test_phase_a_dirty_save_blocks_close_and_different_version_blocks_measure(self):
+        args=self.phase_a_setup();save=self.doc.saveAs.side_effect
+        def dirty(*a):save(*a);self.doc.isModified=True;return True
+        self.doc.saveAs.side_effect=dirty
+        with patch.object(workflow,'modules',return_value=self.module),self.assertRaises(PolicyError):
+            self.run_cmd('run_approved_demo',args)
+        self.doc.close.assert_not_called()
+
+    def test_zero_document_inspect_is_explicit_and_never_rebases(self):
+        spec=importlib.util.spec_from_file_location('phase_a_backend',os.path.join(AUTOMATION,'VanDesignRunner','fusion_backend.py'))
+        backend_module=importlib.util.module_from_spec(spec)
+        with patch.dict(sys.modules,{'adsk':fake_adsk,'adsk.core':fake_adsk.core,'adsk.fusion':fake_adsk.fusion}):
+            spec.loader.exec_module(backend_module)
+        backend=backend_module.FusionBackend(self.app,{'g3_script_dir':'unused','audit_script':'unused'})
+        self.app.activeDocument=None;self.app.documents.values=[]
+        with patch.dict(sys.modules,{'demo_workflow':workflow}),self.assertRaises(PolicyError):backend.inspect()
+        workflow.BASELINE=None
+        with patch.dict(sys.modules,{'demo_workflow':workflow}):r=backend.inspect()
+        self.assertTrue(r['no_active_design']);self.assertEqual(r['session']['open_documents'],[])
+        self.assertNotIn('design_counts',r)
+        self.app.documents.values=[self.protected]
+        with patch.dict(sys.modules,{'demo_workflow':workflow}),self.assertRaises(backend_module.BackendError):backend.inspect()
+        self.app.documents.values=[];self.app.data.personalUseLimits=None
+        with patch.dict(sys.modules,{'demo_workflow':workflow}),self.assertRaises(PolicyError):backend.inspect()
+
+
+    def test_phase_a_reopen_wrong_version_fails_before_post_measurement(self):
+        args=self.phase_a_setup();reopen=self.app.documents.open.side_effect
+        def wrong(df,active):
+            result=reopen(df,active);result.dataFile.versionNumber=2;return result
+        self.app.documents.open.side_effect=wrong
+        with patch.object(workflow,'modules',return_value=self.module),self.assertRaises(PolicyError):
+            self.run_cmd('run_approved_demo',args)
+        self.module.measure_phase_a_combined.assert_called_once()
+        self.doc.saveAs.assert_called_once();self.doc.close.assert_called_once()
+
+    def test_phase_a_unapproved_arguments_and_existing_unsaved_contract(self):
+        validate_job(job('run_approved_demo',dict(demo_id='demo-001',entry_point='PhaseABaseCheckpoint'),target=None))
+        for entry in ('TestStorageBox','PhaseABaseCheckpoint'):
+            with self.assertRaises(JobSchemaError):
+                validate_job(job('run_approved_demo',dict(self.args,entry_point=entry),target=None))
+        with self.assertRaises(JobSchemaError):
+            validate_job(job('run_approved_demo',dict(demo_id='demo-001',entry_point='PhaseACombinedPersistence'),target=None))

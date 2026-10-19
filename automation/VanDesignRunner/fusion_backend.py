@@ -103,6 +103,12 @@ class FusionBackend:
 
     # ------------------------------------------------------------ read-only inspection
     def inspect(self):
+        if self.app.activeDocument is None:
+            from demo_workflow import destinations, inventory
+            if self.app.documents.count != 0:
+                raise BackendError('Missing active document with nonempty inventory')
+            return {'no_active_design': True, 'cloud_destinations': destinations(self.app),
+                    'session': inventory(self.app)}
         design = self._design()
         g3 = self._g3()
         adapter = g3["adapter"].FusionAdapter(design)
