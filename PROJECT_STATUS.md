@@ -15,7 +15,7 @@
 
 ## Now
 
-Issue #51 bounded development-only test is complete, pending Jack's final acceptance. These assumed dimensions do not establish real vehicle fit. Preserve all three failed fixtures and original evidence; no further live work is assigned. Measured vehicle geometry remains necessary for fit qualification.
+Issue #51 bounded development-only test is complete and [independently accepted](https://github.com/AnyBuzzin/van-design-system/issues/51#issuecomment-6257222265). These assumed dimensions do not establish real vehicle fit. Preserve all three failed fixtures and original evidence; no further live work is assigned. Measured vehicle geometry remains necessary for fit qualification.
 
 ## Owner to-do
 
