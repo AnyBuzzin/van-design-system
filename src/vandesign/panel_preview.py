@@ -256,6 +256,26 @@ def make_preview(spec_text, report_bytes=None):
     raw = json.loads(spec_text)
     if isinstance(raw, dict) and raw.get("module") == "bed-platform@1":
         return _bed_preview(spec_text, report_bytes)
+    if isinstance(raw, dict) and raw.get("module") == "storage-box@1":
+        from .schemas.storage_box_spec import load_storage_spec, MODULE, SCHEMA, NOTICE as STORAGE_NOTICE
+        from .modules.storage_box import build_storage_box
+        spec = load_storage_spec(spec_text)
+        assembly = build_storage_box(spec)
+        if report_bytes is not None:
+            raise ValueError("Storage report integration is not qualified; omit --report")
+        return {
+            "format": "vandesign.panel-preview/1", "notice": NOTICE, "unit": "mm",
+            "qualification": STORAGE_NOTICE,
+            "generator": "vandesign.storage-box@1", "package_version": __version__,
+            "specification": {"module": MODULE, "design_schema_version": SCHEMA,
+                              "canonical_json": spec.to_json(), "design_spec_hash": spec.spec_hash(),
+                              "hash_scheme": "storage-box-1-canonical-sha256"},
+            "resolved_nominal_parameters_mm": assembly.parameters.resolve(),
+            "panels": panel_rows(assembly), "grooves": [],
+            "evidence": {"status": "UNKNOWN", "scope": "specification-only; no live storage qualification",
+                         "report_sha256": None, "failures": [], "unknowns": ["no qualified measurement report"],
+                         "cut_ownership": "UNKNOWN", "saved_document": "UNKNOWN"},
+        }
     design = load_design_spec(spec_text)
     assembly = build_variant(design.resolved_params, design.profile)
     report = json.loads(report_bytes) if report_bytes is not None else None

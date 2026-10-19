@@ -368,3 +368,8 @@ def run_composition_demo(app, output_dir, guard):
 def run_test_envelope(app, output_dir, guard):
     from .test_envelope import run_test_envelope as run
     return run(app, output_dir, guard)
+
+
+def run_storage_box(app, output_dir, guard):
+    from .storage_box import run_storage_box as run
+    return run(app, output_dir, guard)

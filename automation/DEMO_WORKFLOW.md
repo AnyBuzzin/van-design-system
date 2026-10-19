@@ -105,3 +105,19 @@ and Jack's fresh baseline handoff. Capture then close only this new owned unsave
 fixture. Stop on failure without retry/cleanup; prior failed fixtures stay protected.
 Offline tests prove intent, not Fusion solver success. Live qualification and
 screenshot remain NOT RUN until separately authorised deployment and execution.
+
+
+## Under-bed storage box (Issue #56 candidate)
+
+`TestStorageBox` accepts only the existing owned `demo_id` and fixed entry point.
+It adds five 18 mm butt-contact panels to the unchanged test scene at X592/Y600/Z0.
+Width 600 -> 700 -> 600 stays anchored, with measured 396/396 -> 396/296 ->
+396/396 mm arch gaps and 432 mm deck clearance. Eight contacts, bounds, volumes,
+interference, cabinet cut ownership and exact restoration are checked. A fixed
++500 mm X preview must refuse without changing parameters, geometry or timeline.
+Raw parameter edits are not continuously guarded. There is no qualified extraction
+path through the bed supports, load capacity, measured van fit or CNC approval.
+Failure stops and retains the new fixture and partial report; no automatic restore,
+retry or cleanup. Success follows capture/close-only-owned-unsaved/final baseline.
+Owner approval is required BEFORE deployment or ANY live test of this candidate.
+Offline tests are not live Fusion evidence. All existing documents remain protected.

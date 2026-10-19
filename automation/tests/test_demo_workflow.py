@@ -369,3 +369,46 @@ class DemoTests(TmpDirCase):
             with self.assertRaises(PolicyError):
                 self.run_cmd('run_approved_demo',dict(demo_id='demo-001',entry_point='TestTransitEnvelope'))
         self.doc.saveAs.assert_not_called()
+
+
+    def test_storage_fixed_entry_measurement_gates_and_no_save_retry(self):
+        args=dict(demo_id='demo-001',entry_point='TestStorageBox')
+        validate_job(job('run_approved_demo',args,target=None))
+        for extras in ({'layout_mm':{}},{'script':'arbitrary.py'},{'width_mm':700}):
+            with self.assertRaises(JobSchemaError):
+                validate_job(job('run_approved_demo',dict(args,**extras),target=None))
+        self.run_cmd('create_demo_design',{})
+        required=['test_clearances','furniture_interference','inventory',
+                  'reference.arch.left.interference','reference.arch.right.interference',
+                  'cabinet.001.dado.shelf1.left.ownership','cabinet.001.dado.shelf1.right.ownership',
+                  'entities.managed_ids','storage.parameters','storage.clearances']
+        required += ['storage.contact.bottom.'+n for n in ('left','right','front','rear')]
+        required += ['storage.contact.'+a+'.'+b for a,b in (
+            ('left','front'),('left','rear'),('front','right'),('rear','right'))]
+        bodies={'panel.'+str(i):{} for i in range(21)}
+        required += [sid+suffix for sid in bodies for suffix in ('.bbox','.volume')]
+        stages=[dict(outcome='PASS',bodies=copy.deepcopy(bodies),counts={'timeline_items':67},
+                     parameters_mm={'Storage_Width':w},
+                     checks=[dict(check_id=k,status='PASS') for k in required]) for w in (600,700,600)]
+        report=dict(outcome='PASS',furniture_cut_list=[{}]*16,before=copy.deepcopy(stages[0]),
+                    after=copy.deepcopy(stages[0]),stages=stages,refusal={'outcome':'REFUSED'},
+                    state_before={'timeline':67},state_after={'timeline':67},
+                    baseline_state={'timeline':67},restored_state={'timeline':67})
+        self.assertTrue(workflow.verified_storage(report))
+        for mutation in (lambda r:r['stages'][1]['checks'].pop(),
+                         lambda r:r['stages'][1]['parameters_mm'].update(Storage_Width=float('nan')),
+                         lambda r:r['stages'][1]['parameters_mm'].update(Storage_Width=600),
+                         lambda r:r['stages'][1]['bodies'].pop('panel.0'),
+                         lambda r:r['stages'][1]['checks'][0].update(status='FAIL'),
+                         lambda r:r['restored_state'].update(timeline=68),
+                         lambda r:r['state_after'].update(timeline=68)):
+            bad=copy.deepcopy(report);mutation(bad)
+            self.assertFalse(workflow.verified_storage(bad))
+        with open(self.report_path,'w') as fh: json.dump(report,fh)
+        self.module.run_storage_box=Mock(return_value=self.report_path)
+        with patch.object(workflow,'modules',return_value=self.module):
+            self.run_cmd('run_approved_demo',args)
+            with self.assertRaises(PolicyError): self.run_cmd('save_demo_design',self.args)
+            with self.assertRaises(PolicyError): self.run_cmd('run_approved_demo',args)
+        self.module.run_storage_box.assert_called_once()
+        self.doc.saveAs.assert_not_called(); self.protected.close.assert_not_called()
