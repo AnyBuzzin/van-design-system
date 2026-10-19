@@ -1,6 +1,6 @@
 # VanDesign current status
 
-**18 October 2026.** Issue #46 bounded positioning and collision refusal accepted; approved Runner correction installed. `main` is unchanged. Rules: [AGENTS.md](AGENTS.md). Next work: [ROADMAP.md](docs/ROADMAP.md).
+**19 October 2026.** Issue #51 development-only envelope qualification passed; approved Runner correction installed. `main` is unchanged. Rules: [AGENTS.md](AGENTS.md). Next work: [ROADMAP.md](docs/ROADMAP.md).
 
 ## Works today
 
@@ -10,11 +10,12 @@
 | Three-panel bed, resizable in width, length and height | Live Fusion: [PR #30](https://github.com/AnyBuzzin/van-design-system/pull/30) |
 | Bed + cabinet: 11 solids, exact two-side dado ownership, zero interference; both widths edit/restore; test closes unsaved with original document baseline preserved | Live Fusion: 95/95 checks, [results](https://github.com/AnyBuzzin/van-design-system/issues/43#issuecomment-6255609683), [independent acceptance](https://github.com/AnyBuzzin/van-design-system/pull/45#pullrequestreview-5565186671) |
 | Cabinet placement (1500,0) to (1600,100) and back: doors follow, cuts/volumes/interference verified; overlapping (100,100) refused without mutation; both existing documents preserved | Live Fusion: 140/140 stage checks, [results](https://github.com/AnyBuzzin/van-design-system/issues/46#issuecomment-6256189001), [independent acceptance](https://github.com/AnyBuzzin/van-design-system/pull/49) |
+| Bed + cabinet in an UNMEASURED Transit test envelope with assumed wheel arches; 382 mm deck/arch clearance, 634 mm nominal right strip; unsafe move refused unchanged | Live Fusion: 176/176 checks, [results](https://github.com/AnyBuzzin/van-design-system/issues/51#issuecomment-6257218503); four existing documents preserved |
 | Nominal cut lists (CSV/JSON) | Offline; not CNC toolpaths |
 
 ## Now
 
-Issue #46 is complete. The next roadmap step requires the owner's confirmed vehicle and measured envelope before scoped implementation. Preserve the original failed fixture and evidence; no further live work is assigned.
+Issue #51 bounded development-only test is complete and [independently accepted](https://github.com/AnyBuzzin/van-design-system/issues/51#issuecomment-6257222265). These assumed dimensions do not establish real vehicle fit. Preserve all three failed fixtures and original evidence; no further live work is assigned. Measured vehicle geometry remains necessary for fit qualification.
 
 ## Owner to-do
 
