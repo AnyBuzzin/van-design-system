@@ -8,7 +8,7 @@ Already proven in live Fusion (2026-10-14 to 10-19): cabinets (base/tall/overhea
 
 ## Phase A — Stabilise the existing furniture system (current)
 
-1. Finish Issue #56 storage box: volume-noise fix (PR #58), approved redeploy, live run PASS including refusal, capture and unsaved close.
+1. Finish Issue #56 storage box: volume-noise fix (PR #58, merged), approved redeploy, live run PASS including refusal, capture and unsaved close.
 2. Regression-check the shared Fusion adapter change from PR #49 on base/tall/overhead cabinets (offline expression equality, one live base checkpoint).
 3. Combined scene save → reopen → re-measure unchanged.
 

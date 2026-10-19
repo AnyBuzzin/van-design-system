@@ -15,7 +15,7 @@
 
 ## Now
 
-Phase A. Issue [#56](https://github.com/AnyBuzzin/van-design-system/issues/56) storage box: offline merged ([PR #57](https://github.com/AnyBuzzin/van-design-system/pull/57)). The live run passed 339/339 stage checks but FAILED exact restoration on 2.65e-8 mm³ volume readback noise; fix in draft [PR #58](https://github.com/AnyBuzzin/van-design-system/pull/58). Redeploy and live rerun need owner approval. The Issue #51 envelope ([accepted](https://github.com/AnyBuzzin/van-design-system/issues/51#issuecomment-6257222265)) remains an unmeasured development fixture, not real vehicle fit.
+Phase A. Issue [#56](https://github.com/AnyBuzzin/van-design-system/issues/56) storage box: offline merged ([PR #57](https://github.com/AnyBuzzin/van-design-system/pull/57)). The live run passed 339/339 stage checks but FAILED exact restoration on 2.65e-8 mm³ volume readback noise; fix merged ([PR #58](https://github.com/AnyBuzzin/van-design-system/pull/58)), live result UNKNOWN until rerun. Redeploy and live rerun need owner approval. The Issue #51 envelope ([accepted](https://github.com/AnyBuzzin/van-design-system/issues/51#issuecomment-6257222265)) remains an unmeasured development fixture, not real vehicle fit.
 
 ## Owner to-do
 
