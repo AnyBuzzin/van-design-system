@@ -18,7 +18,7 @@ def snapshot(design):
                 timeline=[design.timeline.count,design.timeline.markerPosition], counts=_design_counts(design))
 
 
-def measure_test(design, assembly, guard, *, expected_panels=16, expected_timeline=52):
+def measure_test(design, assembly, guard, *, expected_panels=16, expected_timeline=52, base_profile=None):
     guard()
     source = FusionAdapter(design).geometry_source()
     env = {p.name:source.parameter_value(p.name) for p in assembly.parameters.params}
@@ -28,17 +28,24 @@ def measure_test(design, assembly, guard, *, expected_panels=16, expected_timeli
     if any(b is None or not all(math.isfinite(v) for v in b.box.lo+b.box.hi+(b.volume_mm3,))
            for b in bodies.values()):
         raise RuntimeError("Incomplete finite body measurements")
-    report = validate(assembly, source)
+    if base_profile is None:
+        report = validate(assembly, source)
+    else:
+        from ...modules.variants import profile_limits
+        report = validate(assembly, source, profile_limits=profile_limits(base_profile), profile_variant='base')
+        if len(report.checks)!=59:
+            raise RuntimeError('Expected existing base@1 checkpoint 59 checks')
     checks = [c.to_dict() for c in report.checks]
     def check(name, ok, **data):
         checks.append(dict(check_id=name,status="PASS" if ok else "FAIL",**data))
-    clearance = preview_fit(assembly, env, {k:b.box for k,b in bodies.items()})
-    check('test_clearances', abs(clearance['deck_to_arch_mm']-382)<0.01
-          and abs(clearance['nominal_right_strip_mm']-634)<0.01, observed=clearance)
+    if base_profile is None:
+        clearance = preview_fit(assembly, env, {k:b.box for k,b in bodies.items()})
+        check('test_clearances', abs(clearance['deck_to_arch_mm']-382)<0.01
+              and abs(clearance['nominal_right_strip_mm']-634)<0.01, observed=clearance)
     ids = [p.stable_id for p in assembly.panels if not p.stable_id.startswith(REFERENCE)]
     count = source.interference_count(ids)
     check('furniture_interference', count==0, observed=count)
-    for arch in ARCHES:
+    for arch in ARCHES if base_profile is None else ():
         count = source.interference_count(ids+[arch])
         check(arch+'.interference', count==0, observed=count)
     components = [design.allComponents.item(i) for i in range(design.allComponents.count)]

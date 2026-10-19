@@ -229,6 +229,81 @@ def unused(folder, name):
         raise PolicyError("Document name already exists; no overwrite or duplicate-name save permitted")
 
 
+def sole_owned(app, state, *, saved=False):
+    """No implicit disposal of an existing blank tab during cloud reopen."""
+    doc=state['document']
+    if state['existing'] or documents(app)!=[doc] or app.activeDocument!=doc:
+        raise PolicyError('Phase A persistence requires sole Runner-created document; owner must preserve/close other tabs')
+    info=document_state(doc)
+    if saved and (not info['is_saved'] or info['is_modified'] or not doc.dataFile.isComplete):
+        raise PolicyError('Exact saved clean cloud-complete fixture required')
+    return info
+
+
+def phase_a_persistence(backend, state, args, out_dir):
+    """One first save/reopen of this session receipt, never a supplied cloud ID."""
+    app=backend.app
+    path=os.path.join(out_dir,'phase_a_persistence.json')
+    if os.path.exists(path): raise PolicyError('Persistence evidence exists; no retry')
+    payload=dict(outcome='FAIL')
+    try:
+        sole_owned(app,state)
+        empty(adsk.fusion.Design.cast(app.activeProduct),state['document'])
+        if capacity(app)['editable']>=8: raise PolicyError('First save would reach editable safety threshold')
+        folder=resolve_folder(app,args['project_id'],args['folder_id'])
+        unused(folder,args['name'])
+        module=modules(backend.cfg)
+        state['status']='build_attempted'
+        guard=lambda: sole_owned(app,state)
+        payload['build']=module.run_phase_a(app,out_dir,guard,combined=True)
+        if payload['build']['outcome']!='PASS': raise PolicyError('Combined baseline failed')
+        before,shape_state=module.measure_phase_a_combined(app,guard)
+        payload.update(before=before,shape_state_before=shape_state)
+        from vandesign.modules.storage_box import restored_storage_measurements
+        if not restored_storage_measurements(payload['build']['stages'][0],before):
+            raise PolicyError('Presave geometry changed')
+        sole_owned(app,state);unused(folder,args['name'])
+        state['status']='save_attempted'
+        doc=state['document']
+        if not doc.saveAs(args['name'],folder,'VanDesign Phase A persistence qualification',''):
+            raise PolicyError('Save uncertain; no retry')
+        deadline=time.monotonic()+45
+        while time.monotonic()<deadline:
+            adsk.doEvents();sole_owned(app,state)
+            if doc.isSaved and doc.dataFile and doc.dataFile.isComplete:break
+            time.sleep(0.1)
+        else:raise PolicyError('Save completion unknown')
+        saved=sole_owned(app,state,saved=True);data_file=doc.dataFile
+        if data_file.name!=args['name'] or data_file.parentFolder.id!=folder.id:
+            raise PolicyError('Saved name/location mismatch')
+        payload['identity_before']=saved
+        capacity(app)
+        # No events between final sole/identity check and close.
+        if sole_owned(app,state,saved=True)!=saved: raise PolicyError('Saved identity changed')
+        state['status']='close_attempted'
+        if not doc.close(False): raise PolicyError('Close failed; no retry')
+        state['status']='closed'
+        if documents(app): raise PolicyError('Unexpected document after close; reopen refused')
+        state['status']='reopen_attempted'
+        reopened=app.documents.open(data_file,True)
+        if not reopened: raise PolicyError('Reopen failed; no retry')
+        state['document']=reopened
+        if sole_owned(app,state,saved=True)!=saved: raise PolicyError('Reopened saved identity/version differs')
+        after,after_state=module.measure_phase_a_combined(app,guard)
+        payload.update(after=after,shape_state_after=after_state,identity_after=document_state(reopened))
+        if (not restored_storage_measurements(before,after) or shape_state!=after_state
+                or sole_owned(app,state,saved=True)!=saved):
+            raise PolicyError('Reopened geometry/state or clean identity differs')
+        payload['capacity_after']=capacity(app)
+        state.update(status='saved',entry_point='PhaseACombinedPersistence')
+        payload.update(outcome='PASS',owner_read_only_action=args['name'])
+    except Exception as exc:
+        payload['error']=str(exc);raise
+    finally:
+        with open(path,'w',encoding='utf-8') as f:json.dump(payload,f,indent=2)
+    return payload
+
+
 def persistence(backend, design_id, out_dir):
     """Only the explicitly allowlisted, clean, active demo may be closed/reopened."""
     cfg, app = backend.cfg, backend.app
@@ -324,6 +399,16 @@ def execute(backend, command, args, out_dir, job_id):
                     closed_document=before, open_documents=remaining)
     design = adsk.fusion.Design.cast(app.activeProduct)
     if command == 'run_approved_demo':
+        if args['entry_point'] in ('PhaseABaseCheckpoint','PhaseACombinedPersistence'):
+            if state['status']!='created': raise PolicyError('Unused owned session required; no retry')
+            if args['entry_point']=='PhaseACombinedPersistence':
+                return phase_a_persistence(backend,state,args,out_dir)
+            empty(design,doc);capacity(app)
+            module=modules(backend.cfg);state['status']='build_attempted'
+            report=module.run_phase_a(app,out_dir,lambda:session(args['demo_id']))
+            if report['outcome']!='PASS':raise PolicyError('Base checkpoint failed')
+            session(args['demo_id']);state.update(status='verified',entry_point='PhaseABaseCheckpoint')
+            return dict(outcome='PASS',demo_id=args['demo_id'],verification=report)
         if args['entry_point'] in ('TestTransitEnvelope','TestStorageBox'):
             if state['status'] != 'created' or set(args) != {'demo_id','entry_point'}:
                 raise PolicyError('Test envelope requires unused session and fixed arguments')
@@ -384,7 +469,7 @@ def execute(backend, command, args, out_dir, job_id):
                     verification=report, identity=backend.identity(), existing_documents=unchanged(state))
 
     if command == 'save_demo_design':
-        if state.get('entry_point') in ('BedCabinetComposition','TestTransitEnvelope','TestStorageBox'):
+        if state.get('entry_point') in ('BedCabinetComposition','TestTransitEnvelope','TestStorageBox','PhaseABaseCheckpoint','PhaseACombinedPersistence'):
             raise PolicyError('Composition demonstration is unsaved-only')
         if state['status'] != 'verified':
             raise PolicyError("Only a successfully verified build can be saved")

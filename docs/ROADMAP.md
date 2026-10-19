@@ -4,19 +4,19 @@ Present capability and blockers belong in [PROJECT_STATUS.md](../PROJECT_STATUS.
 
 **Adopted first-product strategy (19 October 2026, [ADR-0002](decisions/ADR-0002-lined-interior-envelope.md)):** van shell → structural timber framework → plywood-lined interior → measured planar design envelope → parametric furniture → CNC panel output → secure installation. VanDesign models the finished lined interior as a few measurable planes and obstructions, not the curved metal shell. Keep the existing core/adapter/Runner; extend, do not replace.
 
-Already proven in live Fusion (2026-10-14 to 10-19): cabinets (base/tall/overhead, width/shelf edits), resizable bed, bed + cabinet composition, guarded cabinet placement with collision refusal, and an *unmeasured* development envelope with assumed arches (Issue #51).
+Already proven in live Fusion (2026-10-14 to 10-19): cabinets (base/tall/overhead, width/shelf edits), resizable bed, bed + cabinet composition, guarded cabinet placement with collision refusal, an *unmeasured* development envelope with assumed arches (Issue #51), and an under-bed storage box (Issue #56).
 
 ## Phase A — Stabilise the existing furniture system (current)
 
-1. Finish Issue #56 storage box: volume-noise fix (PR #58, merged), approved redeploy, live run PASS including refusal, capture and unsaved close.
-2. Regression-check the shared Fusion adapter change from PR #49 on base/tall/overhead cabinets (offline expression equality, one live base checkpoint).
-3. Combined scene save → reopen → re-measure unchanged.
+1. Done: Issue #56 storage box accepted live (452/452) after the PR #58 volume-noise fix.
+2. Issue #60: regression-check the shared Fusion adapter change from PR #49 on base/tall/overhead cabinets (offline oracle merged in PR #63; one live base checkpoint).
+3. Issue #60: combined scene save → reopen → re-measure unchanged.
 
 Done when every existing module resizes, moves, restores and validates in Fusion and the combined design survives save/reopen.
 
 ## Phase B — Parametric lined-interior envelope
 
-Generalise the Issue #51 test envelope into a measured-envelope spec: floor plane, lower walls, optional angled upper-wall planes, flat or segmented ceiling, front/rear limits, wheel arches and obstructions as boxes, door openings with clearance keep-out volumes, an installation tolerance inset, and mounting points/rails as geometric data only. Editable `Env_*` Fusion parameters; reference-only bodies never enter cut lists. Fit check: every furniture panel corner inside all planes and outside all keep-outs; violations refused before CAD mutation.
+Generalise the Issue #51 test envelope into a measured-envelope spec, in two steps: B1 ([#61](https://github.com/AnyBuzzin/van-design-system/issues/61)) flat planes and keep-outs; B2 angled upper-wall planes, which need non-axis-aligned reference bodies in the adapter. Contents: floor plane, lower walls, angled upper-wall planes (B2), flat or segmented ceiling, front/rear limits, wheel arches and obstructions as boxes, door openings with clearance keep-out volumes, an installation tolerance inset, and mounting points/rails as geometric data only. Editable `Env_*` Fusion parameters; reference-only bodies never enter cut lists. Fit check: every furniture panel corner inside all planes (exact for the convex usable space) and no positive-volume overlap between any panel box and any keep-out box; violations refused before CAD mutation.
 
 ## Phase C — Real vehicle qualification
 

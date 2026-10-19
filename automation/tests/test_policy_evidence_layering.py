@@ -78,7 +78,14 @@ class LayeringTests(unittest.TestCase):
         lifecycle = open(os.path.join(AUTOMATION, "VanDesignRunner", "demo_workflow.py"), encoding="utf-8").read()
         for f in ("deleteMe", ".save(", "exportManager", "exec(", "eval(", "subprocess", "os.system"):
             self.assertNotIn(f, lifecycle)
-        self.assertEqual(lifecycle.count('doc.saveAs('), 1)
+        # Exactly the original owned-demo save and Issue60 sole-document first save.
+        save_sites=[]
+        for function in ast.parse(lifecycle).body:
+            if isinstance(function,ast.FunctionDef):
+                for call in ast.walk(function):
+                    if isinstance(call,ast.Call) and isinstance(call.func,ast.Attribute) and call.func.attr=='saveAs':
+                        save_sites.append((function.name,ast.unparse(call.func.value)))
+        self.assertCountEqual(save_sites,[('execute','doc'),('phase_a_persistence','doc')])
 
 
 if __name__ == "__main__":

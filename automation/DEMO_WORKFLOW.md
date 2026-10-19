@@ -121,3 +121,35 @@ Failure stops and retains the new fixture and partial report; no automatic resto
 retry or cleanup. Success follows capture/close-only-owned-unsaved/final baseline.
 Owner approval is required BEFORE deployment or ANY live test of this candidate.
 Offline tests are not live Fusion evidence. All existing documents remain protected.
+
+
+## Phase A close-out (Issue #60 candidate)
+
+Offline profile traces compare all base/tall/overhead/bed panels and cuts with
+pre-PR49 sketch dimension/constraint output. Only parameter-dependent zero-origin
+bindings may differ; fake-API results do not establish real BRep correctness.
+`PhaseABaseCheckpoint` uses a fresh Runner receipt and the existing base@1
+59-check validator, exact cut participants and width1200 ->1210 ->1200 mm.
+It stops on failure without automatic restoration and remains unsaved-only.
+`PhaseACombinedPersistence` is a separate fixed entry with explicit `demo_id`,
+`name`, `project_id`, `folder_id`. Existing `TestStorageBox` stays unsaved-only.
+It compiles/measures the accepted combined scene once (no storage resize replay),
+saves once to the uniquely resolved existing folder/name, closes and reopens only
+that saved session-owned object, then compares measurements and state. Only the
+reviewed absolute1e-6 mm3 volume noise is allowed; all other fields remain exact.
+The saved fixture is left open; the report gives its exact name for the owner to
+mark read-only. No API read-only transition is claimed or silently attempted.
+
+Persistence requires a fresh Runner session baseline with ZERO documents, then
+only the new owned fixture open; saved clean cloud-complete identity/version are
+rechecked immediately before close. An existing blank tab is NOT disposable:
+G3 previously observed its disappearance during reopen. Owner must manually
+preserve/close existing tabs before this procedure; agents never close them.
+The read-only zero-document inspection explicitly has no geometry measurements.
+Existing in-memory baselines cannot be reset/rebased when documents disappear.
+If Fusion creates a blank automatically, refuse; no workaround or tab cleanup.
+Stop on unexpected inventory, metadata, geometry, save/reopen or dirty-state
+failure; preserve reports/fixtures, with no retry, second save or rollback.
+Editable capacity must remain below9 including the new save. Inspect destination
+read-only first and obtain clarification if the approved existing folder is not
+unique. New installation/configuration changes require separate owner approval.
