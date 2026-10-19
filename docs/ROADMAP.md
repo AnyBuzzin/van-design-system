@@ -1,6 +1,6 @@
 # VanDesign product direction
 
-Present capability and blockers belong in [PROJECT_STATUS.md](../PROJECT_STATUS.md); working rules belong in [AGENTS.md](../AGENTS.md). Work top to bottom; each item is done when it works in Fusion (and, from Phase H, in the real van).
+Present capability and blockers belong in [PROJECT_STATUS.md](../PROJECT_STATUS.md); working rules belong in [AGENTS.md](../AGENTS.md). Work order: A → B1 → E1 → D with E2 → B2 when needed by D → F → G; C when the van is acquired, always before H → H → I. Each item is done when it works in Fusion (and, from Phase H, in the real van).
 
 **Adopted first-product strategy (19 October 2026, [ADR-0002](decisions/ADR-0002-lined-interior-envelope.md)):** van shell → structural timber framework → plywood-lined interior → measured planar design envelope → parametric furniture → CNC panel output → secure installation. VanDesign models the finished lined interior as a few measurable planes and obstructions, not the curved metal shell. Keep the existing core/adapter/Runner; extend, do not replace.
 
@@ -20,6 +20,14 @@ Generalise the Issue #51 test envelope into a measured-envelope spec, in two ste
 
 **Reference van (owner decision, 19 October 2026):** until the target van is acquired, build and test every feature against published dimensions: Ford Transit L2H3 load space 1784 W × 3044 L × 2025 H mm, 1392 mm between arches (arch length, height and position remain assumed). A lining-allowance parameter derives the lined interior from the bare load space. Every value stays an editable parameter labelled PUBLISHED-NOMINAL, so retargeting to the acquired van is a data change, not new code.
 
+## Phase E1 — Joinery foundation (owner decision: next after B1, before most of Phase D)
+
+New modules must be born with real joinery rather than retrofitted from butt joints. In order:
+1. **2D panel outlines:** a flat panel defined by a profile of lines and arcs (not only an axis-aligned box) in the core and Fusion adapter, verified against real BRep bodies. This is the base for tabs, slots, notches, cut-outs and radiused edges.
+2. **Tab-and-slot carcass joints with dog-bone corner relief,** parameterised by tool diameter, fit clearance and measured sheet thickness; applied to the existing cabinet carcass; exact cut ownership and zero interference verified in Fusion.
+3. **One hardware connector as cut geometry** (for example Lamello Cabineo or confirmat), with insertion points and exact target bodies.
+4. **Physical test pieces:** cut coupons on a CNC router and record measured fit before the joint is used in furniture.
+
 ## Phase C — Real vehicle qualification (when the van is acquired)
 
 Phases D–G proceed on the reference van; Phase C must be complete before Phase H. Owner measures the finished lined interior of the acquired van. Enter it as an envelope spec, build bed + cabinet + storage inside it in Fusion, and confirm 3–5 physical tape checks match the model within tolerance. First real fit claim; still no load claim.
@@ -28,9 +36,9 @@ Phases D–G proceed on the reference van; Phase C must be complete before Phase
 
 Only modules a working van needs, in this order: overhead cabinets on angled walls, kitchen base run (worktop, sink/hob cut-outs), drawer unit (one slide type), wardrobe/tall unit, bed variants. Each a parametric module with stable IDs on the common composition and fit check.
 
-## Phase E — Materials and interlocking joinery
+## Phase E2 — Materials and joinery completion
 
-Per-panel thickness 5, 10, 12, 15, 18 mm (others only when justified), driven by **measured actual sheet thickness**. CNC-compatible joinery (existing dados, tab-and-slot, dog-bone relief) parameterised by tool diameter, fit clearance and thickness. Validate with physically cut test coupons before use in furniture.
+Builds on E1 alongside Phase D. Per-panel thickness 5, 10, 12, 15, 18 mm (others only when justified), driven by **measured actual sheet thickness**. CNC-compatible joinery (existing dados, tab-and-slot, dog-bone relief) parameterised by tool diameter, fit clearance and thickness. Validate with physically cut test coupons before use in furniture.
 
 ## Phase F — Manufacturing output
 
