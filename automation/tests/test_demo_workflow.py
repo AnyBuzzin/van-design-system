@@ -390,11 +390,28 @@ class DemoTests(TmpDirCase):
         stages=[dict(outcome='PASS',bodies=copy.deepcopy(bodies),counts={'timeline_items':67},
                      parameters_mm={'Storage_Width':w},
                      checks=[dict(check_id=k,status='PASS') for k in required]) for w in (600,700,600)]
+        for stage in stages:
+            for sid in stage['bodies']:
+                stage['bodies'][sid]['volume_mm3']=100.0
+                check=next(c for c in stage['checks'] if c['check_id']==sid+'.volume')
+                check.update(observed=100.0,expected=100.0,tolerance=1.0,unit='mm3',object_ids=[sid])
         report=dict(outcome='PASS',furniture_cut_list=[{}]*16,before=copy.deepcopy(stages[0]),
                     after=copy.deepcopy(stages[0]),stages=stages,refusal={'outcome':'REFUSED'},
                     state_before={'timeline':67},state_after={'timeline':67},
                     baseline_state={'timeline':67},restored_state={'timeline':67})
         self.assertTrue(workflow.verified_storage(report))
+        noisy=copy.deepcopy(report)
+        for stage in (noisy['stages'][-1],noisy['before'],noisy['after']):
+            stage['bodies']['panel.0']['volume_mm3']+=3e-8
+            next(c for c in stage['checks'] if c['check_id']=='panel.0.volume')['observed']+=3e-8
+        self.assertTrue(workflow.verified_storage(noisy))
+        for value in (100.001,None,float('nan'),float('inf')):
+            bad=copy.deepcopy(noisy)
+            for stage in (bad['stages'][-1],bad['before'],bad['after']):
+                stage['bodies']['panel.0']['volume_mm3']=value
+                next(c for c in stage['checks'] if c['check_id']=='panel.0.volume')['observed']=value
+            self.assertFalse(workflow.verified_storage(bad))
+
         for mutation in (lambda r:r['stages'][1]['checks'].pop(),
                          lambda r:r['stages'][1]['parameters_mm'].update(Storage_Width=float('nan')),
                          lambda r:r['stages'][1]['parameters_mm'].update(Storage_Width=600),

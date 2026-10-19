@@ -25,7 +25,9 @@ class StorageRunnerTests(unittest.TestCase):
 
     def report(self,width):
         env=self.a.parameters.resolve({'Storage_Width':width})
-        return dict(outcome='PASS',checks=[dict(check_id='existing',status='PASS')],parameters_mm=env,
+        return dict(outcome='PASS',checks=[dict(check_id=p.stable_id+'.volume',status='PASS',
+            observed=p.box.resolve(env).volume,expected=p.box.resolve(env).volume,tolerance=1,
+            unit='mm3',object_ids=[p.stable_id]) for p in self.a.panels],parameters_mm=env,
             counts={'timeline_items':67},bodies={p.stable_id:dict(min=p.box.resolve(env).lo,
                 max=p.box.resolve(env).hi,volume_mm3=p.box.resolve(env).volume) for p in self.a.panels})
 
@@ -82,4 +84,20 @@ class StorageRunnerTests(unittest.TestCase):
         p['min']=(p['min'][0],p['min'][1],p['min'][2]+1)
         with patch.object(self.m,'measure_test',return_value=measured):
             r=self.m.measure_storage(self.design,self.a,self.guard,600)
+        self.assertEqual(r['outcome'],'FAIL')
+
+
+    def test_runtime_volume_noise_retained_but_refusal_stays_exact(self):
+        reports=[self.report(w) for w in (600,700,600,600)]
+        sid='storage.001.storage.right.001'
+        for r in reports[2:]:
+            r['bodies'][sid]['volume_mm3']+=3e-8
+            next(c for c in r['checks'] if c['check_id']==sid+'.volume')['observed']+=3e-8
+        raw=copy.deepcopy(reports)
+        r,_=self.run_sequence(reports)
+        self.assertEqual(r['outcome'],'PASS')
+        self.assertEqual(reports,raw)
+        self.assertNotEqual(r['stages'][0]['bodies'][sid]['volume_mm3'],r['stages'][-1]['bodies'][sid]['volume_mm3'])
+        reports[-1]['bodies'][sid]['volume_mm3']+=3e-8
+        r,_=self.run_sequence(reports)
         self.assertEqual(r['outcome'],'FAIL')
