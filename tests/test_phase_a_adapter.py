@@ -21,12 +21,13 @@ class AdapterRegressionTests(unittest.TestCase):
             self.current=importlib.import_module('vandesign.cad.fusion.adapter')
         patcher=patch.object(self.current,'adsk',self.fake);patcher.start();self.addCleanup(patcher.stop)
         root=Path(__file__).resolve().parents[1]
-        tree=ast.parse((root/'prototypes/claude-v5/VanCabinetJoineryV5/vandesign/cad/fusion/adapter.py').read_text(encoding='utf-8'))
+        source=(root/'prototypes/claude-v5/VanCabinetJoineryV5/vandesign/cad/fusion/adapter.py').read_text(encoding='utf-8')
+        tree=ast.parse(source)
         cls=next(n for n in tree.body if isinstance(n,ast.ClassDef) and n.name=='FusionAdapter')
         method=next(n for n in cls.body if isinstance(n,ast.FunctionDef) and n.name=='_rectangle_profile')
-        # Independently matched to git 17b74de^ (before PR49) during preparation.
-        self.assertEqual(hashlib.sha256(ast.dump(method).encode()).hexdigest(),
-            'd51537a5f9dc71a14b7977be55a65a3e8bc8ccb01a52072b8b5db0b5217c7349')
+        # Exact source matched to git 17b74de^ (before PR49); AST fields vary by Python version.
+        self.assertEqual(hashlib.sha256(ast.get_source_segment(source,method).encode('utf-8')).hexdigest(),
+            'c9fdbfdf5c913a7113a62d838f52c741022ad8dff93b3bbdb97bedb948a4b08a')
         namespace={'adsk':self.fake,'FusionAdapterError':RuntimeError}
         exec(compile(ast.Module(body=[method],type_ignores=[]),'<pinned pre49 profile>','exec'),namespace)
         self.old=namespace['_rectangle_profile']
