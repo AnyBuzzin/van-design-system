@@ -373,3 +373,14 @@ def run_test_envelope(app, output_dir, guard):
 def run_storage_box(app, output_dir, guard):
     from .storage_box import run_storage_box as run
     return run(app, output_dir, guard)
+
+
+def run_phase_a(app, output_dir, guard, combined=False):
+    from .phase_a import run_phase_a as run
+    return run(app, output_dir, guard, combined)
+
+
+def measure_phase_a_combined(app, guard):
+    from .phase_a import phase_a_measure
+    from .test_envelope import snapshot
+    return phase_a_measure(app,guard,True), snapshot(adsk.fusion.Design.cast(app.activeProduct))

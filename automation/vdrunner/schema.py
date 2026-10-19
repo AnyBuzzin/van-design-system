@@ -116,14 +116,16 @@ def validate_args(command: str, args: Any, path: str) -> None:
         required = {"create_demo_design": (), "run_approved_demo": ("demo_id", "entry_point"),
                     "save_demo_design": ("demo_id", "name", "project_id", "folder_id"),
                     "close_demo_design": ("demo_id",), "capture_demo_viewport": ("demo_id",), "verify_demo_persistence": ("design_id",)}[command]
-        _keys(args, path, required, ("layout_mm", "vehicle_mm") if command == 'run_approved_demo' else ())
+        if command=='run_approved_demo' and isinstance(args,dict) and args.get('entry_point')=='PhaseACombinedPersistence':
+            required=('demo_id','entry_point','name','project_id','folder_id')
+        _keys(args, path, required, ('layout_mm','vehicle_mm') if command=='run_approved_demo' and args.get('entry_point')=='FirstInteriorDemo' else ())
         for key in required:
             _str(args[key], path + "." + key, 300)
         if "demo_id" in args and not JOB_ID_RE.fullmatch(args["demo_id"]):
             _fail(path + ".demo_id", "must be the create job id")
-        if command == "run_approved_demo" and args["entry_point"] not in ("FirstInteriorDemo", "BedCabinetComposition", "TestTransitEnvelope", "TestStorageBox"):
+        if command == "run_approved_demo" and args["entry_point"] not in ("FirstInteriorDemo", "BedCabinetComposition", "TestTransitEnvelope", "TestStorageBox", "PhaseABaseCheckpoint", "PhaseACombinedPersistence"):
             _fail(path + ".entry_point", "unapproved entry point")
-        if args.get('entry_point') in ('BedCabinetComposition', 'TestTransitEnvelope', 'TestStorageBox') and set(args) != {'demo_id', 'entry_point'}:
+        if args.get('entry_point') in ('BedCabinetComposition', 'TestTransitEnvelope', 'TestStorageBox', 'PhaseABaseCheckpoint') and set(args) != {'demo_id', 'entry_point'}:
             _fail(path, 'composition uses fixed reviewed inputs')
         if 'layout_mm' in args:
             _keys(args['layout_mm'], path+'.layout_mm', (), ('Bed_Width', 'Bed_Length', 'Bed_Height', 'Kitchen_X', 'Kitchen_Y'))
