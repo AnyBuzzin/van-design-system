@@ -153,3 +153,26 @@ failure; preserve reports/fixtures, with no retry, second save or rollback.
 Editable capacity must remain below9 including the new save. Inspect destination
 read-only first and obtain clarification if the approved existing folder is not
 unique. New installation/configuration changes require separate owner approval.
+
+
+## Issue #60 owner-priority dimensioned cutaway
+
+`DimensionedCutaway` accepts only a fresh owned `demo_id` and this fixed entry.
+It reuses the accepted storage scene, changing only the outside right reference
+sill into a full-height wall. Front wall and floor stay outside the clear volume;
+a roof sketch outlines 1784 x 3044 at Z2025. Left/rear/roof remain open for viewing.
+No negative-X solid guide, added furniture, parameter edit or resize campaign.
+The two reference sketches and roof plane add three timeline items (70 total).
+Nominal furniture cut-list rows and IDs stay unchanged (16 furniture panels).
+A 28 mm sketch-text legend outside the model uses complete PASS BRep observations;
+clear-volume values are explicitly specification, arches ASSUMED, vehicle UNMEASURED.
+Labels are a static measured snapshot, not continuously updating dimensions.
+Sketch text uses Autodesk createInput3/setAsMultiLine; unavailable API or mismatched
+text/roof readback stops, preserving partial evidence. No fallback script or retry.
+The fixed helper captures cutaway and plan views. Text legibility stays UNKNOWN
+until image review; screenshots never replace bounds/volume/ownership checks.
+The existing full baseline/capacity and session guards apply with protected tabs
+allowed. Save is refused. Capture/close only this new unsaved receipt and compare
+final baseline. This does not bypass or resolve the separate persistence blocker.
+Reviewed merged green code and NEW owner installation approval are required before
+live execution. Failure retains the owned fixture; no automatic cleanup/rollback.

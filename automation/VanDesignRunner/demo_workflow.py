@@ -399,6 +399,15 @@ def execute(backend, command, args, out_dir, job_id):
                     closed_document=before, open_documents=remaining)
     design = adsk.fusion.Design.cast(app.activeProduct)
     if command == 'run_approved_demo':
+        if args['entry_point']=='DimensionedCutaway':
+            if state['status']!='created' or set(args)!={'demo_id','entry_point'}:
+                raise PolicyError('Unused owned session and fixed visual entry required')
+            empty(design,doc);capacity(app)
+            module=modules(backend.cfg);state['status']='build_attempted'
+            report=module.run_dimensioned_cutaway(app,out_dir,lambda:session(args['demo_id']))
+            if report.get('outcome')!='PASS': raise PolicyError('Dimensioned cutaway failed')
+            session(args['demo_id']);state.update(status='verified',entry_point='DimensionedCutaway')
+            return dict(outcome='PASS',demo_id=args['demo_id'],verification=report)
         if args['entry_point'] in ('PhaseABaseCheckpoint','PhaseACombinedPersistence'):
             if state['status']!='created': raise PolicyError('Unused owned session required; no retry')
             if args['entry_point']=='PhaseACombinedPersistence':
@@ -469,7 +478,7 @@ def execute(backend, command, args, out_dir, job_id):
                     verification=report, identity=backend.identity(), existing_documents=unchanged(state))
 
     if command == 'save_demo_design':
-        if state.get('entry_point') in ('BedCabinetComposition','TestTransitEnvelope','TestStorageBox','PhaseABaseCheckpoint','PhaseACombinedPersistence'):
+        if state.get('entry_point') in ('BedCabinetComposition','TestTransitEnvelope','TestStorageBox','DimensionedCutaway','PhaseABaseCheckpoint','PhaseACombinedPersistence'):
             raise PolicyError('Composition demonstration is unsaved-only')
         if state['status'] != 'verified':
             raise PolicyError("Only a successfully verified build can be saved")
