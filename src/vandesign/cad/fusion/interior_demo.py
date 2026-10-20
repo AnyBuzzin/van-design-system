@@ -391,6 +391,11 @@ def run_dimensioned_cutaway(app, output_dir, guard):
     return run(app, output_dir, guard)
 
 
+def run_lined_envelope(app, output_dir, guard):
+    from .lined_envelope import run_lined_envelope as run
+    return run(app, output_dir, guard)
+
+
 def measure_phase_a_reopened(app, guard):
     from .storage_box import measure_storage
     from .test_envelope import snapshot
