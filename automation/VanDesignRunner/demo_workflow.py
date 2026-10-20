@@ -404,6 +404,16 @@ def execute(backend, command, args, out_dir, job_id):
                     closed_document=before, open_documents=remaining)
     design = adsk.fusion.Design.cast(app.activeProduct)
     if command == 'run_approved_demo':
+        if args['entry_point']=='LinedInteriorEnvelope':
+            if state['status']!='created' or set(args)!={'demo_id','entry_point'}:
+                raise PolicyError('Unused owned session and fixed B1 entry required')
+            empty(design,doc);capacity(app)
+            module=modules(backend.cfg);state['status']='build_attempted'
+            path=module.run_lined_envelope(app,out_dir,lambda:session(args['demo_id']))
+            with open(path,encoding='utf-8') as fh:report=json.load(fh)
+            if report.get('outcome')!='PASS':raise PolicyError('B1 verification failed')
+            session(args['demo_id']);state.update(status='verified',entry_point='LinedInteriorEnvelope')
+            return dict(outcome='PASS',demo_id=args['demo_id'],report_path=path,verification=report)
         if args['entry_point']=='DimensionedCutaway':
             if state['status']!='created' or set(args)!={'demo_id','entry_point'}:
                 raise PolicyError('Unused owned session and fixed visual entry required')
@@ -483,7 +493,7 @@ def execute(backend, command, args, out_dir, job_id):
                     verification=report, identity=backend.identity(), existing_documents=unchanged(state))
 
     if command == 'save_demo_design':
-        if state.get('entry_point') in ('BedCabinetComposition','TestTransitEnvelope','TestStorageBox','DimensionedCutaway','PhaseABaseCheckpoint','PhaseACombinedPersistence'):
+        if state.get('entry_point') in ('BedCabinetComposition','TestTransitEnvelope','TestStorageBox','DimensionedCutaway','PhaseABaseCheckpoint','PhaseACombinedPersistence','LinedInteriorEnvelope'):
             raise PolicyError('Composition demonstration is unsaved-only')
         if state['status'] != 'verified':
             raise PolicyError("Only a successfully verified build can be saved")
