@@ -1,0 +1,62 @@
+{
+  "repository": "C:\\Users\\Buzz\\Documents\\GitHub\\van-design-system",
+  "develop": "4c82a0ae3cf1e142c7d299e446629eb53d50864b",
+  "checkout_branch": "codex/astra-engineering-onboarding",
+  "config_sha256": "70bf4288f224cef35efc1760aae594c54cf39d1676a298aa10956621d81d8378",
+  "runner_dir": "C:\\Users\\Buzz\\AppData\\Roaming\\Autodesk\\Autodesk Fusion 360\\API\\AddIns\\VanDesignRunner",
+  "configured_paths": {
+    "g3_script_dir": "C:\\Users\\Buzz\\Documents\\VanDesign-Runner\\deployments\\vandesign-0.5.0\\VanCabinetJoineryV5",
+    "demo_package_dir": "C:\\Users\\Buzz\\Documents\\VanDesign-Runner\\deployments\\vandesign-0.5.0\\FirstInteriorDemo",
+    "audit_script": "C:\\Users\\Buzz\\Documents\\VanDesign-G3\\4d4345b\\VanDesignCutAuditG3\\VanDesignCutAuditG3.py"
+  },
+  "bundles": {
+    "g3_script_dir": {
+      "file_count": 31,
+      "all_hashes_match": true,
+      "manifest_sha256": "9dca986105401b2b3c506b151d5d21684057a8f8cc2eece85752705ce66bcb2a"
+    },
+    "demo_package_dir": {
+      "file_count": 31,
+      "all_hashes_match": true,
+      "manifest_sha256": "c5fee18088bf2518f6679df134c7f5eefa5dffbbd0057aad030639a717d1380e"
+    }
+  },
+  "runner_changes_required": [
+    "fusion_backend.py",
+    "vdrunner/executor.py",
+    "vdrunner/journal.py",
+    "vdrunner/schema.py",
+    "vdrunner/shelf_change.py"
+  ],
+  "queue": {
+    "inbox": 0,
+    "claimed": 0
+  },
+  "journals": [
+    {
+      "file_sha256": "cff95acc29f8ed5d0e297a6f704a2f41cdb45dae1cc28e31fd7c0b9d4ce0f60c",
+      "unresolved_entries": 0
+    },
+    {
+      "file_sha256": "c984e0df6280f9680c8cada549e5d8270ab08929df3547cfa2f16a4691abc161",
+      "unresolved_entries": 0
+    },
+    {
+      "file_sha256": "f6d8e2ce85d2863717f71c4fa60d15871f46cbe5941f61834cb811c15dfad83a",
+      "unresolved_entries": 0
+    },
+    {
+      "file_sha256": "db41dbff9e476ee0a7ac6a3d8a7db3b65c09f9feaf96313c0b4e8a570645dcfb",
+      "unresolved_entries": 0
+    }
+  ],
+  "offline_python": "C:\\Users\\Buzz\\Documents\\VanDesign-G5-review-fix\\wheel-env\\Scripts\\python.exe",
+  "installed_package": "C:\\Users\\Buzz\\Documents\\VanDesign-G5-review-fix\\wheel-env\\Lib\\site-packages\\vandesign\\__init__.py",
+  "wheel_sha256": "55d9530da10866d08a2e0c84e6c7083d9aef5044278648f62e78ef183eb10e50",
+  "installed_sources_match_wheel": true,
+  "wheel_sources_match_develop": true,
+  "active_sources_match_disk": true,
+  "proposed_g3_script_dir": "C:\\Users\\Buzz\\Documents\\VanDesign-G5-review-fix\\bundles-a\\VanCabinetJoineryV5",
+  "proposed_bundle_verified": true,
+  "proposed_bundle_file_count": 33
+}

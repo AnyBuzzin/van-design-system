@@ -1,0 +1,11 @@
+{
+  "outcome": "PASS",
+  "prior_demo_persistence_version": 2,
+  "persistence_max_corner_change_mm": 0.0,
+  "expected_invalid_refusal": true,
+  "invalid_doc_untouched": true,
+  "valid_build_checks": 171,
+  "presave_checks": 19,
+  "saved_version": 1,
+  "other_document_snapshots_equal": true
+}

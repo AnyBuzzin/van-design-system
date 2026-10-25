@@ -1,0 +1,13 @@
+{
+  "schema": "vandesign.runner.job/1",
+  "job_id": "v5demo-g4-20261018-to-two",
+  "command": "update_shelf_count",
+  "args": {
+    "new_shelf_count": 2
+  },
+  "target": {
+    "design_id": "redacted-sha256:ee76fcdc877f819a17dc9b2d5eee3d8f1060ef2973695ee7928007a0d11ba768",
+    "document_name": "V5-Demo-Shelves-20261017-01"
+  },
+  "created_utc": "2026-10-17T23:10:56.352+00:00"
+}

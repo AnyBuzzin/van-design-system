@@ -1,0 +1,43 @@
+{
+  "schema": "vandesign.runner.result/1",
+  "runner_version": "0.4.0",
+  "job_id": "vd-20261018T010646-baa790",
+  "command": "ping",
+  "target": null,
+  "started_utc": "2026-10-18T00:06:46.409+00:00",
+  "steps": [
+    {
+      "command": "ping",
+      "label": null,
+      "status": "PASS",
+      "elapsed_ms": 0.0,
+      "ident": {
+        "fusion_version": "2705.1.30",
+        "design_id": "sha256:ee76fcdc877f819a17dc9b2d5eee3d8f1060ef2973695ee7928007a0d11ba768",
+        "document_name": "V5-Demo-Shelves-20261017-01",
+        "is_saved": true,
+        "is_modified": true,
+        "version_number": 1,
+        "data_file_name": "V5-Demo-Shelves-20261017-01"
+      }
+    }
+  ],
+  "outcome": "PASS",
+  "notes": [],
+  "identity_at_start": {
+    "fusion_version": "2705.1.30",
+    "design_id": "sha256:ee76fcdc877f819a17dc9b2d5eee3d8f1060ef2973695ee7928007a0d11ba768",
+    "document_name": "V5-Demo-Shelves-20261017-01",
+    "is_saved": true,
+    "is_modified": true,
+    "version_number": 1,
+    "data_file_name": "V5-Demo-Shelves-20261017-01"
+  },
+  "finished_utc": "2026-10-18T00:06:46.410+00:00",
+  "elapsed_ms": 1.0,
+  "summary": {
+    "steps": 1,
+    "passed": 1,
+    "outcome": "PASS"
+  }
+}

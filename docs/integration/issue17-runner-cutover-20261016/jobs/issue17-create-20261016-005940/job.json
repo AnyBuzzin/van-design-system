@@ -1,0 +1,7 @@
+{
+  "command": "create_demo_design",
+  "schema": "vandesign.runner.job/1",
+  "job_id": "issue17-create-20261016-005940",
+  "args": {},
+  "created_utc": "2026-10-15T23:59:34.745+00:00"
+}

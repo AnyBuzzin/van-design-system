@@ -1,0 +1,5 @@
+{
+  "sha256": "f68a43f130286063f00c7dcb97b80920956ae4f4ae416e5847d7d8fb3b46d0c8",
+  "review": "Instance-only one-shot hook after original panel construction/capture; installed Executor/journal retained; finally removes both instance overrides; no save/close/delete operation in helper; one-attempt guard.",
+  "syntax": "PASS"
+}

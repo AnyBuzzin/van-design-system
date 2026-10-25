@@ -1,0 +1,12 @@
+{
+  "id": 17,
+  "jsonrpc": "2.0",
+  "result": {
+    "content": [
+      {
+        "text": "{\n    \"error\": \"Traceback (most recent call last):\\n  File \\\"<string>\\\", line 48, in <module>\\n  File \\\"<string>\\\", line 41, in run\\nAttributeError: 'Application' object has no attribute 'isOffline'. Did you mean: 'isOffLine'?\\n\",\n    \"success\": false\n}",
+        "type": "text"
+      }
+    ]
+  }
+}

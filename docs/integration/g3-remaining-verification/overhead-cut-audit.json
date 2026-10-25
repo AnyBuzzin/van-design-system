@@ -1,0 +1,40 @@
+{
+  "overall": "UNKNOWN",
+  "results": [
+    {
+      "operation_id": "dado.shelf1.left",
+      "expected_target": "panel.left.001",
+      "status": "UNKNOWN",
+      "details": [
+        "could not inspect: RuntimeError: 3 : Failed to roll timeline"
+      ]
+    },
+    {
+      "operation_id": "dado.shelf1.right",
+      "expected_target": "panel.right.001",
+      "status": "UNKNOWN",
+      "details": [
+        "could not inspect: RuntimeError: 3 : Failed to roll timeline"
+      ]
+    }
+  ],
+  "timeline_restored": true,
+  "restore_error": null,
+  "collect_error": null,
+  "start_marker": 28,
+  "start_count": 28,
+  "counts_before": {
+    "timeline_items": 28,
+    "user_parameters": 16,
+    "root_occurrences": 8
+  },
+  "counts_after": {
+    "timeline_items": 28,
+    "user_parameters": 16,
+    "root_occurrences": 8
+  },
+  "expected_operations": {
+    "dado.shelf1.left": "panel.left.001",
+    "dado.shelf1.right": "panel.right.001"
+  }
+}

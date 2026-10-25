@@ -1,0 +1,2 @@
+# Evidence hashes describe exact bytes; do not convert JSON line endings on checkout.
+*.json -text

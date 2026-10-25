@@ -1,0 +1,184 @@
+{
+  "restoration": "PASS",
+  "design_spec_hash": "0db0be535621b56469735b052624d0f071300aacf7b4b5efbfa0d663edee905c",
+  "params_mm": {
+    "Cab_Width": 1200.0,
+    "Cab_Height": 850.0,
+    "Cab_Depth": 550.0,
+    "Cab_Ply": 18.0,
+    "Cab_Back": 6.000000000000001,
+    "Cab_Gap": 3.0000000000000004,
+    "Cab_Dado_Depth": 6.000000000000001,
+    "Cab_Slot_Clearance": 0.5,
+    "Cab_End_Clearance": 0.3,
+    "Cab_Inner_Depth": 544.0,
+    "Cab_Slot_Height": 18.5,
+    "Cab_Shelf_X": 12.3,
+    "Cab_Shelf_Length": 1175.4,
+    "Cab_Compartment": 398.0,
+    "Cab_Shelf1_Z": 415.99999999999994,
+    "Cab_Slot1_Z": 415.74999999999994
+  },
+  "bodies": {
+    "panel.left.001": {
+      "min_mm": [
+        0.0,
+        17.99999999999997,
+        0.0
+      ],
+      "max_mm": [
+        18.0,
+        568.0,
+        850.0
+      ],
+      "size_mm": [
+        18.0,
+        550.0,
+        850.0
+      ],
+      "volume_mm3": 8354616.0
+    },
+    "panel.right.001": {
+      "min_mm": [
+        1182.0,
+        17.99999999999997,
+        0.0
+      ],
+      "max_mm": [
+        1200.0,
+        568.0,
+        850.0
+      ],
+      "size_mm": [
+        18.0,
+        550.0,
+        850.0
+      ],
+      "volume_mm3": 8354615.999999987
+    },
+    "panel.bottom.001": {
+      "min_mm": [
+        18.0,
+        18.0,
+        0.0
+      ],
+      "max_mm": [
+        1182.0,
+        562.0,
+        18.0
+      ],
+      "size_mm": [
+        1164.0,
+        544.0,
+        18.0
+      ],
+      "volume_mm3": 11397888.0
+    },
+    "panel.top.001": {
+      "min_mm": [
+        18.0,
+        18.0,
+        832.0
+      ],
+      "max_mm": [
+        1182.0,
+        562.0,
+        850.0
+      ],
+      "size_mm": [
+        1164.0,
+        544.0,
+        18.0
+      ],
+      "volume_mm3": 11397887.999999981
+    },
+    "panel.back.001": {
+      "min_mm": [
+        18.0,
+        562.0,
+        18.0
+      ],
+      "max_mm": [
+        1182.0,
+        568.0,
+        832.0
+      ],
+      "size_mm": [
+        1164.0,
+        6.0,
+        814.0
+      ],
+      "volume_mm3": 5684976.000000014
+    },
+    "panel.shelf.001": {
+      "min_mm": [
+        12.3,
+        18.0,
+        415.99999999999994
+      ],
+      "max_mm": [
+        1187.7,
+        562.0,
+        433.9999999999999
+      ],
+      "size_mm": [
+        1175.4,
+        544.0,
+        17.999999999999943
+      ],
+      "volume_mm3": 11509516.799999982
+    },
+    "panel.door.001": {
+      "min_mm": [
+        3.0000000000000004,
+        0.0,
+        3.0000000000000004
+      ],
+      "max_mm": [
+        598.5,
+        18.0,
+        847.0
+      ],
+      "size_mm": [
+        595.5,
+        18.0,
+        844.0
+      ],
+      "volume_mm3": 9046836.000000002
+    },
+    "panel.door.002": {
+      "min_mm": [
+        601.5,
+        0.0,
+        3.0000000000000004
+      ],
+      "max_mm": [
+        1197.0,
+        18.0,
+        847.0
+      ],
+      "size_mm": [
+        595.5,
+        18.0,
+        844.0
+      ],
+      "volume_mm3": 9046836.0
+    }
+  },
+  "counts": {
+    "parameters": 16,
+    "components": 9,
+    "occurrences": 8,
+    "timeline": 28
+  },
+  "identity": {
+    "name": "V5-Demo-Base-20261017-01",
+    "saved": true,
+    "modified": true,
+    "valid": true,
+    "id": "redacted-sha256:725b4934fa29451f0cff459ee5c0c2c9592489d18b2d514cbf36bb981d773f86",
+    "version": 1
+  },
+  "protected_unchanged": true,
+  "other_documents_unchanged": true
+}

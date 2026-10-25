@@ -1,0 +1,204 @@
+{
+  "base": {
+    "status": "PASS",
+    "panel_count": 8,
+    "tolerance_mm": 0.01,
+    "checks": [
+      {
+        "panel_id": "panel.back.001",
+        "label": "05 Back",
+        "dimensions_match_measured_brep": "PASS",
+        "nominal_thickness_mm": 6.0,
+        "quantity": 1
+      },
+      {
+        "panel_id": "panel.bottom.001",
+        "label": "03 Bottom",
+        "dimensions_match_measured_brep": "PASS",
+        "nominal_thickness_mm": 18.0,
+        "quantity": 1
+      },
+      {
+        "panel_id": "panel.door.001",
+        "label": "07 Door 1",
+        "dimensions_match_measured_brep": "PASS",
+        "nominal_thickness_mm": 18.0,
+        "quantity": 1
+      },
+      {
+        "panel_id": "panel.door.002",
+        "label": "07 Door 2",
+        "dimensions_match_measured_brep": "PASS",
+        "nominal_thickness_mm": 18.0,
+        "quantity": 1
+      },
+      {
+        "panel_id": "panel.left.001",
+        "label": "01 Left Side",
+        "dimensions_match_measured_brep": "PASS",
+        "nominal_thickness_mm": 18.0,
+        "quantity": 1
+      },
+      {
+        "panel_id": "panel.right.001",
+        "label": "02 Right Side",
+        "dimensions_match_measured_brep": "PASS",
+        "nominal_thickness_mm": 18.0,
+        "quantity": 1
+      },
+      {
+        "panel_id": "panel.shelf.001",
+        "label": "06 Shelf 1",
+        "dimensions_match_measured_brep": "PASS",
+        "nominal_thickness_mm": 18.0,
+        "quantity": 1
+      },
+      {
+        "panel_id": "panel.top.001",
+        "label": "04 Top",
+        "dimensions_match_measured_brep": "PASS",
+        "nominal_thickness_mm": 18.0,
+        "quantity": 1
+      }
+    ],
+    "preview_sha256": "7e135b90d68c3026716fbaae4ae35b4b213e8f813d2f0274f9543a725d903a7b",
+    "measured_proof_sha256": "405db7ffdc68d590535ff9596d1111d7893b5c6bfcb17b7e8efd60168bc5c660"
+  },
+  "tall": {
+    "status": "PASS",
+    "panel_count": 9,
+    "tolerance_mm": 0.01,
+    "checks": [
+      {
+        "panel_id": "panel.back.001",
+        "label": "05 Back",
+        "dimensions_match_measured_brep": "PASS",
+        "nominal_thickness_mm": 6.0,
+        "quantity": 1
+      },
+      {
+        "panel_id": "panel.bottom.001",
+        "label": "03 Bottom",
+        "dimensions_match_measured_brep": "PASS",
+        "nominal_thickness_mm": 18.0,
+        "quantity": 1
+      },
+      {
+        "panel_id": "panel.door.001",
+        "label": "07 Door 1",
+        "dimensions_match_measured_brep": "PASS",
+        "nominal_thickness_mm": 18.0,
+        "quantity": 1
+      },
+      {
+        "panel_id": "panel.left.001",
+        "label": "01 Left Side",
+        "dimensions_match_measured_brep": "PASS",
+        "nominal_thickness_mm": 18.0,
+        "quantity": 1
+      },
+      {
+        "panel_id": "panel.right.001",
+        "label": "02 Right Side",
+        "dimensions_match_measured_brep": "PASS",
+        "nominal_thickness_mm": 18.0,
+        "quantity": 1
+      },
+      {
+        "panel_id": "panel.shelf.001",
+        "label": "06 Shelf 1",
+        "dimensions_match_measured_brep": "PASS",
+        "nominal_thickness_mm": 18.0,
+        "quantity": 1
+      },
+      {
+        "panel_id": "panel.shelf.002",
+        "label": "06 Shelf 2",
+        "dimensions_match_measured_brep": "PASS",
+        "nominal_thickness_mm": 18.0,
+        "quantity": 1
+      },
+      {
+        "panel_id": "panel.shelf.003",
+        "label": "06 Shelf 3",
+        "dimensions_match_measured_brep": "PASS",
+        "nominal_thickness_mm": 18.0,
+        "quantity": 1
+      },
+      {
+        "panel_id": "panel.top.001",
+        "label": "04 Top",
+        "dimensions_match_measured_brep": "PASS",
+        "nominal_thickness_mm": 18.0,
+        "quantity": 1
+      }
+    ],
+    "preview_sha256": "1eb39f4e23be1621fce4216e735e333817256bd234a47e0e16c871f749b1a8b0",
+    "measured_proof_sha256": "f1399aac1e559d193bef590660b6fdbb9fa6f73f5b3760cb62bb385d1ba1495b"
+  },
+  "overhead": {
+    "status": "PASS",
+    "panel_count": 8,
+    "tolerance_mm": 0.01,
+    "checks": [
+      {
+        "panel_id": "panel.back.001",
+        "label": "05 Back",
+        "dimensions_match_measured_brep": "PASS",
+        "nominal_thickness_mm": 6.0,
+        "quantity": 1
+      },
+      {
+        "panel_id": "panel.bottom.001",
+        "label": "03 Bottom",
+        "dimensions_match_measured_brep": "PASS",
+        "nominal_thickness_mm": 18.0,
+        "quantity": 1
+      },
+      {
+        "panel_id": "panel.door.001",
+        "label": "07 Door 1",
+        "dimensions_match_measured_brep": "PASS",
+        "nominal_thickness_mm": 18.0,
+        "quantity": 1
+      },
+      {
+        "panel_id": "panel.door.002",
+        "label": "07 Door 2",
+        "dimensions_match_measured_brep": "PASS",
+        "nominal_thickness_mm": 18.0,
+        "quantity": 1
+      },
+      {
+        "panel_id": "panel.left.001",
+        "label": "01 Left Side",
+        "dimensions_match_measured_brep": "PASS",
+        "nominal_thickness_mm": 18.0,
+        "quantity": 1
+      },
+      {
+        "panel_id": "panel.right.001",
+        "label": "02 Right Side",
+        "dimensions_match_measured_brep": "PASS",
+        "nominal_thickness_mm": 18.0,
+        "quantity": 1
+      },
+      {
+        "panel_id": "panel.shelf.001",
+        "label": "06 Shelf 1",
+        "dimensions_match_measured_brep": "PASS",
+        "nominal_thickness_mm": 18.0,
+        "quantity": 1
+      },
+      {
+        "panel_id": "panel.top.001",
+        "label": "04 Top",
+        "dimensions_match_measured_brep": "PASS",
+        "nominal_thickness_mm": 18.0,
+        "quantity": 1
+      }
+    ],
+    "preview_sha256": "c01936bf45e95169cec8df0653ad35634d65e238d954e09589be34581cfc2bff",
+    "measured_proof_sha256": "914539a4bce8cfbf1cc693d61e56a3acedda4c90efa5b55ea8fe5e0eb3f5b044"
+  }
+}

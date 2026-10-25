@@ -1,0 +1,6393 @@
+{
+ "combos": {
+  "s0_d1": {
+   "assembly_id": "cabinet.001",
+   "constraints": [
+    {
+     "description": "Cab_Ply > 0",
+     "id": "ply_positive",
+     "lhs": "Cab_Ply",
+     "op": ">",
+     "rhs": "0 mm"
+    },
+    {
+     "description": "Cab_Dado_Depth > 0",
+     "id": "dado_positive",
+     "lhs": "Cab_Dado_Depth",
+     "op": ">",
+     "rhs": "0 mm"
+    },
+    {
+     "description": "groove must leave side-panel material (Cab_Ply > Cab_Dado_Depth)",
+     "id": "dado_lt_ply",
+     "lhs": "Cab_Ply",
+     "op": ">",
+     "rhs": "Cab_Dado_Depth"
+    },
+    {
+     "description": "Cab_End_Clearance >= 0",
+     "id": "end_clearance_nonneg",
+     "lhs": "Cab_End_Clearance",
+     "op": ">=",
+     "rhs": "0 mm"
+    },
+    {
+     "description": "shelf must enter the groove (Cab_Dado_Depth > Cab_End_Clearance)",
+     "id": "end_clearance_lt_dado",
+     "lhs": "Cab_Dado_Depth",
+     "op": ">",
+     "rhs": "Cab_End_Clearance"
+    },
+    {
+     "description": "Cab_Slot_Clearance >= 0",
+     "id": "slot_clearance_nonneg",
+     "lhs": "Cab_Slot_Clearance",
+     "op": ">=",
+     "rhs": "0 mm"
+    },
+    {
+     "description": "Cab_Back > 0",
+     "id": "back_positive",
+     "lhs": "Cab_Back",
+     "op": ">",
+     "rhs": "0 mm"
+    },
+    {
+     "description": "Cab_Depth > Cab_Back",
+     "id": "back_lt_depth",
+     "lhs": "Cab_Depth",
+     "op": ">",
+     "rhs": "Cab_Back"
+    },
+    {
+     "description": "Cab_Gap >= 0",
+     "id": "gap_nonneg",
+     "lhs": "Cab_Gap",
+     "op": ">=",
+     "rhs": "0 mm"
+    },
+    {
+     "description": "Cab_Height > (2 + shelves) * Cab_Ply",
+     "id": "height_fits",
+     "lhs": "Cab_Height",
+     "op": ">",
+     "rhs": "(2 * Cab_Ply)"
+    },
+    {
+     "description": "Cab_Width > 2 * Cab_Ply",
+     "id": "width_fits",
+     "lhs": "Cab_Width",
+     "op": ">",
+     "rhs": "(2 * Cab_Ply)"
+    },
+    {
+     "description": "Cab_Width > (doors + 1) * Cab_Gap",
+     "id": "doors_fit",
+     "lhs": "Cab_Width",
+     "op": ">",
+     "rhs": "(2 * Cab_Gap)"
+    }
+   ],
+   "legacy_spec_hash": "85234daabdee6ff2d1f0d740d858ef33dabe74239affb69dbee29085a236a6be",
+   "legacy_spec_json": "{\"module\":\"base_cabinet@1\",\"parameters\":{\"back_mm\":6.0,\"cabinet_id\":\"cabinet.001\",\"dado_depth_mm\":6.0,\"depth_mm\":550.0,\"door_count\":1,\"end_clearance_mm\":0.3,\"gap_mm\":3.0,\"height_mm\":850.0,\"material_ref\":\"ply_main\",\"ply_mm\":18.0,\"shelf_count\":0,\"slot_clearance_mm\":0.5,\"width_mm\":1200.0},\"schema_version\":\"0.1\"}",
+   "operations": [],
+   "panels": [
+    {
+     "box": {
+      "origin": [
+       "0 mm",
+       "Cab_Ply",
+       "0 mm"
+      ],
+      "size": [
+       "Cab_Ply",
+       "Cab_Depth",
+       "Cab_Height"
+      ]
+     },
+     "display_name": "01 Left Side",
+     "id": "panel.left.001",
+     "material_ref": "ply_main",
+     "role": "left"
+    },
+    {
+     "box": {
+      "origin": [
+       "(Cab_Width - Cab_Ply)",
+       "Cab_Ply",
+       "0 mm"
+      ],
+      "size": [
+       "Cab_Ply",
+       "Cab_Depth",
+       "Cab_Height"
+      ]
+     },
+     "display_name": "02 Right Side",
+     "id": "panel.right.001",
+     "material_ref": "ply_main",
+     "role": "right"
+    },
+    {
+     "box": {
+      "origin": [
+       "Cab_Ply",
+       "Cab_Ply",
+       "0 mm"
+      ],
+      "size": [
+       "(Cab_Width - (2 * Cab_Ply))",
+       "Cab_Inner_Depth",
+       "Cab_Ply"
+      ]
+     },
+     "display_name": "03 Bottom",
+     "id": "panel.bottom.001",
+     "material_ref": "ply_main",
+     "role": "bottom"
+    },
+    {
+     "box": {
+      "origin": [
+       "Cab_Ply",
+       "Cab_Ply",
+       "(Cab_Height - Cab_Ply)"
+      ],
+      "size": [
+       "(Cab_Width - (2 * Cab_Ply))",
+       "Cab_Inner_Depth",
+       "Cab_Ply"
+      ]
+     },
+     "display_name": "04 Top",
+     "id": "panel.top.001",
+     "material_ref": "ply_main",
+     "role": "top"
+    },
+    {
+     "box": {
+      "origin": [
+       "Cab_Ply",
+       "((Cab_Ply + Cab_Depth) - Cab_Back)",
+       "Cab_Ply"
+      ],
+      "size": [
+       "(Cab_Width - (2 * Cab_Ply))",
+       "Cab_Back",
+       "(Cab_Height - (2 * Cab_Ply))"
+      ]
+     },
+     "display_name": "05 Back",
+     "id": "panel.back.001",
+     "material_ref": "ply_main",
+     "role": "back"
+    },
+    {
+     "box": {
+      "origin": [
+       "((1 * Cab_Gap) + (0 * ((Cab_Width - (2 * Cab_Gap)) / 1)))",
+       "0 mm",
+       "Cab_Gap"
+      ],
+      "size": [
+       "((Cab_Width - (2 * Cab_Gap)) / 1)",
+       "Cab_Ply",
+       "(Cab_Height - (2 * Cab_Gap))"
+      ]
+     },
+     "display_name": "07 Door 1",
+     "id": "panel.door.001",
+     "material_ref": "ply_main",
+     "role": "door"
+    }
+   ],
+   "parameters": [
+    {
+     "base": true,
+     "comment": "Van Cabinet Joinery V5",
+     "expr": null,
+     "name": "Cab_Width",
+     "value_mm": 1200.0
+    },
+    {
+     "base": true,
+     "comment": "Van Cabinet Joinery V5",
+     "expr": null,
+     "name": "Cab_Height",
+     "value_mm": 850.0
+    },
+    {
+     "base": true,
+     "comment": "Van Cabinet Joinery V5",
+     "expr": null,
+     "name": "Cab_Depth",
+     "value_mm": 550.0
+    },
+    {
+     "base": true,
+     "comment": "Van Cabinet Joinery V5",
+     "expr": null,
+     "name": "Cab_Ply",
+     "value_mm": 18.0
+    },
+    {
+     "base": true,
+     "comment": "Van Cabinet Joinery V5",
+     "expr": null,
+     "name": "Cab_Back",
+     "value_mm": 6.0
+    },
+    {
+     "base": true,
+     "comment": "Van Cabinet Joinery V5",
+     "expr": null,
+     "name": "Cab_Gap",
+     "value_mm": 3.0
+    },
+    {
+     "base": true,
+     "comment": "Groove penetrates each side panel",
+     "expr": null,
+     "name": "Cab_Dado_Depth",
+     "value_mm": 6.0
+    },
+    {
+     "base": true,
+     "comment": "Groove is this much taller than the shelf",
+     "expr": null,
+     "name": "Cab_Slot_Clearance",
+     "value_mm": 0.5
+    },
+    {
+     "base": true,
+     "comment": "Gap at EACH shelf end, bottom of groove",
+     "expr": null,
+     "name": "Cab_End_Clearance",
+     "value_mm": 0.3
+    },
+    {
+     "base": false,
+     "comment": "Side-panel depth minus back",
+     "expr": "(Cab_Depth - Cab_Back)",
+     "name": "Cab_Inner_Depth",
+     "value_mm": null
+    },
+    {
+     "base": false,
+     "comment": "Groove height",
+     "expr": "(Cab_Ply + Cab_Slot_Clearance)",
+     "name": "Cab_Slot_Height",
+     "value_mm": null
+    },
+    {
+     "base": false,
+     "comment": "Shelf left end X",
+     "expr": "((Cab_Ply - Cab_Dado_Depth) + Cab_End_Clearance)",
+     "name": "Cab_Shelf_X",
+     "value_mm": null
+    },
+    {
+     "base": false,
+     "comment": "Shelf length incl. both groove insertions",
+     "expr": "(((Cab_Width - (2 * Cab_Ply)) + (2 * Cab_Dado_Depth)) - (2 * Cab_End_Clearance))",
+     "name": "Cab_Shelf_Length",
+     "value_mm": null
+    },
+    {
+     "base": false,
+     "comment": "Equal clear compartment height",
+     "expr": "((Cab_Height - (2 * Cab_Ply)) / 1)",
+     "name": "Cab_Compartment",
+     "value_mm": null
+    }
+   ],
+   "sim_check_ids": [
+    "constraint.ply_positive",
+    "constraint.dado_positive",
+    "constraint.dado_lt_ply",
+    "constraint.end_clearance_nonneg",
+    "constraint.end_clearance_lt_dado",
+    "constraint.slot_clearance_nonneg",
+    "constraint.back_positive",
+    "constraint.back_lt_depth",
+    "constraint.gap_nonneg",
+    "constraint.height_fits",
+    "constraint.width_fits",
+    "constraint.doors_fit",
+    "param.Cab_Inner_Depth",
+    "param.Cab_Slot_Height",
+    "param.Cab_Shelf_X",
+    "param.Cab_Shelf_Length",
+    "param.Cab_Compartment",
+    "panel.left.001.bbox",
+    "panel.left.001.volume",
+    "panel.right.001.bbox",
+    "panel.right.001.volume",
+    "panel.bottom.001.bbox",
+    "panel.bottom.001.volume",
+    "panel.top.001.bbox",
+    "panel.top.001.volume",
+    "panel.back.001.bbox",
+    "panel.back.001.volume",
+    "panel.door.001.bbox",
+    "panel.door.001.volume"
+   ],
+   "sim_check_statuses": [
+    "PASS",
+    "PASS",
+    "PASS",
+    "PASS",
+    "PASS",
+    "PASS",
+    "PASS",
+    "PASS",
+    "PASS",
+    "PASS",
+    "PASS",
+    "PASS",
+    "PASS",
+    "PASS",
+    "PASS",
+    "PASS",
+    "PASS",
+    "PASS",
+    "PASS",
+    "PASS",
+    "PASS",
+    "PASS",
+    "PASS",
+    "PASS",
+    "PASS",
+    "PASS",
+    "PASS",
+    "PASS",
+    "PASS"
+   ],
+   "spec_hash": "85234daabdee6ff2d1f0d740d858ef33dabe74239affb69dbee29085a236a6be"
+  },
+  "s0_d2": {
+   "assembly_id": "cabinet.001",
+   "constraints": [
+    {
+     "description": "Cab_Ply > 0",
+     "id": "ply_positive",
+     "lhs": "Cab_Ply",
+     "op": ">",
+     "rhs": "0 mm"
+    },
+    {
+     "description": "Cab_Dado_Depth > 0",
+     "id": "dado_positive",
+     "lhs": "Cab_Dado_Depth",
+     "op": ">",
+     "rhs": "0 mm"
+    },
+    {
+     "description": "groove must leave side-panel material (Cab_Ply > Cab_Dado_Depth)",
+     "id": "dado_lt_ply",
+     "lhs": "Cab_Ply",
+     "op": ">",
+     "rhs": "Cab_Dado_Depth"
+    },
+    {
+     "description": "Cab_End_Clearance >= 0",
+     "id": "end_clearance_nonneg",
+     "lhs": "Cab_End_Clearance",
+     "op": ">=",
+     "rhs": "0 mm"
+    },
+    {
+     "description": "shelf must enter the groove (Cab_Dado_Depth > Cab_End_Clearance)",
+     "id": "end_clearance_lt_dado",
+     "lhs": "Cab_Dado_Depth",
+     "op": ">",
+     "rhs": "Cab_End_Clearance"
+    },
+    {
+     "description": "Cab_Slot_Clearance >= 0",
+     "id": "slot_clearance_nonneg",
+     "lhs": "Cab_Slot_Clearance",
+     "op": ">=",
+     "rhs": "0 mm"
+    },
+    {
+     "description": "Cab_Back > 0",
+     "id": "back_positive",
+     "lhs": "Cab_Back",
+     "op": ">",
+     "rhs": "0 mm"
+    },
+    {
+     "description": "Cab_Depth > Cab_Back",
+     "id": "back_lt_depth",
+     "lhs": "Cab_Depth",
+     "op": ">",
+     "rhs": "Cab_Back"
+    },
+    {
+     "description": "Cab_Gap >= 0",
+     "id": "gap_nonneg",
+     "lhs": "Cab_Gap",
+     "op": ">=",
+     "rhs": "0 mm"
+    },
+    {
+     "description": "Cab_Height > (2 + shelves) * Cab_Ply",
+     "id": "height_fits",
+     "lhs": "Cab_Height",
+     "op": ">",
+     "rhs": "(2 * Cab_Ply)"
+    },
+    {
+     "description": "Cab_Width > 2 * Cab_Ply",
+     "id": "width_fits",
+     "lhs": "Cab_Width",
+     "op": ">",
+     "rhs": "(2 * Cab_Ply)"
+    },
+    {
+     "description": "Cab_Width > (doors + 1) * Cab_Gap",
+     "id": "doors_fit",
+     "lhs": "Cab_Width",
+     "op": ">",
+     "rhs": "(3 * Cab_Gap)"
+    }
+   ],
+   "legacy_spec_hash": "0830993e9baf300a710625dfac9368b80bb58b29ef20d885cac12bd31e619c53",
+   "legacy_spec_json": "{\"module\":\"base_cabinet@1\",\"parameters\":{\"back_mm\":6.0,\"cabinet_id\":\"cabinet.001\",\"dado_depth_mm\":6.0,\"depth_mm\":550.0,\"door_count\":2,\"end_clearance_mm\":0.3,\"gap_mm\":3.0,\"height_mm\":850.0,\"material_ref\":\"ply_main\",\"ply_mm\":18.0,\"shelf_count\":0,\"slot_clearance_mm\":0.5,\"width_mm\":1200.0},\"schema_version\":\"0.1\"}",
+   "operations": [],
+   "panels": [
+    {
+     "box": {
+      "origin": [
+       "0 mm",
+       "Cab_Ply",
+       "0 mm"
+      ],
+      "size": [
+       "Cab_Ply",
+       "Cab_Depth",
+       "Cab_Height"
+      ]
+     },
+     "display_name": "01 Left Side",
+     "id": "panel.left.001",
+     "material_ref": "ply_main",
+     "role": "left"
+    },
+    {
+     "box": {
+      "origin": [
+       "(Cab_Width - Cab_Ply)",
+       "Cab_Ply",
+       "0 mm"
+      ],
+      "size": [
+       "Cab_Ply",
+       "Cab_Depth",
+       "Cab_Height"
+      ]
+     },
+     "display_name": "02 Right Side",
+     "id": "panel.right.001",
+     "material_ref": "ply_main",
+     "role": "right"
+    },
+    {
+     "box": {
+      "origin": [
+       "Cab_Ply",
+       "Cab_Ply",
+       "0 mm"
+      ],
+      "size": [
+       "(Cab_Width - (2 * Cab_Ply))",
+       "Cab_Inner_Depth",
+       "Cab_Ply"
+      ]
+     },
+     "display_name": "03 Bottom",
+     "id": "panel.bottom.001",
+     "material_ref": "ply_main",
+     "role": "bottom"
+    },
+    {
+     "box": {
+      "origin": [
+       "Cab_Ply",
+       "Cab_Ply",
+       "(Cab_Height - Cab_Ply)"
+      ],
+      "size": [
+       "(Cab_Width - (2 * Cab_Ply))",
+       "Cab_Inner_Depth",
+       "Cab_Ply"
+      ]
+     },
+     "display_name": "04 Top",
+     "id": "panel.top.001",
+     "material_ref": "ply_main",
+     "role": "top"
+    },
+    {
+     "box": {
+      "origin": [
+       "Cab_Ply",
+       "((Cab_Ply + Cab_Depth) - Cab_Back)",
+       "Cab_Ply"
+      ],
+      "size": [
+       "(Cab_Width - (2 * Cab_Ply))",
+       "Cab_Back",
+       "(Cab_Height - (2 * Cab_Ply))"
+      ]
+     },
+     "display_name": "05 Back",
+     "id": "panel.back.001",
+     "material_ref": "ply_main",
+     "role": "back"
+    },
+    {
+     "box": {
+      "origin": [
+       "((1 * Cab_Gap) + (0 * ((Cab_Width - (3 * Cab_Gap)) / 2)))",
+       "0 mm",
+       "Cab_Gap"
+      ],
+      "size": [
+       "((Cab_Width - (3 * Cab_Gap)) / 2)",
+       "Cab_Ply",
+       "(Cab_Height - (2 * Cab_Gap))"
+      ]
+     },
+     "display_name": "07 Door 1",
+     "id": "panel.door.001",
+     "material_ref": "ply_main",
+     "role": "door"
+    },
+    {
+     "box": {
+      "origin": [
+       "((2 * Cab_Gap) + (1 * ((Cab_Width - (3 * Cab_Gap)) / 2)))",
+       "0 mm",
+       "Cab_Gap"
+      ],
+      "size": [
+       "((Cab_Width - (3 * Cab_Gap)) / 2)",
+       "Cab_Ply",
+       "(Cab_Height - (2 * Cab_Gap))"
+      ]
+     },
+     "display_name": "07 Door 2",
+     "id": "panel.door.002",
+     "material_ref": "ply_main",
+     "role": "door"
+    }
+   ],
+   "parameters": [
+    {
+     "base": true,
+     "comment": "Van Cabinet Joinery V5",
+     "expr": null,
+     "name": "Cab_Width",
+     "value_mm": 1200.0
+    },
+    {
+     "base": true,
+     "comment": "Van Cabinet Joinery V5",
+     "expr": null,
+     "name": "Cab_Height",
+     "value_mm": 850.0
+    },
+    {
+     "base": true,
+     "comment": "Van Cabinet Joinery V5",
+     "expr": null,
+     "name": "Cab_Depth",
+     "value_mm": 550.0
+    },
+    {
+     "base": true,
+     "comment": "Van Cabinet Joinery V5",
+     "expr": null,
+     "name": "Cab_Ply",
+     "value_mm": 18.0
+    },
+    {
+     "base": true,
+     "comment": "Van Cabinet Joinery V5",
+     "expr": null,
+     "name": "Cab_Back",
+     "value_mm": 6.0
+    },
+    {
+     "base": true,
+     "comment": "Van Cabinet Joinery V5",
+     "expr": null,
+     "name": "Cab_Gap",
+     "value_mm": 3.0
+    },
+    {
+     "base": true,
+     "comment": "Groove penetrates each side panel",
+     "expr": null,
+     "name": "Cab_Dado_Depth",
+     "value_mm": 6.0
+    },
+    {
+     "base": true,
+     "comment": "Groove is this much taller than the shelf",
+     "expr": null,
+     "name": "Cab_Slot_Clearance",
+     "value_mm": 0.5
+    },
+    {
+     "base": true,
+     "comment": "Gap at EACH shelf end, bottom of groove",
+     "expr": null,
+     "name": "Cab_End_Clearance",
+     "value_mm": 0.3
+    },
+    {
+     "base": false,
+     "comment": "Side-panel depth minus back",
+     "expr": "(Cab_Depth - Cab_Back)",
+     "name": "Cab_Inner_Depth",
+     "value_mm": null
+    },
+    {
+     "base": false,
+     "comment": "Groove height",
+     "expr": "(Cab_Ply + Cab_Slot_Clearance)",
+     "name": "Cab_Slot_Height",
+     "value_mm": null
+    },
+    {
+     "base": false,
+     "comment": "Shelf left end X",
+     "expr": "((Cab_Ply - Cab_Dado_Depth) + Cab_End_Clearance)",
+     "name": "Cab_Shelf_X",
+     "value_mm": null
+    },
+    {
+     "base": false,
+     "comment": "Shelf length incl. both groove insertions",
+     "expr": "(((Cab_Width - (2 * Cab_Ply)) + (2 * Cab_Dado_Depth)) - (2 * Cab_End_Clearance))",
+     "name": "Cab_Shelf_Length",
+     "value_mm": null
+    },
+    {
+     "base": false,
+     "comment": "Equal clear compartment height",
+     "expr": "((Cab_Height - (2 * Cab_Ply)) / 1)",
+     "name": "Cab_Compartment",
+     "value_mm": null
+    }
+   ],
+   "sim_check_ids": [
+    "constraint.ply_positive",
+    "constraint.dado_positive",
+    "constraint.dado_lt_ply",
+    "constraint.end_clearance_nonneg",
+    "constraint.end_clearance_lt_dado",
+    "constraint.slot_clearance_nonneg",
+    "constraint.back_positive",
+    "constraint.back_lt_depth",
+    "constraint.gap_nonneg",
+    "constraint.height_fits",
+    "constraint.width_fits",
+    "constraint.doors_fit",
+    "param.Cab_Inner_Depth",
+    "param.Cab_Slot_Height",
+    "param.Cab_Shelf_X",
+    "param.Cab_Shelf_Length",
+    "param.Cab_Compartment",
+    "panel.left.001.bbox",
+    "panel.left.001.volume",
+    "panel.right.001.bbox",
+    "panel.right.001.volume",
+    "panel.bottom.001.bbox",
+    "panel.bottom.001.volume",
+    "panel.top.001.bbox",
+    "panel.top.001.volume",
+    "panel.back.001.bbox",
+    "panel.back.001.volume",
+    "panel.door.001.bbox",
+    "panel.door.001.volume",
+    "panel.door.002.bbox",
+    "panel.door.002.volume"
+   ],
+   "sim_check_statuses": [
+    "PASS",
+    "PASS",
+    "PASS",
+    "PASS",
+    "PASS",
+    "PASS",
+    "PASS",
+    "PASS",
+    "PASS",
+    "PASS",
+    "PASS",
+    "PASS",
+    "PASS",
+    "PASS",
+    "PASS",
+    "PASS",
+    "PASS",
+    "PASS",
+    "PASS",
+    "PASS",
+    "PASS",
+    "PASS",
+    "PASS",
+    "PASS",
+    "PASS",
+    "PASS",
+    "PASS",
+    "PASS",
+    "PASS",
+    "PASS",
+    "PASS"
+   ],
+   "spec_hash": "0830993e9baf300a710625dfac9368b80bb58b29ef20d885cac12bd31e619c53"
+  },
+  "s1_d1": {
+   "assembly_id": "cabinet.001",
+   "constraints": [
+    {
+     "description": "Cab_Ply > 0",
+     "id": "ply_positive",
+     "lhs": "Cab_Ply",
+     "op": ">",
+     "rhs": "0 mm"
+    },
+    {
+     "description": "Cab_Dado_Depth > 0",
+     "id": "dado_positive",
+     "lhs": "Cab_Dado_Depth",
+     "op": ">",
+     "rhs": "0 mm"
+    },
+    {
+     "description": "groove must leave side-panel material (Cab_Ply > Cab_Dado_Depth)",
+     "id": "dado_lt_ply",
+     "lhs": "Cab_Ply",
+     "op": ">",
+     "rhs": "Cab_Dado_Depth"
+    },
+    {
+     "description": "Cab_End_Clearance >= 0",
+     "id": "end_clearance_nonneg",
+     "lhs": "Cab_End_Clearance",
+     "op": ">=",
+     "rhs": "0 mm"
+    },
+    {
+     "description": "shelf must enter the groove (Cab_Dado_Depth > Cab_End_Clearance)",
+     "id": "end_clearance_lt_dado",
+     "lhs": "Cab_Dado_Depth",
+     "op": ">",
+     "rhs": "Cab_End_Clearance"
+    },
+    {
+     "description": "Cab_Slot_Clearance >= 0",
+     "id": "slot_clearance_nonneg",
+     "lhs": "Cab_Slot_Clearance",
+     "op": ">=",
+     "rhs": "0 mm"
+    },
+    {
+     "description": "Cab_Back > 0",
+     "id": "back_positive",
+     "lhs": "Cab_Back",
+     "op": ">",
+     "rhs": "0 mm"
+    },
+    {
+     "description": "Cab_Depth > Cab_Back",
+     "id": "back_lt_depth",
+     "lhs": "Cab_Depth",
+     "op": ">",
+     "rhs": "Cab_Back"
+    },
+    {
+     "description": "Cab_Gap >= 0",
+     "id": "gap_nonneg",
+     "lhs": "Cab_Gap",
+     "op": ">=",
+     "rhs": "0 mm"
+    },
+    {
+     "description": "Cab_Height > (2 + shelves) * Cab_Ply",
+     "id": "height_fits",
+     "lhs": "Cab_Height",
+     "op": ">",
+     "rhs": "(3 * Cab_Ply)"
+    },
+    {
+     "description": "Cab_Width > 2 * Cab_Ply",
+     "id": "width_fits",
+     "lhs": "Cab_Width",
+     "op": ">",
+     "rhs": "(2 * Cab_Ply)"
+    },
+    {
+     "description": "Cab_Width > (doors + 1) * Cab_Gap",
+     "id": "doors_fit",
+     "lhs": "Cab_Width",
+     "op": ">",
+     "rhs": "(2 * Cab_Gap)"
+    }
+   ],
+   "legacy_spec_hash": "bac59bbba38178f82c8a263b754c322dcf625a52628daaa8c1b10ee4b1165eed",
+   "legacy_spec_json": "{\"module\":\"base_cabinet@1\",\"parameters\":{\"back_mm\":6.0,\"cabinet_id\":\"cabinet.001\",\"dado_depth_mm\":6.0,\"depth_mm\":550.0,\"door_count\":1,\"end_clearance_mm\":0.3,\"gap_mm\":3.0,\"height_mm\":850.0,\"material_ref\":\"ply_main\",\"ply_mm\":18.0,\"shelf_count\":1,\"slot_clearance_mm\":0.5,\"width_mm\":1200.0},\"schema_version\":\"0.1\"}",
+   "operations": [
+    {
+     "cut": {
+      "origin": [
+       "(Cab_Ply - Cab_Dado_Depth)",
+       "Cab_Ply",
+       "Cab_Slot1_Z"
+      ],
+      "size": [
+       "Cab_Dado_Depth",
+       "Cab_Inner_Depth",
+       "Cab_Slot_Height"
+      ]
+     },
+     "end_clearance": "Cab_End_Clearance",
+     "groove_depth": "Cab_Dado_Depth",
+     "id": "dado.shelf1.left",
+     "mating": "panel.shelf.001",
+     "open_at": "front",
+     "process": "cnc_pocket",
+     "side": "left",
+     "slot_clearance": "Cab_Slot_Clearance",
+     "target": "panel.left.001"
+    },
+    {
+     "cut": {
+      "origin": [
+       "(Cab_Width - Cab_Ply)",
+       "Cab_Ply",
+       "Cab_Slot1_Z"
+      ],
+      "size": [
+       "Cab_Dado_Depth",
+       "Cab_Inner_Depth",
+       "Cab_Slot_Height"
+      ]
+     },
+     "end_clearance": "Cab_End_Clearance",
+     "groove_depth": "Cab_Dado_Depth",
+     "id": "dado.shelf1.right",
+     "mating": "panel.shelf.001",
+     "open_at": "front",
+     "process": "cnc_pocket",
+     "side": "right",
+     "slot_clearance": "Cab_Slot_Clearance",
+     "target": "panel.right.001"
+    }
+   ],
+   "panels": [
+    {
+     "box": {
+      "origin": [
+       "0 mm",
+       "Cab_Ply",
+       "0 mm"
+      ],
+      "size": [
+       "Cab_Ply",
+       "Cab_Depth",
+       "Cab_Height"
+      ]
+     },
+     "display_name": "01 Left Side",
+     "id": "panel.left.001",
+     "material_ref": "ply_main",
+     "role": "left"
+    },
+    {
+     "box": {
+      "origin": [
+       "(Cab_Width - Cab_Ply)",
+       "Cab_Ply",
+       "0 mm"
+      ],
+      "size": [
+       "Cab_Ply",
+       "Cab_Depth",
+       "Cab_Height"
+      ]
+     },
+     "display_name": "02 Right Side",
+     "id": "panel.right.001",
+     "material_ref": "ply_main",
+     "role": "right"
+    },
+    {
+     "box": {
+      "origin": [
+       "Cab_Ply",
+       "Cab_Ply",
+       "0 mm"
+      ],
+      "size": [
+       "(Cab_Width - (2 * Cab_Ply))",
+       "Cab_Inner_Depth",
+       "Cab_Ply"
+      ]
+     },
+     "display_name": "03 Bottom",
+     "id": "panel.bottom.001",
+     "material_ref": "ply_main",
+     "role": "bottom"
+    },
+    {
+     "box": {
+      "origin": [
+       "Cab_Ply",
+       "Cab_Ply",
+       "(Cab_Height - Cab_Ply)"
+      ],
+      "size": [
+       "(Cab_Width - (2 * Cab_Ply))",
+       "Cab_Inner_Depth",
+       "Cab_Ply"
+      ]
+     },
+     "display_name": "04 Top",
+     "id": "panel.top.001",
+     "material_ref": "ply_main",
+     "role": "top"
+    },
+    {
+     "box": {
+      "origin": [
+       "Cab_Ply",
+       "((Cab_Ply + Cab_Depth) - Cab_Back)",
+       "Cab_Ply"
+      ],
+      "size": [
+       "(Cab_Width - (2 * Cab_Ply))",
+       "Cab_Back",
+       "(Cab_Height - (2 * Cab_Ply))"
+      ]
+     },
+     "display_name": "05 Back",
+     "id": "panel.back.001",
+     "material_ref": "ply_main",
+     "role": "back"
+    },
+    {
+     "box": {
+      "origin": [
+       "Cab_Shelf_X",
+       "Cab_Ply",
+       "Cab_Shelf1_Z"
+      ],
+      "size": [
+       "Cab_Shelf_Length",
+       "Cab_Inner_Depth",
+       "Cab_Ply"
+      ]
+     },
+     "display_name": "06 Shelf 1",
+     "id": "panel.shelf.001",
+     "material_ref": "ply_main",
+     "role": "shelf"
+    },
+    {
+     "box": {
+      "origin": [
+       "((1 * Cab_Gap) + (0 * ((Cab_Width - (2 * Cab_Gap)) / 1)))",
+       "0 mm",
+       "Cab_Gap"
+      ],
+      "size": [
+       "((Cab_Width - (2 * Cab_Gap)) / 1)",
+       "Cab_Ply",
+       "(Cab_Height - (2 * Cab_Gap))"
+      ]
+     },
+     "display_name": "07 Door 1",
+     "id": "panel.door.001",
+     "material_ref": "ply_main",
+     "role": "door"
+    }
+   ],
+   "parameters": [
+    {
+     "base": true,
+     "comment": "Van Cabinet Joinery V5",
+     "expr": null,
+     "name": "Cab_Width",
+     "value_mm": 1200.0
+    },
+    {
+     "base": true,
+     "comment": "Van Cabinet Joinery V5",
+     "expr": null,
+     "name": "Cab_Height",
+     "value_mm": 850.0
+    },
+    {
+     "base": true,
+     "comment": "Van Cabinet Joinery V5",
+     "expr": null,
+     "name": "Cab_Depth",
+     "value_mm": 550.0
+    },
+    {
+     "base": true,
+     "comment": "Van Cabinet Joinery V5",
+     "expr": null,
+     "name": "Cab_Ply",
+     "value_mm": 18.0
+    },
+    {
+     "base": true,
+     "comment": "Van Cabinet Joinery V5",
+     "expr": null,
+     "name": "Cab_Back",
+     "value_mm": 6.0
+    },
+    {
+     "base": true,
+     "comment": "Van Cabinet Joinery V5",
+     "expr": null,
+     "name": "Cab_Gap",
+     "value_mm": 3.0
+    },
+    {
+     "base": true,
+     "comment": "Groove penetrates each side panel",
+     "expr": null,
+     "name": "Cab_Dado_Depth",
+     "value_mm": 6.0
+    },
+    {
+     "base": true,
+     "comment": "Groove is this much taller than the shelf",
+     "expr": null,
+     "name": "Cab_Slot_Clearance",
+     "value_mm": 0.5
+    },
+    {
+     "base": true,
+     "comment": "Gap at EACH shelf end, bottom of groove",
+     "expr": null,
+     "name": "Cab_End_Clearance",
+     "value_mm": 0.3
+    },
+    {
+     "base": false,
+     "comment": "Side-panel depth minus back",
+     "expr": "(Cab_Depth - Cab_Back)",
+     "name": "Cab_Inner_Depth",
+     "value_mm": null
+    },
+    {
+     "base": false,
+     "comment": "Groove height",
+     "expr": "(Cab_Ply + Cab_Slot_Clearance)",
+     "name": "Cab_Slot_Height",
+     "value_mm": null
+    },
+    {
+     "base": false,
+     "comment": "Shelf left end X",
+     "expr": "((Cab_Ply - Cab_Dado_Depth) + Cab_End_Clearance)",
+     "name": "Cab_Shelf_X",
+     "value_mm": null
+    },
+    {
+     "base": false,
+     "comment": "Shelf length incl. both groove insertions",
+     "expr": "(((Cab_Width - (2 * Cab_Ply)) + (2 * Cab_Dado_Depth)) - (2 * Cab_End_Clearance))",
+     "name": "Cab_Shelf_Length",
+     "value_mm": null
+    },
+    {
+     "base": false,
+     "comment": "Equal clear compartment height",
+     "expr": "((Cab_Height - (3 * Cab_Ply)) / 2)",
+     "name": "Cab_Compartment",
+     "value_mm": null
+    },
+    {
+     "base": false,
+     "comment": "Shelf 1 underside Z",
+     "expr": "((Cab_Ply + (1 * Cab_Compartment)) + (0 * Cab_Ply))",
+     "name": "Cab_Shelf1_Z",
+     "value_mm": null
+    },
+    {
+     "base": false,
+     "comment": "Groove 1 underside Z",
+     "expr": "(Cab_Shelf1_Z - (Cab_Slot_Clearance / 2))",
+     "name": "Cab_Slot1_Z",
+     "value_mm": null
+    }
+   ],
+   "sim_check_ids": [
+    "constraint.ply_positive",
+    "constraint.dado_positive",
+    "constraint.dado_lt_ply",
+    "constraint.end_clearance_nonneg",
+    "constraint.end_clearance_lt_dado",
+    "constraint.slot_clearance_nonneg",
+    "constraint.back_positive",
+    "constraint.back_lt_depth",
+    "constraint.gap_nonneg",
+    "constraint.height_fits",
+    "constraint.width_fits",
+    "constraint.doors_fit",
+    "param.Cab_Inner_Depth",
+    "param.Cab_Slot_Height",
+    "param.Cab_Shelf_X",
+    "param.Cab_Shelf_Length",
+    "param.Cab_Compartment",
+    "param.Cab_Shelf1_Z",
+    "param.Cab_Slot1_Z",
+    "panel.left.001.bbox",
+    "panel.left.001.volume",
+    "panel.right.001.bbox",
+    "panel.right.001.volume",
+    "panel.bottom.001.bbox",
+    "panel.bottom.001.volume",
+    "panel.top.001.bbox",
+    "panel.top.001.volume",
+    "panel.back.001.bbox",
+    "panel.back.001.volume",
+    "panel.shelf.001.bbox",
+    "panel.shelf.001.volume",
+    "panel.door.001.bbox",
+    "panel.door.001.volume",
+    "dado.shelf1.left.penetration",
+    "dado.shelf1.left.end_gap",
+    "dado.shelf1.left.gap_below",
+    "dado.shelf1.left.gap_above",
+    "dado.shelf1.left.mating_unmodified",
+    "dado.shelf1.left.probe.centre_empty",
+    "dado.shelf1.left.probe.front_open",
+    "dado.shelf1.left.probe.below_solid",
+    "dado.shelf1.left.probe.above_solid",
+    "dado.shelf1.left.probe.far_wall_solid",
+    "dado.shelf1.left.probe.rear_wall_solid",
+    "dado.shelf1.right.penetration",
+    "dado.shelf1.right.end_gap",
+    "dado.shelf1.right.gap_below",
+    "dado.shelf1.right.gap_above",
+    "dado.shelf1.right.mating_unmodified",
+    "dado.shelf1.right.probe.centre_empty",
+    "dado.shelf1.right.probe.front_open",
+    "dado.shelf1.right.probe.below_solid",
+    "dado.shelf1.right.probe.above_solid",
+    "dado.shelf1.right.probe.far_wall_solid",
+    "dado.shelf1.right.probe.rear_wall_solid",
+    "interference.joined"
+   ],
+   "sim_check_statuses": [
+    "PASS",
+    "PASS",
+    "PASS",
+    "PASS",
+    "PASS",
+    "PASS",
+    "PASS",
+    "PASS",
+    "PASS",
+    "PASS",
+    "PASS",
+    "PASS",
+    "PASS",
+    "PASS",
+    "PASS",
+    "PASS",
+    "PASS",
+    "PASS",
+    "PASS",
+    "PASS",
+    "PASS",
+    "PASS",
+    "PASS",
+    "PASS",
+    "PASS",
+    "PASS",
+    "PASS",
+    "PASS",
+    "PASS",
+    "PASS",
+    "PASS",
+    "PASS",
+    "PASS",
+    "PASS",
+    "PASS",
+    "PASS",
+    "PASS",
+    "PASS",
+    "PASS",
+    "PASS",
+    "PASS",
+    "PASS",
+    "PASS",
+    "PASS",
+    "PASS",
+    "PASS",
+    "PASS",
+    "PASS",
+    "PASS",
+    "PASS",
+    "PASS",
+    "PASS",
+    "PASS",
+    "PASS",
+    "PASS",
+    "PASS"
+   ],
+   "spec_hash": "bac59bbba38178f82c8a263b754c322dcf625a52628daaa8c1b10ee4b1165eed"
+  },
+  "s1_d2": {
+   "assembly_id": "cabinet.001",
+   "constraints": [
+    {
+     "description": "Cab_Ply > 0",
+     "id": "ply_positive",
+     "lhs": "Cab_Ply",
+     "op": ">",
+     "rhs": "0 mm"
+    },
+    {
+     "description": "Cab_Dado_Depth > 0",
+     "id": "dado_positive",
+     "lhs": "Cab_Dado_Depth",
+     "op": ">",
+     "rhs": "0 mm"
+    },
+    {
+     "description": "groove must leave side-panel material (Cab_Ply > Cab_Dado_Depth)",
+     "id": "dado_lt_ply",
+     "lhs": "Cab_Ply",
+     "op": ">",
+     "rhs": "Cab_Dado_Depth"
+    },
+    {
+     "description": "Cab_End_Clearance >= 0",
+     "id": "end_clearance_nonneg",
+     "lhs": "Cab_End_Clearance",
+     "op": ">=",
+     "rhs": "0 mm"
+    },
+    {
+     "description": "shelf must enter the groove (Cab_Dado_Depth > Cab_End_Clearance)",
+     "id": "end_clearance_lt_dado",
+     "lhs": "Cab_Dado_Depth",
+     "op": ">",
+     "rhs": "Cab_End_Clearance"
+    },
+    {
+     "description": "Cab_Slot_Clearance >= 0",
+     "id": "slot_clearance_nonneg",
+     "lhs": "Cab_Slot_Clearance",
+     "op": ">=",
+     "rhs": "0 mm"
+    },
+    {
+     "description": "Cab_Back > 0",
+     "id": "back_positive",
+     "lhs": "Cab_Back",
+     "op": ">",
+     "rhs": "0 mm"
+    },
+    {
+     "description": "Cab_Depth > Cab_Back",
+     "id": "back_lt_depth",
+     "lhs": "Cab_Depth",
+     "op": ">",
+     "rhs": "Cab_Back"
+    },
+    {
+     "description": "Cab_Gap >= 0",
+     "id": "gap_nonneg",
+     "lhs": "Cab_Gap",
+     "op": ">=",
+     "rhs": "0 mm"
+    },
+    {
+     "description": "Cab_Height > (2 + shelves) * Cab_Ply",
+     "id": "height_fits",
+     "lhs": "Cab_Height",
+     "op": ">",
+     "rhs": "(3 * Cab_Ply)"
+    },
+    {
+     "description": "Cab_Width > 2 * Cab_Ply",
+     "id": "width_fits",
+     "lhs": "Cab_Width",
+     "op": ">",
+     "rhs": "(2 * Cab_Ply)"
+    },
+    {
+     "description": "Cab_Width > (doors + 1) * Cab_Gap",
+     "id": "doors_fit",
+     "lhs": "Cab_Width",
+     "op": ">",
+     "rhs": "(3 * Cab_Gap)"
+    }
+   ],
+   "legacy_spec_hash": "a0a43e005535b33f069dd786dc847682734819a09bd0803650688bb5e4b0a750",
+   "legacy_spec_json": "{\"module\":\"base_cabinet@1\",\"parameters\":{\"back_mm\":6.0,\"cabinet_id\":\"cabinet.001\",\"dado_depth_mm\":6.0,\"depth_mm\":550.0,\"door_count\":2,\"end_clearance_mm\":0.3,\"gap_mm\":3.0,\"height_mm\":850.0,\"material_ref\":\"ply_main\",\"ply_mm\":18.0,\"shelf_count\":1,\"slot_clearance_mm\":0.5,\"width_mm\":1200.0},\"schema_version\":\"0.1\"}",
+   "operations": [
+    {
+     "cut": {
+      "origin": [
+       "(Cab_Ply - Cab_Dado_Depth)",
+       "Cab_Ply",
+       "Cab_Slot1_Z"
+      ],
+      "size": [
+       "Cab_Dado_Depth",
+       "Cab_Inner_Depth",
+       "Cab_Slot_Height"
+      ]
+     },
+     "end_clearance": "Cab_End_Clearance",
+     "groove_depth": "Cab_Dado_Depth",
+     "id": "dado.shelf1.left",
+     "mating": "panel.shelf.001",
+     "open_at": "front",
+     "process": "cnc_pocket",
+     "side": "left",
+     "slot_clearance": "Cab_Slot_Clearance",
+     "target": "panel.left.001"
+    },
+    {
+     "cut": {
+      "origin": [
+       "(Cab_Width - Cab_Ply)",
+       "Cab_Ply",
+       "Cab_Slot1_Z"
+      ],
+      "size": [
+       "Cab_Dado_Depth",
+       "Cab_Inner_Depth",
+       "Cab_Slot_Height"
+      ]
+     },
+     "end_clearance": "Cab_End_Clearance",
+     "groove_depth": "Cab_Dado_Depth",
+     "id": "dado.shelf1.right",
+     "mating": "panel.shelf.001",
+     "open_at": "front",
+     "process": "cnc_pocket",
+     "side": "right",
+     "slot_clearance": "Cab_Slot_Clearance",
+     "target": "panel.right.001"
+    }
+   ],
+   "panels": [
+    {
+     "box": {
+      "origin": [
+       "0 mm",
+       "Cab_Ply",
+       "0 mm"
+      ],
+      "size": [
+       "Cab_Ply",
+       "Cab_Depth",
+       "Cab_Height"
+      ]
+     },
+     "display_name": "01 Left Side",
+     "id": "panel.left.001",
+     "material_ref": "ply_main",
+     "role": "left"
+    },
+    {
+     "box": {
+      "origin": [
+       "(Cab_Width - Cab_Ply)",
+       "Cab_Ply",
+       "0 mm"
+      ],
+      "size": [
+       "Cab_Ply",
+       "Cab_Depth",
+       "Cab_Height"
+      ]
+     },
+     "display_name": "02 Right Side",
+     "id": "panel.right.001",
+     "material_ref": "ply_main",
+     "role": "right"
+    },
+    {
+     "box": {
+      "origin": [
+       "Cab_Ply",
+       "Cab_Ply",
+       "0 mm"
+      ],
+      "size": [
+       "(Cab_Width - (2 * Cab_Ply))",
+       "Cab_Inner_Depth",
+       "Cab_Ply"
+      ]
+     },
+     "display_name": "03 Bottom",
+     "id": "panel.bottom.001",
+     "material_ref": "ply_main",
+     "role": "bottom"
+    },
+    {
+     "box": {
+      "origin": [
+       "Cab_Ply",
+       "Cab_Ply",
+       "(Cab_Height - Cab_Ply)"
+      ],
+      "size": [
+       "(Cab_Width - (2 * Cab_Ply))",
+       "Cab_Inner_Depth",
+       "Cab_Ply"
+      ]
+     },
+     "display_name": "04 Top",
+     "id": "panel.top.001",
+     "material_ref": "ply_main",
+     "role": "top"
+    },
+    {
+     "box": {
+      "origin": [
+       "Cab_Ply",
+       "((Cab_Ply + Cab_Depth) - Cab_Back)",
+       "Cab_Ply"
+      ],
+      "size": [
+       "(Cab_Width - (2 * Cab_Ply))",
+       "Cab_Back",
+       "(Cab_Height - (2 * Cab_Ply))"
+      ]
+     },
+     "display_name": "05 Back",
+     "id": "panel.back.001",
+     "material_ref": "ply_main",
+     "role": "back"
+    },
+    {
+     "box": {
+      "origin": [
+       "Cab_Shelf_X",
+       "Cab_Ply",
+       "Cab_Shelf1_Z"
+      ],
+      "size": [
+       "Cab_Shelf_Length",
+       "Cab_Inner_Depth",
+       "Cab_Ply"
+      ]
+     },
+     "display_name": "06 Shelf 1",
+     "id": "panel.shelf.001",
+     "material_ref": "ply_main",
+     "role": "shelf"
+    },
+    {
+     "box": {
+      "origin": [
+       "((1 * Cab_Gap) + (0 * ((Cab_Width - (3 * Cab_Gap)) / 2)))",
+       "0 mm",
+       "Cab_Gap"
+      ],
+      "size": [
+       "((Cab_Width - (3 * Cab_Gap)) / 2)",
+       "Cab_Ply",
+       "(Cab_Height - (2 * Cab_Gap))"
+      ]
+     },
+     "display_name": "07 Door 1",
+     "id": "panel.door.001",
+     "material_ref": "ply_main",
+     "role": "door"
+    },
+    {
+     "box": {
+      "origin": [
+       "((2 * Cab_Gap) + (1 * ((Cab_Width - (3 * Cab_Gap)) / 2)))",
+       "0 mm",
+       "Cab_Gap"
+      ],
+      "size": [
+       "((Cab_Width - (3 * Cab_Gap)) / 2)",
+       "Cab_Ply",
+       "(Cab_Height - (2 * Cab_Gap))"
+      ]
+     },
+     "display_name": "07 Door 2",
+     "id": "panel.door.002",
+     "material_ref": "ply_main",
+     "role": "door"
+    }
+   ],
+   "parameters": [
+    {
+     "base": true,
+     "comment": "Van Cabinet Joinery V5",
+     "expr": null,
+     "name": "Cab_Width",
+     "value_mm": 1200.0
+    },
+    {
+     "base": true,
+     "comment": "Van Cabinet Joinery V5",
+     "expr": null,
+     "name": "Cab_Height",
+     "value_mm": 850.0
+    },
+    {
+     "base": true,
+     "comment": "Van Cabinet Joinery V5",
+     "expr": null,
+     "name": "Cab_Depth",
+     "value_mm": 550.0
+    },
+    {
+     "base": true,
+     "comment": "Van Cabinet Joinery V5",
+     "expr": null,
+     "name": "Cab_Ply",
+     "value_mm": 18.0
+    },
+    {
+     "base": true,
+     "comment": "Van Cabinet Joinery V5",
+     "expr": null,
+     "name": "Cab_Back",
+     "value_mm": 6.0
+    },
+    {
+     "base": true,
+     "comment": "Van Cabinet Joinery V5",
+     "expr": null,
+     "name": "Cab_Gap",
+     "value_mm": 3.0
+    },
+    {
+     "base": true,
+     "comment": "Groove penetrates each side panel",
+     "expr": null,
+     "name": "Cab_Dado_Depth",
+     "value_mm": 6.0
+    },
+    {
+     "base": true,
+     "comment": "Groove is this much taller than the shelf",
+     "expr": null,
+     "name": "Cab_Slot_Clearance",
+     "value_mm": 0.5
+    },
+    {
+     "base": true,
+     "comment": "Gap at EACH shelf end, bottom of groove",
+     "expr": null,
+     "name": "Cab_End_Clearance",
+     "value_mm": 0.3
+    },
+    {
+     "base": false,
+     "comment": "Side-panel depth minus back",
+     "expr": "(Cab_Depth - Cab_Back)",
+     "name": "Cab_Inner_Depth",
+     "value_mm": null
+    },
+    {
+     "base": false,
+     "comment": "Groove height",
+     "expr": "(Cab_Ply + Cab_Slot_Clearance)",
+     "name": "Cab_Slot_Height",
+     "value_mm": null
+    },
+    {
+     "base": false,
+     "comment": "Shelf left end X",
+     "expr": "((Cab_Ply - Cab_Dado_Depth) + Cab_End_Clearance)",
+     "name": "Cab_Shelf_X",
+     "value_mm": null
+    },
+    {
+     "base": false,
+     "comment": "Shelf length incl. both groove insertions",
+     "expr": "(((Cab_Width - (2 * Cab_Ply)) + (2 * Cab_Dado_Depth)) - (2 * Cab_End_Clearance))",
+     "name": "Cab_Shelf_Length",
+     "value_mm": null
+    },
+    {
+     "base": false,
+     "comment": "Equal clear compartment height",
+     "expr": "((Cab_Height - (3 * Cab_Ply)) / 2)",
+     "name": "Cab_Compartment",
+     "value_mm": null
+    },
+    {
+     "base": false,
+     "comment": "Shelf 1 underside Z",
+     "expr": "((Cab_Ply + (1 * Cab_Compartment)) + (0 * Cab_Ply))",
+     "name": "Cab_Shelf1_Z",
+     "value_mm": null
+    },
+    {
+     "base": false,
+     "comment": "Groove 1 underside Z",
+     "expr": "(Cab_Shelf1_Z - (Cab_Slot_Clearance / 2))",
+     "name": "Cab_Slot1_Z",
+     "value_mm": null
+    }
+   ],
+   "sim_check_ids": [
+    "constraint.ply_positive",
+    "constraint.dado_positive",
+    "constraint.dado_lt_ply",
+    "constraint.end_clearance_nonneg",
+    "constraint.end_clearance_lt_dado",
+    "constraint.slot_clearance_nonneg",
+    "constraint.back_positive",
+    "constraint.back_lt_depth",
+    "constraint.gap_nonneg",
+    "constraint.height_fits",
+    "constraint.width_fits",
+    "constraint.doors_fit",
+    "param.Cab_Inner_Depth",
+    "param.Cab_Slot_Height",
+    "param.Cab_Shelf_X",
+    "param.Cab_Shelf_Length",
+    "param.Cab_Compartment",
+    "param.Cab_Shelf1_Z",
+    "param.Cab_Slot1_Z",
+    "panel.left.001.bbox",
+    "panel.left.001.volume",
+    "panel.right.001.bbox",
+    "panel.right.001.volume",
+    "panel.bottom.001.bbox",
+    "panel.bottom.001.volume",
+    "panel.top.001.bbox",
+    "panel.top.001.volume",
+    "panel.back.001.bbox",
+    "panel.back.001.volume",
+    "panel.shelf.001.bbox",
+    "panel.shelf.001.volume",
+    "panel.door.001.bbox",
+    "panel.door.001.volume",
+    "panel.door.002.bbox",
+    "panel.door.002.volume",
+    "dado.shelf1.left.penetration",
+    "dado.shelf1.left.end_gap",
+    "dado.shelf1.left.gap_below",
+    "dado.shelf1.left.gap_above",
+    "dado.shelf1.left.mating_unmodified",
+    "dado.shelf1.left.probe.centre_empty",
+    "dado.shelf1.left.probe.front_open",
+    "dado.shelf1.left.probe.below_solid",
+    "dado.shelf1.left.probe.above_solid",
+    "dado.shelf1.left.probe.far_wall_solid",
+    "dado.shelf1.left.probe.rear_wall_solid",
+    "dado.shelf1.right.penetration",
+    "dado.shelf1.right.end_gap",
+    "dado.shelf1.right.gap_below",
+    "dado.shelf1.right.gap_above",
+    "dado.shelf1.right.mating_unmodified",
+    "dado.shelf1.right.probe.centre_empty",
+    "dado.shelf1.right.probe.front_open",
+    "dado.shelf1.right.probe.below_solid",
+    "dado.shelf1.right.probe.above_solid",
+    "dado.shelf1.right.probe.far_wall_solid",
+    "dado.shelf1.right.probe.rear_wall_solid",
+    "interference.joined"
+   ],
+   "sim_check_statuses": [
+    "PASS",
+    "PASS",
+    "PASS",
+    "PASS",
+    "PASS",
+    "PASS",
+    "PASS",
+    "PASS",
+    "PASS",
+    "PASS",
+    "PASS",
+    "PASS",
+    "PASS",
+    "PASS",
+    "PASS",
+    "PASS",
+    "PASS",
+    "PASS",
+    "PASS",
+    "PASS",
+    "PASS",
+    "PASS",
+    "PASS",
+    "PASS",
+    "PASS",
+    "PASS",
+    "PASS",
+    "PASS",
+    "PASS",
+    "PASS",
+    "PASS",
+    "PASS",
+    "PASS",
+    "PASS",
+    "PASS",
+    "PASS",
+    "PASS",
+    "PASS",
+    "PASS",
+    "PASS",
+    "PASS",
+    "PASS",
+    "PASS",
+    "PASS",
+    "PASS",
+    "PASS",
+    "PASS",
+    "PASS",
+    "PASS",
+    "PASS",
+    "PASS",
+    "PASS",
+    "PASS",
+    "PASS",
+    "PASS",
+    "PASS",
+    "PASS",
+    "PASS"
+   ],
+   "spec_hash": "a0a43e005535b33f069dd786dc847682734819a09bd0803650688bb5e4b0a750"
+  },
+  "s2_d1": {
+   "assembly_id": "cabinet.001",
+   "constraints": [
+    {
+     "description": "Cab_Ply > 0",
+     "id": "ply_positive",
+     "lhs": "Cab_Ply",
+     "op": ">",
+     "rhs": "0 mm"
+    },
+    {
+     "description": "Cab_Dado_Depth > 0",
+     "id": "dado_positive",
+     "lhs": "Cab_Dado_Depth",
+     "op": ">",
+     "rhs": "0 mm"
+    },
+    {
+     "description": "groove must leave side-panel material (Cab_Ply > Cab_Dado_Depth)",
+     "id": "dado_lt_ply",
+     "lhs": "Cab_Ply",
+     "op": ">",
+     "rhs": "Cab_Dado_Depth"
+    },
+    {
+     "description": "Cab_End_Clearance >= 0",
+     "id": "end_clearance_nonneg",
+     "lhs": "Cab_End_Clearance",
+     "op": ">=",
+     "rhs": "0 mm"
+    },
+    {
+     "description": "shelf must enter the groove (Cab_Dado_Depth > Cab_End_Clearance)",
+     "id": "end_clearance_lt_dado",
+     "lhs": "Cab_Dado_Depth",
+     "op": ">",
+     "rhs": "Cab_End_Clearance"
+    },
+    {
+     "description": "Cab_Slot_Clearance >= 0",
+     "id": "slot_clearance_nonneg",
+     "lhs": "Cab_Slot_Clearance",
+     "op": ">=",
+     "rhs": "0 mm"
+    },
+    {
+     "description": "Cab_Back > 0",
+     "id": "back_positive",
+     "lhs": "Cab_Back",
+     "op": ">",
+     "rhs": "0 mm"
+    },
+    {
+     "description": "Cab_Depth > Cab_Back",
+     "id": "back_lt_depth",
+     "lhs": "Cab_Depth",
+     "op": ">",
+     "rhs": "Cab_Back"
+    },
+    {
+     "description": "Cab_Gap >= 0",
+     "id": "gap_nonneg",
+     "lhs": "Cab_Gap",
+     "op": ">=",
+     "rhs": "0 mm"
+    },
+    {
+     "description": "Cab_Height > (2 + shelves) * Cab_Ply",
+     "id": "height_fits",
+     "lhs": "Cab_Height",
+     "op": ">",
+     "rhs": "(4 * Cab_Ply)"
+    },
+    {
+     "description": "Cab_Width > 2 * Cab_Ply",
+     "id": "width_fits",
+     "lhs": "Cab_Width",
+     "op": ">",
+     "rhs": "(2 * Cab_Ply)"
+    },
+    {
+     "description": "Cab_Width > (doors + 1) * Cab_Gap",
+     "id": "doors_fit",
+     "lhs": "Cab_Width",
+     "op": ">",
+     "rhs": "(2 * Cab_Gap)"
+    }
+   ],
+   "legacy_spec_hash": "d3f9ae43a907500a76b88a6783c1a4bd1185e4226f52aa778b25c7ec75686545",
+   "legacy_spec_json": "{\"module\":\"base_cabinet@1\",\"parameters\":{\"back_mm\":6.0,\"cabinet_id\":\"cabinet.001\",\"dado_depth_mm\":6.0,\"depth_mm\":550.0,\"door_count\":1,\"end_clearance_mm\":0.3,\"gap_mm\":3.0,\"height_mm\":850.0,\"material_ref\":\"ply_main\",\"ply_mm\":18.0,\"shelf_count\":2,\"slot_clearance_mm\":0.5,\"width_mm\":1200.0},\"schema_version\":\"0.1\"}",
+   "operations": [
+    {
+     "cut": {
+      "origin": [
+       "(Cab_Ply - Cab_Dado_Depth)",
+       "Cab_Ply",
+       "Cab_Slot1_Z"
+      ],
+      "size": [
+       "Cab_Dado_Depth",
+       "Cab_Inner_Depth",
+       "Cab_Slot_Height"
+      ]
+     },
+     "end_clearance": "Cab_End_Clearance",
+     "groove_depth": "Cab_Dado_Depth",
+     "id": "dado.shelf1.left",
+     "mating": "panel.shelf.001",
+     "open_at": "front",
+     "process": "cnc_pocket",
+     "side": "left",
+     "slot_clearance": "Cab_Slot_Clearance",
+     "target": "panel.left.001"
+    },
+    {
+     "cut": {
+      "origin": [
+       "(Cab_Width - Cab_Ply)",
+       "Cab_Ply",
+       "Cab_Slot1_Z"
+      ],
+      "size": [
+       "Cab_Dado_Depth",
+       "Cab_Inner_Depth",
+       "Cab_Slot_Height"
+      ]
+     },
+     "end_clearance": "Cab_End_Clearance",
+     "groove_depth": "Cab_Dado_Depth",
+     "id": "dado.shelf1.right",
+     "mating": "panel.shelf.001",
+     "open_at": "front",
+     "process": "cnc_pocket",
+     "side": "right",
+     "slot_clearance": "Cab_Slot_Clearance",
+     "target": "panel.right.001"
+    },
+    {
+     "cut": {
+      "origin": [
+       "(Cab_Ply - Cab_Dado_Depth)",
+       "Cab_Ply",
+       "Cab_Slot2_Z"
+      ],
+      "size": [
+       "Cab_Dado_Depth",
+       "Cab_Inner_Depth",
+       "Cab_Slot_Height"
+      ]
+     },
+     "end_clearance": "Cab_End_Clearance",
+     "groove_depth": "Cab_Dado_Depth",
+     "id": "dado.shelf2.left",
+     "mating": "panel.shelf.002",
+     "open_at": "front",
+     "process": "cnc_pocket",
+     "side": "left",
+     "slot_clearance": "Cab_Slot_Clearance",
+     "target": "panel.left.001"
+    },
+    {
+     "cut": {
+      "origin": [
+       "(Cab_Width - Cab_Ply)",
+       "Cab_Ply",
+       "Cab_Slot2_Z"
+      ],
+      "size": [
+       "Cab_Dado_Depth",
+       "Cab_Inner_Depth",
+       "Cab_Slot_Height"
+      ]
+     },
+     "end_clearance": "Cab_End_Clearance",
+     "groove_depth": "Cab_Dado_Depth",
+     "id": "dado.shelf2.right",
+     "mating": "panel.shelf.002",
+     "open_at": "front",
+     "process": "cnc_pocket",
+     "side": "right",
+     "slot_clearance": "Cab_Slot_Clearance",
+     "target": "panel.right.001"
+    }
+   ],
+   "panels": [
+    {
+     "box": {
+      "origin": [
+       "0 mm",
+       "Cab_Ply",
+       "0 mm"
+      ],
+      "size": [
+       "Cab_Ply",
+       "Cab_Depth",
+       "Cab_Height"
+      ]
+     },
+     "display_name": "01 Left Side",
+     "id": "panel.left.001",
+     "material_ref": "ply_main",
+     "role": "left"
+    },
+    {
+     "box": {
+      "origin": [
+       "(Cab_Width - Cab_Ply)",
+       "Cab_Ply",
+       "0 mm"
+      ],
+      "size": [
+       "Cab_Ply",
+       "Cab_Depth",
+       "Cab_Height"
+      ]
+     },
+     "display_name": "02 Right Side",
+     "id": "panel.right.001",
+     "material_ref": "ply_main",
+     "role": "right"
+    },
+    {
+     "box": {
+      "origin": [
+       "Cab_Ply",
+       "Cab_Ply",
+       "0 mm"
+      ],
+      "size": [
+       "(Cab_Width - (2 * Cab_Ply))",
+       "Cab_Inner_Depth",
+       "Cab_Ply"
+      ]
+     },
+     "display_name": "03 Bottom",
+     "id": "panel.bottom.001",
+     "material_ref": "ply_main",
+     "role": "bottom"
+    },
+    {
+     "box": {
+      "origin": [
+       "Cab_Ply",
+       "Cab_Ply",
+       "(Cab_Height - Cab_Ply)"
+      ],
+      "size": [
+       "(Cab_Width - (2 * Cab_Ply))",
+       "Cab_Inner_Depth",
+       "Cab_Ply"
+      ]
+     },
+     "display_name": "04 Top",
+     "id": "panel.top.001",
+     "material_ref": "ply_main",
+     "role": "top"
+    },
+    {
+     "box": {
+      "origin": [
+       "Cab_Ply",
+       "((Cab_Ply + Cab_Depth) - Cab_Back)",
+       "Cab_Ply"
+      ],
+      "size": [
+       "(Cab_Width - (2 * Cab_Ply))",
+       "Cab_Back",
+       "(Cab_Height - (2 * Cab_Ply))"
+      ]
+     },
+     "display_name": "05 Back",
+     "id": "panel.back.001",
+     "material_ref": "ply_main",
+     "role": "back"
+    },
+    {
+     "box": {
+      "origin": [
+       "Cab_Shelf_X",
+       "Cab_Ply",
+       "Cab_Shelf1_Z"
+      ],
+      "size": [
+       "Cab_Shelf_Length",
+       "Cab_Inner_Depth",
+       "Cab_Ply"
+      ]
+     },
+     "display_name": "06 Shelf 1",
+     "id": "panel.shelf.001",
+     "material_ref": "ply_main",
+     "role": "shelf"
+    },
+    {
+     "box": {
+      "origin": [
+       "Cab_Shelf_X",
+       "Cab_Ply",
+       "Cab_Shelf2_Z"
+      ],
+      "size": [
+       "Cab_Shelf_Length",
+       "Cab_Inner_Depth",
+       "Cab_Ply"
+      ]
+     },
+     "display_name": "06 Shelf 2",
+     "id": "panel.shelf.002",
+     "material_ref": "ply_main",
+     "role": "shelf"
+    },
+    {
+     "box": {
+      "origin": [
+       "((1 * Cab_Gap) + (0 * ((Cab_Width - (2 * Cab_Gap)) / 1)))",
+       "0 mm",
+       "Cab_Gap"
+      ],
+      "size": [
+       "((Cab_Width - (2 * Cab_Gap)) / 1)",
+       "Cab_Ply",
+       "(Cab_Height - (2 * Cab_Gap))"
+      ]
+     },
+     "display_name": "07 Door 1",
+     "id": "panel.door.001",
+     "material_ref": "ply_main",
+     "role": "door"
+    }
+   ],
+   "parameters": [
+    {
+     "base": true,
+     "comment": "Van Cabinet Joinery V5",
+     "expr": null,
+     "name": "Cab_Width",
+     "value_mm": 1200.0
+    },
+    {
+     "base": true,
+     "comment": "Van Cabinet Joinery V5",
+     "expr": null,
+     "name": "Cab_Height",
+     "value_mm": 850.0
+    },
+    {
+     "base": true,
+     "comment": "Van Cabinet Joinery V5",
+     "expr": null,
+     "name": "Cab_Depth",
+     "value_mm": 550.0
+    },
+    {
+     "base": true,
+     "comment": "Van Cabinet Joinery V5",
+     "expr": null,
+     "name": "Cab_Ply",
+     "value_mm": 18.0
+    },
+    {
+     "base": true,
+     "comment": "Van Cabinet Joinery V5",
+     "expr": null,
+     "name": "Cab_Back",
+     "value_mm": 6.0
+    },
+    {
+     "base": true,
+     "comment": "Van Cabinet Joinery V5",
+     "expr": null,
+     "name": "Cab_Gap",
+     "value_mm": 3.0
+    },
+    {
+     "base": true,
+     "comment": "Groove penetrates each side panel",
+     "expr": null,
+     "name": "Cab_Dado_Depth",
+     "value_mm": 6.0
+    },
+    {
+     "base": true,
+     "comment": "Groove is this much taller than the shelf",
+     "expr": null,
+     "name": "Cab_Slot_Clearance",
+     "value_mm": 0.5
+    },
+    {
+     "base": true,
+     "comment": "Gap at EACH shelf end, bottom of groove",
+     "expr": null,
+     "name": "Cab_End_Clearance",
+     "value_mm": 0.3
+    },
+    {
+     "base": false,
+     "comment": "Side-panel depth minus back",
+     "expr": "(Cab_Depth - Cab_Back)",
+     "name": "Cab_Inner_Depth",
+     "value_mm": null
+    },
+    {
+     "base": false,
+     "comment": "Groove height",
+     "expr": "(Cab_Ply + Cab_Slot_Clearance)",
+     "name": "Cab_Slot_Height",
+     "value_mm": null
+    },
+    {
+     "base": false,
+     "comment": "Shelf left end X",
+     "expr": "((Cab_Ply - Cab_Dado_Depth) + Cab_End_Clearance)",
+     "name": "Cab_Shelf_X",
+     "value_mm": null
+    },
+    {
+     "base": false,
+     "comment": "Shelf length incl. both groove insertions",
+     "expr": "(((Cab_Width - (2 * Cab_Ply)) + (2 * Cab_Dado_Depth)) - (2 * Cab_End_Clearance))",
+     "name": "Cab_Shelf_Length",
+     "value_mm": null
+    },
+    {
+     "base": false,
+     "comment": "Equal clear compartment height",
+     "expr": "((Cab_Height - (4 * Cab_Ply)) / 3)",
+     "name": "Cab_Compartment",
+     "value_mm": null
+    },
+    {
+     "base": false,
+     "comment": "Shelf 1 underside Z",
+     "expr": "((Cab_Ply + (1 * Cab_Compartment)) + (0 * Cab_Ply))",
+     "name": "Cab_Shelf1_Z",
+     "value_mm": null
+    },
+    {
+     "base": false,
+     "comment": "Groove 1 underside Z",
+     "expr": "(Cab_Shelf1_Z - (Cab_Slot_Clearance / 2))",
+     "name": "Cab_Slot1_Z",
+     "value_mm": null
+    },
+    {
+     "base": false,
+     "comment": "Shelf 2 underside Z",
+     "expr": "((Cab_Ply + (2 * Cab_Compartment)) + (1 * Cab_Ply))",
+     "name": "Cab_Shelf2_Z",
+     "value_mm": null
+    },
+    {
+     "base": false,
+     "comment": "Groove 2 underside Z",
+     "expr": "(Cab_Shelf2_Z - (Cab_Slot_Clearance / 2))",
+     "name": "Cab_Slot2_Z",
+     "value_mm": null
+    }
+   ],
+   "sim_check_ids": [
+    "constraint.ply_positive",
+    "constraint.dado_positive",
+    "constraint.dado_lt_ply",
+    "constraint.end_clearance_nonneg",
+    "constraint.end_clearance_lt_dado",
+    "constraint.slot_clearance_nonneg",
+    "constraint.back_positive",
+    "constraint.back_lt_depth",
+    "constraint.gap_nonneg",
+    "constraint.height_fits",
+    "constraint.width_fits",
+    "constraint.doors_fit",
+    "param.Cab_Inner_Depth",
+    "param.Cab_Slot_Height",
+    "param.Cab_Shelf_X",
+    "param.Cab_Shelf_Length",
+    "param.Cab_Compartment",
+    "param.Cab_Shelf1_Z",
+    "param.Cab_Slot1_Z",
+    "param.Cab_Shelf2_Z",
+    "param.Cab_Slot2_Z",
+    "panel.left.001.bbox",
+    "panel.left.001.volume",
+    "panel.right.001.bbox",
+    "panel.right.001.volume",
+    "panel.bottom.001.bbox",
+    "panel.bottom.001.volume",
+    "panel.top.001.bbox",
+    "panel.top.001.volume",
+    "panel.back.001.bbox",
+    "panel.back.001.volume",
+    "panel.shelf.001.bbox",
+    "panel.shelf.001.volume",
+    "panel.shelf.002.bbox",
+    "panel.shelf.002.volume",
+    "panel.door.001.bbox",
+    "panel.door.001.volume",
+    "dado.shelf1.left.penetration",
+    "dado.shelf1.left.end_gap",
+    "dado.shelf1.left.gap_below",
+    "dado.shelf1.left.gap_above",
+    "dado.shelf1.left.mating_unmodified",
+    "dado.shelf1.left.probe.centre_empty",
+    "dado.shelf1.left.probe.front_open",
+    "dado.shelf1.left.probe.below_solid",
+    "dado.shelf1.left.probe.above_solid",
+    "dado.shelf1.left.probe.far_wall_solid",
+    "dado.shelf1.left.probe.rear_wall_solid",
+    "dado.shelf1.right.penetration",
+    "dado.shelf1.right.end_gap",
+    "dado.shelf1.right.gap_below",
+    "dado.shelf1.right.gap_above",
+    "dado.shelf1.right.mating_unmodified",
+    "dado.shelf1.right.probe.centre_empty",
+    "dado.shelf1.right.probe.front_open",
+    "dado.shelf1.right.probe.below_solid",
+    "dado.shelf1.right.probe.above_solid",
+    "dado.shelf1.right.probe.far_wall_solid",
+    "dado.shelf1.right.probe.rear_wall_solid",
+    "dado.shelf2.left.penetration",
+    "dado.shelf2.left.end_gap",
+    "dado.shelf2.left.gap_below",
+    "dado.shelf2.left.gap_above",
+    "dado.shelf2.left.mating_unmodified",
+    "dado.shelf2.left.probe.centre_empty",
+    "dado.shelf2.left.probe.front_open",
+    "dado.shelf2.left.probe.below_solid",
+    "dado.shelf2.left.probe.above_solid",
+    "dado.shelf2.left.probe.far_wall_solid",
+    "dado.shelf2.left.probe.rear_wall_solid",
+    "dado.shelf2.right.penetration",
+    "dado.shelf2.right.end_gap",
+    "dado.shelf2.right.gap_below",
+    "dado.shelf2.right.gap_above",
+    "dado.shelf2.right.mating_unmodified",
+    "dado.shelf2.right.probe.centre_empty",
+    "dado.shelf2.right.probe.front_open",
+    "dado.shelf2.right.probe.below_solid",
+    "dado.shelf2.right.probe.above_solid",
+    "dado.shelf2.right.probe.far_wall_solid",
+    "dado.shelf2.right.probe.rear_wall_solid",
+    "interference.joined"
+   ],
+   "sim_check_statuses": [
+    "PASS",
+    "PASS",
+    "PASS",
+    "PASS",
+    "PASS",
+    "PASS",
+    "PASS",
+    "PASS",
+    "PASS",
+    "PASS",
+    "PASS",
+    "PASS",
+    "PASS",
+    "PASS",
+    "PASS",
+    "PASS",
+    "PASS",
+    "PASS",
+    "PASS",
+    "PASS",
+    "PASS",
+    "PASS",
+    "PASS",
+    "PASS",
+    "PASS",
+    "PASS",
+    "PASS",
+    "PASS",
+    "PASS",
+    "PASS",
+    "PASS",
+    "PASS",
+    "PASS",
+    "PASS",
+    "PASS",
+    "PASS",
+    "PASS",
+    "PASS",
+    "PASS",
+    "PASS",
+    "PASS",
+    "PASS",
+    "PASS",
+    "PASS",
+    "PASS",
+    "PASS",
+    "PASS",
+    "PASS",
+    "PASS",
+    "PASS",
+    "PASS",
+    "PASS",
+    "PASS",
+    "PASS",
+    "PASS",
+    "PASS",
+    "PASS",
+    "PASS",
+    "PASS",
+    "PASS",
+    "PASS",
+    "PASS",
+    "PASS",
+    "PASS",
+    "PASS",
+    "PASS",
+    "PASS",
+    "PASS",
+    "PASS",
+    "PASS",
+    "PASS",
+    "PASS",
+    "PASS",
+    "PASS",
+    "PASS",
+    "PASS",
+    "PASS",
+    "PASS",
+    "PASS",
+    "PASS",
+    "PASS",
+    "PASS"
+   ],
+   "spec_hash": "d3f9ae43a907500a76b88a6783c1a4bd1185e4226f52aa778b25c7ec75686545"
+  },
+  "s2_d2": {
+   "assembly_id": "cabinet.001",
+   "constraints": [
+    {
+     "description": "Cab_Ply > 0",
+     "id": "ply_positive",
+     "lhs": "Cab_Ply",
+     "op": ">",
+     "rhs": "0 mm"
+    },
+    {
+     "description": "Cab_Dado_Depth > 0",
+     "id": "dado_positive",
+     "lhs": "Cab_Dado_Depth",
+     "op": ">",
+     "rhs": "0 mm"
+    },
+    {
+     "description": "groove must leave side-panel material (Cab_Ply > Cab_Dado_Depth)",
+     "id": "dado_lt_ply",
+     "lhs": "Cab_Ply",
+     "op": ">",
+     "rhs": "Cab_Dado_Depth"
+    },
+    {
+     "description": "Cab_End_Clearance >= 0",
+     "id": "end_clearance_nonneg",
+     "lhs": "Cab_End_Clearance",
+     "op": ">=",
+     "rhs": "0 mm"
+    },
+    {
+     "description": "shelf must enter the groove (Cab_Dado_Depth > Cab_End_Clearance)",
+     "id": "end_clearance_lt_dado",
+     "lhs": "Cab_Dado_Depth",
+     "op": ">",
+     "rhs": "Cab_End_Clearance"
+    },
+    {
+     "description": "Cab_Slot_Clearance >= 0",
+     "id": "slot_clearance_nonneg",
+     "lhs": "Cab_Slot_Clearance",
+     "op": ">=",
+     "rhs": "0 mm"
+    },
+    {
+     "description": "Cab_Back > 0",
+     "id": "back_positive",
+     "lhs": "Cab_Back",
+     "op": ">",
+     "rhs": "0 mm"
+    },
+    {
+     "description": "Cab_Depth > Cab_Back",
+     "id": "back_lt_depth",
+     "lhs": "Cab_Depth",
+     "op": ">",
+     "rhs": "Cab_Back"
+    },
+    {
+     "description": "Cab_Gap >= 0",
+     "id": "gap_nonneg",
+     "lhs": "Cab_Gap",
+     "op": ">=",
+     "rhs": "0 mm"
+    },
+    {
+     "description": "Cab_Height > (2 + shelves) * Cab_Ply",
+     "id": "height_fits",
+     "lhs": "Cab_Height",
+     "op": ">",
+     "rhs": "(4 * Cab_Ply)"
+    },
+    {
+     "description": "Cab_Width > 2 * Cab_Ply",
+     "id": "width_fits",
+     "lhs": "Cab_Width",
+     "op": ">",
+     "rhs": "(2 * Cab_Ply)"
+    },
+    {
+     "description": "Cab_Width > (doors + 1) * Cab_Gap",
+     "id": "doors_fit",
+     "lhs": "Cab_Width",
+     "op": ">",
+     "rhs": "(3 * Cab_Gap)"
+    }
+   ],
+   "legacy_spec_hash": "8c0fd1e13077c7a3646fda82d7d6c26bcba278e6f3c29e2df05707cc0c1371f6",
+   "legacy_spec_json": "{\"module\":\"base_cabinet@1\",\"parameters\":{\"back_mm\":6.0,\"cabinet_id\":\"cabinet.001\",\"dado_depth_mm\":6.0,\"depth_mm\":550.0,\"door_count\":2,\"end_clearance_mm\":0.3,\"gap_mm\":3.0,\"height_mm\":850.0,\"material_ref\":\"ply_main\",\"ply_mm\":18.0,\"shelf_count\":2,\"slot_clearance_mm\":0.5,\"width_mm\":1200.0},\"schema_version\":\"0.1\"}",
+   "operations": [
+    {
+     "cut": {
+      "origin": [
+       "(Cab_Ply - Cab_Dado_Depth)",
+       "Cab_Ply",
+       "Cab_Slot1_Z"
+      ],
+      "size": [
+       "Cab_Dado_Depth",
+       "Cab_Inner_Depth",
+       "Cab_Slot_Height"
+      ]
+     },
+     "end_clearance": "Cab_End_Clearance",
+     "groove_depth": "Cab_Dado_Depth",
+     "id": "dado.shelf1.left",
+     "mating": "panel.shelf.001",
+     "open_at": "front",
+     "process": "cnc_pocket",
+     "side": "left",
+     "slot_clearance": "Cab_Slot_Clearance",
+     "target": "panel.left.001"
+    },
+    {
+     "cut": {
+      "origin": [
+       "(Cab_Width - Cab_Ply)",
+       "Cab_Ply",
+       "Cab_Slot1_Z"
+      ],
+      "size": [
+       "Cab_Dado_Depth",
+       "Cab_Inner_Depth",
+       "Cab_Slot_Height"
+      ]
+     },
+     "end_clearance": "Cab_End_Clearance",
+     "groove_depth": "Cab_Dado_Depth",
+     "id": "dado.shelf1.right",
+     "mating": "panel.shelf.001",
+     "open_at": "front",
+     "process": "cnc_pocket",
+     "side": "right",
+     "slot_clearance": "Cab_Slot_Clearance",
+     "target": "panel.right.001"
+    },
+    {
+     "cut": {
+      "origin": [
+       "(Cab_Ply - Cab_Dado_Depth)",
+       "Cab_Ply",
+       "Cab_Slot2_Z"
+      ],
+      "size": [
+       "Cab_Dado_Depth",
+       "Cab_Inner_Depth",
+       "Cab_Slot_Height"
+      ]
+     },
+     "end_clearance": "Cab_End_Clearance",
+     "groove_depth": "Cab_Dado_Depth",
+     "id": "dado.shelf2.left",
+     "mating": "panel.shelf.002",
+     "open_at": "front",
+     "process": "cnc_pocket",
+     "side": "left",
+     "slot_clearance": "Cab_Slot_Clearance",
+     "target": "panel.left.001"
+    },
+    {
+     "cut": {
+      "origin": [
+       "(Cab_Width - Cab_Ply)",
+       "Cab_Ply",
+       "Cab_Slot2_Z"
+      ],
+      "size": [
+       "Cab_Dado_Depth",
+       "Cab_Inner_Depth",
+       "Cab_Slot_Height"
+      ]
+     },
+     "end_clearance": "Cab_End_Clearance",
+     "groove_depth": "Cab_Dado_Depth",
+     "id": "dado.shelf2.right",
+     "mating": "panel.shelf.002",
+     "open_at": "front",
+     "process": "cnc_pocket",
+     "side": "right",
+     "slot_clearance": "Cab_Slot_Clearance",
+     "target": "panel.right.001"
+    }
+   ],
+   "panels": [
+    {
+     "box": {
+      "origin": [
+       "0 mm",
+       "Cab_Ply",
+       "0 mm"
+      ],
+      "size": [
+       "Cab_Ply",
+       "Cab_Depth",
+       "Cab_Height"
+      ]
+     },
+     "display_name": "01 Left Side",
+     "id": "panel.left.001",
+     "material_ref": "ply_main",
+     "role": "left"
+    },
+    {
+     "box": {
+      "origin": [
+       "(Cab_Width - Cab_Ply)",
+       "Cab_Ply",
+       "0 mm"
+      ],
+      "size": [
+       "Cab_Ply",
+       "Cab_Depth",
+       "Cab_Height"
+      ]
+     },
+     "display_name": "02 Right Side",
+     "id": "panel.right.001",
+     "material_ref": "ply_main",
+     "role": "right"
+    },
+    {
+     "box": {
+      "origin": [
+       "Cab_Ply",
+       "Cab_Ply",
+       "0 mm"
+      ],
+      "size": [
+       "(Cab_Width - (2 * Cab_Ply))",
+       "Cab_Inner_Depth",
+       "Cab_Ply"
+      ]
+     },
+     "display_name": "03 Bottom",
+     "id": "panel.bottom.001",
+     "material_ref": "ply_main",
+     "role": "bottom"
+    },
+    {
+     "box": {
+      "origin": [
+       "Cab_Ply",
+       "Cab_Ply",
+       "(Cab_Height - Cab_Ply)"
+      ],
+      "size": [
+       "(Cab_Width - (2 * Cab_Ply))",
+       "Cab_Inner_Depth",
+       "Cab_Ply"
+      ]
+     },
+     "display_name": "04 Top",
+     "id": "panel.top.001",
+     "material_ref": "ply_main",
+     "role": "top"
+    },
+    {
+     "box": {
+      "origin": [
+       "Cab_Ply",
+       "((Cab_Ply + Cab_Depth) - Cab_Back)",
+       "Cab_Ply"
+      ],
+      "size": [
+       "(Cab_Width - (2 * Cab_Ply))",
+       "Cab_Back",
+       "(Cab_Height - (2 * Cab_Ply))"
+      ]
+     },
+     "display_name": "05 Back",
+     "id": "panel.back.001",
+     "material_ref": "ply_main",
+     "role": "back"
+    },
+    {
+     "box": {
+      "origin": [
+       "Cab_Shelf_X",
+       "Cab_Ply",
+       "Cab_Shelf1_Z"
+      ],
+      "size": [
+       "Cab_Shelf_Length",
+       "Cab_Inner_Depth",
+       "Cab_Ply"
+      ]
+     },
+     "display_name": "06 Shelf 1",
+     "id": "panel.shelf.001",
+     "material_ref": "ply_main",
+     "role": "shelf"
+    },
+    {
+     "box": {
+      "origin": [
+       "Cab_Shelf_X",
+       "Cab_Ply",
+       "Cab_Shelf2_Z"
+      ],
+      "size": [
+       "Cab_Shelf_Length",
+       "Cab_Inner_Depth",
+       "Cab_Ply"
+      ]
+     },
+     "display_name": "06 Shelf 2",
+     "id": "panel.shelf.002",
+     "material_ref": "ply_main",
+     "role": "shelf"
+    },
+    {
+     "box": {
+      "origin": [
+       "((1 * Cab_Gap) + (0 * ((Cab_Width - (3 * Cab_Gap)) / 2)))",
+       "0 mm",
+       "Cab_Gap"
+      ],
+      "size": [
+       "((Cab_Width - (3 * Cab_Gap)) / 2)",
+       "Cab_Ply",
+       "(Cab_Height - (2 * Cab_Gap))"
+      ]
+     },
+     "display_name": "07 Door 1",
+     "id": "panel.door.001",
+     "material_ref": "ply_main",
+     "role": "door"
+    },
+    {
+     "box": {
+      "origin": [
+       "((2 * Cab_Gap) + (1 * ((Cab_Width - (3 * Cab_Gap)) / 2)))",
+       "0 mm",
+       "Cab_Gap"
+      ],
+      "size": [
+       "((Cab_Width - (3 * Cab_Gap)) / 2)",
+       "Cab_Ply",
+       "(Cab_Height - (2 * Cab_Gap))"
+      ]
+     },
+     "display_name": "07 Door 2",
+     "id": "panel.door.002",
+     "material_ref": "ply_main",
+     "role": "door"
+    }
+   ],
+   "parameters": [
+    {
+     "base": true,
+     "comment": "Van Cabinet Joinery V5",
+     "expr": null,
+     "name": "Cab_Width",
+     "value_mm": 1200.0
+    },
+    {
+     "base": true,
+     "comment": "Van Cabinet Joinery V5",
+     "expr": null,
+     "name": "Cab_Height",
+     "value_mm": 850.0
+    },
+    {
+     "base": true,
+     "comment": "Van Cabinet Joinery V5",
+     "expr": null,
+     "name": "Cab_Depth",
+     "value_mm": 550.0
+    },
+    {
+     "base": true,
+     "comment": "Van Cabinet Joinery V5",
+     "expr": null,
+     "name": "Cab_Ply",
+     "value_mm": 18.0
+    },
+    {
+     "base": true,
+     "comment": "Van Cabinet Joinery V5",
+     "expr": null,
+     "name": "Cab_Back",
+     "value_mm": 6.0
+    },
+    {
+     "base": true,
+     "comment": "Van Cabinet Joinery V5",
+     "expr": null,
+     "name": "Cab_Gap",
+     "value_mm": 3.0
+    },
+    {
+     "base": true,
+     "comment": "Groove penetrates each side panel",
+     "expr": null,
+     "name": "Cab_Dado_Depth",
+     "value_mm": 6.0
+    },
+    {
+     "base": true,
+     "comment": "Groove is this much taller than the shelf",
+     "expr": null,
+     "name": "Cab_Slot_Clearance",
+     "value_mm": 0.5
+    },
+    {
+     "base": true,
+     "comment": "Gap at EACH shelf end, bottom of groove",
+     "expr": null,
+     "name": "Cab_End_Clearance",
+     "value_mm": 0.3
+    },
+    {
+     "base": false,
+     "comment": "Side-panel depth minus back",
+     "expr": "(Cab_Depth - Cab_Back)",
+     "name": "Cab_Inner_Depth",
+     "value_mm": null
+    },
+    {
+     "base": false,
+     "comment": "Groove height",
+     "expr": "(Cab_Ply + Cab_Slot_Clearance)",
+     "name": "Cab_Slot_Height",
+     "value_mm": null
+    },
+    {
+     "base": false,
+     "comment": "Shelf left end X",
+     "expr": "((Cab_Ply - Cab_Dado_Depth) + Cab_End_Clearance)",
+     "name": "Cab_Shelf_X",
+     "value_mm": null
+    },
+    {
+     "base": false,
+     "comment": "Shelf length incl. both groove insertions",
+     "expr": "(((Cab_Width - (2 * Cab_Ply)) + (2 * Cab_Dado_Depth)) - (2 * Cab_End_Clearance))",
+     "name": "Cab_Shelf_Length",
+     "value_mm": null
+    },
+    {
+     "base": false,
+     "comment": "Equal clear compartment height",
+     "expr": "((Cab_Height - (4 * Cab_Ply)) / 3)",
+     "name": "Cab_Compartment",
+     "value_mm": null
+    },
+    {
+     "base": false,
+     "comment": "Shelf 1 underside Z",
+     "expr": "((Cab_Ply + (1 * Cab_Compartment)) + (0 * Cab_Ply))",
+     "name": "Cab_Shelf1_Z",
+     "value_mm": null
+    },
+    {
+     "base": false,
+     "comment": "Groove 1 underside Z",
+     "expr": "(Cab_Shelf1_Z - (Cab_Slot_Clearance / 2))",
+     "name": "Cab_Slot1_Z",
+     "value_mm": null
+    },
+    {
+     "base": false,
+     "comment": "Shelf 2 underside Z",
+     "expr": "((Cab_Ply + (2 * Cab_Compartment)) + (1 * Cab_Ply))",
+     "name": "Cab_Shelf2_Z",
+     "value_mm": null
+    },
+    {
+     "base": false,
+     "comment": "Groove 2 underside Z",
+     "expr": "(Cab_Shelf2_Z - (Cab_Slot_Clearance / 2))",
+     "name": "Cab_Slot2_Z",
+     "value_mm": null
+    }
+   ],
+   "sim_check_ids": [
+    "constraint.ply_positive",
+    "constraint.dado_positive",
+    "constraint.dado_lt_ply",
+    "constraint.end_clearance_nonneg",
+    "constraint.end_clearance_lt_dado",
+    "constraint.slot_clearance_nonneg",
+    "constraint.back_positive",
+    "constraint.back_lt_depth",
+    "constraint.gap_nonneg",
+    "constraint.height_fits",
+    "constraint.width_fits",
+    "constraint.doors_fit",
+    "param.Cab_Inner_Depth",
+    "param.Cab_Slot_Height",
+    "param.Cab_Shelf_X",
+    "param.Cab_Shelf_Length",
+    "param.Cab_Compartment",
+    "param.Cab_Shelf1_Z",
+    "param.Cab_Slot1_Z",
+    "param.Cab_Shelf2_Z",
+    "param.Cab_Slot2_Z",
+    "panel.left.001.bbox",
+    "panel.left.001.volume",
+    "panel.right.001.bbox",
+    "panel.right.001.volume",
+    "panel.bottom.001.bbox",
+    "panel.bottom.001.volume",
+    "panel.top.001.bbox",
+    "panel.top.001.volume",
+    "panel.back.001.bbox",
+    "panel.back.001.volume",
+    "panel.shelf.001.bbox",
+    "panel.shelf.001.volume",
+    "panel.shelf.002.bbox",
+    "panel.shelf.002.volume",
+    "panel.door.001.bbox",
+    "panel.door.001.volume",
+    "panel.door.002.bbox",
+    "panel.door.002.volume",
+    "dado.shelf1.left.penetration",
+    "dado.shelf1.left.end_gap",
+    "dado.shelf1.left.gap_below",
+    "dado.shelf1.left.gap_above",
+    "dado.shelf1.left.mating_unmodified",
+    "dado.shelf1.left.probe.centre_empty",
+    "dado.shelf1.left.probe.front_open",
+    "dado.shelf1.left.probe.below_solid",
+    "dado.shelf1.left.probe.above_solid",
+    "dado.shelf1.left.probe.far_wall_solid",
+    "dado.shelf1.left.probe.rear_wall_solid",
+    "dado.shelf1.right.penetration",
+    "dado.shelf1.right.end_gap",
+    "dado.shelf1.right.gap_below",
+    "dado.shelf1.right.gap_above",
+    "dado.shelf1.right.mating_unmodified",
+    "dado.shelf1.right.probe.centre_empty",
+    "dado.shelf1.right.probe.front_open",
+    "dado.shelf1.right.probe.below_solid",
+    "dado.shelf1.right.probe.above_solid",
+    "dado.shelf1.right.probe.far_wall_solid",
+    "dado.shelf1.right.probe.rear_wall_solid",
+    "dado.shelf2.left.penetration",
+    "dado.shelf2.left.end_gap",
+    "dado.shelf2.left.gap_below",
+    "dado.shelf2.left.gap_above",
+    "dado.shelf2.left.mating_unmodified",
+    "dado.shelf2.left.probe.centre_empty",
+    "dado.shelf2.left.probe.front_open",
+    "dado.shelf2.left.probe.below_solid",
+    "dado.shelf2.left.probe.above_solid",
+    "dado.shelf2.left.probe.far_wall_solid",
+    "dado.shelf2.left.probe.rear_wall_solid",
+    "dado.shelf2.right.penetration",
+    "dado.shelf2.right.end_gap",
+    "dado.shelf2.right.gap_below",
+    "dado.shelf2.right.gap_above",
+    "dado.shelf2.right.mating_unmodified",
+    "dado.shelf2.right.probe.centre_empty",
+    "dado.shelf2.right.probe.front_open",
+    "dado.shelf2.right.probe.below_solid",
+    "dado.shelf2.right.probe.above_solid",
+    "dado.shelf2.right.probe.far_wall_solid",
+    "dado.shelf2.right.probe.rear_wall_solid",
+    "interference.joined"
+   ],
+   "sim_check_statuses": [
+    "PASS",
+    "PASS",
+    "PASS",
+    "PASS",
+    "PASS",
+    "PASS",
+    "PASS",
+    "PASS",
+    "PASS",
+    "PASS",
+    "PASS",
+    "PASS",
+    "PASS",
+    "PASS",
+    "PASS",
+    "PASS",
+    "PASS",
+    "PASS",
+    "PASS",
+    "PASS",
+    "PASS",
+    "PASS",
+    "PASS",
+    "PASS",
+    "PASS",
+    "PASS",
+    "PASS",
+    "PASS",
+    "PASS",
+    "PASS",
+    "PASS",
+    "PASS",
+    "PASS",
+    "PASS",
+    "PASS",
+    "PASS",
+    "PASS",
+    "PASS",
+    "PASS",
+    "PASS",
+    "PASS",
+    "PASS",
+    "PASS",
+    "PASS",
+    "PASS",
+    "PASS",
+    "PASS",
+    "PASS",
+    "PASS",
+    "PASS",
+    "PASS",
+    "PASS",
+    "PASS",
+    "PASS",
+    "PASS",
+    "PASS",
+    "PASS",
+    "PASS",
+    "PASS",
+    "PASS",
+    "PASS",
+    "PASS",
+    "PASS",
+    "PASS",
+    "PASS",
+    "PASS",
+    "PASS",
+    "PASS",
+    "PASS",
+    "PASS",
+    "PASS",
+    "PASS",
+    "PASS",
+    "PASS",
+    "PASS",
+    "PASS",
+    "PASS",
+    "PASS",
+    "PASS",
+    "PASS",
+    "PASS",
+    "PASS",
+    "PASS",
+    "PASS"
+   ],
+   "spec_hash": "8c0fd1e13077c7a3646fda82d7d6c26bcba278e6f3c29e2df05707cc0c1371f6"
+  },
+  "s3_d1": {
+   "assembly_id": "cabinet.001",
+   "constraints": [
+    {
+     "description": "Cab_Ply > 0",
+     "id": "ply_positive",
+     "lhs": "Cab_Ply",
+     "op": ">",
+     "rhs": "0 mm"
+    },
+    {
+     "description": "Cab_Dado_Depth > 0",
+     "id": "dado_positive",
+     "lhs": "Cab_Dado_Depth",
+     "op": ">",
+     "rhs": "0 mm"
+    },
+    {
+     "description": "groove must leave side-panel material (Cab_Ply > Cab_Dado_Depth)",
+     "id": "dado_lt_ply",
+     "lhs": "Cab_Ply",
+     "op": ">",
+     "rhs": "Cab_Dado_Depth"
+    },
+    {
+     "description": "Cab_End_Clearance >= 0",
+     "id": "end_clearance_nonneg",
+     "lhs": "Cab_End_Clearance",
+     "op": ">=",
+     "rhs": "0 mm"
+    },
+    {
+     "description": "shelf must enter the groove (Cab_Dado_Depth > Cab_End_Clearance)",
+     "id": "end_clearance_lt_dado",
+     "lhs": "Cab_Dado_Depth",
+     "op": ">",
+     "rhs": "Cab_End_Clearance"
+    },
+    {
+     "description": "Cab_Slot_Clearance >= 0",
+     "id": "slot_clearance_nonneg",
+     "lhs": "Cab_Slot_Clearance",
+     "op": ">=",
+     "rhs": "0 mm"
+    },
+    {
+     "description": "Cab_Back > 0",
+     "id": "back_positive",
+     "lhs": "Cab_Back",
+     "op": ">",
+     "rhs": "0 mm"
+    },
+    {
+     "description": "Cab_Depth > Cab_Back",
+     "id": "back_lt_depth",
+     "lhs": "Cab_Depth",
+     "op": ">",
+     "rhs": "Cab_Back"
+    },
+    {
+     "description": "Cab_Gap >= 0",
+     "id": "gap_nonneg",
+     "lhs": "Cab_Gap",
+     "op": ">=",
+     "rhs": "0 mm"
+    },
+    {
+     "description": "Cab_Height > (2 + shelves) * Cab_Ply",
+     "id": "height_fits",
+     "lhs": "Cab_Height",
+     "op": ">",
+     "rhs": "(5 * Cab_Ply)"
+    },
+    {
+     "description": "Cab_Width > 2 * Cab_Ply",
+     "id": "width_fits",
+     "lhs": "Cab_Width",
+     "op": ">",
+     "rhs": "(2 * Cab_Ply)"
+    },
+    {
+     "description": "Cab_Width > (doors + 1) * Cab_Gap",
+     "id": "doors_fit",
+     "lhs": "Cab_Width",
+     "op": ">",
+     "rhs": "(2 * Cab_Gap)"
+    }
+   ],
+   "legacy_spec_hash": "b07afe3a1811797864da93c2df03a51caf941a3b74cf05060ed506a11d3060aa",
+   "legacy_spec_json": "{\"module\":\"base_cabinet@1\",\"parameters\":{\"back_mm\":6.0,\"cabinet_id\":\"cabinet.001\",\"dado_depth_mm\":6.0,\"depth_mm\":550.0,\"door_count\":1,\"end_clearance_mm\":0.3,\"gap_mm\":3.0,\"height_mm\":850.0,\"material_ref\":\"ply_main\",\"ply_mm\":18.0,\"shelf_count\":3,\"slot_clearance_mm\":0.5,\"width_mm\":1200.0},\"schema_version\":\"0.1\"}",
+   "operations": [
+    {
+     "cut": {
+      "origin": [
+       "(Cab_Ply - Cab_Dado_Depth)",
+       "Cab_Ply",
+       "Cab_Slot1_Z"
+      ],
+      "size": [
+       "Cab_Dado_Depth",
+       "Cab_Inner_Depth",
+       "Cab_Slot_Height"
+      ]
+     },
+     "end_clearance": "Cab_End_Clearance",
+     "groove_depth": "Cab_Dado_Depth",
+     "id": "dado.shelf1.left",
+     "mating": "panel.shelf.001",
+     "open_at": "front",
+     "process": "cnc_pocket",
+     "side": "left",
+     "slot_clearance": "Cab_Slot_Clearance",
+     "target": "panel.left.001"
+    },
+    {
+     "cut": {
+      "origin": [
+       "(Cab_Width - Cab_Ply)",
+       "Cab_Ply",
+       "Cab_Slot1_Z"
+      ],
+      "size": [
+       "Cab_Dado_Depth",
+       "Cab_Inner_Depth",
+       "Cab_Slot_Height"
+      ]
+     },
+     "end_clearance": "Cab_End_Clearance",
+     "groove_depth": "Cab_Dado_Depth",
+     "id": "dado.shelf1.right",
+     "mating": "panel.shelf.001",
+     "open_at": "front",
+     "process": "cnc_pocket",
+     "side": "right",
+     "slot_clearance": "Cab_Slot_Clearance",
+     "target": "panel.right.001"
+    },
+    {
+     "cut": {
+      "origin": [
+       "(Cab_Ply - Cab_Dado_Depth)",
+       "Cab_Ply",
+       "Cab_Slot2_Z"
+      ],
+      "size": [
+       "Cab_Dado_Depth",
+       "Cab_Inner_Depth",
+       "Cab_Slot_Height"
+      ]
+     },
+     "end_clearance": "Cab_End_Clearance",
+     "groove_depth": "Cab_Dado_Depth",
+     "id": "dado.shelf2.left",
+     "mating": "panel.shelf.002",
+     "open_at": "front",
+     "process": "cnc_pocket",
+     "side": "left",
+     "slot_clearance": "Cab_Slot_Clearance",
+     "target": "panel.left.001"
+    },
+    {
+     "cut": {
+      "origin": [
+       "(Cab_Width - Cab_Ply)",
+       "Cab_Ply",
+       "Cab_Slot2_Z"
+      ],
+      "size": [
+       "Cab_Dado_Depth",
+       "Cab_Inner_Depth",
+       "Cab_Slot_Height"
+      ]
+     },
+     "end_clearance": "Cab_End_Clearance",
+     "groove_depth": "Cab_Dado_Depth",
+     "id": "dado.shelf2.right",
+     "mating": "panel.shelf.002",
+     "open_at": "front",
+     "process": "cnc_pocket",
+     "side": "right",
+     "slot_clearance": "Cab_Slot_Clearance",
+     "target": "panel.right.001"
+    },
+    {
+     "cut": {
+      "origin": [
+       "(Cab_Ply - Cab_Dado_Depth)",
+       "Cab_Ply",
+       "Cab_Slot3_Z"
+      ],
+      "size": [
+       "Cab_Dado_Depth",
+       "Cab_Inner_Depth",
+       "Cab_Slot_Height"
+      ]
+     },
+     "end_clearance": "Cab_End_Clearance",
+     "groove_depth": "Cab_Dado_Depth",
+     "id": "dado.shelf3.left",
+     "mating": "panel.shelf.003",
+     "open_at": "front",
+     "process": "cnc_pocket",
+     "side": "left",
+     "slot_clearance": "Cab_Slot_Clearance",
+     "target": "panel.left.001"
+    },
+    {
+     "cut": {
+      "origin": [
+       "(Cab_Width - Cab_Ply)",
+       "Cab_Ply",
+       "Cab_Slot3_Z"
+      ],
+      "size": [
+       "Cab_Dado_Depth",
+       "Cab_Inner_Depth",
+       "Cab_Slot_Height"
+      ]
+     },
+     "end_clearance": "Cab_End_Clearance",
+     "groove_depth": "Cab_Dado_Depth",
+     "id": "dado.shelf3.right",
+     "mating": "panel.shelf.003",
+     "open_at": "front",
+     "process": "cnc_pocket",
+     "side": "right",
+     "slot_clearance": "Cab_Slot_Clearance",
+     "target": "panel.right.001"
+    }
+   ],
+   "panels": [
+    {
+     "box": {
+      "origin": [
+       "0 mm",
+       "Cab_Ply",
+       "0 mm"
+      ],
+      "size": [
+       "Cab_Ply",
+       "Cab_Depth",
+       "Cab_Height"
+      ]
+     },
+     "display_name": "01 Left Side",
+     "id": "panel.left.001",
+     "material_ref": "ply_main",
+     "role": "left"
+    },
+    {
+     "box": {
+      "origin": [
+       "(Cab_Width - Cab_Ply)",
+       "Cab_Ply",
+       "0 mm"
+      ],
+      "size": [
+       "Cab_Ply",
+       "Cab_Depth",
+       "Cab_Height"
+      ]
+     },
+     "display_name": "02 Right Side",
+     "id": "panel.right.001",
+     "material_ref": "ply_main",
+     "role": "right"
+    },
+    {
+     "box": {
+      "origin": [
+       "Cab_Ply",
+       "Cab_Ply",
+       "0 mm"
+      ],
+      "size": [
+       "(Cab_Width - (2 * Cab_Ply))",
+       "Cab_Inner_Depth",
+       "Cab_Ply"
+      ]
+     },
+     "display_name": "03 Bottom",
+     "id": "panel.bottom.001",
+     "material_ref": "ply_main",
+     "role": "bottom"
+    },
+    {
+     "box": {
+      "origin": [
+       "Cab_Ply",
+       "Cab_Ply",
+       "(Cab_Height - Cab_Ply)"
+      ],
+      "size": [
+       "(Cab_Width - (2 * Cab_Ply))",
+       "Cab_Inner_Depth",
+       "Cab_Ply"
+      ]
+     },
+     "display_name": "04 Top",
+     "id": "panel.top.001",
+     "material_ref": "ply_main",
+     "role": "top"
+    },
+    {
+     "box": {
+      "origin": [
+       "Cab_Ply",
+       "((Cab_Ply + Cab_Depth) - Cab_Back)",
+       "Cab_Ply"
+      ],
+      "size": [
+       "(Cab_Width - (2 * Cab_Ply))",
+       "Cab_Back",
+       "(Cab_Height - (2 * Cab_Ply))"
+      ]
+     },
+     "display_name": "05 Back",
+     "id": "panel.back.001",
+     "material_ref": "ply_main",
+     "role": "back"
+    },
+    {
+     "box": {
+      "origin": [
+       "Cab_Shelf_X",
+       "Cab_Ply",
+       "Cab_Shelf1_Z"
+      ],
+      "size": [
+       "Cab_Shelf_Length",
+       "Cab_Inner_Depth",
+       "Cab_Ply"
+      ]
+     },
+     "display_name": "06 Shelf 1",
+     "id": "panel.shelf.001",
+     "material_ref": "ply_main",
+     "role": "shelf"
+    },
+    {
+     "box": {
+      "origin": [
+       "Cab_Shelf_X",
+       "Cab_Ply",
+       "Cab_Shelf2_Z"
+      ],
+      "size": [
+       "Cab_Shelf_Length",
+       "Cab_Inner_Depth",
+       "Cab_Ply"
+      ]
+     },
+     "display_name": "06 Shelf 2",
+     "id": "panel.shelf.002",
+     "material_ref": "ply_main",
+     "role": "shelf"
+    },
+    {
+     "box": {
+      "origin": [
+       "Cab_Shelf_X",
+       "Cab_Ply",
+       "Cab_Shelf3_Z"
+      ],
+      "size": [
+       "Cab_Shelf_Length",
+       "Cab_Inner_Depth",
+       "Cab_Ply"
+      ]
+     },
+     "display_name": "06 Shelf 3",
+     "id": "panel.shelf.003",
+     "material_ref": "ply_main",
+     "role": "shelf"
+    },
+    {
+     "box": {
+      "origin": [
+       "((1 * Cab_Gap) + (0 * ((Cab_Width - (2 * Cab_Gap)) / 1)))",
+       "0 mm",
+       "Cab_Gap"
+      ],
+      "size": [
+       "((Cab_Width - (2 * Cab_Gap)) / 1)",
+       "Cab_Ply",
+       "(Cab_Height - (2 * Cab_Gap))"
+      ]
+     },
+     "display_name": "07 Door 1",
+     "id": "panel.door.001",
+     "material_ref": "ply_main",
+     "role": "door"
+    }
+   ],
+   "parameters": [
+    {
+     "base": true,
+     "comment": "Van Cabinet Joinery V5",
+     "expr": null,
+     "name": "Cab_Width",
+     "value_mm": 1200.0
+    },
+    {
+     "base": true,
+     "comment": "Van Cabinet Joinery V5",
+     "expr": null,
+     "name": "Cab_Height",
+     "value_mm": 850.0
+    },
+    {
+     "base": true,
+     "comment": "Van Cabinet Joinery V5",
+     "expr": null,
+     "name": "Cab_Depth",
+     "value_mm": 550.0
+    },
+    {
+     "base": true,
+     "comment": "Van Cabinet Joinery V5",
+     "expr": null,
+     "name": "Cab_Ply",
+     "value_mm": 18.0
+    },
+    {
+     "base": true,
+     "comment": "Van Cabinet Joinery V5",
+     "expr": null,
+     "name": "Cab_Back",
+     "value_mm": 6.0
+    },
+    {
+     "base": true,
+     "comment": "Van Cabinet Joinery V5",
+     "expr": null,
+     "name": "Cab_Gap",
+     "value_mm": 3.0
+    },
+    {
+     "base": true,
+     "comment": "Groove penetrates each side panel",
+     "expr": null,
+     "name": "Cab_Dado_Depth",
+     "value_mm": 6.0
+    },
+    {
+     "base": true,
+     "comment": "Groove is this much taller than the shelf",
+     "expr": null,
+     "name": "Cab_Slot_Clearance",
+     "value_mm": 0.5
+    },
+    {
+     "base": true,
+     "comment": "Gap at EACH shelf end, bottom of groove",
+     "expr": null,
+     "name": "Cab_End_Clearance",
+     "value_mm": 0.3
+    },
+    {
+     "base": false,
+     "comment": "Side-panel depth minus back",
+     "expr": "(Cab_Depth - Cab_Back)",
+     "name": "Cab_Inner_Depth",
+     "value_mm": null
+    },
+    {
+     "base": false,
+     "comment": "Groove height",
+     "expr": "(Cab_Ply + Cab_Slot_Clearance)",
+     "name": "Cab_Slot_Height",
+     "value_mm": null
+    },
+    {
+     "base": false,
+     "comment": "Shelf left end X",
+     "expr": "((Cab_Ply - Cab_Dado_Depth) + Cab_End_Clearance)",
+     "name": "Cab_Shelf_X",
+     "value_mm": null
+    },
+    {
+     "base": false,
+     "comment": "Shelf length incl. both groove insertions",
+     "expr": "(((Cab_Width - (2 * Cab_Ply)) + (2 * Cab_Dado_Depth)) - (2 * Cab_End_Clearance))",
+     "name": "Cab_Shelf_Length",
+     "value_mm": null
+    },
+    {
+     "base": false,
+     "comment": "Equal clear compartment height",
+     "expr": "((Cab_Height - (5 * Cab_Ply)) / 4)",
+     "name": "Cab_Compartment",
+     "value_mm": null
+    },
+    {
+     "base": false,
+     "comment": "Shelf 1 underside Z",
+     "expr": "((Cab_Ply + (1 * Cab_Compartment)) + (0 * Cab_Ply))",
+     "name": "Cab_Shelf1_Z",
+     "value_mm": null
+    },
+    {
+     "base": false,
+     "comment": "Groove 1 underside Z",
+     "expr": "(Cab_Shelf1_Z - (Cab_Slot_Clearance / 2))",
+     "name": "Cab_Slot1_Z",
+     "value_mm": null
+    },
+    {
+     "base": false,
+     "comment": "Shelf 2 underside Z",
+     "expr": "((Cab_Ply + (2 * Cab_Compartment)) + (1 * Cab_Ply))",
+     "name": "Cab_Shelf2_Z",
+     "value_mm": null
+    },
+    {
+     "base": false,
+     "comment": "Groove 2 underside Z",
+     "expr": "(Cab_Shelf2_Z - (Cab_Slot_Clearance / 2))",
+     "name": "Cab_Slot2_Z",
+     "value_mm": null
+    },
+    {
+     "base": false,
+     "comment": "Shelf 3 underside Z",
+     "expr": "((Cab_Ply + (3 * Cab_Compartment)) + (2 * Cab_Ply))",
+     "name": "Cab_Shelf3_Z",
+     "value_mm": null
+    },
+    {
+     "base": false,
+     "comment": "Groove 3 underside Z",
+     "expr": "(Cab_Shelf3_Z - (Cab_Slot_Clearance / 2))",
+     "name": "Cab_Slot3_Z",
+     "value_mm": null
+    }
+   ],
+   "sim_check_ids": [
+    "constraint.ply_positive",
+    "constraint.dado_positive",
+    "constraint.dado_lt_ply",
+    "constraint.end_clearance_nonneg",
+    "constraint.end_clearance_lt_dado",
+    "constraint.slot_clearance_nonneg",
+    "constraint.back_positive",
+    "constraint.back_lt_depth",
+    "constraint.gap_nonneg",
+    "constraint.height_fits",
+    "constraint.width_fits",
+    "constraint.doors_fit",
+    "param.Cab_Inner_Depth",
+    "param.Cab_Slot_Height",
+    "param.Cab_Shelf_X",
+    "param.Cab_Shelf_Length",
+    "param.Cab_Compartment",
+    "param.Cab_Shelf1_Z",
+    "param.Cab_Slot1_Z",
+    "param.Cab_Shelf2_Z",
+    "param.Cab_Slot2_Z",
+    "param.Cab_Shelf3_Z",
+    "param.Cab_Slot3_Z",
+    "panel.left.001.bbox",
+    "panel.left.001.volume",
+    "panel.right.001.bbox",
+    "panel.right.001.volume",
+    "panel.bottom.001.bbox",
+    "panel.bottom.001.volume",
+    "panel.top.001.bbox",
+    "panel.top.001.volume",
+    "panel.back.001.bbox",
+    "panel.back.001.volume",
+    "panel.shelf.001.bbox",
+    "panel.shelf.001.volume",
+    "panel.shelf.002.bbox",
+    "panel.shelf.002.volume",
+    "panel.shelf.003.bbox",
+    "panel.shelf.003.volume",
+    "panel.door.001.bbox",
+    "panel.door.001.volume",
+    "dado.shelf1.left.penetration",
+    "dado.shelf1.left.end_gap",
+    "dado.shelf1.left.gap_below",
+    "dado.shelf1.left.gap_above",
+    "dado.shelf1.left.mating_unmodified",
+    "dado.shelf1.left.probe.centre_empty",
+    "dado.shelf1.left.probe.front_open",
+    "dado.shelf1.left.probe.below_solid",
+    "dado.shelf1.left.probe.above_solid",
+    "dado.shelf1.left.probe.far_wall_solid",
+    "dado.shelf1.left.probe.rear_wall_solid",
+    "dado.shelf1.right.penetration",
+    "dado.shelf1.right.end_gap",
+    "dado.shelf1.right.gap_below",
+    "dado.shelf1.right.gap_above",
+    "dado.shelf1.right.mating_unmodified",
+    "dado.shelf1.right.probe.centre_empty",
+    "dado.shelf1.right.probe.front_open",
+    "dado.shelf1.right.probe.below_solid",
+    "dado.shelf1.right.probe.above_solid",
+    "dado.shelf1.right.probe.far_wall_solid",
+    "dado.shelf1.right.probe.rear_wall_solid",
+    "dado.shelf2.left.penetration",
+    "dado.shelf2.left.end_gap",
+    "dado.shelf2.left.gap_below",
+    "dado.shelf2.left.gap_above",
+    "dado.shelf2.left.mating_unmodified",
+    "dado.shelf2.left.probe.centre_empty",
+    "dado.shelf2.left.probe.front_open",
+    "dado.shelf2.left.probe.below_solid",
+    "dado.shelf2.left.probe.above_solid",
+    "dado.shelf2.left.probe.far_wall_solid",
+    "dado.shelf2.left.probe.rear_wall_solid",
+    "dado.shelf2.right.penetration",
+    "dado.shelf2.right.end_gap",
+    "dado.shelf2.right.gap_below",
+    "dado.shelf2.right.gap_above",
+    "dado.shelf2.right.mating_unmodified",
+    "dado.shelf2.right.probe.centre_empty",
+    "dado.shelf2.right.probe.front_open",
+    "dado.shelf2.right.probe.below_solid",
+    "dado.shelf2.right.probe.above_solid",
+    "dado.shelf2.right.probe.far_wall_solid",
+    "dado.shelf2.right.probe.rear_wall_solid",
+    "dado.shelf3.left.penetration",
+    "dado.shelf3.left.end_gap",
+    "dado.shelf3.left.gap_below",
+    "dado.shelf3.left.gap_above",
+    "dado.shelf3.left.mating_unmodified",
+    "dado.shelf3.left.probe.centre_empty",
+    "dado.shelf3.left.probe.front_open",
+    "dado.shelf3.left.probe.below_solid",
+    "dado.shelf3.left.probe.above_solid",
+    "dado.shelf3.left.probe.far_wall_solid",
+    "dado.shelf3.left.probe.rear_wall_solid",
+    "dado.shelf3.right.penetration",
+    "dado.shelf3.right.end_gap",
+    "dado.shelf3.right.gap_below",
+    "dado.shelf3.right.gap_above",
+    "dado.shelf3.right.mating_unmodified",
+    "dado.shelf3.right.probe.centre_empty",
+    "dado.shelf3.right.probe.front_open",
+    "dado.shelf3.right.probe.below_solid",
+    "dado.shelf3.right.probe.above_solid",
+    "dado.shelf3.right.probe.far_wall_solid",
+    "dado.shelf3.right.probe.rear_wall_solid",
+    "interference.joined"
+   ],
+   "sim_check_statuses": [
+    "PASS",
+    "PASS",
+    "PASS",
+    "PASS",
+    "PASS",
+    "PASS",
+    "PASS",
+    "PASS",
+    "PASS",
+    "PASS",
+    "PASS",
+    "PASS",
+    "PASS",
+    "PASS",
+    "PASS",
+    "PASS",
+    "PASS",
+    "PASS",
+    "PASS",
+    "PASS",
+    "PASS",
+    "PASS",
+    "PASS",
+    "PASS",
+    "PASS",
+    "PASS",
+    "PASS",
+    "PASS",
+    "PASS",
+    "PASS",
+    "PASS",
+    "PASS",
+    "PASS",
+    "PASS",
+    "PASS",
+    "PASS",
+    "PASS",
+    "PASS",
+    "PASS",
+    "PASS",
+    "PASS",
+    "PASS",
+    "PASS",
+    "PASS",
+    "PASS",
+    "PASS",
+    "PASS",
+    "PASS",
+    "PASS",
+    "PASS",
+    "PASS",
+    "PASS",
+    "PASS",
+    "PASS",
+    "PASS",
+    "PASS",
+    "PASS",
+    "PASS",
+    "PASS",
+    "PASS",
+    "PASS",
+    "PASS",
+    "PASS",
+    "PASS",
+    "PASS",
+    "PASS",
+    "PASS",
+    "PASS",
+    "PASS",
+    "PASS",
+    "PASS",
+    "PASS",
+    "PASS",
+    "PASS",
+    "PASS",
+    "PASS",
+    "PASS",
+    "PASS",
+    "PASS",
+    "PASS",
+    "PASS",
+    "PASS",
+    "PASS",
+    "PASS",
+    "PASS",
+    "PASS",
+    "PASS",
+    "PASS",
+    "PASS",
+    "PASS",
+    "PASS",
+    "PASS",
+    "PASS",
+    "PASS",
+    "PASS",
+    "PASS",
+    "PASS",
+    "PASS",
+    "PASS",
+    "PASS",
+    "PASS",
+    "PASS",
+    "PASS",
+    "PASS",
+    "PASS",
+    "PASS",
+    "PASS",
+    "PASS"
+   ],
+   "spec_hash": "b07afe3a1811797864da93c2df03a51caf941a3b74cf05060ed506a11d3060aa"
+  },
+  "s3_d2": {
+   "assembly_id": "cabinet.001",
+   "constraints": [
+    {
+     "description": "Cab_Ply > 0",
+     "id": "ply_positive",
+     "lhs": "Cab_Ply",
+     "op": ">",
+     "rhs": "0 mm"
+    },
+    {
+     "description": "Cab_Dado_Depth > 0",
+     "id": "dado_positive",
+     "lhs": "Cab_Dado_Depth",
+     "op": ">",
+     "rhs": "0 mm"
+    },
+    {
+     "description": "groove must leave side-panel material (Cab_Ply > Cab_Dado_Depth)",
+     "id": "dado_lt_ply",
+     "lhs": "Cab_Ply",
+     "op": ">",
+     "rhs": "Cab_Dado_Depth"
+    },
+    {
+     "description": "Cab_End_Clearance >= 0",
+     "id": "end_clearance_nonneg",
+     "lhs": "Cab_End_Clearance",
+     "op": ">=",
+     "rhs": "0 mm"
+    },
+    {
+     "description": "shelf must enter the groove (Cab_Dado_Depth > Cab_End_Clearance)",
+     "id": "end_clearance_lt_dado",
+     "lhs": "Cab_Dado_Depth",
+     "op": ">",
+     "rhs": "Cab_End_Clearance"
+    },
+    {
+     "description": "Cab_Slot_Clearance >= 0",
+     "id": "slot_clearance_nonneg",
+     "lhs": "Cab_Slot_Clearance",
+     "op": ">=",
+     "rhs": "0 mm"
+    },
+    {
+     "description": "Cab_Back > 0",
+     "id": "back_positive",
+     "lhs": "Cab_Back",
+     "op": ">",
+     "rhs": "0 mm"
+    },
+    {
+     "description": "Cab_Depth > Cab_Back",
+     "id": "back_lt_depth",
+     "lhs": "Cab_Depth",
+     "op": ">",
+     "rhs": "Cab_Back"
+    },
+    {
+     "description": "Cab_Gap >= 0",
+     "id": "gap_nonneg",
+     "lhs": "Cab_Gap",
+     "op": ">=",
+     "rhs": "0 mm"
+    },
+    {
+     "description": "Cab_Height > (2 + shelves) * Cab_Ply",
+     "id": "height_fits",
+     "lhs": "Cab_Height",
+     "op": ">",
+     "rhs": "(5 * Cab_Ply)"
+    },
+    {
+     "description": "Cab_Width > 2 * Cab_Ply",
+     "id": "width_fits",
+     "lhs": "Cab_Width",
+     "op": ">",
+     "rhs": "(2 * Cab_Ply)"
+    },
+    {
+     "description": "Cab_Width > (doors + 1) * Cab_Gap",
+     "id": "doors_fit",
+     "lhs": "Cab_Width",
+     "op": ">",
+     "rhs": "(3 * Cab_Gap)"
+    }
+   ],
+   "legacy_spec_hash": "175321fb5291f54093833c647987ab97f6c6c966f0ef262ca18f75a9eb1a591b",
+   "legacy_spec_json": "{\"module\":\"base_cabinet@1\",\"parameters\":{\"back_mm\":6.0,\"cabinet_id\":\"cabinet.001\",\"dado_depth_mm\":6.0,\"depth_mm\":550.0,\"door_count\":2,\"end_clearance_mm\":0.3,\"gap_mm\":3.0,\"height_mm\":850.0,\"material_ref\":\"ply_main\",\"ply_mm\":18.0,\"shelf_count\":3,\"slot_clearance_mm\":0.5,\"width_mm\":1200.0},\"schema_version\":\"0.1\"}",
+   "operations": [
+    {
+     "cut": {
+      "origin": [
+       "(Cab_Ply - Cab_Dado_Depth)",
+       "Cab_Ply",
+       "Cab_Slot1_Z"
+      ],
+      "size": [
+       "Cab_Dado_Depth",
+       "Cab_Inner_Depth",
+       "Cab_Slot_Height"
+      ]
+     },
+     "end_clearance": "Cab_End_Clearance",
+     "groove_depth": "Cab_Dado_Depth",
+     "id": "dado.shelf1.left",
+     "mating": "panel.shelf.001",
+     "open_at": "front",
+     "process": "cnc_pocket",
+     "side": "left",
+     "slot_clearance": "Cab_Slot_Clearance",
+     "target": "panel.left.001"
+    },
+    {
+     "cut": {
+      "origin": [
+       "(Cab_Width - Cab_Ply)",
+       "Cab_Ply",
+       "Cab_Slot1_Z"
+      ],
+      "size": [
+       "Cab_Dado_Depth",
+       "Cab_Inner_Depth",
+       "Cab_Slot_Height"
+      ]
+     },
+     "end_clearance": "Cab_End_Clearance",
+     "groove_depth": "Cab_Dado_Depth",
+     "id": "dado.shelf1.right",
+     "mating": "panel.shelf.001",
+     "open_at": "front",
+     "process": "cnc_pocket",
+     "side": "right",
+     "slot_clearance": "Cab_Slot_Clearance",
+     "target": "panel.right.001"
+    },
+    {
+     "cut": {
+      "origin": [
+       "(Cab_Ply - Cab_Dado_Depth)",
+       "Cab_Ply",
+       "Cab_Slot2_Z"
+      ],
+      "size": [
+       "Cab_Dado_Depth",
+       "Cab_Inner_Depth",
+       "Cab_Slot_Height"
+      ]
+     },
+     "end_clearance": "Cab_End_Clearance",
+     "groove_depth": "Cab_Dado_Depth",
+     "id": "dado.shelf2.left",
+     "mating": "panel.shelf.002",
+     "open_at": "front",
+     "process": "cnc_pocket",
+     "side": "left",
+     "slot_clearance": "Cab_Slot_Clearance",
+     "target": "panel.left.001"
+    },
+    {
+     "cut": {
+      "origin": [
+       "(Cab_Width - Cab_Ply)",
+       "Cab_Ply",
+       "Cab_Slot2_Z"
+      ],
+      "size": [
+       "Cab_Dado_Depth",
+       "Cab_Inner_Depth",
+       "Cab_Slot_Height"
+      ]
+     },
+     "end_clearance": "Cab_End_Clearance",
+     "groove_depth": "Cab_Dado_Depth",
+     "id": "dado.shelf2.right",
+     "mating": "panel.shelf.002",
+     "open_at": "front",
+     "process": "cnc_pocket",
+     "side": "right",
+     "slot_clearance": "Cab_Slot_Clearance",
+     "target": "panel.right.001"
+    },
+    {
+     "cut": {
+      "origin": [
+       "(Cab_Ply - Cab_Dado_Depth)",
+       "Cab_Ply",
+       "Cab_Slot3_Z"
+      ],
+      "size": [
+       "Cab_Dado_Depth",
+       "Cab_Inner_Depth",
+       "Cab_Slot_Height"
+      ]
+     },
+     "end_clearance": "Cab_End_Clearance",
+     "groove_depth": "Cab_Dado_Depth",
+     "id": "dado.shelf3.left",
+     "mating": "panel.shelf.003",
+     "open_at": "front",
+     "process": "cnc_pocket",
+     "side": "left",
+     "slot_clearance": "Cab_Slot_Clearance",
+     "target": "panel.left.001"
+    },
+    {
+     "cut": {
+      "origin": [
+       "(Cab_Width - Cab_Ply)",
+       "Cab_Ply",
+       "Cab_Slot3_Z"
+      ],
+      "size": [
+       "Cab_Dado_Depth",
+       "Cab_Inner_Depth",
+       "Cab_Slot_Height"
+      ]
+     },
+     "end_clearance": "Cab_End_Clearance",
+     "groove_depth": "Cab_Dado_Depth",
+     "id": "dado.shelf3.right",
+     "mating": "panel.shelf.003",
+     "open_at": "front",
+     "process": "cnc_pocket",
+     "side": "right",
+     "slot_clearance": "Cab_Slot_Clearance",
+     "target": "panel.right.001"
+    }
+   ],
+   "panels": [
+    {
+     "box": {
+      "origin": [
+       "0 mm",
+       "Cab_Ply",
+       "0 mm"
+      ],
+      "size": [
+       "Cab_Ply",
+       "Cab_Depth",
+       "Cab_Height"
+      ]
+     },
+     "display_name": "01 Left Side",
+     "id": "panel.left.001",
+     "material_ref": "ply_main",
+     "role": "left"
+    },
+    {
+     "box": {
+      "origin": [
+       "(Cab_Width - Cab_Ply)",
+       "Cab_Ply",
+       "0 mm"
+      ],
+      "size": [
+       "Cab_Ply",
+       "Cab_Depth",
+       "Cab_Height"
+      ]
+     },
+     "display_name": "02 Right Side",
+     "id": "panel.right.001",
+     "material_ref": "ply_main",
+     "role": "right"
+    },
+    {
+     "box": {
+      "origin": [
+       "Cab_Ply",
+       "Cab_Ply",
+       "0 mm"
+      ],
+      "size": [
+       "(Cab_Width - (2 * Cab_Ply))",
+       "Cab_Inner_Depth",
+       "Cab_Ply"
+      ]
+     },
+     "display_name": "03 Bottom",
+     "id": "panel.bottom.001",
+     "material_ref": "ply_main",
+     "role": "bottom"
+    },
+    {
+     "box": {
+      "origin": [
+       "Cab_Ply",
+       "Cab_Ply",
+       "(Cab_Height - Cab_Ply)"
+      ],
+      "size": [
+       "(Cab_Width - (2 * Cab_Ply))",
+       "Cab_Inner_Depth",
+       "Cab_Ply"
+      ]
+     },
+     "display_name": "04 Top",
+     "id": "panel.top.001",
+     "material_ref": "ply_main",
+     "role": "top"
+    },
+    {
+     "box": {
+      "origin": [
+       "Cab_Ply",
+       "((Cab_Ply + Cab_Depth) - Cab_Back)",
+       "Cab_Ply"
+      ],
+      "size": [
+       "(Cab_Width - (2 * Cab_Ply))",
+       "Cab_Back",
+       "(Cab_Height - (2 * Cab_Ply))"
+      ]
+     },
+     "display_name": "05 Back",
+     "id": "panel.back.001",
+     "material_ref": "ply_main",
+     "role": "back"
+    },
+    {
+     "box": {
+      "origin": [
+       "Cab_Shelf_X",
+       "Cab_Ply",
+       "Cab_Shelf1_Z"
+      ],
+      "size": [
+       "Cab_Shelf_Length",
+       "Cab_Inner_Depth",
+       "Cab_Ply"
+      ]
+     },
+     "display_name": "06 Shelf 1",
+     "id": "panel.shelf.001",
+     "material_ref": "ply_main",
+     "role": "shelf"
+    },
+    {
+     "box": {
+      "origin": [
+       "Cab_Shelf_X",
+       "Cab_Ply",
+       "Cab_Shelf2_Z"
+      ],
+      "size": [
+       "Cab_Shelf_Length",
+       "Cab_Inner_Depth",
+       "Cab_Ply"
+      ]
+     },
+     "display_name": "06 Shelf 2",
+     "id": "panel.shelf.002",
+     "material_ref": "ply_main",
+     "role": "shelf"
+    },
+    {
+     "box": {
+      "origin": [
+       "Cab_Shelf_X",
+       "Cab_Ply",
+       "Cab_Shelf3_Z"
+      ],
+      "size": [
+       "Cab_Shelf_Length",
+       "Cab_Inner_Depth",
+       "Cab_Ply"
+      ]
+     },
+     "display_name": "06 Shelf 3",
+     "id": "panel.shelf.003",
+     "material_ref": "ply_main",
+     "role": "shelf"
+    },
+    {
+     "box": {
+      "origin": [
+       "((1 * Cab_Gap) + (0 * ((Cab_Width - (3 * Cab_Gap)) / 2)))",
+       "0 mm",
+       "Cab_Gap"
+      ],
+      "size": [
+       "((Cab_Width - (3 * Cab_Gap)) / 2)",
+       "Cab_Ply",
+       "(Cab_Height - (2 * Cab_Gap))"
+      ]
+     },
+     "display_name": "07 Door 1",
+     "id": "panel.door.001",
+     "material_ref": "ply_main",
+     "role": "door"
+    },
+    {
+     "box": {
+      "origin": [
+       "((2 * Cab_Gap) + (1 * ((Cab_Width - (3 * Cab_Gap)) / 2)))",
+       "0 mm",
+       "Cab_Gap"
+      ],
+      "size": [
+       "((Cab_Width - (3 * Cab_Gap)) / 2)",
+       "Cab_Ply",
+       "(Cab_Height - (2 * Cab_Gap))"
+      ]
+     },
+     "display_name": "07 Door 2",
+     "id": "panel.door.002",
+     "material_ref": "ply_main",
+     "role": "door"
+    }
+   ],
+   "parameters": [
+    {
+     "base": true,
+     "comment": "Van Cabinet Joinery V5",
+     "expr": null,
+     "name": "Cab_Width",
+     "value_mm": 1200.0
+    },
+    {
+     "base": true,
+     "comment": "Van Cabinet Joinery V5",
+     "expr": null,
+     "name": "Cab_Height",
+     "value_mm": 850.0
+    },
+    {
+     "base": true,
+     "comment": "Van Cabinet Joinery V5",
+     "expr": null,
+     "name": "Cab_Depth",
+     "value_mm": 550.0
+    },
+    {
+     "base": true,
+     "comment": "Van Cabinet Joinery V5",
+     "expr": null,
+     "name": "Cab_Ply",
+     "value_mm": 18.0
+    },
+    {
+     "base": true,
+     "comment": "Van Cabinet Joinery V5",
+     "expr": null,
+     "name": "Cab_Back",
+     "value_mm": 6.0
+    },
+    {
+     "base": true,
+     "comment": "Van Cabinet Joinery V5",
+     "expr": null,
+     "name": "Cab_Gap",
+     "value_mm": 3.0
+    },
+    {
+     "base": true,
+     "comment": "Groove penetrates each side panel",
+     "expr": null,
+     "name": "Cab_Dado_Depth",
+     "value_mm": 6.0
+    },
+    {
+     "base": true,
+     "comment": "Groove is this much taller than the shelf",
+     "expr": null,
+     "name": "Cab_Slot_Clearance",
+     "value_mm": 0.5
+    },
+    {
+     "base": true,
+     "comment": "Gap at EACH shelf end, bottom of groove",
+     "expr": null,
+     "name": "Cab_End_Clearance",
+     "value_mm": 0.3
+    },
+    {
+     "base": false,
+     "comment": "Side-panel depth minus back",
+     "expr": "(Cab_Depth - Cab_Back)",
+     "name": "Cab_Inner_Depth",
+     "value_mm": null
+    },
+    {
+     "base": false,
+     "comment": "Groove height",
+     "expr": "(Cab_Ply + Cab_Slot_Clearance)",
+     "name": "Cab_Slot_Height",
+     "value_mm": null
+    },
+    {
+     "base": false,
+     "comment": "Shelf left end X",
+     "expr": "((Cab_Ply - Cab_Dado_Depth) + Cab_End_Clearance)",
+     "name": "Cab_Shelf_X",
+     "value_mm": null
+    },
+    {
+     "base": false,
+     "comment": "Shelf length incl. both groove insertions",
+     "expr": "(((Cab_Width - (2 * Cab_Ply)) + (2 * Cab_Dado_Depth)) - (2 * Cab_End_Clearance))",
+     "name": "Cab_Shelf_Length",
+     "value_mm": null
+    },
+    {
+     "base": false,
+     "comment": "Equal clear compartment height",
+     "expr": "((Cab_Height - (5 * Cab_Ply)) / 4)",
+     "name": "Cab_Compartment",
+     "value_mm": null
+    },
+    {
+     "base": false,
+     "comment": "Shelf 1 underside Z",
+     "expr": "((Cab_Ply + (1 * Cab_Compartment)) + (0 * Cab_Ply))",
+     "name": "Cab_Shelf1_Z",
+     "value_mm": null
+    },
+    {
+     "base": false,
+     "comment": "Groove 1 underside Z",
+     "expr": "(Cab_Shelf1_Z - (Cab_Slot_Clearance / 2))",
+     "name": "Cab_Slot1_Z",
+     "value_mm": null
+    },
+    {
+     "base": false,
+     "comment": "Shelf 2 underside Z",
+     "expr": "((Cab_Ply + (2 * Cab_Compartment)) + (1 * Cab_Ply))",
+     "name": "Cab_Shelf2_Z",
+     "value_mm": null
+    },
+    {
+     "base": false,
+     "comment": "Groove 2 underside Z",
+     "expr": "(Cab_Shelf2_Z - (Cab_Slot_Clearance / 2))",
+     "name": "Cab_Slot2_Z",
+     "value_mm": null
+    },
+    {
+     "base": false,
+     "comment": "Shelf 3 underside Z",
+     "expr": "((Cab_Ply + (3 * Cab_Compartment)) + (2 * Cab_Ply))",
+     "name": "Cab_Shelf3_Z",
+     "value_mm": null
+    },
+    {
+     "base": false,
+     "comment": "Groove 3 underside Z",
+     "expr": "(Cab_Shelf3_Z - (Cab_Slot_Clearance / 2))",
+     "name": "Cab_Slot3_Z",
+     "value_mm": null
+    }
+   ],
+   "sim_check_ids": [
+    "constraint.ply_positive",
+    "constraint.dado_positive",
+    "constraint.dado_lt_ply",
+    "constraint.end_clearance_nonneg",
+    "constraint.end_clearance_lt_dado",
+    "constraint.slot_clearance_nonneg",
+    "constraint.back_positive",
+    "constraint.back_lt_depth",
+    "constraint.gap_nonneg",
+    "constraint.height_fits",
+    "constraint.width_fits",
+    "constraint.doors_fit",
+    "param.Cab_Inner_Depth",
+    "param.Cab_Slot_Height",
+    "param.Cab_Shelf_X",
+    "param.Cab_Shelf_Length",
+    "param.Cab_Compartment",
+    "param.Cab_Shelf1_Z",
+    "param.Cab_Slot1_Z",
+    "param.Cab_Shelf2_Z",
+    "param.Cab_Slot2_Z",
+    "param.Cab_Shelf3_Z",
+    "param.Cab_Slot3_Z",
+    "panel.left.001.bbox",
+    "panel.left.001.volume",
+    "panel.right.001.bbox",
+    "panel.right.001.volume",
+    "panel.bottom.001.bbox",
+    "panel.bottom.001.volume",
+    "panel.top.001.bbox",
+    "panel.top.001.volume",
+    "panel.back.001.bbox",
+    "panel.back.001.volume",
+    "panel.shelf.001.bbox",
+    "panel.shelf.001.volume",
+    "panel.shelf.002.bbox",
+    "panel.shelf.002.volume",
+    "panel.shelf.003.bbox",
+    "panel.shelf.003.volume",
+    "panel.door.001.bbox",
+    "panel.door.001.volume",
+    "panel.door.002.bbox",
+    "panel.door.002.volume",
+    "dado.shelf1.left.penetration",
+    "dado.shelf1.left.end_gap",
+    "dado.shelf1.left.gap_below",
+    "dado.shelf1.left.gap_above",
+    "dado.shelf1.left.mating_unmodified",
+    "dado.shelf1.left.probe.centre_empty",
+    "dado.shelf1.left.probe.front_open",
+    "dado.shelf1.left.probe.below_solid",
+    "dado.shelf1.left.probe.above_solid",
+    "dado.shelf1.left.probe.far_wall_solid",
+    "dado.shelf1.left.probe.rear_wall_solid",
+    "dado.shelf1.right.penetration",
+    "dado.shelf1.right.end_gap",
+    "dado.shelf1.right.gap_below",
+    "dado.shelf1.right.gap_above",
+    "dado.shelf1.right.mating_unmodified",
+    "dado.shelf1.right.probe.centre_empty",
+    "dado.shelf1.right.probe.front_open",
+    "dado.shelf1.right.probe.below_solid",
+    "dado.shelf1.right.probe.above_solid",
+    "dado.shelf1.right.probe.far_wall_solid",
+    "dado.shelf1.right.probe.rear_wall_solid",
+    "dado.shelf2.left.penetration",
+    "dado.shelf2.left.end_gap",
+    "dado.shelf2.left.gap_below",
+    "dado.shelf2.left.gap_above",
+    "dado.shelf2.left.mating_unmodified",
+    "dado.shelf2.left.probe.centre_empty",
+    "dado.shelf2.left.probe.front_open",
+    "dado.shelf2.left.probe.below_solid",
+    "dado.shelf2.left.probe.above_solid",
+    "dado.shelf2.left.probe.far_wall_solid",
+    "dado.shelf2.left.probe.rear_wall_solid",
+    "dado.shelf2.right.penetration",
+    "dado.shelf2.right.end_gap",
+    "dado.shelf2.right.gap_below",
+    "dado.shelf2.right.gap_above",
+    "dado.shelf2.right.mating_unmodified",
+    "dado.shelf2.right.probe.centre_empty",
+    "dado.shelf2.right.probe.front_open",
+    "dado.shelf2.right.probe.below_solid",
+    "dado.shelf2.right.probe.above_solid",
+    "dado.shelf2.right.probe.far_wall_solid",
+    "dado.shelf2.right.probe.rear_wall_solid",
+    "dado.shelf3.left.penetration",
+    "dado.shelf3.left.end_gap",
+    "dado.shelf3.left.gap_below",
+    "dado.shelf3.left.gap_above",
+    "dado.shelf3.left.mating_unmodified",
+    "dado.shelf3.left.probe.centre_empty",
+    "dado.shelf3.left.probe.front_open",
+    "dado.shelf3.left.probe.below_solid",
+    "dado.shelf3.left.probe.above_solid",
+    "dado.shelf3.left.probe.far_wall_solid",
+    "dado.shelf3.left.probe.rear_wall_solid",
+    "dado.shelf3.right.penetration",
+    "dado.shelf3.right.end_gap",
+    "dado.shelf3.right.gap_below",
+    "dado.shelf3.right.gap_above",
+    "dado.shelf3.right.mating_unmodified",
+    "dado.shelf3.right.probe.centre_empty",
+    "dado.shelf3.right.probe.front_open",
+    "dado.shelf3.right.probe.below_solid",
+    "dado.shelf3.right.probe.above_solid",
+    "dado.shelf3.right.probe.far_wall_solid",
+    "dado.shelf3.right.probe.rear_wall_solid",
+    "interference.joined"
+   ],
+   "sim_check_statuses": [
+    "PASS",
+    "PASS",
+    "PASS",
+    "PASS",
+    "PASS",
+    "PASS",
+    "PASS",
+    "PASS",
+    "PASS",
+    "PASS",
+    "PASS",
+    "PASS",
+    "PASS",
+    "PASS",
+    "PASS",
+    "PASS",
+    "PASS",
+    "PASS",
+    "PASS",
+    "PASS",
+    "PASS",
+    "PASS",
+    "PASS",
+    "PASS",
+    "PASS",
+    "PASS",
+    "PASS",
+    "PASS",
+    "PASS",
+    "PASS",
+    "PASS",
+    "PASS",
+    "PASS",
+    "PASS",
+    "PASS",
+    "PASS",
+    "PASS",
+    "PASS",
+    "PASS",
+    "PASS",
+    "PASS",
+    "PASS",
+    "PASS",
+    "PASS",
+    "PASS",
+    "PASS",
+    "PASS",
+    "PASS",
+    "PASS",
+    "PASS",
+    "PASS",
+    "PASS",
+    "PASS",
+    "PASS",
+    "PASS",
+    "PASS",
+    "PASS",
+    "PASS",
+    "PASS",
+    "PASS",
+    "PASS",
+    "PASS",
+    "PASS",
+    "PASS",
+    "PASS",
+    "PASS",
+    "PASS",
+    "PASS",
+    "PASS",
+    "PASS",
+    "PASS",
+    "PASS",
+    "PASS",
+    "PASS",
+    "PASS",
+    "PASS",
+    "PASS",
+    "PASS",
+    "PASS",
+    "PASS",
+    "PASS",
+    "PASS",
+    "PASS",
+    "PASS",
+    "PASS",
+    "PASS",
+    "PASS",
+    "PASS",
+    "PASS",
+    "PASS",
+    "PASS",
+    "PASS",
+    "PASS",
+    "PASS",
+    "PASS",
+    "PASS",
+    "PASS",
+    "PASS",
+    "PASS",
+    "PASS",
+    "PASS",
+    "PASS",
+    "PASS",
+    "PASS",
+    "PASS",
+    "PASS",
+    "PASS",
+    "PASS",
+    "PASS",
+    "PASS"
+   ],
+   "spec_hash": "175321fb5291f54093833c647987ab97f6c6c966f0ef262ca18f75a9eb1a591b"
+  },
+  "s4_d1": {
+   "assembly_id": "cabinet.001",
+   "constraints": [
+    {
+     "description": "Cab_Ply > 0",
+     "id": "ply_positive",
+     "lhs": "Cab_Ply",
+     "op": ">",
+     "rhs": "0 mm"
+    },
+    {
+     "description": "Cab_Dado_Depth > 0",
+     "id": "dado_positive",
+     "lhs": "Cab_Dado_Depth",
+     "op": ">",
+     "rhs": "0 mm"
+    },
+    {
+     "description": "groove must leave side-panel material (Cab_Ply > Cab_Dado_Depth)",
+     "id": "dado_lt_ply",
+     "lhs": "Cab_Ply",
+     "op": ">",
+     "rhs": "Cab_Dado_Depth"
+    },
+    {
+     "description": "Cab_End_Clearance >= 0",
+     "id": "end_clearance_nonneg",
+     "lhs": "Cab_End_Clearance",
+     "op": ">=",
+     "rhs": "0 mm"
+    },
+    {
+     "description": "shelf must enter the groove (Cab_Dado_Depth > Cab_End_Clearance)",
+     "id": "end_clearance_lt_dado",
+     "lhs": "Cab_Dado_Depth",
+     "op": ">",
+     "rhs": "Cab_End_Clearance"
+    },
+    {
+     "description": "Cab_Slot_Clearance >= 0",
+     "id": "slot_clearance_nonneg",
+     "lhs": "Cab_Slot_Clearance",
+     "op": ">=",
+     "rhs": "0 mm"
+    },
+    {
+     "description": "Cab_Back > 0",
+     "id": "back_positive",
+     "lhs": "Cab_Back",
+     "op": ">",
+     "rhs": "0 mm"
+    },
+    {
+     "description": "Cab_Depth > Cab_Back",
+     "id": "back_lt_depth",
+     "lhs": "Cab_Depth",
+     "op": ">",
+     "rhs": "Cab_Back"
+    },
+    {
+     "description": "Cab_Gap >= 0",
+     "id": "gap_nonneg",
+     "lhs": "Cab_Gap",
+     "op": ">=",
+     "rhs": "0 mm"
+    },
+    {
+     "description": "Cab_Height > (2 + shelves) * Cab_Ply",
+     "id": "height_fits",
+     "lhs": "Cab_Height",
+     "op": ">",
+     "rhs": "(6 * Cab_Ply)"
+    },
+    {
+     "description": "Cab_Width > 2 * Cab_Ply",
+     "id": "width_fits",
+     "lhs": "Cab_Width",
+     "op": ">",
+     "rhs": "(2 * Cab_Ply)"
+    },
+    {
+     "description": "Cab_Width > (doors + 1) * Cab_Gap",
+     "id": "doors_fit",
+     "lhs": "Cab_Width",
+     "op": ">",
+     "rhs": "(2 * Cab_Gap)"
+    }
+   ],
+   "legacy_spec_hash": "bd06590fbaff4a361000390242db2c1451a3ffc264d67cab957226f02906d8b7",
+   "legacy_spec_json": "{\"module\":\"base_cabinet@1\",\"parameters\":{\"back_mm\":6.0,\"cabinet_id\":\"cabinet.001\",\"dado_depth_mm\":6.0,\"depth_mm\":550.0,\"door_count\":1,\"end_clearance_mm\":0.3,\"gap_mm\":3.0,\"height_mm\":850.0,\"material_ref\":\"ply_main\",\"ply_mm\":18.0,\"shelf_count\":4,\"slot_clearance_mm\":0.5,\"width_mm\":1200.0},\"schema_version\":\"0.1\"}",
+   "operations": [
+    {
+     "cut": {
+      "origin": [
+       "(Cab_Ply - Cab_Dado_Depth)",
+       "Cab_Ply",
+       "Cab_Slot1_Z"
+      ],
+      "size": [
+       "Cab_Dado_Depth",
+       "Cab_Inner_Depth",
+       "Cab_Slot_Height"
+      ]
+     },
+     "end_clearance": "Cab_End_Clearance",
+     "groove_depth": "Cab_Dado_Depth",
+     "id": "dado.shelf1.left",
+     "mating": "panel.shelf.001",
+     "open_at": "front",
+     "process": "cnc_pocket",
+     "side": "left",
+     "slot_clearance": "Cab_Slot_Clearance",
+     "target": "panel.left.001"
+    },
+    {
+     "cut": {
+      "origin": [
+       "(Cab_Width - Cab_Ply)",
+       "Cab_Ply",
+       "Cab_Slot1_Z"
+      ],
+      "size": [
+       "Cab_Dado_Depth",
+       "Cab_Inner_Depth",
+       "Cab_Slot_Height"
+      ]
+     },
+     "end_clearance": "Cab_End_Clearance",
+     "groove_depth": "Cab_Dado_Depth",
+     "id": "dado.shelf1.right",
+     "mating": "panel.shelf.001",
+     "open_at": "front",
+     "process": "cnc_pocket",
+     "side": "right",
+     "slot_clearance": "Cab_Slot_Clearance",
+     "target": "panel.right.001"
+    },
+    {
+     "cut": {
+      "origin": [
+       "(Cab_Ply - Cab_Dado_Depth)",
+       "Cab_Ply",
+       "Cab_Slot2_Z"
+      ],
+      "size": [
+       "Cab_Dado_Depth",
+       "Cab_Inner_Depth",
+       "Cab_Slot_Height"
+      ]
+     },
+     "end_clearance": "Cab_End_Clearance",
+     "groove_depth": "Cab_Dado_Depth",
+     "id": "dado.shelf2.left",
+     "mating": "panel.shelf.002",
+     "open_at": "front",
+     "process": "cnc_pocket",
+     "side": "left",
+     "slot_clearance": "Cab_Slot_Clearance",
+     "target": "panel.left.001"
+    },
+    {
+     "cut": {
+      "origin": [
+       "(Cab_Width - Cab_Ply)",
+       "Cab_Ply",
+       "Cab_Slot2_Z"
+      ],
+      "size": [
+       "Cab_Dado_Depth",
+       "Cab_Inner_Depth",
+       "Cab_Slot_Height"
+      ]
+     },
+     "end_clearance": "Cab_End_Clearance",
+     "groove_depth": "Cab_Dado_Depth",
+     "id": "dado.shelf2.right",
+     "mating": "panel.shelf.002",
+     "open_at": "front",
+     "process": "cnc_pocket",
+     "side": "right",
+     "slot_clearance": "Cab_Slot_Clearance",
+     "target": "panel.right.001"
+    },
+    {
+     "cut": {
+      "origin": [
+       "(Cab_Ply - Cab_Dado_Depth)",
+       "Cab_Ply",
+       "Cab_Slot3_Z"
+      ],
+      "size": [
+       "Cab_Dado_Depth",
+       "Cab_Inner_Depth",
+       "Cab_Slot_Height"
+      ]
+     },
+     "end_clearance": "Cab_End_Clearance",
+     "groove_depth": "Cab_Dado_Depth",
+     "id": "dado.shelf3.left",
+     "mating": "panel.shelf.003",
+     "open_at": "front",
+     "process": "cnc_pocket",
+     "side": "left",
+     "slot_clearance": "Cab_Slot_Clearance",
+     "target": "panel.left.001"
+    },
+    {
+     "cut": {
+      "origin": [
+       "(Cab_Width - Cab_Ply)",
+       "Cab_Ply",
+       "Cab_Slot3_Z"
+      ],
+      "size": [
+       "Cab_Dado_Depth",
+       "Cab_Inner_Depth",
+       "Cab_Slot_Height"
+      ]
+     },
+     "end_clearance": "Cab_End_Clearance",
+     "groove_depth": "Cab_Dado_Depth",
+     "id": "dado.shelf3.right",
+     "mating": "panel.shelf.003",
+     "open_at": "front",
+     "process": "cnc_pocket",
+     "side": "right",
+     "slot_clearance": "Cab_Slot_Clearance",
+     "target": "panel.right.001"
+    },
+    {
+     "cut": {
+      "origin": [
+       "(Cab_Ply - Cab_Dado_Depth)",
+       "Cab_Ply",
+       "Cab_Slot4_Z"
+      ],
+      "size": [
+       "Cab_Dado_Depth",
+       "Cab_Inner_Depth",
+       "Cab_Slot_Height"
+      ]
+     },
+     "end_clearance": "Cab_End_Clearance",
+     "groove_depth": "Cab_Dado_Depth",
+     "id": "dado.shelf4.left",
+     "mating": "panel.shelf.004",
+     "open_at": "front",
+     "process": "cnc_pocket",
+     "side": "left",
+     "slot_clearance": "Cab_Slot_Clearance",
+     "target": "panel.left.001"
+    },
+    {
+     "cut": {
+      "origin": [
+       "(Cab_Width - Cab_Ply)",
+       "Cab_Ply",
+       "Cab_Slot4_Z"
+      ],
+      "size": [
+       "Cab_Dado_Depth",
+       "Cab_Inner_Depth",
+       "Cab_Slot_Height"
+      ]
+     },
+     "end_clearance": "Cab_End_Clearance",
+     "groove_depth": "Cab_Dado_Depth",
+     "id": "dado.shelf4.right",
+     "mating": "panel.shelf.004",
+     "open_at": "front",
+     "process": "cnc_pocket",
+     "side": "right",
+     "slot_clearance": "Cab_Slot_Clearance",
+     "target": "panel.right.001"
+    }
+   ],
+   "panels": [
+    {
+     "box": {
+      "origin": [
+       "0 mm",
+       "Cab_Ply",
+       "0 mm"
+      ],
+      "size": [
+       "Cab_Ply",
+       "Cab_Depth",
+       "Cab_Height"
+      ]
+     },
+     "display_name": "01 Left Side",
+     "id": "panel.left.001",
+     "material_ref": "ply_main",
+     "role": "left"
+    },
+    {
+     "box": {
+      "origin": [
+       "(Cab_Width - Cab_Ply)",
+       "Cab_Ply",
+       "0 mm"
+      ],
+      "size": [
+       "Cab_Ply",
+       "Cab_Depth",
+       "Cab_Height"
+      ]
+     },
+     "display_name": "02 Right Side",
+     "id": "panel.right.001",
+     "material_ref": "ply_main",
+     "role": "right"
+    },
+    {
+     "box": {
+      "origin": [
+       "Cab_Ply",
+       "Cab_Ply",
+       "0 mm"
+      ],
+      "size": [
+       "(Cab_Width - (2 * Cab_Ply))",
+       "Cab_Inner_Depth",
+       "Cab_Ply"
+      ]
+     },
+     "display_name": "03 Bottom",
+     "id": "panel.bottom.001",
+     "material_ref": "ply_main",
+     "role": "bottom"
+    },
+    {
+     "box": {
+      "origin": [
+       "Cab_Ply",
+       "Cab_Ply",
+       "(Cab_Height - Cab_Ply)"
+      ],
+      "size": [
+       "(Cab_Width - (2 * Cab_Ply))",
+       "Cab_Inner_Depth",
+       "Cab_Ply"
+      ]
+     },
+     "display_name": "04 Top",
+     "id": "panel.top.001",
+     "material_ref": "ply_main",
+     "role": "top"
+    },
+    {
+     "box": {
+      "origin": [
+       "Cab_Ply",
+       "((Cab_Ply + Cab_Depth) - Cab_Back)",
+       "Cab_Ply"
+      ],
+      "size": [
+       "(Cab_Width - (2 * Cab_Ply))",
+       "Cab_Back",
+       "(Cab_Height - (2 * Cab_Ply))"
+      ]
+     },
+     "display_name": "05 Back",
+     "id": "panel.back.001",
+     "material_ref": "ply_main",
+     "role": "back"
+    },
+    {
+     "box": {
+      "origin": [
+       "Cab_Shelf_X",
+       "Cab_Ply",
+       "Cab_Shelf1_Z"
+      ],
+      "size": [
+       "Cab_Shelf_Length",
+       "Cab_Inner_Depth",
+       "Cab_Ply"
+      ]
+     },
+     "display_name": "06 Shelf 1",
+     "id": "panel.shelf.001",
+     "material_ref": "ply_main",
+     "role": "shelf"
+    },
+    {
+     "box": {
+      "origin": [
+       "Cab_Shelf_X",
+       "Cab_Ply",
+       "Cab_Shelf2_Z"
+      ],
+      "size": [
+       "Cab_Shelf_Length",
+       "Cab_Inner_Depth",
+       "Cab_Ply"
+      ]
+     },
+     "display_name": "06 Shelf 2",
+     "id": "panel.shelf.002",
+     "material_ref": "ply_main",
+     "role": "shelf"
+    },
+    {
+     "box": {
+      "origin": [
+       "Cab_Shelf_X",
+       "Cab_Ply",
+       "Cab_Shelf3_Z"
+      ],
+      "size": [
+       "Cab_Shelf_Length",
+       "Cab_Inner_Depth",
+       "Cab_Ply"
+      ]
+     },
+     "display_name": "06 Shelf 3",
+     "id": "panel.shelf.003",
+     "material_ref": "ply_main",
+     "role": "shelf"
+    },
+    {
+     "box": {
+      "origin": [
+       "Cab_Shelf_X",
+       "Cab_Ply",
+       "Cab_Shelf4_Z"
+      ],
+      "size": [
+       "Cab_Shelf_Length",
+       "Cab_Inner_Depth",
+       "Cab_Ply"
+      ]
+     },
+     "display_name": "06 Shelf 4",
+     "id": "panel.shelf.004",
+     "material_ref": "ply_main",
+     "role": "shelf"
+    },
+    {
+     "box": {
+      "origin": [
+       "((1 * Cab_Gap) + (0 * ((Cab_Width - (2 * Cab_Gap)) / 1)))",
+       "0 mm",
+       "Cab_Gap"
+      ],
+      "size": [
+       "((Cab_Width - (2 * Cab_Gap)) / 1)",
+       "Cab_Ply",
+       "(Cab_Height - (2 * Cab_Gap))"
+      ]
+     },
+     "display_name": "07 Door 1",
+     "id": "panel.door.001",
+     "material_ref": "ply_main",
+     "role": "door"
+    }
+   ],
+   "parameters": [
+    {
+     "base": true,
+     "comment": "Van Cabinet Joinery V5",
+     "expr": null,
+     "name": "Cab_Width",
+     "value_mm": 1200.0
+    },
+    {
+     "base": true,
+     "comment": "Van Cabinet Joinery V5",
+     "expr": null,
+     "name": "Cab_Height",
+     "value_mm": 850.0
+    },
+    {
+     "base": true,
+     "comment": "Van Cabinet Joinery V5",
+     "expr": null,
+     "name": "Cab_Depth",
+     "value_mm": 550.0
+    },
+    {
+     "base": true,
+     "comment": "Van Cabinet Joinery V5",
+     "expr": null,
+     "name": "Cab_Ply",
+     "value_mm": 18.0
+    },
+    {
+     "base": true,
+     "comment": "Van Cabinet Joinery V5",
+     "expr": null,
+     "name": "Cab_Back",
+     "value_mm": 6.0
+    },
+    {
+     "base": true,
+     "comment": "Van Cabinet Joinery V5",
+     "expr": null,
+     "name": "Cab_Gap",
+     "value_mm": 3.0
+    },
+    {
+     "base": true,
+     "comment": "Groove penetrates each side panel",
+     "expr": null,
+     "name": "Cab_Dado_Depth",
+     "value_mm": 6.0
+    },
+    {
+     "base": true,
+     "comment": "Groove is this much taller than the shelf",
+     "expr": null,
+     "name": "Cab_Slot_Clearance",
+     "value_mm": 0.5
+    },
+    {
+     "base": true,
+     "comment": "Gap at EACH shelf end, bottom of groove",
+     "expr": null,
+     "name": "Cab_End_Clearance",
+     "value_mm": 0.3
+    },
+    {
+     "base": false,
+     "comment": "Side-panel depth minus back",
+     "expr": "(Cab_Depth - Cab_Back)",
+     "name": "Cab_Inner_Depth",
+     "value_mm": null
+    },
+    {
+     "base": false,
+     "comment": "Groove height",
+     "expr": "(Cab_Ply + Cab_Slot_Clearance)",
+     "name": "Cab_Slot_Height",
+     "value_mm": null
+    },
+    {
+     "base": false,
+     "comment": "Shelf left end X",
+     "expr": "((Cab_Ply - Cab_Dado_Depth) + Cab_End_Clearance)",
+     "name": "Cab_Shelf_X",
+     "value_mm": null
+    },
+    {
+     "base": false,
+     "comment": "Shelf length incl. both groove insertions",
+     "expr": "(((Cab_Width - (2 * Cab_Ply)) + (2 * Cab_Dado_Depth)) - (2 * Cab_End_Clearance))",
+     "name": "Cab_Shelf_Length",
+     "value_mm": null
+    },
+    {
+     "base": false,
+     "comment": "Equal clear compartment height",
+     "expr": "((Cab_Height - (6 * Cab_Ply)) / 5)",
+     "name": "Cab_Compartment",
+     "value_mm": null
+    },
+    {
+     "base": false,
+     "comment": "Shelf 1 underside Z",
+     "expr": "((Cab_Ply + (1 * Cab_Compartment)) + (0 * Cab_Ply))",
+     "name": "Cab_Shelf1_Z",
+     "value_mm": null
+    },
+    {
+     "base": false,
+     "comment": "Groove 1 underside Z",
+     "expr": "(Cab_Shelf1_Z - (Cab_Slot_Clearance / 2))",
+     "name": "Cab_Slot1_Z",
+     "value_mm": null
+    },
+    {
+     "base": false,
+     "comment": "Shelf 2 underside Z",
+     "expr": "((Cab_Ply + (2 * Cab_Compartment)) + (1 * Cab_Ply))",
+     "name": "Cab_Shelf2_Z",
+     "value_mm": null
+    },
+    {
+     "base": false,
+     "comment": "Groove 2 underside Z",
+     "expr": "(Cab_Shelf2_Z - (Cab_Slot_Clearance / 2))",
+     "name": "Cab_Slot2_Z",
+     "value_mm": null
+    },
+    {
+     "base": false,
+     "comment": "Shelf 3 underside Z",
+     "expr": "((Cab_Ply + (3 * Cab_Compartment)) + (2 * Cab_Ply))",
+     "name": "Cab_Shelf3_Z",
+     "value_mm": null
+    },
+    {
+     "base": false,
+     "comment": "Groove 3 underside Z",
+     "expr": "(Cab_Shelf3_Z - (Cab_Slot_Clearance / 2))",
+     "name": "Cab_Slot3_Z",
+     "value_mm": null
+    },
+    {
+     "base": false,
+     "comment": "Shelf 4 underside Z",
+     "expr": "((Cab_Ply + (4 * Cab_Compartment)) + (3 * Cab_Ply))",
+     "name": "Cab_Shelf4_Z",
+     "value_mm": null
+    },
+    {
+     "base": false,
+     "comment": "Groove 4 underside Z",
+     "expr": "(Cab_Shelf4_Z - (Cab_Slot_Clearance / 2))",
+     "name": "Cab_Slot4_Z",
+     "value_mm": null
+    }
+   ],
+   "sim_check_ids": [
+    "constraint.ply_positive",
+    "constraint.dado_positive",
+    "constraint.dado_lt_ply",
+    "constraint.end_clearance_nonneg",
+    "constraint.end_clearance_lt_dado",
+    "constraint.slot_clearance_nonneg",
+    "constraint.back_positive",
+    "constraint.back_lt_depth",
+    "constraint.gap_nonneg",
+    "constraint.height_fits",
+    "constraint.width_fits",
+    "constraint.doors_fit",
+    "param.Cab_Inner_Depth",
+    "param.Cab_Slot_Height",
+    "param.Cab_Shelf_X",
+    "param.Cab_Shelf_Length",
+    "param.Cab_Compartment",
+    "param.Cab_Shelf1_Z",
+    "param.Cab_Slot1_Z",
+    "param.Cab_Shelf2_Z",
+    "param.Cab_Slot2_Z",
+    "param.Cab_Shelf3_Z",
+    "param.Cab_Slot3_Z",
+    "param.Cab_Shelf4_Z",
+    "param.Cab_Slot4_Z",
+    "panel.left.001.bbox",
+    "panel.left.001.volume",
+    "panel.right.001.bbox",
+    "panel.right.001.volume",
+    "panel.bottom.001.bbox",
+    "panel.bottom.001.volume",
+    "panel.top.001.bbox",
+    "panel.top.001.volume",
+    "panel.back.001.bbox",
+    "panel.back.001.volume",
+    "panel.shelf.001.bbox",
+    "panel.shelf.001.volume",
+    "panel.shelf.002.bbox",
+    "panel.shelf.002.volume",
+    "panel.shelf.003.bbox",
+    "panel.shelf.003.volume",
+    "panel.shelf.004.bbox",
+    "panel.shelf.004.volume",
+    "panel.door.001.bbox",
+    "panel.door.001.volume",
+    "dado.shelf1.left.penetration",
+    "dado.shelf1.left.end_gap",
+    "dado.shelf1.left.gap_below",
+    "dado.shelf1.left.gap_above",
+    "dado.shelf1.left.mating_unmodified",
+    "dado.shelf1.left.probe.centre_empty",
+    "dado.shelf1.left.probe.front_open",
+    "dado.shelf1.left.probe.below_solid",
+    "dado.shelf1.left.probe.above_solid",
+    "dado.shelf1.left.probe.far_wall_solid",
+    "dado.shelf1.left.probe.rear_wall_solid",
+    "dado.shelf1.right.penetration",
+    "dado.shelf1.right.end_gap",
+    "dado.shelf1.right.gap_below",
+    "dado.shelf1.right.gap_above",
+    "dado.shelf1.right.mating_unmodified",
+    "dado.shelf1.right.probe.centre_empty",
+    "dado.shelf1.right.probe.front_open",
+    "dado.shelf1.right.probe.below_solid",
+    "dado.shelf1.right.probe.above_solid",
+    "dado.shelf1.right.probe.far_wall_solid",
+    "dado.shelf1.right.probe.rear_wall_solid",
+    "dado.shelf2.left.penetration",
+    "dado.shelf2.left.end_gap",
+    "dado.shelf2.left.gap_below",
+    "dado.shelf2.left.gap_above",
+    "dado.shelf2.left.mating_unmodified",
+    "dado.shelf2.left.probe.centre_empty",
+    "dado.shelf2.left.probe.front_open",
+    "dado.shelf2.left.probe.below_solid",
+    "dado.shelf2.left.probe.above_solid",
+    "dado.shelf2.left.probe.far_wall_solid",
+    "dado.shelf2.left.probe.rear_wall_solid",
+    "dado.shelf2.right.penetration",
+    "dado.shelf2.right.end_gap",
+    "dado.shelf2.right.gap_below",
+    "dado.shelf2.right.gap_above",
+    "dado.shelf2.right.mating_unmodified",
+    "dado.shelf2.right.probe.centre_empty",
+    "dado.shelf2.right.probe.front_open",
+    "dado.shelf2.right.probe.below_solid",
+    "dado.shelf2.right.probe.above_solid",
+    "dado.shelf2.right.probe.far_wall_solid",
+    "dado.shelf2.right.probe.rear_wall_solid",
+    "dado.shelf3.left.penetration",
+    "dado.shelf3.left.end_gap",
+    "dado.shelf3.left.gap_below",
+    "dado.shelf3.left.gap_above",
+    "dado.shelf3.left.mating_unmodified",
+    "dado.shelf3.left.probe.centre_empty",
+    "dado.shelf3.left.probe.front_open",
+    "dado.shelf3.left.probe.below_solid",
+    "dado.shelf3.left.probe.above_solid",
+    "dado.shelf3.left.probe.far_wall_solid",
+    "dado.shelf3.left.probe.rear_wall_solid",
+    "dado.shelf3.right.penetration",
+    "dado.shelf3.right.end_gap",
+    "dado.shelf3.right.gap_below",
+    "dado.shelf3.right.gap_above",
+    "dado.shelf3.right.mating_unmodified",
+    "dado.shelf3.right.probe.centre_empty",
+    "dado.shelf3.right.probe.front_open",
+    "dado.shelf3.right.probe.below_solid",
+    "dado.shelf3.right.probe.above_solid",
+    "dado.shelf3.right.probe.far_wall_solid",
+    "dado.shelf3.right.probe.rear_wall_solid",
+    "dado.shelf4.left.penetration",
+    "dado.shelf4.left.end_gap",
+    "dado.shelf4.left.gap_below",
+    "dado.shelf4.left.gap_above",
+    "dado.shelf4.left.mating_unmodified",
+    "dado.shelf4.left.probe.centre_empty",
+    "dado.shelf4.left.probe.front_open",
+    "dado.shelf4.left.probe.below_solid",
+    "dado.shelf4.left.probe.above_solid",
+    "dado.shelf4.left.probe.far_wall_solid",
+    "dado.shelf4.left.probe.rear_wall_solid",
+    "dado.shelf4.right.penetration",
+    "dado.shelf4.right.end_gap",
+    "dado.shelf4.right.gap_below",
+    "dado.shelf4.right.gap_above",
+    "dado.shelf4.right.mating_unmodified",
+    "dado.shelf4.right.probe.centre_empty",
+    "dado.shelf4.right.probe.front_open",
+    "dado.shelf4.right.probe.below_solid",
+    "dado.shelf4.right.probe.above_solid",
+    "dado.shelf4.right.probe.far_wall_solid",
+    "dado.shelf4.right.probe.rear_wall_solid",
+    "interference.joined"
+   ],
+   "sim_check_statuses": [
+    "PASS",
+    "PASS",
+    "PASS",
+    "PASS",
+    "PASS",
+    "PASS",
+    "PASS",
+    "PASS",
+    "PASS",
+    "PASS",
+    "PASS",
+    "PASS",
+    "PASS",
+    "PASS",
+    "PASS",
+    "PASS",
+    "PASS",
+    "PASS",
+    "PASS",
+    "PASS",
+    "PASS",
+    "PASS",
+    "PASS",
+    "PASS",
+    "PASS",
+    "PASS",
+    "PASS",
+    "PASS",
+    "PASS",
+    "PASS",
+    "PASS",
+    "PASS",
+    "PASS",
+    "PASS",
+    "PASS",
+    "PASS",
+    "PASS",
+    "PASS",
+    "PASS",
+    "PASS",
+    "PASS",
+    "PASS",
+    "PASS",
+    "PASS",
+    "PASS",
+    "PASS",
+    "PASS",
+    "PASS",
+    "PASS",
+    "PASS",
+    "PASS",
+    "PASS",
+    "PASS",
+    "PASS",
+    "PASS",
+    "PASS",
+    "PASS",
+    "PASS",
+    "PASS",
+    "PASS",
+    "PASS",
+    "PASS",
+    "PASS",
+    "PASS",
+    "PASS",
+    "PASS",
+    "PASS",
+    "PASS",
+    "PASS",
+    "PASS",
+    "PASS",
+    "PASS",
+    "PASS",
+    "PASS",
+    "PASS",
+    "PASS",
+    "PASS",
+    "PASS",
+    "PASS",
+    "PASS",
+    "PASS",
+    "PASS",
+    "PASS",
+    "PASS",
+    "PASS",
+    "PASS",
+    "PASS",
+    "PASS",
+    "PASS",
+    "PASS",
+    "PASS",
+    "PASS",
+    "PASS",
+    "PASS",
+    "PASS",
+    "PASS",
+    "PASS",
+    "PASS",
+    "PASS",
+    "PASS",
+    "PASS",
+    "PASS",
+    "PASS",
+    "PASS",
+    "PASS",
+    "PASS",
+    "PASS",
+    "PASS",
+    "PASS",
+    "PASS",
+    "PASS",
+    "PASS",
+    "PASS",
+    "PASS",
+    "PASS",
+    "PASS",
+    "PASS",
+    "PASS",
+    "PASS",
+    "PASS",
+    "PASS",
+    "PASS",
+    "PASS",
+    "PASS",
+    "PASS",
+    "PASS",
+    "PASS",
+    "PASS",
+    "PASS",
+    "PASS",
+    "PASS",
+    "PASS",
+    "PASS",
+    "PASS"
+   ],
+   "spec_hash": "bd06590fbaff4a361000390242db2c1451a3ffc264d67cab957226f02906d8b7"
+  },
+  "s4_d2": {
+   "assembly_id": "cabinet.001",
+   "constraints": [
+    {
+     "description": "Cab_Ply > 0",
+     "id": "ply_positive",
+     "lhs": "Cab_Ply",
+     "op": ">",
+     "rhs": "0 mm"
+    },
+    {
+     "description": "Cab_Dado_Depth > 0",
+     "id": "dado_positive",
+     "lhs": "Cab_Dado_Depth",
+     "op": ">",
+     "rhs": "0 mm"
+    },
+    {
+     "description": "groove must leave side-panel material (Cab_Ply > Cab_Dado_Depth)",
+     "id": "dado_lt_ply",
+     "lhs": "Cab_Ply",
+     "op": ">",
+     "rhs": "Cab_Dado_Depth"
+    },
+    {
+     "description": "Cab_End_Clearance >= 0",
+     "id": "end_clearance_nonneg",
+     "lhs": "Cab_End_Clearance",
+     "op": ">=",
+     "rhs": "0 mm"
+    },
+    {
+     "description": "shelf must enter the groove (Cab_Dado_Depth > Cab_End_Clearance)",
+     "id": "end_clearance_lt_dado",
+     "lhs": "Cab_Dado_Depth",
+     "op": ">",
+     "rhs": "Cab_End_Clearance"
+    },
+    {
+     "description": "Cab_Slot_Clearance >= 0",
+     "id": "slot_clearance_nonneg",
+     "lhs": "Cab_Slot_Clearance",
+     "op": ">=",
+     "rhs": "0 mm"
+    },
+    {
+     "description": "Cab_Back > 0",
+     "id": "back_positive",
+     "lhs": "Cab_Back",
+     "op": ">",
+     "rhs": "0 mm"
+    },
+    {
+     "description": "Cab_Depth > Cab_Back",
+     "id": "back_lt_depth",
+     "lhs": "Cab_Depth",
+     "op": ">",
+     "rhs": "Cab_Back"
+    },
+    {
+     "description": "Cab_Gap >= 0",
+     "id": "gap_nonneg",
+     "lhs": "Cab_Gap",
+     "op": ">=",
+     "rhs": "0 mm"
+    },
+    {
+     "description": "Cab_Height > (2 + shelves) * Cab_Ply",
+     "id": "height_fits",
+     "lhs": "Cab_Height",
+     "op": ">",
+     "rhs": "(6 * Cab_Ply)"
+    },
+    {
+     "description": "Cab_Width > 2 * Cab_Ply",
+     "id": "width_fits",
+     "lhs": "Cab_Width",
+     "op": ">",
+     "rhs": "(2 * Cab_Ply)"
+    },
+    {
+     "description": "Cab_Width > (doors + 1) * Cab_Gap",
+     "id": "doors_fit",
+     "lhs": "Cab_Width",
+     "op": ">",
+     "rhs": "(3 * Cab_Gap)"
+    }
+   ],
+   "legacy_spec_hash": "2d884ed787e03203ee39a64de5ab77af361bb1fb0a2d9958e30924b59589686b",
+   "legacy_spec_json": "{\"module\":\"base_cabinet@1\",\"parameters\":{\"back_mm\":6.0,\"cabinet_id\":\"cabinet.001\",\"dado_depth_mm\":6.0,\"depth_mm\":550.0,\"door_count\":2,\"end_clearance_mm\":0.3,\"gap_mm\":3.0,\"height_mm\":850.0,\"material_ref\":\"ply_main\",\"ply_mm\":18.0,\"shelf_count\":4,\"slot_clearance_mm\":0.5,\"width_mm\":1200.0},\"schema_version\":\"0.1\"}",
+   "operations": [
+    {
+     "cut": {
+      "origin": [
+       "(Cab_Ply - Cab_Dado_Depth)",
+       "Cab_Ply",
+       "Cab_Slot1_Z"
+      ],
+      "size": [
+       "Cab_Dado_Depth",
+       "Cab_Inner_Depth",
+       "Cab_Slot_Height"
+      ]
+     },
+     "end_clearance": "Cab_End_Clearance",
+     "groove_depth": "Cab_Dado_Depth",
+     "id": "dado.shelf1.left",
+     "mating": "panel.shelf.001",
+     "open_at": "front",
+     "process": "cnc_pocket",
+     "side": "left",
+     "slot_clearance": "Cab_Slot_Clearance",
+     "target": "panel.left.001"
+    },
+    {
+     "cut": {
+      "origin": [
+       "(Cab_Width - Cab_Ply)",
+       "Cab_Ply",
+       "Cab_Slot1_Z"
+      ],
+      "size": [
+       "Cab_Dado_Depth",
+       "Cab_Inner_Depth",
+       "Cab_Slot_Height"
+      ]
+     },
+     "end_clearance": "Cab_End_Clearance",
+     "groove_depth": "Cab_Dado_Depth",
+     "id": "dado.shelf1.right",
+     "mating": "panel.shelf.001",
+     "open_at": "front",
+     "process": "cnc_pocket",
+     "side": "right",
+     "slot_clearance": "Cab_Slot_Clearance",
+     "target": "panel.right.001"
+    },
+    {
+     "cut": {
+      "origin": [
+       "(Cab_Ply - Cab_Dado_Depth)",
+       "Cab_Ply",
+       "Cab_Slot2_Z"
+      ],
+      "size": [
+       "Cab_Dado_Depth",
+       "Cab_Inner_Depth",
+       "Cab_Slot_Height"
+      ]
+     },
+     "end_clearance": "Cab_End_Clearance",
+     "groove_depth": "Cab_Dado_Depth",
+     "id": "dado.shelf2.left",
+     "mating": "panel.shelf.002",
+     "open_at": "front",
+     "process": "cnc_pocket",
+     "side": "left",
+     "slot_clearance": "Cab_Slot_Clearance",
+     "target": "panel.left.001"
+    },
+    {
+     "cut": {
+      "origin": [
+       "(Cab_Width - Cab_Ply)",
+       "Cab_Ply",
+       "Cab_Slot2_Z"
+      ],
+      "size": [
+       "Cab_Dado_Depth",
+       "Cab_Inner_Depth",
+       "Cab_Slot_Height"
+      ]
+     },
+     "end_clearance": "Cab_End_Clearance",
+     "groove_depth": "Cab_Dado_Depth",
+     "id": "dado.shelf2.right",
+     "mating": "panel.shelf.002",
+     "open_at": "front",
+     "process": "cnc_pocket",
+     "side": "right",
+     "slot_clearance": "Cab_Slot_Clearance",
+     "target": "panel.right.001"
+    },
+    {
+     "cut": {
+      "origin": [
+       "(Cab_Ply - Cab_Dado_Depth)",
+       "Cab_Ply",
+       "Cab_Slot3_Z"
+      ],
+      "size": [
+       "Cab_Dado_Depth",
+       "Cab_Inner_Depth",
+       "Cab_Slot_Height"
+      ]
+     },
+     "end_clearance": "Cab_End_Clearance",
+     "groove_depth": "Cab_Dado_Depth",
+     "id": "dado.shelf3.left",
+     "mating": "panel.shelf.003",
+     "open_at": "front",
+     "process": "cnc_pocket",
+     "side": "left",
+     "slot_clearance": "Cab_Slot_Clearance",
+     "target": "panel.left.001"
+    },
+    {
+     "cut": {
+      "origin": [
+       "(Cab_Width - Cab_Ply)",
+       "Cab_Ply",
+       "Cab_Slot3_Z"
+      ],
+      "size": [
+       "Cab_Dado_Depth",
+       "Cab_Inner_Depth",
+       "Cab_Slot_Height"
+      ]
+     },
+     "end_clearance": "Cab_End_Clearance",
+     "groove_depth": "Cab_Dado_Depth",
+     "id": "dado.shelf3.right",
+     "mating": "panel.shelf.003",
+     "open_at": "front",
+     "process": "cnc_pocket",
+     "side": "right",
+     "slot_clearance": "Cab_Slot_Clearance",
+     "target": "panel.right.001"
+    },
+    {
+     "cut": {
+      "origin": [
+       "(Cab_Ply - Cab_Dado_Depth)",
+       "Cab_Ply",
+       "Cab_Slot4_Z"
+      ],
+      "size": [
+       "Cab_Dado_Depth",
+       "Cab_Inner_Depth",
+       "Cab_Slot_Height"
+      ]
+     },
+     "end_clearance": "Cab_End_Clearance",
+     "groove_depth": "Cab_Dado_Depth",
+     "id": "dado.shelf4.left",
+     "mating": "panel.shelf.004",
+     "open_at": "front",
+     "process": "cnc_pocket",
+     "side": "left",
+     "slot_clearance": "Cab_Slot_Clearance",
+     "target": "panel.left.001"
+    },
+    {
+     "cut": {
+      "origin": [
+       "(Cab_Width - Cab_Ply)",
+       "Cab_Ply",
+       "Cab_Slot4_Z"
+      ],
+      "size": [
+       "Cab_Dado_Depth",
+       "Cab_Inner_Depth",
+       "Cab_Slot_Height"
+      ]
+     },
+     "end_clearance": "Cab_End_Clearance",
+     "groove_depth": "Cab_Dado_Depth",
+     "id": "dado.shelf4.right",
+     "mating": "panel.shelf.004",
+     "open_at": "front",
+     "process": "cnc_pocket",
+     "side": "right",
+     "slot_clearance": "Cab_Slot_Clearance",
+     "target": "panel.right.001"
+    }
+   ],
+   "panels": [
+    {
+     "box": {
+      "origin": [
+       "0 mm",
+       "Cab_Ply",
+       "0 mm"
+      ],
+      "size": [
+       "Cab_Ply",
+       "Cab_Depth",
+       "Cab_Height"
+      ]
+     },
+     "display_name": "01 Left Side",
+     "id": "panel.left.001",
+     "material_ref": "ply_main",
+     "role": "left"
+    },
+    {
+     "box": {
+      "origin": [
+       "(Cab_Width - Cab_Ply)",
+       "Cab_Ply",
+       "0 mm"
+      ],
+      "size": [
+       "Cab_Ply",
+       "Cab_Depth",
+       "Cab_Height"
+      ]
+     },
+     "display_name": "02 Right Side",
+     "id": "panel.right.001",
+     "material_ref": "ply_main",
+     "role": "right"
+    },
+    {
+     "box": {
+      "origin": [
+       "Cab_Ply",
+       "Cab_Ply",
+       "0 mm"
+      ],
+      "size": [
+       "(Cab_Width - (2 * Cab_Ply))",
+       "Cab_Inner_Depth",
+       "Cab_Ply"
+      ]
+     },
+     "display_name": "03 Bottom",
+     "id": "panel.bottom.001",
+     "material_ref": "ply_main",
+     "role": "bottom"
+    },
+    {
+     "box": {
+      "origin": [
+       "Cab_Ply",
+       "Cab_Ply",
+       "(Cab_Height - Cab_Ply)"
+      ],
+      "size": [
+       "(Cab_Width - (2 * Cab_Ply))",
+       "Cab_Inner_Depth",
+       "Cab_Ply"
+      ]
+     },
+     "display_name": "04 Top",
+     "id": "panel.top.001",
+     "material_ref": "ply_main",
+     "role": "top"
+    },
+    {
+     "box": {
+      "origin": [
+       "Cab_Ply",
+       "((Cab_Ply + Cab_Depth) - Cab_Back)",
+       "Cab_Ply"
+      ],
+      "size": [
+       "(Cab_Width - (2 * Cab_Ply))",
+       "Cab_Back",
+       "(Cab_Height - (2 * Cab_Ply))"
+      ]
+     },
+     "display_name": "05 Back",
+     "id": "panel.back.001",
+     "material_ref": "ply_main",
+     "role": "back"
+    },
+    {
+     "box": {
+      "origin": [
+       "Cab_Shelf_X",
+       "Cab_Ply",
+       "Cab_Shelf1_Z"
+      ],
+      "size": [
+       "Cab_Shelf_Length",
+       "Cab_Inner_Depth",
+       "Cab_Ply"
+      ]
+     },
+     "display_name": "06 Shelf 1",
+     "id": "panel.shelf.001",
+     "material_ref": "ply_main",
+     "role": "shelf"
+    },
+    {
+     "box": {
+      "origin": [
+       "Cab_Shelf_X",
+       "Cab_Ply",
+       "Cab_Shelf2_Z"
+      ],
+      "size": [
+       "Cab_Shelf_Length",
+       "Cab_Inner_Depth",
+       "Cab_Ply"
+      ]
+     },
+     "display_name": "06 Shelf 2",
+     "id": "panel.shelf.002",
+     "material_ref": "ply_main",
+     "role": "shelf"
+    },
+    {
+     "box": {
+      "origin": [
+       "Cab_Shelf_X",
+       "Cab_Ply",
+       "Cab_Shelf3_Z"
+      ],
+      "size": [
+       "Cab_Shelf_Length",
+       "Cab_Inner_Depth",
+       "Cab_Ply"
+      ]
+     },
+     "display_name": "06 Shelf 3",
+     "id": "panel.shelf.003",
+     "material_ref": "ply_main",
+     "role": "shelf"
+    },
+    {
+     "box": {
+      "origin": [
+       "Cab_Shelf_X",
+       "Cab_Ply",
+       "Cab_Shelf4_Z"
+      ],
+      "size": [
+       "Cab_Shelf_Length",
+       "Cab_Inner_Depth",
+       "Cab_Ply"
+      ]
+     },
+     "display_name": "06 Shelf 4",
+     "id": "panel.shelf.004",
+     "material_ref": "ply_main",
+     "role": "shelf"
+    },
+    {
+     "box": {
+      "origin": [
+       "((1 * Cab_Gap) + (0 * ((Cab_Width - (3 * Cab_Gap)) / 2)))",
+       "0 mm",
+       "Cab_Gap"
+      ],
+      "size": [
+       "((Cab_Width - (3 * Cab_Gap)) / 2)",
+       "Cab_Ply",
+       "(Cab_Height - (2 * Cab_Gap))"
+      ]
+     },
+     "display_name": "07 Door 1",
+     "id": "panel.door.001",
+     "material_ref": "ply_main",
+     "role": "door"
+    },
+    {
+     "box": {
+      "origin": [
+       "((2 * Cab_Gap) + (1 * ((Cab_Width - (3 * Cab_Gap)) / 2)))",
+       "0 mm",
+       "Cab_Gap"
+      ],
+      "size": [
+       "((Cab_Width - (3 * Cab_Gap)) / 2)",
+       "Cab_Ply",
+       "(Cab_Height - (2 * Cab_Gap))"
+      ]
+     },
+     "display_name": "07 Door 2",
+     "id": "panel.door.002",
+     "material_ref": "ply_main",
+     "role": "door"
+    }
+   ],
+   "parameters": [
+    {
+     "base": true,
+     "comment": "Van Cabinet Joinery V5",
+     "expr": null,
+     "name": "Cab_Width",
+     "value_mm": 1200.0
+    },
+    {
+     "base": true,
+     "comment": "Van Cabinet Joinery V5",
+     "expr": null,
+     "name": "Cab_Height",
+     "value_mm": 850.0
+    },
+    {
+     "base": true,
+     "comment": "Van Cabinet Joinery V5",
+     "expr": null,
+     "name": "Cab_Depth",
+     "value_mm": 550.0
+    },
+    {
+     "base": true,
+     "comment": "Van Cabinet Joinery V5",
+     "expr": null,
+     "name": "Cab_Ply",
+     "value_mm": 18.0
+    },
+    {
+     "base": true,
+     "comment": "Van Cabinet Joinery V5",
+     "expr": null,
+     "name": "Cab_Back",
+     "value_mm": 6.0
+    },
+    {
+     "base": true,
+     "comment": "Van Cabinet Joinery V5",
+     "expr": null,
+     "name": "Cab_Gap",
+     "value_mm": 3.0
+    },
+    {
+     "base": true,
+     "comment": "Groove penetrates each side panel",
+     "expr": null,
+     "name": "Cab_Dado_Depth",
+     "value_mm": 6.0
+    },
+    {
+     "base": true,
+     "comment": "Groove is this much taller than the shelf",
+     "expr": null,
+     "name": "Cab_Slot_Clearance",
+     "value_mm": 0.5
+    },
+    {
+     "base": true,
+     "comment": "Gap at EACH shelf end, bottom of groove",
+     "expr": null,
+     "name": "Cab_End_Clearance",
+     "value_mm": 0.3
+    },
+    {
+     "base": false,
+     "comment": "Side-panel depth minus back",
+     "expr": "(Cab_Depth - Cab_Back)",
+     "name": "Cab_Inner_Depth",
+     "value_mm": null
+    },
+    {
+     "base": false,
+     "comment": "Groove height",
+     "expr": "(Cab_Ply + Cab_Slot_Clearance)",
+     "name": "Cab_Slot_Height",
+     "value_mm": null
+    },
+    {
+     "base": false,
+     "comment": "Shelf left end X",
+     "expr": "((Cab_Ply - Cab_Dado_Depth) + Cab_End_Clearance)",
+     "name": "Cab_Shelf_X",
+     "value_mm": null
+    },
+    {
+     "base": false,
+     "comment": "Shelf length incl. both groove insertions",
+     "expr": "(((Cab_Width - (2 * Cab_Ply)) + (2 * Cab_Dado_Depth)) - (2 * Cab_End_Clearance))",
+     "name": "Cab_Shelf_Length",
+     "value_mm": null
+    },
+    {
+     "base": false,
+     "comment": "Equal clear compartment height",
+     "expr": "((Cab_Height - (6 * Cab_Ply)) / 5)",
+     "name": "Cab_Compartment",
+     "value_mm": null
+    },
+    {
+     "base": false,
+     "comment": "Shelf 1 underside Z",
+     "expr": "((Cab_Ply + (1 * Cab_Compartment)) + (0 * Cab_Ply))",
+     "name": "Cab_Shelf1_Z",
+     "value_mm": null
+    },
+    {
+     "base": false,
+     "comment": "Groove 1 underside Z",
+     "expr": "(Cab_Shelf1_Z - (Cab_Slot_Clearance / 2))",
+     "name": "Cab_Slot1_Z",
+     "value_mm": null
+    },
+    {
+     "base": false,
+     "comment": "Shelf 2 underside Z",
+     "expr": "((Cab_Ply + (2 * Cab_Compartment)) + (1 * Cab_Ply))",
+     "name": "Cab_Shelf2_Z",
+     "value_mm": null
+    },
+    {
+     "base": false,
+     "comment": "Groove 2 underside Z",
+     "expr": "(Cab_Shelf2_Z - (Cab_Slot_Clearance / 2))",
+     "name": "Cab_Slot2_Z",
+     "value_mm": null
+    },
+    {
+     "base": false,
+     "comment": "Shelf 3 underside Z",
+     "expr": "((Cab_Ply + (3 * Cab_Compartment)) + (2 * Cab_Ply))",
+     "name": "Cab_Shelf3_Z",
+     "value_mm": null
+    },
+    {
+     "base": false,
+     "comment": "Groove 3 underside Z",
+     "expr": "(Cab_Shelf3_Z - (Cab_Slot_Clearance / 2))",
+     "name": "Cab_Slot3_Z",
+     "value_mm": null
+    },
+    {
+     "base": false,
+     "comment": "Shelf 4 underside Z",
+     "expr": "((Cab_Ply + (4 * Cab_Compartment)) + (3 * Cab_Ply))",
+     "name": "Cab_Shelf4_Z",
+     "value_mm": null
+    },
+    {
+     "base": false,
+     "comment": "Groove 4 underside Z",
+     "expr": "(Cab_Shelf4_Z - (Cab_Slot_Clearance / 2))",
+     "name": "Cab_Slot4_Z",
+     "value_mm": null
+    }
+   ],
+   "sim_check_ids": [
+    "constraint.ply_positive",
+    "constraint.dado_positive",
+    "constraint.dado_lt_ply",
+    "constraint.end_clearance_nonneg",
+    "constraint.end_clearance_lt_dado",
+    "constraint.slot_clearance_nonneg",
+    "constraint.back_positive",
+    "constraint.back_lt_depth",
+    "constraint.gap_nonneg",
+    "constraint.height_fits",
+    "constraint.width_fits",
+    "constraint.doors_fit",
+    "param.Cab_Inner_Depth",
+    "param.Cab_Slot_Height",
+    "param.Cab_Shelf_X",
+    "param.Cab_Shelf_Length",
+    "param.Cab_Compartment",
+    "param.Cab_Shelf1_Z",
+    "param.Cab_Slot1_Z",
+    "param.Cab_Shelf2_Z",
+    "param.Cab_Slot2_Z",
+    "param.Cab_Shelf3_Z",
+    "param.Cab_Slot3_Z",
+    "param.Cab_Shelf4_Z",
+    "param.Cab_Slot4_Z",
+    "panel.left.001.bbox",
+    "panel.left.001.volume",
+    "panel.right.001.bbox",
+    "panel.right.001.volume",
+    "panel.bottom.001.bbox",
+    "panel.bottom.001.volume",
+    "panel.top.001.bbox",
+    "panel.top.001.volume",
+    "panel.back.001.bbox",
+    "panel.back.001.volume",
+    "panel.shelf.001.bbox",
+    "panel.shelf.001.volume",
+    "panel.shelf.002.bbox",
+    "panel.shelf.002.volume",
+    "panel.shelf.003.bbox",
+    "panel.shelf.003.volume",
+    "panel.shelf.004.bbox",
+    "panel.shelf.004.volume",
+    "panel.door.001.bbox",
+    "panel.door.001.volume",
+    "panel.door.002.bbox",
+    "panel.door.002.volume",
+    "dado.shelf1.left.penetration",
+    "dado.shelf1.left.end_gap",
+    "dado.shelf1.left.gap_below",
+    "dado.shelf1.left.gap_above",
+    "dado.shelf1.left.mating_unmodified",
+    "dado.shelf1.left.probe.centre_empty",
+    "dado.shelf1.left.probe.front_open",
+    "dado.shelf1.left.probe.below_solid",
+    "dado.shelf1.left.probe.above_solid",
+    "dado.shelf1.left.probe.far_wall_solid",
+    "dado.shelf1.left.probe.rear_wall_solid",
+    "dado.shelf1.right.penetration",
+    "dado.shelf1.right.end_gap",
+    "dado.shelf1.right.gap_below",
+    "dado.shelf1.right.gap_above",
+    "dado.shelf1.right.mating_unmodified",
+    "dado.shelf1.right.probe.centre_empty",
+    "dado.shelf1.right.probe.front_open",
+    "dado.shelf1.right.probe.below_solid",
+    "dado.shelf1.right.probe.above_solid",
+    "dado.shelf1.right.probe.far_wall_solid",
+    "dado.shelf1.right.probe.rear_wall_solid",
+    "dado.shelf2.left.penetration",
+    "dado.shelf2.left.end_gap",
+    "dado.shelf2.left.gap_below",
+    "dado.shelf2.left.gap_above",
+    "dado.shelf2.left.mating_unmodified",
+    "dado.shelf2.left.probe.centre_empty",
+    "dado.shelf2.left.probe.front_open",
+    "dado.shelf2.left.probe.below_solid",
+    "dado.shelf2.left.probe.above_solid",
+    "dado.shelf2.left.probe.far_wall_solid",
+    "dado.shelf2.left.probe.rear_wall_solid",
+    "dado.shelf2.right.penetration",
+    "dado.shelf2.right.end_gap",
+    "dado.shelf2.right.gap_below",
+    "dado.shelf2.right.gap_above",
+    "dado.shelf2.right.mating_unmodified",
+    "dado.shelf2.right.probe.centre_empty",
+    "dado.shelf2.right.probe.front_open",
+    "dado.shelf2.right.probe.below_solid",
+    "dado.shelf2.right.probe.above_solid",
+    "dado.shelf2.right.probe.far_wall_solid",
+    "dado.shelf2.right.probe.rear_wall_solid",
+    "dado.shelf3.left.penetration",
+    "dado.shelf3.left.end_gap",
+    "dado.shelf3.left.gap_below",
+    "dado.shelf3.left.gap_above",
+    "dado.shelf3.left.mating_unmodified",
+    "dado.shelf3.left.probe.centre_empty",
+    "dado.shelf3.left.probe.front_open",
+    "dado.shelf3.left.probe.below_solid",
+    "dado.shelf3.left.probe.above_solid",
+    "dado.shelf3.left.probe.far_wall_solid",
+    "dado.shelf3.left.probe.rear_wall_solid",
+    "dado.shelf3.right.penetration",
+    "dado.shelf3.right.end_gap",
+    "dado.shelf3.right.gap_below",
+    "dado.shelf3.right.gap_above",
+    "dado.shelf3.right.mating_unmodified",
+    "dado.shelf3.right.probe.centre_empty",
+    "dado.shelf3.right.probe.front_open",
+    "dado.shelf3.right.probe.below_solid",
+    "dado.shelf3.right.probe.above_solid",
+    "dado.shelf3.right.probe.far_wall_solid",
+    "dado.shelf3.right.probe.rear_wall_solid",
+    "dado.shelf4.left.penetration",
+    "dado.shelf4.left.end_gap",
+    "dado.shelf4.left.gap_below",
+    "dado.shelf4.left.gap_above",
+    "dado.shelf4.left.mating_unmodified",
+    "dado.shelf4.left.probe.centre_empty",
+    "dado.shelf4.left.probe.front_open",
+    "dado.shelf4.left.probe.below_solid",
+    "dado.shelf4.left.probe.above_solid",
+    "dado.shelf4.left.probe.far_wall_solid",
+    "dado.shelf4.left.probe.rear_wall_solid",
+    "dado.shelf4.right.penetration",
+    "dado.shelf4.right.end_gap",
+    "dado.shelf4.right.gap_below",
+    "dado.shelf4.right.gap_above",
+    "dado.shelf4.right.mating_unmodified",
+    "dado.shelf4.right.probe.centre_empty",
+    "dado.shelf4.right.probe.front_open",
+    "dado.shelf4.right.probe.below_solid",
+    "dado.shelf4.right.probe.above_solid",
+    "dado.shelf4.right.probe.far_wall_solid",
+    "dado.shelf4.right.probe.rear_wall_solid",
+    "interference.joined"
+   ],
+   "sim_check_statuses": [
+    "PASS",
+    "PASS",
+    "PASS",
+    "PASS",
+    "PASS",
+    "PASS",
+    "PASS",
+    "PASS",
+    "PASS",
+    "PASS",
+    "PASS",
+    "PASS",
+    "PASS",
+    "PASS",
+    "PASS",
+    "PASS",
+    "PASS",
+    "PASS",
+    "PASS",
+    "PASS",
+    "PASS",
+    "PASS",
+    "PASS",
+    "PASS",
+    "PASS",
+    "PASS",
+    "PASS",
+    "PASS",
+    "PASS",
+    "PASS",
+    "PASS",
+    "PASS",
+    "PASS",
+    "PASS",
+    "PASS",
+    "PASS",
+    "PASS",
+    "PASS",
+    "PASS",
+    "PASS",
+    "PASS",
+    "PASS",
+    "PASS",
+    "PASS",
+    "PASS",
+    "PASS",
+    "PASS",
+    "PASS",
+    "PASS",
+    "PASS",
+    "PASS",
+    "PASS",
+    "PASS",
+    "PASS",
+    "PASS",
+    "PASS",
+    "PASS",
+    "PASS",
+    "PASS",
+    "PASS",
+    "PASS",
+    "PASS",
+    "PASS",
+    "PASS",
+    "PASS",
+    "PASS",
+    "PASS",
+    "PASS",
+    "PASS",
+    "PASS",
+    "PASS",
+    "PASS",
+    "PASS",
+    "PASS",
+    "PASS",
+    "PASS",
+    "PASS",
+    "PASS",
+    "PASS",
+    "PASS",
+    "PASS",
+    "PASS",
+    "PASS",
+    "PASS",
+    "PASS",
+    "PASS",
+    "PASS",
+    "PASS",
+    "PASS",
+    "PASS",
+    "PASS",
+    "PASS",
+    "PASS",
+    "PASS",
+    "PASS",
+    "PASS",
+    "PASS",
+    "PASS",
+    "PASS",
+    "PASS",
+    "PASS",
+    "PASS",
+    "PASS",
+    "PASS",
+    "PASS",
+    "PASS",
+    "PASS",
+    "PASS",
+    "PASS",
+    "PASS",
+    "PASS",
+    "PASS",
+    "PASS",
+    "PASS",
+    "PASS",
+    "PASS",
+    "PASS",
+    "PASS",
+    "PASS",
+    "PASS",
+    "PASS",
+    "PASS",
+    "PASS",
+    "PASS",
+    "PASS",
+    "PASS",
+    "PASS",
+    "PASS",
+    "PASS",
+    "PASS",
+    "PASS",
+    "PASS",
+    "PASS",
+    "PASS",
+    "PASS",
+    "PASS"
+   ],
+   "spec_hash": "2d884ed787e03203ee39a64de5ab77af361bb1fb0a2d9958e30924b59589686b"
+  }
+ },
+ "header": {
+  "captured_from_git_sha": "6c72b63",
+  "note": "Frozen from pre-G3 source. Do not regenerate to make a test pass.",
+  "python": "3.12.3"
+ }
+}

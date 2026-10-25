@@ -1,0 +1,273 @@
+{
+  "schema": "vandesign.runner.result/1",
+  "runner_version": "0.4.0",
+  "job_id": "g4-live-20261017-preview-two",
+  "command": "preview_shelf_count_change",
+  "target": {
+    "design_id": "REDACTED_CLOUD_ID_66bacffad31a",
+    "document_name": "VanDesign-G4-base-shelf-count-20261017"
+  },
+  "started_utc": "2026-10-17T21:32:47.178+00:00",
+  "steps": [
+    {
+      "command": "preview_shelf_count_change",
+      "label": null,
+      "status": "PASS",
+      "elapsed_ms": 154.4,
+      "preview": {
+        "new_shelf_count": 2,
+        "refusals": [],
+        "old_shelf_count": 1,
+        "old_design_spec_hash": "0db0be535621b56469735b052624d0f071300aacf7b4b5efbfa0d663edee905c",
+        "new_design_spec_hash": "166056598df7f519661b428b4d29fde27b9e5d57ce4086228eab7cf9770a6a64",
+        "parameter_expressions": {
+          "Cab_Compartment": {
+            "old": "((Cab_Height - (3 * Cab_Ply)) / 2)",
+            "new": "((Cab_Height - (4 * Cab_Ply)) / 3)"
+          },
+          "Cab_Shelf2_Z": {
+            "old": null,
+            "new": "((Cab_Ply + (2 * Cab_Compartment)) + (1 * Cab_Ply))"
+          },
+          "Cab_Slot2_Z": {
+            "old": null,
+            "new": "(Cab_Shelf2_Z - (Cab_Slot_Clearance / 2))"
+          }
+        },
+        "geometry_changes": {
+          "dado.shelf1.left": {
+            "old": {
+              "min": [
+                12.0,
+                18.0,
+                415.75
+              ],
+              "max": [
+                18.0,
+                562.0,
+                434.25
+              ],
+              "size": [
+                6.0,
+                544.0,
+                18.5
+              ]
+            },
+            "new": {
+              "min": [
+                12.0,
+                18.0,
+                277.083333
+              ],
+              "max": [
+                18.0,
+                562.0,
+                295.583333
+              ],
+              "size": [
+                6.0,
+                544.0,
+                18.5
+              ]
+            }
+          },
+          "dado.shelf1.right": {
+            "old": {
+              "min": [
+                1182.0,
+                18.0,
+                415.75
+              ],
+              "max": [
+                1188.0,
+                562.0,
+                434.25
+              ],
+              "size": [
+                6.0,
+                544.0,
+                18.5
+              ]
+            },
+            "new": {
+              "min": [
+                1182.0,
+                18.0,
+                277.083333
+              ],
+              "max": [
+                1188.0,
+                562.0,
+                295.583333
+              ],
+              "size": [
+                6.0,
+                544.0,
+                18.5
+              ]
+            }
+          },
+          "dado.shelf2.left": {
+            "old": null,
+            "new": {
+              "min": [
+                12.0,
+                18.0,
+                554.416667
+              ],
+              "max": [
+                18.0,
+                562.0,
+                572.916667
+              ],
+              "size": [
+                6.0,
+                544.0,
+                18.5
+              ]
+            }
+          },
+          "dado.shelf2.right": {
+            "old": null,
+            "new": {
+              "min": [
+                1182.0,
+                18.0,
+                554.416667
+              ],
+              "max": [
+                1188.0,
+                562.0,
+                572.916667
+              ],
+              "size": [
+                6.0,
+                544.0,
+                18.5
+              ]
+            }
+          },
+          "panel.shelf.001": {
+            "old": {
+              "min": [
+                12.3,
+                18.0,
+                416.0
+              ],
+              "max": [
+                1187.7,
+                562.0,
+                434.0
+              ],
+              "size": [
+                1175.4,
+                544.0,
+                18.0
+              ]
+            },
+            "new": {
+              "min": [
+                12.3,
+                18.0,
+                277.333333
+              ],
+              "max": [
+                1187.7,
+                562.0,
+                295.333333
+              ],
+              "size": [
+                1175.4,
+                544.0,
+                18.0
+              ]
+            }
+          },
+          "panel.shelf.002": {
+            "old": null,
+            "new": {
+              "min": [
+                12.3,
+                18.0,
+                554.666667
+              ],
+              "max": [
+                1187.7,
+                562.0,
+                572.666667
+              ],
+              "size": [
+                1175.4,
+                544.0,
+                18.0
+              ]
+            }
+          }
+        },
+        "expected_after_mm": {
+          "Cab_Width": 1200.0,
+          "Cab_Height": 850.0,
+          "Cab_Depth": 550.0,
+          "Cab_Ply": 18.0,
+          "Cab_Back": 6.0,
+          "Cab_Gap": 3.0,
+          "Cab_Dado_Depth": 6.0,
+          "Cab_Slot_Clearance": 0.5,
+          "Cab_End_Clearance": 0.3,
+          "Cab_Inner_Depth": 544.0,
+          "Cab_Slot_Height": 18.5,
+          "Cab_Shelf_X": 12.3,
+          "Cab_Shelf_Length": 1175.4,
+          "Cab_Compartment": 259.3333333333333,
+          "Cab_Shelf1_Z": 277.3333333333333,
+          "Cab_Slot1_Z": 277.0833333333333,
+          "Cab_Shelf2_Z": 554.6666666666666,
+          "Cab_Slot2_Z": 554.4166666666666
+        },
+        "panel_ids": [
+          "panel.left.001",
+          "panel.right.001",
+          "panel.bottom.001",
+          "panel.top.001",
+          "panel.back.001",
+          "panel.shelf.001",
+          "panel.shelf.002",
+          "panel.door.001",
+          "panel.door.002"
+        ],
+        "cut_targets": {
+          "dado.shelf1.left": "panel.left.001",
+          "dado.shelf1.right": "panel.right.001",
+          "dado.shelf2.left": "panel.left.001",
+          "dado.shelf2.right": "panel.right.001"
+        },
+        "expected_counts": {
+          "user_parameters": 18,
+          "root_occurrences": 9,
+          "all_components": 10,
+          "timeline_items": 35
+        }
+      },
+      "refused": false,
+      "checks": []
+    }
+  ],
+  "outcome": "PASS",
+  "notes": [],
+  "identity_at_start": {
+    "fusion_version": "2705.1.30",
+    "design_id": "REDACTED_CLOUD_ID_66bacffad31a",
+    "document_name": "VanDesign-G4-base-shelf-count-20261017",
+    "is_saved": true,
+    "is_modified": false,
+    "version_number": 1,
+    "data_file_name": "VanDesign-G4-base-shelf-count-20261017"
+  },
+  "finished_utc": "2026-10-17T21:32:47.334+00:00",
+  "elapsed_ms": 155.7,
+  "summary": {
+    "steps": 1,
+    "passed": 1,
+    "outcome": "PASS"
+  }
+}

@@ -1,0 +1,10 @@
+{
+  "changed_files": {
+    "fusion_backend.py": "f96ab3f7a5d8d18773e090f8f4acdc833f58d480593bfd958a7f72a1f8d37e1e",
+    "vdrunner/executor.py": "3066c5e51d5616b505773cce14b4df29e3f52ec1ec207aa21c8e4e8bb28d75b0",
+    "vdrunner/journal.py": "62c0a683c0e3b9cab762b145b5d6977fc1d0b29d63632321da649f2402c1c521",
+    "vdrunner/schema.py": "2fbdc292adc8f9f188a815b792c480a09564bba92d809279089221836968e778",
+    "vdrunner/shelf_change.py": "71d6d224e1ccca4740df19d0ed9fce87623d0e0b69f94fec288691807c278cec"
+  },
+  "config_sha256": "7b492a9c71b26630b984386381ba07a486018a97e8de33acb13c68e3bac25f2f"
+}

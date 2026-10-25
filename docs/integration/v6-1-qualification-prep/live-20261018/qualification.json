@@ -1,0 +1,720 @@
+{
+  "outcome": "PASS",
+  "stages": [
+    {
+      "label": "baseline",
+      "parameters": {
+        "Bed_Width": {
+          "expression": "1400 mm",
+          "value_mm": 1400.0
+        },
+        "Bed_Length": {
+          "expression": "1900 mm",
+          "value_mm": 1900.0
+        },
+        "Bed_Height": {
+          "expression": "700 mm",
+          "value_mm": 700.0
+        },
+        "Bed_Ply": {
+          "expression": "18 mm",
+          "value_mm": 18.0
+        },
+        "Bed_Support_Height": {
+          "expression": "( Bed_Height - Bed_Ply )",
+          "value_mm": 682.0
+        }
+      },
+      "panels": {
+        "bed.deck.001": {
+          "lo_mm": [
+            0.0,
+            0.0,
+            682.0
+          ],
+          "hi_mm": [
+            1400.0,
+            1900.0,
+            700.0
+          ],
+          "volume_mm3": 47879999.999999925
+        },
+        "bed.front.001": {
+          "lo_mm": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "hi_mm": [
+            1400.0,
+            18.0,
+            682.0
+          ],
+          "volume_mm3": 17186400.0
+        },
+        "bed.rear.001": {
+          "lo_mm": [
+            0.0,
+            1882.0,
+            0.0
+          ],
+          "hi_mm": [
+            1400.0,
+            1900.0,
+            682.0
+          ],
+          "volume_mm3": 17186400.00000011
+        }
+      },
+      "contacts": {
+        "bed.front.001": {
+          "measured_face_area_mm2": 25200.0,
+          "projected_overlap_mm2": 25200.0
+        },
+        "bed.rear.001": {
+          "measured_face_area_mm2": 25200.00000000016,
+          "projected_overlap_mm2": 25200.0
+        }
+      },
+      "timeline_count": 9,
+      "stored_spec": "{\"module\":\"bed-platform@1\",\"parameters\":{\"height_mm\":700.0,\"length_mm\":1900.0,\"ply_mm\":18.0,\"width_mm\":1400.0},\"schema_version\":\"vandesign.bed-platform/1\"}",
+      "expected_spec_hash": "8d549858816baa058c1a90d21a3c51257b307f2f323d97fb628c47bc4b381595",
+      "result": "PASS"
+    },
+    {
+      "label": "Bed_Width changed",
+      "parameters": {
+        "Bed_Width": {
+          "expression": "1500 mm",
+          "value_mm": 1500.0
+        },
+        "Bed_Length": {
+          "expression": "1900 mm",
+          "value_mm": 1900.0
+        },
+        "Bed_Height": {
+          "expression": "700 mm",
+          "value_mm": 700.0
+        },
+        "Bed_Ply": {
+          "expression": "18 mm",
+          "value_mm": 18.0
+        },
+        "Bed_Support_Height": {
+          "expression": "( Bed_Height - Bed_Ply )",
+          "value_mm": 682.0
+        }
+      },
+      "panels": {
+        "bed.deck.001": {
+          "lo_mm": [
+            0.0,
+            0.0,
+            682.0
+          ],
+          "hi_mm": [
+            1500.0,
+            1900.0,
+            700.0
+          ],
+          "volume_mm3": 51299999.99999991
+        },
+        "bed.front.001": {
+          "lo_mm": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "hi_mm": [
+            1500.0,
+            18.0,
+            682.0
+          ],
+          "volume_mm3": 18414000.0
+        },
+        "bed.rear.001": {
+          "lo_mm": [
+            0.0,
+            1882.0,
+            0.0
+          ],
+          "hi_mm": [
+            1500.0,
+            1900.0,
+            682.0
+          ],
+          "volume_mm3": 18414000.000000115
+        }
+      },
+      "contacts": {
+        "bed.front.001": {
+          "measured_face_area_mm2": 27000.0,
+          "projected_overlap_mm2": 27000.0
+        },
+        "bed.rear.001": {
+          "measured_face_area_mm2": 27000.00000000017,
+          "projected_overlap_mm2": 27000.0
+        }
+      },
+      "timeline_count": 9,
+      "stored_spec": "{\"module\":\"bed-platform@1\",\"parameters\":{\"height_mm\":700.0,\"length_mm\":1900.0,\"ply_mm\":18.0,\"width_mm\":1400.0},\"schema_version\":\"vandesign.bed-platform/1\"}",
+      "expected_spec_hash": "9c0106f7e77f8fab9b1d2597dd76f4f79a96a29e34adbd0294751d7b482d921f",
+      "result": "PASS"
+    },
+    {
+      "label": "Bed_Width restored",
+      "parameters": {
+        "Bed_Width": {
+          "expression": "1400 mm",
+          "value_mm": 1400.0
+        },
+        "Bed_Length": {
+          "expression": "1900 mm",
+          "value_mm": 1900.0
+        },
+        "Bed_Height": {
+          "expression": "700 mm",
+          "value_mm": 700.0
+        },
+        "Bed_Ply": {
+          "expression": "18 mm",
+          "value_mm": 18.0
+        },
+        "Bed_Support_Height": {
+          "expression": "( Bed_Height - Bed_Ply )",
+          "value_mm": 682.0
+        }
+      },
+      "panels": {
+        "bed.deck.001": {
+          "lo_mm": [
+            0.0,
+            0.0,
+            682.0
+          ],
+          "hi_mm": [
+            1400.0,
+            1900.0,
+            700.0
+          ],
+          "volume_mm3": 47879999.999999925
+        },
+        "bed.front.001": {
+          "lo_mm": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "hi_mm": [
+            1400.0,
+            18.0,
+            682.0
+          ],
+          "volume_mm3": 17186400.0
+        },
+        "bed.rear.001": {
+          "lo_mm": [
+            0.0,
+            1882.0,
+            0.0
+          ],
+          "hi_mm": [
+            1400.0,
+            1900.0,
+            682.0
+          ],
+          "volume_mm3": 17186400.00000011
+        }
+      },
+      "contacts": {
+        "bed.front.001": {
+          "measured_face_area_mm2": 25200.0,
+          "projected_overlap_mm2": 25200.0
+        },
+        "bed.rear.001": {
+          "measured_face_area_mm2": 25200.00000000016,
+          "projected_overlap_mm2": 25200.0
+        }
+      },
+      "timeline_count": 9,
+      "stored_spec": "{\"module\":\"bed-platform@1\",\"parameters\":{\"height_mm\":700.0,\"length_mm\":1900.0,\"ply_mm\":18.0,\"width_mm\":1400.0},\"schema_version\":\"vandesign.bed-platform/1\"}",
+      "expected_spec_hash": "8d549858816baa058c1a90d21a3c51257b307f2f323d97fb628c47bc4b381595",
+      "result": "PASS"
+    },
+    {
+      "label": "Bed_Length changed",
+      "parameters": {
+        "Bed_Width": {
+          "expression": "1400 mm",
+          "value_mm": 1400.0
+        },
+        "Bed_Length": {
+          "expression": "2000 mm",
+          "value_mm": 2000.0
+        },
+        "Bed_Height": {
+          "expression": "700 mm",
+          "value_mm": 700.0
+        },
+        "Bed_Ply": {
+          "expression": "18 mm",
+          "value_mm": 18.0
+        },
+        "Bed_Support_Height": {
+          "expression": "( Bed_Height - Bed_Ply )",
+          "value_mm": 682.0
+        }
+      },
+      "panels": {
+        "bed.deck.001": {
+          "lo_mm": [
+            0.0,
+            0.0,
+            682.0
+          ],
+          "hi_mm": [
+            1400.0,
+            2000.0,
+            700.0
+          ],
+          "volume_mm3": 50399999.99999992
+        },
+        "bed.front.001": {
+          "lo_mm": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "hi_mm": [
+            1400.0,
+            18.0,
+            682.0
+          ],
+          "volume_mm3": 17186400.0
+        },
+        "bed.rear.001": {
+          "lo_mm": [
+            0.0,
+            1982.0,
+            0.0
+          ],
+          "hi_mm": [
+            1400.0,
+            2000.0,
+            682.0
+          ],
+          "volume_mm3": 17186400.00000011
+        }
+      },
+      "contacts": {
+        "bed.front.001": {
+          "measured_face_area_mm2": 25200.0,
+          "projected_overlap_mm2": 25200.0
+        },
+        "bed.rear.001": {
+          "measured_face_area_mm2": 25200.00000000016,
+          "projected_overlap_mm2": 25200.0
+        }
+      },
+      "timeline_count": 9,
+      "stored_spec": "{\"module\":\"bed-platform@1\",\"parameters\":{\"height_mm\":700.0,\"length_mm\":1900.0,\"ply_mm\":18.0,\"width_mm\":1400.0},\"schema_version\":\"vandesign.bed-platform/1\"}",
+      "expected_spec_hash": "21afd124a2154f8d6c691c8289b260e071bd19941fc6b2d06b87d57b848936ca",
+      "result": "PASS"
+    },
+    {
+      "label": "Bed_Length restored",
+      "parameters": {
+        "Bed_Width": {
+          "expression": "1400 mm",
+          "value_mm": 1400.0
+        },
+        "Bed_Length": {
+          "expression": "1900 mm",
+          "value_mm": 1900.0
+        },
+        "Bed_Height": {
+          "expression": "700 mm",
+          "value_mm": 700.0
+        },
+        "Bed_Ply": {
+          "expression": "18 mm",
+          "value_mm": 18.0
+        },
+        "Bed_Support_Height": {
+          "expression": "( Bed_Height - Bed_Ply )",
+          "value_mm": 682.0
+        }
+      },
+      "panels": {
+        "bed.deck.001": {
+          "lo_mm": [
+            0.0,
+            0.0,
+            682.0
+          ],
+          "hi_mm": [
+            1400.0,
+            1900.0,
+            700.0
+          ],
+          "volume_mm3": 47879999.999999925
+        },
+        "bed.front.001": {
+          "lo_mm": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "hi_mm": [
+            1400.0,
+            18.0,
+            682.0
+          ],
+          "volume_mm3": 17186400.0
+        },
+        "bed.rear.001": {
+          "lo_mm": [
+            0.0,
+            1882.0,
+            0.0
+          ],
+          "hi_mm": [
+            1400.0,
+            1900.0,
+            682.0
+          ],
+          "volume_mm3": 17186400.00000011
+        }
+      },
+      "contacts": {
+        "bed.front.001": {
+          "measured_face_area_mm2": 25200.0,
+          "projected_overlap_mm2": 25200.0
+        },
+        "bed.rear.001": {
+          "measured_face_area_mm2": 25200.00000000016,
+          "projected_overlap_mm2": 25200.0
+        }
+      },
+      "timeline_count": 9,
+      "stored_spec": "{\"module\":\"bed-platform@1\",\"parameters\":{\"height_mm\":700.0,\"length_mm\":1900.0,\"ply_mm\":18.0,\"width_mm\":1400.0},\"schema_version\":\"vandesign.bed-platform/1\"}",
+      "expected_spec_hash": "8d549858816baa058c1a90d21a3c51257b307f2f323d97fb628c47bc4b381595",
+      "result": "PASS"
+    },
+    {
+      "label": "Bed_Height changed",
+      "parameters": {
+        "Bed_Width": {
+          "expression": "1400 mm",
+          "value_mm": 1400.0
+        },
+        "Bed_Length": {
+          "expression": "1900 mm",
+          "value_mm": 1900.0
+        },
+        "Bed_Height": {
+          "expression": "800 mm",
+          "value_mm": 800.0
+        },
+        "Bed_Ply": {
+          "expression": "18 mm",
+          "value_mm": 18.0
+        },
+        "Bed_Support_Height": {
+          "expression": "( Bed_Height - Bed_Ply )",
+          "value_mm": 782.0
+        }
+      },
+      "panels": {
+        "bed.deck.001": {
+          "lo_mm": [
+            0.0,
+            0.0,
+            782.0
+          ],
+          "hi_mm": [
+            1400.0,
+            1900.0,
+            800.0
+          ],
+          "volume_mm3": 47879999.999999925
+        },
+        "bed.front.001": {
+          "lo_mm": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "hi_mm": [
+            1400.0,
+            18.0,
+            782.0
+          ],
+          "volume_mm3": 19706400.0
+        },
+        "bed.rear.001": {
+          "lo_mm": [
+            0.0,
+            1882.0,
+            0.0
+          ],
+          "hi_mm": [
+            1400.0,
+            1900.0,
+            782.0
+          ],
+          "volume_mm3": 19706400.000000127
+        }
+      },
+      "contacts": {
+        "bed.front.001": {
+          "measured_face_area_mm2": 25200.0,
+          "projected_overlap_mm2": 25200.0
+        },
+        "bed.rear.001": {
+          "measured_face_area_mm2": 25200.00000000016,
+          "projected_overlap_mm2": 25200.0
+        }
+      },
+      "timeline_count": 9,
+      "stored_spec": "{\"module\":\"bed-platform@1\",\"parameters\":{\"height_mm\":700.0,\"length_mm\":1900.0,\"ply_mm\":18.0,\"width_mm\":1400.0},\"schema_version\":\"vandesign.bed-platform/1\"}",
+      "expected_spec_hash": "d8b584348e4e36e7580ebe2a2b8a50fd4f99b04dea0ba7deebcfef3e1c07a3f2",
+      "result": "PASS"
+    },
+    {
+      "label": "Bed_Height restored",
+      "parameters": {
+        "Bed_Width": {
+          "expression": "1400 mm",
+          "value_mm": 1400.0
+        },
+        "Bed_Length": {
+          "expression": "1900 mm",
+          "value_mm": 1900.0
+        },
+        "Bed_Height": {
+          "expression": "700 mm",
+          "value_mm": 700.0
+        },
+        "Bed_Ply": {
+          "expression": "18 mm",
+          "value_mm": 18.0
+        },
+        "Bed_Support_Height": {
+          "expression": "( Bed_Height - Bed_Ply )",
+          "value_mm": 682.0
+        }
+      },
+      "panels": {
+        "bed.deck.001": {
+          "lo_mm": [
+            0.0,
+            0.0,
+            682.0
+          ],
+          "hi_mm": [
+            1400.0,
+            1900.0,
+            700.0
+          ],
+          "volume_mm3": 47879999.999999925
+        },
+        "bed.front.001": {
+          "lo_mm": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "hi_mm": [
+            1400.0,
+            18.0,
+            682.0
+          ],
+          "volume_mm3": 17186400.0
+        },
+        "bed.rear.001": {
+          "lo_mm": [
+            0.0,
+            1882.0,
+            0.0
+          ],
+          "hi_mm": [
+            1400.0,
+            1900.0,
+            682.0
+          ],
+          "volume_mm3": 17186400.00000011
+        }
+      },
+      "contacts": {
+        "bed.front.001": {
+          "measured_face_area_mm2": 25200.0,
+          "projected_overlap_mm2": 25200.0
+        },
+        "bed.rear.001": {
+          "measured_face_area_mm2": 25200.00000000016,
+          "projected_overlap_mm2": 25200.0
+        }
+      },
+      "timeline_count": 9,
+      "stored_spec": "{\"module\":\"bed-platform@1\",\"parameters\":{\"height_mm\":700.0,\"length_mm\":1900.0,\"ply_mm\":18.0,\"width_mm\":1400.0},\"schema_version\":\"vandesign.bed-platform/1\"}",
+      "expected_spec_hash": "8d549858816baa058c1a90d21a3c51257b307f2f323d97fb628c47bc4b381595",
+      "result": "PASS"
+    }
+  ],
+  "before": [
+    {
+      "name": "VanDesign-G3-overhead-remaining-20261017",
+      "saved": true,
+      "modified": false,
+      "identity_sha256": "bfcb0256beff68debe934785d128d4eca4f4540e5139bac6caf49b641ca9e743",
+      "version": 2,
+      "read_only": false
+    },
+    {
+      "name": "VanDesign-G4-base-shelf-count-20261017",
+      "saved": true,
+      "modified": true,
+      "identity_sha256": "66bacffad31a721cb5e3c67f0b3639242ce9da5f6231871f26e8604315cf0a17",
+      "version": 1,
+      "read_only": false
+    },
+    {
+      "name": "V5-Demo-Shelves-20261017-01",
+      "saved": true,
+      "modified": true,
+      "identity_sha256": "ee76fcdc877f819a17dc9b2d5eee3d8f1060ef2973695ee7928007a0d11ba768",
+      "version": 1,
+      "read_only": false
+    }
+  ],
+  "candidate_manifest_sha256": "f12c7ce95cf28ea8590b0036260be18b95c5e41ae712b459a1ddd0357ba79dab",
+  "runner_files": {
+    "config.json": "70bf4288f224cef35efc1760aae594c54cf39d1676a298aa10956621d81d8378",
+    "demo_workflow.py": "94d313bc5fb46a7b9f59eb31a341f6196eb90c17d0efa2d780bc7275262b011e",
+    "fusion_backend.py": "cb0c337ec05068d5e8625a167ab12ca1cdc2a385070005aed61a8e9efe5837cd",
+    "VanDesignRunner.manifest": "75aeae3f1afafebb694af58c088e814eca26645ca3cee0c84a89d453f0970c21",
+    "VanDesignRunner.py": "d458d03306d797f3bb8dd4131849feee0f47e1f266d12bcc484f47d6040bfbd5",
+    "vdrunner/cli.py": "1909005543024d9ffff54e5fba24c16bb8ff61ef00c6a93d44210bd031d095f0",
+    "vdrunner/evidence.py": "ee4e7f7e9e1cd09c1b9a982366ec4d3ec549700b589f8753c58684f709683d26",
+    "vdrunner/executor.py": "5b6c3c247223fed1a9aa21ae458723f4a1daa7b69863267122066f94ce7f2156",
+    "vdrunner/expect.py": "6faa51b6b244714bde7c49a65e70852fb6c3b9323886ccb19bf9dcb5aa6a24bc",
+    "vdrunner/journal.py": "f68befec44c98d800aa72f727feb05869772c97175c08fe6af25f7499b03064e",
+    "vdrunner/policy.py": "f4b71ac95f27d63beb3dac06dba6d43c08340b77169d681b302bda5f757ec4c9",
+    "vdrunner/queue.py": "44a0ec927f41b82658194ea1a650efb35b1231e4aa98212b2659d0878834e768",
+    "vdrunner/schema.py": "6088cbdceec1a0eaec2de6c270d2e8830f1bd9b71e66ab169cce26f867a1cfd0",
+    "vdrunner/width_change.py": "bb1c07fe1d5938d1af762fd14df592444df02aa38aae8004b357abcaa3f1ac78",
+    "vdrunner/__init__.py": "728e7f5c6306463e5858f8d417614c0a7bebfb3f33410bb20a084fd395417619",
+    "vdrunner/__main__.py": "13a1a5b340cdcfc1902b62be90e508c7c71886000d5bf087e7854aadf09fb35e",
+    "__pycache__/demo_workflow.cpython-314.pyc": "e30fb2dc7b3286290d3860fd9f247279f2a0d19de9cf68625d0c47f5f3c1d007",
+    "__pycache__/fusion_backend.cpython-314.pyc": "6f4b0edb8f7ac6e40537fb1a8fc084273eb8ebfe553b461b5e99bdebeadbdeb3",
+    "vdrunner/__pycache__/cli.cpython-312.pyc": "fe5c1a8f5e63093fd2c249b26e8bd5ae87467de926bc5c44b64963e109ef8a41",
+    "vdrunner/__pycache__/evidence.cpython-312.pyc": "e7fe66c2dd6f5e9fbc0c51aab5485b68452cb181cbad7ccdbdf4ce27206496be",
+    "vdrunner/__pycache__/executor.cpython-314.pyc": "3a0e5b2b0909c09b73d9ae5bad4c11d93cedbb07e8d9accd474092eb90f6423f",
+    "vdrunner/__pycache__/expect.cpython-314.pyc": "7a474d7e0a901d78f5cc39b1bf6ac20df5dde649ce02d29bfaa04120ae74c2cf",
+    "vdrunner/__pycache__/journal.cpython-314.pyc": "7c5de93ae30254af65f672643bfc4286e7cddfc4657958d424ccab5957d1d464",
+    "vdrunner/__pycache__/policy.cpython-312.pyc": "0ee7d2f58d0ce17a2c400568a1894e11ee9a9f3adbd0c22390bde39d80eb8f54",
+    "vdrunner/__pycache__/policy.cpython-314.pyc": "d22149a3a47b1f878f289761febfa28b4f9bc22e017811816bd6ec00744e6dca",
+    "vdrunner/__pycache__/queue.cpython-312.pyc": "b33fd02f8a95dd1ad5a37fb6c545e49e21f1ec59925c22a5e5655d0ee0c5f447",
+    "vdrunner/__pycache__/queue.cpython-314.pyc": "ec87d056023905c52c82d1dab8ceff909e3832dcc7deb79dd85b3a8fc7a9a932",
+    "vdrunner/__pycache__/schema.cpython-312.pyc": "0b98eeeaaaf19b69babd1d098c39ed983d7021935951248cae1b7db87a4686d4",
+    "vdrunner/__pycache__/schema.cpython-314.pyc": "afa682fac260e8a5744baa67088bc132615daa11ce99ee98da44a9d79ad6ea7b",
+    "vdrunner/__pycache__/width_change.cpython-314.pyc": "ff11ae823a360f2876dfb750e2af106d00f5ebe83d952ad4a43c72d8e0c7448d",
+    "vdrunner/__pycache__/__init__.cpython-312.pyc": "42f8b87b3b9c756bd1fd4deb7f4cb26e2138b200c71fc7f42b480e6cefdb3081",
+    "vdrunner/__pycache__/__init__.cpython-314.pyc": "3e7defae9f7169c3061f58dd116a82e7e37ceda43e72002e134dcfbe6c5437ba",
+    "vdrunner/__pycache__/__main__.cpython-312.pyc": "d515935b533a6a03936dc8e2f619c83dfac54c2a0da65d233d3e019c54cb033f"
+  },
+  "capacity": {
+    "used": 5,
+    "maximum": 10
+  },
+  "capacity_discrepancy": "UNKNOWN; no save or editability change proposed",
+  "candidate_imports": {
+    "_vandesign_v61_qualification": {
+      "path": "C:\\Users\\Buzz\\Documents\\VanDesign-V6-1-offline-20261018\\live-candidate-20261018\\VanCabinetJoineryV5\\vandesign\\__init__.py",
+      "sha256": "f7d5f6479928f96a87f042f37c9e3cd015827549879087cc2cf80d69f93f57fd"
+    },
+    "_vandesign_v61_qualification.schemas": {
+      "path": "C:\\Users\\Buzz\\Documents\\VanDesign-V6-1-offline-20261018\\live-candidate-20261018\\VanCabinetJoineryV5\\vandesign\\schemas\\__init__.py",
+      "sha256": "8ae003ec476f0f7d952313fafaa3cd5794bf0139d121544230149e1461356609"
+    },
+    "_vandesign_v61_qualification.schemas.bed_platform_spec": {
+      "path": "C:\\Users\\Buzz\\Documents\\VanDesign-V6-1-offline-20261018\\live-candidate-20261018\\VanCabinetJoineryV5\\vandesign\\schemas\\bed_platform_spec.py",
+      "sha256": "2ce514eab96e70a7ec97d4647d70759d620d935e10087bbf115efbdb52b45ea5"
+    },
+    "_vandesign_v61_qualification.modules": {
+      "path": "C:\\Users\\Buzz\\Documents\\VanDesign-V6-1-offline-20261018\\live-candidate-20261018\\VanCabinetJoineryV5\\vandesign\\modules\\__init__.py",
+      "sha256": "e4dd7b82bd0b5ea3cbdf6fac4469526e26ad1fef64b20a68cca9c769ed040f5e"
+    },
+    "_vandesign_v61_qualification.cad": {
+      "path": "C:\\Users\\Buzz\\Documents\\VanDesign-V6-1-offline-20261018\\live-candidate-20261018\\VanCabinetJoineryV5\\vandesign\\cad\\__init__.py",
+      "sha256": "703824dc29bf256f5438a5b0397702e06c6821ca21a7755c27223ccc972ed398"
+    },
+    "_vandesign_v61_qualification.components": {
+      "path": "C:\\Users\\Buzz\\Documents\\VanDesign-V6-1-offline-20261018\\live-candidate-20261018\\VanCabinetJoineryV5\\vandesign\\components\\__init__.py",
+      "sha256": "601c5f2f9af792b150c021c34d83f921c2142ed86aa0193c7a04aa28a3fbdd0e"
+    },
+    "_vandesign_v61_qualification.core": {
+      "path": "C:\\Users\\Buzz\\Documents\\VanDesign-V6-1-offline-20261018\\live-candidate-20261018\\VanCabinetJoineryV5\\vandesign\\core\\__init__.py",
+      "sha256": "a70d0810f0e1d9d6081859ff8ba5c94c19d5bed75be248bb1bb066c9752ce25e"
+    },
+    "_vandesign_v61_qualification.core.expr": {
+      "path": "C:\\Users\\Buzz\\Documents\\VanDesign-V6-1-offline-20261018\\live-candidate-20261018\\VanCabinetJoineryV5\\vandesign\\core\\expr.py",
+      "sha256": "bdf5bfc6d4c6a8f1ca46ced7b68d27f05b4a91fe2affe9e57397a4a5aafc4e2b"
+    },
+    "_vandesign_v61_qualification.core.geometry": {
+      "path": "C:\\Users\\Buzz\\Documents\\VanDesign-V6-1-offline-20261018\\live-candidate-20261018\\VanCabinetJoineryV5\\vandesign\\core\\geometry.py",
+      "sha256": "0319a91e58ac3b21f71ededcd84480befa31118f9a13fe733af1b56f05068045"
+    },
+    "_vandesign_v61_qualification.core.params": {
+      "path": "C:\\Users\\Buzz\\Documents\\VanDesign-V6-1-offline-20261018\\live-candidate-20261018\\VanCabinetJoineryV5\\vandesign\\core\\params.py",
+      "sha256": "2a67bb7cddc96191d920600b3154dfd7c54dfa72467cc5cf887cf4e24c650738"
+    },
+    "_vandesign_v61_qualification.components.ids": {
+      "path": "C:\\Users\\Buzz\\Documents\\VanDesign-V6-1-offline-20261018\\live-candidate-20261018\\VanCabinetJoineryV5\\vandesign\\components\\ids.py",
+      "sha256": "61cc0afa349d799d2d4ac1b728ddf54b6c46a9a856775e9f2f8e33a207a6231c"
+    },
+    "_vandesign_v61_qualification.components.model": {
+      "path": "C:\\Users\\Buzz\\Documents\\VanDesign-V6-1-offline-20261018\\live-candidate-20261018\\VanCabinetJoineryV5\\vandesign\\components\\model.py",
+      "sha256": "f0f389d46f3c1b91c3961e1167150047c51f9fcb442b995fdb2f2163ecfa3869"
+    },
+    "_vandesign_v61_qualification.verification": {
+      "path": "C:\\Users\\Buzz\\Documents\\VanDesign-V6-1-offline-20261018\\live-candidate-20261018\\VanCabinetJoineryV5\\vandesign\\verification\\__init__.py",
+      "sha256": "6519acfbda1c30aa4fc840352f3d54f6f5168a2c598018f1e1c3dab05a18b4a0"
+    },
+    "_vandesign_v61_qualification.verification.geometry_source": {
+      "path": "C:\\Users\\Buzz\\Documents\\VanDesign-V6-1-offline-20261018\\live-candidate-20261018\\VanCabinetJoineryV5\\vandesign\\verification\\geometry_source.py",
+      "sha256": "0d42d325606120ddaf079743e4401df3a44c1d8ee86920bda5256a5b6428d6c5"
+    },
+    "_vandesign_v61_qualification.cad.protocol": {
+      "path": "C:\\Users\\Buzz\\Documents\\VanDesign-V6-1-offline-20261018\\live-candidate-20261018\\VanCabinetJoineryV5\\vandesign\\cad\\protocol.py",
+      "sha256": "c09af102cfa5d8fa9bfe5d59f1e59a8e18081def90493fa9a0d0ac6c11884524"
+    },
+    "_vandesign_v61_qualification.modules.bed_platform": {
+      "path": "C:\\Users\\Buzz\\Documents\\VanDesign-V6-1-offline-20261018\\live-candidate-20261018\\VanCabinetJoineryV5\\vandesign\\modules\\bed_platform.py",
+      "sha256": "fc625c8f568d329195ff6f9ea2be2e0dcd9c185d2a5335850ada628f2324927b"
+    },
+    "_vandesign_v61_qualification.cad.fusion": {
+      "path": "C:\\Users\\Buzz\\Documents\\VanDesign-V6-1-offline-20261018\\live-candidate-20261018\\VanCabinetJoineryV5\\vandesign\\cad\\fusion\\__init__.py",
+      "sha256": "360d13dae8b2db83cc3d60be0628c4db8becaac794fc7e2508bf363f34dd5468"
+    },
+    "_vandesign_v61_qualification.core.units": {
+      "path": "C:\\Users\\Buzz\\Documents\\VanDesign-V6-1-offline-20261018\\live-candidate-20261018\\VanCabinetJoineryV5\\vandesign\\core\\units.py",
+      "sha256": "d6e17b17ccd9459c25df187b8c6d0f1302ffb9659ea3cf1dee8d2fbe4b421961"
+    },
+    "_vandesign_v61_qualification.cad.fusion.adapter": {
+      "path": "C:\\Users\\Buzz\\Documents\\VanDesign-V6-1-offline-20261018\\live-candidate-20261018\\VanCabinetJoineryV5\\vandesign\\cad\\fusion\\adapter.py",
+      "sha256": "e4a739a49fd7062dab8f49f30426df5dc125824a0cd236d686e7a8e4ee14037a"
+    }
+  },
+  "fixture": {
+    "name": "VanDesign-V6-1-bed-unsaved-20261018",
+    "saved": false,
+    "modified": true,
+    "identity_sha256": null,
+    "version": null,
+    "read_only": null
+  },
+  "environment_restored": true,
+  "existing_documents_unchanged": true
+}

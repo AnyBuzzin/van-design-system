@@ -1,0 +1,33 @@
+{
+  "reviewed_head": "2612a8a3a8b60a81ed357f6bef69d1846fef8ab9",
+  "corrected_artifacts": [
+    "g4-stage-20261018/before-runner-restore.json",
+    "g4-stage-20261018/capacity-preflight.json",
+    "g4-stage-20261018/final-state.json",
+    "g4-stage-20261018/first-save.json",
+    "g4-stage-20261018/jobs/v5demo-g4-20261018-no-op/job.json",
+    "g4-stage-20261018/jobs/v5demo-g4-20261018-no-op/result.json",
+    "g4-stage-20261018/jobs/v5demo-g4-20261018-preview-one/job.json",
+    "g4-stage-20261018/jobs/v5demo-g4-20261018-preview-one/result.json",
+    "g4-stage-20261018/jobs/v5demo-g4-20261018-preview-two/job.json",
+    "g4-stage-20261018/jobs/v5demo-g4-20261018-preview-two/result.json",
+    "g4-stage-20261018/jobs/v5demo-g4-20261018-to-one/job.json",
+    "g4-stage-20261018/jobs/v5demo-g4-20261018-to-one/result.json",
+    "g4-stage-20261018/jobs/v5demo-g4-20261018-to-two/job.json",
+    "g4-stage-20261018/jobs/v5demo-g4-20261018-to-two/result.json",
+    "g4-stage-20261018/no-op-proof.json",
+    "g4-stage-20261018/protected-before.json"
+  ],
+  "document_identity_count": 6,
+  "replaced_occurrences": 46,
+  "pr_artifacts_scanned": 175,
+  "additional_affected_artifacts": 0,
+  "known_raw_and_encoded_ids_remaining": 0,
+  "stage_one_shared_identities_match": 5,
+  "all_170_published_artifact_hashes_valid": true,
+  "private_original_hashes_unchanged": true,
+  "all_non_identity_artifact_bytes_unchanged": true,
+  "measurements_results_negative_outcomes_unchanged": true,
+  "original_manifest_hash_fields_unchanged": true,
+  "history_rewritten": false
+}

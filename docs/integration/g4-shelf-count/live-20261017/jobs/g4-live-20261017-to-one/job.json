@@ -1,0 +1,13 @@
+{
+  "schema": "vandesign.runner.job/1",
+  "job_id": "g4-live-20261017-to-one",
+  "command": "update_shelf_count",
+  "args": {
+    "new_shelf_count": 1
+  },
+  "target": {
+    "design_id": "REDACTED_CLOUD_ID_66bacffad31a",
+    "document_name": "VanDesign-G4-base-shelf-count-20261017"
+  },
+  "created_utc": "2026-10-17T21:33:23.105+00:00"
+}

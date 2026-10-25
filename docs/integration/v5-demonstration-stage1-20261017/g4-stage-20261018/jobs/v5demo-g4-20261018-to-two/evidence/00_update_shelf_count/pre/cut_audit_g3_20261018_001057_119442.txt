@@ -1,0 +1,25 @@
+VanDesign G3 cut participant audit
+Document: V5-Demo-Shelves-20261017-01
+Read-only: no geometry, parameters or features changed
+NOTE: The history marker is temporarily repositioned during inspection.
+
+--- dado.shelf1.left ---
+Feature owner stable id: panel.left.001 (expected panel.left.001)
+Operation Cut: True
+Participant count: 1
+  Body: '01 Left Side'; stable id: 'panel.left.001'
+RESULT: PASS
+
+--- dado.shelf1.right ---
+Feature owner stable id: panel.right.001 (expected panel.right.001)
+Operation Cut: True
+Participant count: 1
+  Body: '02 Right Side'; stable id: 'panel.right.001'
+RESULT: PASS
+
+Timeline moved back to original position: True
+Counts before: {"root_occurrences": 8, "timeline_items": 28, "user_parameters": 16}
+Counts after:  {"root_occurrences": 8, "timeline_items": 28, "user_parameters": 16}
+Features passed: 2/2
+
+OVERALL: PASS

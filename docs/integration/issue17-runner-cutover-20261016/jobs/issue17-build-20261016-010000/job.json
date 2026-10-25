@@ -1,0 +1,10 @@
+{
+  "command": "run_approved_demo",
+  "job_id": "issue17-build-20261016-010000",
+  "args": {
+    "demo_id": "issue17-create-20261016-005940",
+    "entry_point": "FirstInteriorDemo"
+  },
+  "schema": "vandesign.runner.job/1",
+  "created_utc": "2026-10-15T23:59:58.227+00:00"
+}

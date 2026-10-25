@@ -1,0 +1,16 @@
+Processing c:\users\buzz\documents\codex\2026-10-15\referenced-chatgpt-conversation-this-is-an-3\work\integration
+  Installing build dependencies: started
+  Installing build dependencies: finished with status 'done'
+  Getting requirements to build wheel: started
+  Getting requirements to build wheel: finished with status 'done'
+  Preparing metadata (pyproject.toml): started
+  Preparing metadata (pyproject.toml): finished with status 'done'
+Building wheels for collected packages: vandesign
+  Building wheel for vandesign (pyproject.toml): started
+  Building wheel for vandesign (pyproject.toml): finished with status 'done'
+  Created wheel for vandesign: filename=vandesign-0.5.0-py3-none-any.whl size=40026 sha256=549ff8843b8966e7339181e9a75d835c8cb5e1d3ac5b20a2954c7adc2bcef80f
+  Stored in directory: C:\Users\Buzz\AppData\Local\Temp\pip-ephem-wheel-cache-18w6g519\wheels\c8\97\f9\173d3aca27e679f259d3a140b91e075c1c1ab9481cbc97cb79
+Successfully built vandesign
+
+[notice] A new release of pip is available: 25.0.1 -> 26.2.1
+[notice] To update, run: C:\Users\Buzz\Documents\Codex\2026-10-15\referenced-chatgpt-conversation-this-is-an-3\work\venv\Scripts\python.exe -m pip install --upgrade pip

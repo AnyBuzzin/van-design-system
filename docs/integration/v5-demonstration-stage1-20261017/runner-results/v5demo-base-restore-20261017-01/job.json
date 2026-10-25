@@ -1,0 +1,59 @@
+{
+  "command": "run_test_batch",
+  "job_id": "v5demo-base-restore-20261017-01",
+  "target": {
+    "design_id": "redacted-sha256:725b4934fa29451f0cff459ee5c0c2c9592489d18b2d514cbf36bb981d773f86",
+    "document_name": "V5-Demo-Base-20261017-01"
+  },
+  "args": {
+    "label": "base guarded width restore",
+    "stable_counts": true,
+    "steps": [
+      {
+        "command": "preview_width_change",
+        "args": {
+          "new_width": 1200,
+          "unit": "mm"
+        }
+      },
+      {
+        "command": "update_width",
+        "args": {
+          "new_width": 1200,
+          "unit": "mm",
+          "expect": {
+            "verdict": "PASS",
+            "pass_count": 59,
+            "total": 59,
+            "params_mm": {
+              "Cab_Width": 1200
+            }
+          }
+        }
+      },
+      {
+        "command": "measure",
+        "args": {
+          "expect": {
+            "verdict": "PASS",
+            "pass_count": 59,
+            "total": 59,
+            "params_mm": {
+              "Cab_Width": 1200
+            }
+          }
+        }
+      },
+      {
+        "command": "audit_cuts",
+        "args": {
+          "expect": {
+            "features_passed": 2
+          }
+        }
+      }
+    ]
+  },
+  "schema": "vandesign.runner.job/1",
+  "created_utc": "2026-10-17T22:58:53.016+00:00"
+}

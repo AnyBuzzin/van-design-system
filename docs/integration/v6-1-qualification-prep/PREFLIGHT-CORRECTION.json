@@ -1,0 +1,20 @@
+{
+  "scope": "Offline preflight correction only",
+  "previous_helper_sha256": "c88a125707660640463e4b6bf0b721ec6afb7a7147c9a147c3dfaf363e671fdd",
+  "helper_sha256": "ab33983555aa7199d5fcf85d88b0297d5ca2aa0364917ffd680593250ed50710",
+  "tests": {
+    "command": "python -B docs/integration/v6-1-qualification-prep/test_preflight.py",
+    "python": "3.12.14 (main, Aug 25 2026, 14:01:42) [MSC v.1944 64 bit (AMD64)]",
+    "tests": 8,
+    "outcome": "PASS",
+    "live_adsk_used": false
+  },
+  "test_source_sha256": "7357c14e46cf4eb41289e6c3ab63e1b7088d769816778378703398e60583d46b",
+  "document_creation_through_final_restoration_bytes_unchanged": true,
+  "unchanged_tail_sha256": "7ed2b5479f340b3a09c30fbfc477b02852158f5d67beb7080d6d5f7fe0d76292",
+  "candidate_package_changed": false,
+  "runner_or_configuration_changed": false,
+  "fusion_execution": "NOT RUN",
+  "independent_review": "REQUESTED",
+  "owner_execution_approval": "REQUIRED for corrected hash"
+}

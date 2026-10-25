@@ -1,0 +1,42 @@
+{
+  "utc": "2026-10-17T00:42:18.894392+00:00",
+  "outcome": "PASS",
+  "explicit_save_calls": 0,
+  "explicit_close_calls": 1,
+  "explicit_open_calls": 1,
+  "geometry_tests_run": false,
+  "before": [
+    {
+      "name": "VanDesign-G3-overhead-remaining-20261017",
+      "saved": true,
+      "modified": false,
+      "active": true,
+      "design_id": "sha256:bfcb0256beff68debe934785d128d4eca4f4540e5139bac6caf49b641ca9e743",
+      "version": 2,
+      "complete": true
+    }
+  ],
+  "after_close": [],
+  "after_reopen": [
+    {
+      "name": "VanDesign-G3-overhead-remaining-20261017",
+      "saved": true,
+      "modified": false,
+      "active": true,
+      "design_id": "sha256:bfcb0256beff68debe934785d128d4eca4f4540e5139bac6caf49b641ca9e743",
+      "version": 2,
+      "complete": true
+    }
+  ],
+  "final_inventory": [
+    {
+      "name": "VanDesign-G3-overhead-remaining-20261017",
+      "saved": true,
+      "modified": false,
+      "active": true,
+      "design_id": "sha256:bfcb0256beff68debe934785d128d4eca4f4540e5139bac6caf49b641ca9e743",
+      "version": 2,
+      "complete": true
+    }
+  ]
+}
