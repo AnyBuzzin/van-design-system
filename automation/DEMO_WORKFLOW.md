@@ -198,6 +198,9 @@ default three-module scene, measures BRep bounds/volumes, exact cut ownership,
 interference and storage contacts, edits `Env_Bare_Width` 1784 → 1794 → 1784,
 then previews a storage +500 mm X intrusion without writing that move. Geometry
 and state must restore; any failure stops with evidence and the fixture retained.
+Only B1 restoration comparison allows finite bound readback differences up to
+1e-9 mm, alongside the existing 1e-6 mm3 volume allowance. Raw reports stay intact;
+all other fields and state snapshots stay exact. Storage/persistence rules are unchanged.
 Save is refused. Existing viewport capture/unsaved close commands apply afterward.
 
 Bare nominal 1784 × 3044 × 2025 and 1392 between arches remain separate from

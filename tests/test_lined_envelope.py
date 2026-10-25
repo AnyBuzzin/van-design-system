@@ -7,8 +7,8 @@ from vandesign.components.model import Panel
 from vandesign.core.expr import Mm
 from vandesign.core.geometry import Box, BoxExpr
 from vandesign.modules.test_envelope import (
-    ARCHES, build_lined_envelope, furniture_rows, preview_lined_fit)
-from vandesign.modules.storage_box import build_storage_scene
+    ARCHES, build_lined_envelope, furniture_rows, preview_lined_fit, restored_lined_measurements)
+from vandesign.modules.storage_box import build_storage_scene, restored_storage_measurements
 from vandesign.schemas.envelope_spec import EnvelopeSpec, KeepOut, MountingPoint, load_envelope_spec
 
 
@@ -155,3 +155,68 @@ class LinedEnvelopeTests(unittest.TestCase):
         changed = dict(boxes); changed.pop(ARCHES[0])
         with self.assertRaises(ValueError): preview_lined_fit(self.a, self.spec, self.env, changed)
         self.assertEqual((self.a, self.env, self.spec), before)
+
+
+class B1RestorationTests(unittest.TestCase):
+    def setUp(self):
+        # Exact readback values from the preserved failed B1 run; no cloud IDs.
+        self.sid = 'reference.arch.right'
+        volume = 40156799.999999955
+        self.before = dict(outcome='PASS', parameters_mm={'Env_Bare_Width':1784.0},
+            counts={'timeline_items':70}, bodies={self.sid:dict(
+                min=[1570.0,582.0,0.0], max=[1748.0,1382.0,282.0], volume_mm3=volume)},
+            checks=[dict(check_id=self.sid+'.volume',status='PASS',unit='mm3',
+                         object_ids=[self.sid],observed=volume,expected=40156800.0,tolerance=40.1568),
+                    dict(check_id='dado.ownership',status='PASS',participants=['panel.right'])])
+        self.after = copy.deepcopy(self.before)
+        self.after['bodies'][self.sid]['min'][1] = 581.9999999999999
+        self.after['bodies'][self.sid]['volume_mm3'] = 40156799.99999996
+        self.after['checks'][0]['observed'] = 40156799.99999996
+
+    def test_observed_noise_passes_only_b1_without_rewriting_inputs(self):
+        original = copy.deepcopy((self.before,self.after))
+        self.assertFalse(restored_storage_measurements(self.before,self.after))
+        self.assertTrue(restored_lined_measurements(self.before,self.after))
+        self.assertEqual((self.before,self.after),original)
+
+    def test_coordinate_and_volume_limits_stay_tight(self):
+        for side in ('min','max'):
+            for axis in range(3):
+                for delta in (-2e-9,2e-9):
+                    after=copy.deepcopy(self.after)
+                    after['bodies'][self.sid][side][axis] += delta
+                    with self.subTest(side=side,axis=axis,delta=delta):
+                        self.assertFalse(restored_lined_measurements(self.before,after))
+        after=copy.deepcopy(self.after)
+        after['bodies'][self.sid]['volume_mm3'] += 2e-6
+        after['checks'][0]['observed'] = after['bodies'][self.sid]['volume_mm3']
+        self.assertFalse(restored_lined_measurements(self.before,after))
+
+    def test_invalid_bounds_fail_even_when_both_reports_match(self):
+        for bad in (None,[],[1,2],[1,2,3,4],'123',[True,2,3],
+                    [float('nan'),2,3],[float('inf'),2,3],[-float('inf'),2,3]):
+            for side in ('min','max'):
+                before=copy.deepcopy(self.before)
+                before['bodies'][self.sid][side]=bad
+                with self.subTest(bad=bad,side=side):
+                    self.assertFalse(restored_lined_measurements(before,copy.deepcopy(before)))
+        for side in ('min','max'):
+            before=copy.deepcopy(self.before);del before['bodies'][self.sid][side]
+            self.assertFalse(restored_lined_measurements(before,copy.deepcopy(before)))
+        before=copy.deepcopy(self.before)
+        before['bodies'][self.sid]['max']=before['bodies'][self.sid]['min'][:]
+        self.assertFalse(restored_lined_measurements(before,copy.deepcopy(before)))
+
+    def test_all_other_fields_remain_exact(self):
+        for mutation in ('identity','parameters','counts','owner','status','unit','observation','missing'):
+            after=copy.deepcopy(self.after)
+            if mutation=='identity':after['bodies']['different']=after['bodies'].pop(self.sid)
+            if mutation=='parameters':after['parameters_mm']['Env_Bare_Width']+=1e-10
+            if mutation=='counts':after['counts']['timeline_items']+=1
+            if mutation=='owner':after['checks'][1]['participants']=['wrong.panel']
+            if mutation=='status':after['checks'][1]['status']='UNKNOWN'
+            if mutation=='unit':after['checks'][0]['unit']='cm3'
+            if mutation=='observation':after['checks'][0]['observed']=None
+            if mutation=='missing':after['checks'].pop(0)
+            with self.subTest(mutation=mutation):
+                self.assertFalse(restored_lined_measurements(self.before,after))
