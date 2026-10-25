@@ -6,15 +6,13 @@ Present capability and blockers belong in [PROJECT_STATUS.md](../PROJECT_STATUS.
 
 Already proven in live Fusion (2026-10-14 to 10-19): cabinets (base/tall/overhead, width/shelf edits), resizable bed, bed + cabinet composition, guarded cabinet placement with collision refusal, an *unmeasured* development envelope with assumed arches (Issue #51), and an under-bed storage box (Issue #56).
 
-## Phase A — Stabilise the existing furniture system (current)
+## Phase A — Stabilise the existing furniture system (complete, 19 October 2026)
 
 1. Done: Issue #56 storage box accepted live (452/452) after the PR #58 volume-noise fix.
-2. Issue #60: regression-check the shared Fusion adapter change from PR #49 on base/tall/overhead cabinets (offline oracle merged in PR #63; one live base checkpoint).
-3. Issue #60: combined scene save → reopen → re-measure unchanged.
+2. Done (Issue #60): PR #49 adapter regression: offline pre-#49 trace parity for base/tall/overhead/bed; live base checkpoint 1200 → 1210 → 1200.
+3. Done (Issue #60, owner-revised scope): combined scene saved and reopened clean with unchanged geometry and affected-body ownership; configured participant-list persistence remains UNKNOWN.
 
-Done when every existing module resizes, moves, restores and validates in Fusion and the combined design survives save/reopen.
-
-## Phase B — Parametric lined-interior envelope
+## Phase B — Parametric lined-interior envelope (B1 current)
 
 Generalise the Issue #51 test envelope into a measured-envelope spec, in two steps: B1 ([#61](https://github.com/AnyBuzzin/van-design-system/issues/61)) flat planes and keep-outs; B2 angled upper-wall planes, which need non-axis-aligned reference bodies in the adapter. Contents: floor plane, lower walls, angled upper-wall planes (B2), flat or segmented ceiling, front/rear limits, wheel arches and obstructions as boxes, door openings with clearance keep-out volumes, an installation tolerance inset, and mounting points/rails as geometric data only. Editable `Env_*` Fusion parameters; reference-only bodies never enter cut lists. Fit check: every furniture panel corner inside all planes (exact for the convex usable space) and no positive-volume overlap between any panel box and any keep-out box; violations refused before CAD mutation.
 

@@ -1,7 +1,0 @@
-{
-  "schema": "vandesign.runner.job/1",
-  "command": "measure",
-  "note": "Read-only measurement of a base@1 cabinet. Supply the target with --target-id.",
-  "args": {"label": "baseline", "expect": {"verdict": "PASS", "pass_count": 59, "total": 59,
-           "params_mm": {"Cab_Shelf_Length": 1175.4, "Cab_Dado_Depth": 6}, "tol_mm": 0.0001}}
-}

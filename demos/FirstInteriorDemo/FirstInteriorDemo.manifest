@@ -1,9 +1,0 @@
-{
-  "autodeskProduct": "Fusion360",
-  "type": "script",
-  "id": "aa8fc9d3-8e34-4a37-b55d-b96713978cfa",
-  "author": "VanDesign",
-  "description": "First campervan interior: new empty design only",
-  "version": "0.1.0",
-  "supportedOS": "windows|mac"
-}

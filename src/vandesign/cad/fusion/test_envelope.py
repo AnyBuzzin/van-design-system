@@ -36,7 +36,7 @@ def affected_body_check(feature, op):
                 affected_bodies=owners,feature_parent=parent.value if parent else None)
 
 
-def measure_test(design, assembly, guard, *, expected_panels=16, expected_timeline=52, base_profile=None, read_only_ownership=False):
+def measure_test(design, assembly, guard, *, expected_panels=16, expected_timeline=52, base_profile=None, read_only_ownership=False, lined_spec=None):
     guard()
     source = FusionAdapter(design).geometry_source()
     env = {p.name:source.parameter_value(p.name) for p in assembly.parameters.params}
@@ -56,7 +56,11 @@ def measure_test(design, assembly, guard, *, expected_panels=16, expected_timeli
     checks = [c.to_dict() for c in report.checks]
     def check(name, ok, **data):
         checks.append(dict(check_id=name,status="PASS" if ok else "FAIL",**data))
-    if base_profile is None:
+    if lined_spec is not None:
+        from ...modules.test_envelope import preview_lined_fit
+        clearance = preview_lined_fit(assembly, lined_spec, env, {k:b.box for k,b in bodies.items()})
+        check('lined_clearances', clearance['outcome']=='PASS', observed=clearance)
+    elif base_profile is None:
         clearance = preview_fit(assembly, env, {k:b.box for k,b in bodies.items()})
         check('test_clearances', abs(clearance['deck_to_arch_mm']-382)<0.01
               and abs(clearance['nominal_right_strip_mm']-634)<0.01, observed=clearance)

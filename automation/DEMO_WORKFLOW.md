@@ -189,3 +189,28 @@ allowed. Save is refused. Capture/close only this new unsaved receipt and compar
 final baseline. This does not bypass or resolve the separate persistence blocker.
 Reviewed merged green code and NEW owner installation approval are required before
 live execution. Failure retains the owned fixture; no automatic cleanup/rollback.
+
+## B1 lined envelope — Issue #61 (offline candidate)
+
+`LinedInteriorEnvelope` accepts only `demo_id` and the fixed entry name. Existing
+baseline, capacity, owned-empty-unsaved and no-retry guards apply. It builds the
+default three-module scene, measures BRep bounds/volumes, exact cut ownership,
+interference and storage contacts, edits `Env_Bare_Width` 1784 → 1794 → 1784,
+then previews a storage +500 mm X intrusion without writing that move. Geometry
+and state must restore; any failure stops with evidence and the fixture retained.
+Save is refused. Existing viewport capture/unsaved close commands apply afterward.
+
+Bare nominal 1784 × 3044 × 2025 and 1392 between arches remain separate from
+finished 1748 × 3008 × 1989 (ASSUMED uniform 18 mm lining on six faces). Arch
+dimensions/position are transformed from bare to finished-floor datums. ASSUMED
+5 mm margin insets all exterior planes and expands all keep-outs; the new furniture
+is explicitly raised to Z=5, not qualified as supported furniture. Generic door
+keep-out size includes clearance depth in the finished frame. One/two ceiling
+segments, all obstruction coordinates and mount data are supplied through the
+strict envelope spec; topology changes require rebuilding a fresh fixture.
+Raw Fusion parameter edits are not automatically guarded. Reference bodies never
+enter `furniture_rows`; generic panel export rejects reference roles. Mounting/load
+capacity and vehicle fit are unqualified.
+
+NOT RUN in Fusion. Separate owner approval is required before installation **and**
+any live job (including inspect). No installed configuration or designs changed.

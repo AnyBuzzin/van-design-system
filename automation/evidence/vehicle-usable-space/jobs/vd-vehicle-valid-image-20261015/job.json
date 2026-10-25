@@ -1,9 +1,0 @@
-{
-  "job_id": "vd-vehicle-valid-image-20261015",
-  "command": "capture_demo_viewport",
-  "args": {
-    "demo_id": "vd-vehicle-valid-create-20261015"
-  },
-  "schema": "vandesign.runner.job/1",
-  "created_utc": "2026-10-15T01:08:08.481+00:00"
-}

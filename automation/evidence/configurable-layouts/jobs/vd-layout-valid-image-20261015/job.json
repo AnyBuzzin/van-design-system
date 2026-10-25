@@ -1,9 +1,0 @@
-{
-  "args": {
-    "demo_id": "vd-layout-valid-create-20261015"
-  },
-  "command": "capture_demo_viewport",
-  "schema": "vandesign.runner.job/1",
-  "job_id": "vd-layout-valid-image-20261015",
-  "created_utc": "2026-10-15T00:43:18.056+00:00"
-}

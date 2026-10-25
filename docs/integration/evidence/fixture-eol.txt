@@ -1,4 +1,0 @@
-i/lf    w/crlf  attr/                 	prototypes/claude-v5/specs/README.md
-i/lf    w/crlf  attr/text eol=lf      	prototypes/claude-v5/specs/base.json
-i/lf    w/crlf  attr/text eol=lf      	prototypes/claude-v5/specs/overhead.json
-i/lf    w/crlf  attr/text eol=lf      	prototypes/claude-v5/specs/tall.json

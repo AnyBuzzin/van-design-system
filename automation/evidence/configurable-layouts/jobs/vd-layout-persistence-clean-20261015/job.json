@@ -1,9 +1,0 @@
-{
-  "schema": "vandesign.runner.job/1",
-  "command": "verify_demo_persistence",
-  "job_id": "vd-layout-persistence-clean-20261015",
-  "args": {
-    "design_id": "urn:adsk.wipprod:dm.lineage:MLOAMeGnSuiHKAmPH6UjoQ"
-  },
-  "created_utc": "2026-10-15T00:38:01.870+00:00"
-}

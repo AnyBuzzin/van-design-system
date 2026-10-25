@@ -1,7 +1,0 @@
-{
-  "command": "create_demo_design",
-  "schema": "vandesign.runner.job/1",
-  "args": {},
-  "job_id": "vd-vehicle-view-create-20261015",
-  "created_utc": "2026-10-15T01:09:56.167+00:00"
-}

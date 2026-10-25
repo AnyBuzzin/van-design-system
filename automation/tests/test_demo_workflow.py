@@ -88,6 +88,25 @@ class DemoTests(TmpDirCase):
         self.doc.saveAs.assert_not_called();self.protected.close.assert_not_called()
         self.protected.saveAs.assert_not_called()
 
+    def test_lined_envelope_fixed_owned_unsaved_only_and_no_retry(self):
+        args=dict(demo_id='demo-001',entry_point='LinedInteriorEnvelope')
+        validate_job(job('run_approved_demo',args,target=None))
+        with self.assertRaises(JobSchemaError):
+            validate_job(job('run_approved_demo',dict(args,layout_mm={}),target=None))
+        with self.assertRaises(PolicyError):
+            self.run_cmd('run_approved_demo',args)
+        self.run_cmd('create_demo_design')
+        with open(self.report_path,'w') as fh:json.dump({'outcome':'PASS'},fh)
+        module=NS(run_lined_envelope=Mock(return_value=self.report_path))
+        with patch.object(workflow,'modules',return_value=module):
+            self.assertEqual(self.run_cmd('run_approved_demo',args)['outcome'],'PASS')
+            with self.assertRaises(PolicyError):self.run_cmd('run_approved_demo',args)
+            with self.assertRaises(PolicyError):self.run_cmd('save_demo_design',self.args)
+        module.run_lined_envelope.assert_called_once()
+        self.doc.saveAs.assert_not_called()
+        self.protected.close.assert_not_called()
+        self.protected.saveAs.assert_not_called()
+
     def test_create_preserves_existing_documents_and_checks_capacity(self):
         result = self.run_cmd('create_demo_design')
         self.assertEqual(result['capacity']['editable'], 3)

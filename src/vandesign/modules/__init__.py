@@ -1,1 +1,0 @@
-"""Module definitions (cabinet family)."""

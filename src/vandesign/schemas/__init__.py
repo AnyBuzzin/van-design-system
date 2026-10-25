@@ -1,1 +1,0 @@
-"""Serialisable design-intent records."""

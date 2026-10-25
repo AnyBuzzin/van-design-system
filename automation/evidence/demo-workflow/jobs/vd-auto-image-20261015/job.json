@@ -1,9 +1,0 @@
-{
-  "args": {
-    "demo_id": "vd-auto-create-20261015"
-  },
-  "schema": "vandesign.runner.job/1",
-  "job_id": "vd-auto-image-20261015",
-  "command": "capture_demo_viewport",
-  "created_utc": "2026-10-15T00:27:10.272+00:00"
-}

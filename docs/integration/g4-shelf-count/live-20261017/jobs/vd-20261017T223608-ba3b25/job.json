@@ -1,7 +1,0 @@
-{
-  "command": "ping",
-  "args": {},
-  "schema": "vandesign.runner.job/1",
-  "job_id": "vd-20261017T223608-ba3b25",
-  "created_utc": "2026-10-17T21:36:08.086+00:00"
-}
