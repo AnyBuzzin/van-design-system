@@ -91,7 +91,7 @@ class PlanRequests(unittest.TestCase):
         self.assertEqual(preview_values(plan.arrangement, plan.envelope, moved)["outcome"], "REFUSED")
 
     def test_shipped_example_request_plans(self):
-        path = os.path.join(os.path.dirname(__file__), "..", "automation", "jobs", "examples",
+        path = os.path.join(os.path.dirname(__file__), "..", "automation", "jobs", "requests",
                             "arrangement_request_crafter.json")
         with open(path, encoding="utf-8") as fh:
             example = json.load(fh)

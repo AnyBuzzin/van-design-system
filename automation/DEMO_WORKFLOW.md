@@ -273,7 +273,7 @@ One entry point for any arrangement, replacing per-feature entries for new work:
 `run_approved_demo {"demo_id": <create job id>, "entry_point": "BuildArrangement",
 "request": {...}}`. The request holds the arrangement instances, a lined envelope,
 up to six `edits` (`expect` `pass` or `refused`) and an optional `tool_diameter_mm`
-for the DXF pack. Example: `jobs/examples/arrangement_request_crafter.json`.
+for the DXF pack. Example request (not a job file): `jobs/requests/arrangement_request_crafter.json`.
 
 Everything is planned before any CAD write: collisions, envelope fit, constraints
 and every edit's preview must match their expectations or the job is refused.
