@@ -39,14 +39,46 @@ def _cabinet(text):
     return build_variant(spec.resolved_params, spec.profile)
 
 
+def tab_slot_parts(spec):
+    """(cabinet design spec dict, TabSlotJoinery) for a cabinet_tab_slot spec."""
+    from .manufacturing.carcass import TabSlotJoinery
+    from .manufacturing.profile import ProfileError
+    if not isinstance(spec, dict) or set(spec) != {"cabinet", "joinery"}:
+        raise ArrangementError("cabinet_tab_slot spec needs exactly: cabinet, joinery")
+    try:
+        joinery = TabSlotJoinery.from_json(spec["joinery"])
+    except ProfileError as exc:
+        raise ArrangementError("Invalid joinery: %s" % exc) from None
+    return spec["cabinet"], joinery
+
+
+def _cabinet_tab_slot(text):
+    cabinet, joinery = tab_slot_parts(json.loads(text))
+    assembly = _cabinet(json.dumps(cabinet))
+    ply = assembly.parameters.resolve()["Cab_Ply"]
+    if abs(ply - joinery.sheet.measured_mm) > 1e-9:
+        raise ArrangementError("cabinet ply_mm %.3f must equal the measured sheet thickness %.3f"
+                               % (ply, joinery.sheet.measured_mm))
+    return assembly
+
+
 # module -> (builder from spec JSON text, local footprint (width, depth, height))
 MODULES = {
     "cabinet": (_cabinet, lambda p: (p("Cab_Width"), p("Cab_Ply") + p("Cab_Depth"), p("Cab_Height"))),
+    # Same box model as "cabinet" (collision, fit and verification); its
+    # manufacturing profiles carry tab-and-slot carcass joints.
+    "cabinet_tab_slot": (_cabinet_tab_slot,
+                         lambda p: (p("Cab_Width"), p("Cab_Ply") + p("Cab_Depth"), p("Cab_Height"))),
     "bed": (lambda t: build_bed_platform(load_bed_spec(t)),
             lambda p: (p("Bed_Width"), p("Bed_Length"), p("Bed_Height"))),
     "storage_box": (lambda t: build_storage_box(load_storage_spec(t)),
                     lambda p: (p("Storage_Width"), p("Storage_Length"), p("Storage_Height"))),
 }
+
+# Modules whose parts are profile panels (joints, outlines). The live Fusion
+# path builds box blanks only, so live BuildArrangement refuses these until an
+# oriented profile builder exists; offline planning and export accept them.
+PROFILE_MODULES = frozenset({"cabinet_tab_slot"})
 
 
 class ArrangementError(ValueError):
