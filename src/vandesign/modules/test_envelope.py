@@ -119,7 +119,9 @@ _ENV_FIELDS = dict(
     tolerance_mm="Env_Tolerance", bare_between_arches_mm="Env_Between_Arches",
     arch_length_mm="Env_Arch_Length", arch_height_mm="Env_Arch_Bare_Height",
     arch_y_mm="Env_Arch_Bare_Y", ceiling_split_mm="Env_Ceiling_Split",
-    second_bare_height_mm="Env_Second_Bare_Height")
+    second_bare_height_mm="Env_Second_Bare_Height",
+    upper_left_break_mm="Env_Upper_Left_Break", upper_left_inset_mm="Env_Upper_Left_Inset",
+    upper_right_break_mm="Env_Upper_Right_Break", upper_right_inset_mm="Env_Upper_Right_Inset")
 
 
 # Shared readback policy (verification/readback.py); name kept for existing callers.
@@ -272,6 +274,14 @@ def preview_lined_fit(assembly, spec, env, boxes=None):
         if not ceiling_gaps or min(ceiling_gaps) < -COORDINATE_READBACK_MM:
             raise ValueError("Outside inset ceiling or step: "+sid)
         gaps["ceiling"] = min(ceiling_gaps)
+        # B2: each sloped upper wall is a half-space; the usable space is convex
+        # at the break, so every box corner at least t from the plane is exact.
+        for side in current.upper_walls:
+            gap = min(current.upper_wall_distance(side, x, z)
+                      for x in (b.lo[0], b.hi[0]) for z in (b.lo[2], b.hi[2])) - t
+            if gap < -COORDINATE_READBACK_MM:
+                raise ValueError("Outside inset upper %s wall: %s" % (side, sid))
+            gaps["upper_" + side] = gap
         for kid, obstacle in keepouts.items():
             if _positive_overlap(b, obstacle):
                 raise ValueError("Panel occupies expanded keep-out: "+sid+" / "+kid)
