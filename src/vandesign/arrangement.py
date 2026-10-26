@@ -23,6 +23,7 @@ from .core.params import ParamDef, ParameterSet
 from .core.placement import place_box
 from .modules.bed_platform import build_bed_platform
 from .modules.storage_box import build_storage_box
+from .modules.worktop import build_worktop
 from .modules.variants import build_variant
 from .schemas.bed_platform_spec import load_bed_spec
 from .schemas.design_spec import load_design_spec
@@ -73,12 +74,14 @@ MODULES = {
             lambda p: (p("Bed_Width"), p("Bed_Length"), p("Bed_Height"))),
     "storage_box": (lambda t: build_storage_box(load_storage_spec(t)),
                     lambda p: (p("Storage_Width"), p("Storage_Length"), p("Storage_Height"))),
+    # ADR-0003 kitchen: exact two-box model, cut as one L profile (offline only).
+    "worktop_l": (build_worktop, lambda p: (p("WT_A_Length"), p("WT_B_Length"), p("WT_Thickness"))),
 }
 
 # Modules whose parts are profile panels (joints, outlines). The live Fusion
 # path builds box blanks only, so live BuildArrangement refuses these until an
 # oriented profile builder exists; offline planning and export accept them.
-PROFILE_MODULES = frozenset({"cabinet_tab_slot"})
+PROFILE_MODULES = frozenset({"cabinet_tab_slot", "worktop_l"})
 
 
 class ArrangementError(ValueError):

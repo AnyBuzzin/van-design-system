@@ -323,7 +323,7 @@ def check_contained(outline, feature, *, may_touch):
     return None
 
 
-def polygon_loop(vertices, *, waste_inside, relief_radius=None, open_points=()):
+def polygon_loop(vertices, *, waste_inside, relief_radius=None, open_points=(), fillets=None):
     """Counter-clockwise loop through axis-aligned ``vertices``.
 
     With ``relief_radius`` every 90-degree corner where the waste side is the
@@ -331,12 +331,14 @@ def polygon_loop(vertices, *, waste_inside, relief_radius=None, open_points=()):
     centre lies on the waste bisector, at distance r from the corner, so a round
     tool reaches the sharp corner a mating part needs. Corners listed in
     ``open_points`` (e.g. on an open pocket edge) are left unrelieved.
+    ``fillets`` ({vertex index: radius}) rounds those corners instead: a
+    quarter arc tangent to both edges, for visible edges (worktops, cut-outs).
     """
     return polygon_loop_with_sources(vertices, waste_inside=waste_inside, relief_radius=relief_radius,
-                                     open_points=open_points)[0]
+                                     open_points=open_points, fillets=fillets)[0]
 
 
-def polygon_loop_with_sources(vertices, *, waste_inside, relief_radius=None, open_points=()):
+def polygon_loop_with_sources(vertices, *, waste_inside, relief_radius=None, open_points=(), fillets=None):
     """``polygon_loop`` plus where every segment point comes from.
 
     Returns (loop, sources), one source per segment, in order:
@@ -357,6 +359,11 @@ def polygon_loop_with_sources(vertices, *, waste_inside, relief_radius=None, ope
     if r is not None and (type(r) not in (int, float) or not math.isfinite(r) or r <= 0):
         raise ProfileError("Relief radius must be finite and positive")
     open_set = [_finite_point(p) for p in open_points]
+    fillets = dict(fillets or {})
+    for i, radius in fillets.items():
+        if (type(i) is not int or not 0 <= i < n or type(radius) not in (int, float)
+                or not math.isfinite(radius) or radius <= 0):
+            raise ProfileError("Fillets need a vertex index and a positive radius")
 
     corners = []  # (vertex, incoming unit, outgoing unit, relieved)
     for i in range(n):
@@ -373,17 +380,22 @@ def polygon_loop_with_sources(vertices, *, waste_inside, relief_radius=None, ope
         # Waste is inside a cut loop (left of travel) and outside an outline.
         narrow_waste = (turn > 0) if waste_inside else (turn < 0)
         is_open = any(math.dist(v, p) <= CLOSURE_TOL_MM for p in open_set)
-        corners.append((v, u1, u2, bool(r) and narrow_waste and not is_open))
+        corners.append((v, u1, u2, bool(r) and narrow_waste and not is_open and i not in fillets))
 
     zero = (0.0, 0.0)
-    if r is None:
+    if r is None and not fillets:
         return (Loop(tuple(Line(pts[i], pts[(i + 1) % n]) for i in range(n))),
                 tuple(("line", (i, zero), ((i + 1) % n, zero)) for i in range(n)))
 
-    reach = r * math.sqrt(2)  # where the relief circle crosses each edge
+    reach = r * math.sqrt(2) if r else 0.0  # where the relief circle crosses each edge
     entry, exit_ = [], []     # (point, offset from its vertex)
-    for v, u1, u2, relieved in corners:
-        if relieved:
+    for i, (v, u1, u2, relieved) in enumerate(corners):
+        if i in fillets:
+            f = fillets[i]
+            a, b = (-(f * u1[0]), -(f * u1[1])), (f * u2[0], f * u2[1])
+            entry.append(((v[0] + a[0], v[1] + a[1]), a))
+            exit_.append(((v[0] + b[0], v[1] + b[1]), b))
+        elif relieved:
             a, b = (-(reach * u1[0]), -(reach * u1[1])), (reach * u2[0], reach * u2[1])
             entry.append(((v[0] + a[0], v[1] + a[1]), a))
             exit_.append(((v[0] + b[0], v[1] + b[1]), b))
@@ -392,7 +404,15 @@ def polygon_loop_with_sources(vertices, *, waste_inside, relief_radius=None, ope
             exit_.append((v, zero))
     segments, sources = [], []
     for i, (v, u1, u2, relieved) in enumerate(corners):
-        if relieved:
+        if i in fillets:
+            f = fillets[i]
+            off = (entry[i][1][0] + exit_[i][1][0], entry[i][1][1] + exit_[i][1][1])
+            c = (v[0] + off[0], v[1] + off[1])
+            a_in = math.atan2(entry[i][0][1] - c[1], entry[i][0][0] - c[0])
+            sweep = math.copysign(math.pi / 2, _turn(u1, u2))     # tangent quarter arc
+            segments.append(Arc(c, f, a_in, sweep))
+            sources.append(("arc", (i, off), f, a_in, sweep))
+        elif relieved:
             bis = ((u2[0] - u1[0]) / math.sqrt(2), (u2[1] - u1[1]) / math.sqrt(2))
             off = (r * bis[0], r * bis[1])
             c = (v[0] + off[0], v[1] + off[1])

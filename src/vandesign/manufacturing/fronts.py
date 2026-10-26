@@ -159,11 +159,11 @@ def _local(p, origin, frame):
     return tuple(sum(d[i] * axis[i] for i in range(3) if axis[i]) for axis in (frame.u, frame.v, frame.w))
 
 
-def add_hardware(profiles, boxes, fronts, captures):
-    """Profiles with the hardware bores added as Holes (after their cut
-    features); ``captures`` gets each hole's local centre as computed (Tracked
-    in a width-binding run) for its binding."""
-    holes = hardware(boxes, fronts)
+def add_hardware(profiles, holes, captures):
+    """Profiles with hardware bores ({panel id: [(module-frame centre on the
+    bored face, outward normal, diameter, depth or None = through)]}) added
+    as Holes after their cut features; ``captures`` gets each hole's local
+    centre as computed (Tracked in a width-binding run) for its binding."""
     out = []
     for p in profiles:
         found = holes.get(p.panel_id, ())
@@ -174,7 +174,7 @@ def add_hardware(profiles, boxes, fronts, captures):
         cap["holes"] = []
         new = []
         for centre, normal, diameter, depth in found:
-            if p.thickness - depth < MIN_SKIN_MM - 1e-9:
+            if depth is not None and p.thickness - depth < MIN_SKIN_MM - 1e-9:
                 raise ProfileError("%s: a %g mm deep bore leaves less than %g mm" % (p.panel_id, depth, MIN_SKIN_MM))
             w = p.frame.w
             face = "top" if w == tuple(float(x) for x in normal) else (
@@ -184,7 +184,7 @@ def add_hardware(profiles, boxes, fronts, captures):
             a, b, c = _local(centre, cap["origin"], p.frame)
             if abs(c - (p.thickness if face == "top" else 0.0)) > 1e-6:
                 raise ProfileError("%s: hardware bore does not start on the panel face" % p.panel_id)
-            new.append(Hole((float(a), float(b)), float(diameter), float(depth), face))
+            new.append(Hole((float(a), float(b)), float(diameter), None if depth is None else float(depth), face))
             cap["holes"].append((a, b, diameter, depth, face))
         out.append(replace(p, features=p.features + tuple(new)))
     return tuple(out)
