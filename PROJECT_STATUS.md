@@ -1,6 +1,6 @@
 # VanDesign current status
 
-**26 October 2026.** E1.1 rounded-panel live qualification passed; reviewed Runner f24df89 installed. Adopted strategy: design to a plywood-lined interior ([ADR-0002](docs/decisions/ADR-0002-lined-interior-envelope.md)); reference van is the published VW Crafter CR35 LWB maxi, high roof, until the target van is acquired. `main` is unchanged. Rules: [AGENTS.md](AGENTS.md). Next work: [ROADMAP.md](docs/ROADMAP.md).
+**26 October 2026.** E1.1 rounded-panel live qualification passed; reviewed Runner f24df89 installed. Adopted strategy: design to a plywood-lined interior ([ADR-0002](docs/decisions/ADR-0002-lined-interior-envelope.md)); reference van is the published VW Crafter CR35 LWB maxi, high roof, until the target van is acquired. `main` is unchanged. Rules: [AGENTS.md](AGENTS.md). Next work: [ROADMAP.md](docs/ROADMAP.md) M1 platform consolidation (PRs #76, #77).
 
 ## Works today
 
@@ -25,7 +25,7 @@ E1.1 passed the bounded nominal 18 mm rounded-panel test; Jack independently con
 ## Owner to-do
 
 - Mark **VanDesign-PhaseA-Combined-Persistence-20261019-R2** read-only in **VanDesign-V5-Demonstration-20261017-01**; leave the earlier failed fixture untouched.
-- When the target van is acquired and lined, measure its finished interior (ROADMAP Phase C).
+- When the target van is acquired and lined, measure its finished interior (ROADMAP M6).
 - Decide whether the repository should be private.
 - Check which Fusion licence is needed for commercial use.
 
