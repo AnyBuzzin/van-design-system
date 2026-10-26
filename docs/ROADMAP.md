@@ -22,11 +22,11 @@ M1 was accepted on Runner `7392a67`: the shipped four-instance Crafter request p
 
 E1.1 passed live (#70). E1.2 (#73) is superseded, not qualified; its failure evidence remains preserved. M2.1 (#84) is accepted on installed Runner/runtime `a6d3b2f`: fixed-XY rounded/relieved-slot/pocket/blind-hole fixture, thickness 18 -> 20 -> 18 mm and invalid 5 mm refusal, 404/404 live checks, five fully constrained sketches and three exact cut owners. Two DXFs were independently re-read; only the successful fixture was closed unsaved and all five protected states were preserved ([results](https://github.com/AnyBuzzin/van-design-system/issues/84#issuecomment-6423328030), [acceptance](https://github.com/AnyBuzzin/van-design-system/issues/84#issuecomment-6423342354)). This does not qualify general XY parametrisation, arbitrary profiles, saved persistence or physical CNC assembly.
 
-Remaining M2 work follows the approved roadmap: joinery driven by the profile model: tab-and-slot with automatic dog-bones (including tab roots) from tool diameter, clearance and **measured** sheet thickness; one hardware connector (Lamello Cabineo or confirmat) as cut geometry. **First physical coupon cut from VanDesign DXF** and its fit measured.
+Remaining M2 work follows the approved roadmap: joinery driven by the profile model: tab-and-slot with automatic dog-bones (including tab roots) from tool diameter, clearance and **measured** sheet thickness; one hardware connector (Lamello Cabineo or confirmat) as cut geometry. Fit is proven virtually: exact clearance and zero assembled overlap offline, measured BRep bodies in Fusion, and DXF re-read against the core. The physical coupon cut moves to M7.
 
 ## M3 — First manufacturable module
 
-A kitchen base cabinet run in the reference van: arrangement + tab-and-slot carcass + DXF pack. Cut one cabinet and dry-assemble it; record panel accuracy and assembly time. This is the early end-to-end demonstration.
+A kitchen base cabinet run in the reference van: arrangement + tab-and-slot carcass + DXF pack, built and verified live in Fusion (bodies, joints, clearances, interference). The DXF pack is checked by importing it into CAM or nesting software. This is the virtual end-to-end demonstration, with no physical cut.
 
 ## M4 — Furniture library and materials (was D + E2, B2)
 
@@ -41,6 +41,8 @@ Arrangement JSON in → build and verify → DXF pack and cut list out. Nesting 
 Measure the finished lined interior; retarget the envelope data; build the arrangement and confirm 3–5 tape checks within tolerance. First real fit claim.
 
 ## M7 — Physical validation (was H)
+
+**Owner decision (26 October 2026): no physical CNC cutting until the software is complete; all physical validation happens here.** Start with a joint test coupon (measured sheet, actual bit) before the full arrangement. Joinery fit on real plywood stays unproven until this point; conservative clearances are the mitigation meanwhile.
 
 Cut, assemble and install one complete arrangement in the van. Measure panels against DXF, joinery fit, assembly sequence and installed clearances. Each heavy item has a documented load path into vehicle structure, reviewed by a competent person; capacities come from tests or calculation.
 
