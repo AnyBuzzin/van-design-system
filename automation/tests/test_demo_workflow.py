@@ -147,6 +147,30 @@ class DemoTests(TmpDirCase):
             with self.assertRaises(PolicyError):self.run_cmd('save_demo_design',self.args)
         self.doc.saveAs.assert_not_called();self.protected.close.assert_not_called()
 
+    def test_tab_slot_fixed_owned_candidate_no_retry_or_save(self):
+        args=dict(demo_id='demo-001',entry_point='TabSlotCoupon')
+        validate_job(job('run_approved_demo',args,target=None))
+        for extra in ({'tool_diameter_mm':8},{'layout_mm':{}},{'script':'arbitrary.py'}):
+            with self.assertRaises(JobSchemaError):validate_job(job('run_approved_demo',dict(args,**extra),target=None))
+        with self.assertRaises(PolicyError):self.run_cmd('run_approved_demo',args)
+        self.run_cmd('create_demo_design')
+        with open(self.report_path,'w') as fh:json.dump({'outcome':'PASS'},fh)
+        module=NS(run_tab_slot=Mock(return_value=self.report_path))
+        with patch.object(workflow,'modules',return_value=module):
+            self.assertEqual(self.run_cmd('run_approved_demo',args)['outcome'],'PASS')
+            with self.assertRaises(PolicyError):self.run_cmd('run_approved_demo',args)
+            with self.assertRaises(PolicyError):self.run_cmd('save_demo_design',self.args)
+        module.run_tab_slot.assert_called_once()
+        self.doc.saveAs.assert_not_called();self.protected.close.assert_not_called();self.protected.saveAs.assert_not_called()
+
+    def test_tab_slot_failed_build_cannot_retry(self):
+        self.run_cmd('create_demo_design');args=dict(demo_id='demo-001',entry_point='TabSlotCoupon')
+        module=NS(run_tab_slot=Mock(side_effect=RuntimeError('failed cut')))
+        with patch.object(workflow,'modules',return_value=module):
+            with self.assertRaisesRegex(RuntimeError,'failed cut'):self.run_cmd('run_approved_demo',args)
+            with self.assertRaises(PolicyError):self.run_cmd('run_approved_demo',args)
+        module.run_tab_slot.assert_called_once();self.protected.close.assert_not_called()
+
     def test_build_refuses_nonempty_saved_wrong_tab_and_unknown_entry(self):
         self.run_cmd('create_demo_design')
         for attr, value in [('isSaved', True), ('isModified', True), ('isActive', False)]:

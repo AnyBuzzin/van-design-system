@@ -237,3 +237,32 @@ blank from finished area/volume; the rectangular cut-list extractor refuses this
 shape. This is unqualified geometry, not CNC output or a furniture joint.
 Separate owner approval is required for installation and all live jobs. The
 candidate has not changed the installed Runner or any Fusion document.
+
+### E1.2 tab-and-slot coupon candidate (Issue #73; offline only)
+
+`TabSlotCoupon` accepts only the existing owned `demo_id` and fixed entry name.
+One nominal 18 mm receiver (200 × 120) and upright (120 × 100 body plus central
+tab) form a T-joint. Default tab width 60, engagement 18, TOTAL clearance 0.5 per
+axis (0.25 per face), cutter diameter 6 mm. Through-slot and four circles form a
+union: each circle centre is inward by radius/√2 from its slot corner. Validation
+rejects nonfinite/invalid dimensions, relief overlap, lost shoulder contact and
+nonpositive receiver edge margins before CAD writes. The blank scaffold is not
+a finished-joint report; rectangular cut-list preview rejects these panel roles.
+
+The bounded compiler reuses rectangular profiles/extrusions, adding only a
+parameter-bound circle sketch. Two shoulder cuts target only the upright; the
+slot and four relief cuts target only the receiver. Each of seven cuts records
+actual removed volume and unchanged mate volume, preserving partial evidence.
+The fixed qualification reads BRep bounds/net volumes, face-based clearances,
+engagement and shoulder contacts, material probes, zero interference, stable
+inventory and exact participants (with guarded timeline restoration). It edits
+ONLY tool diameter 6 → 8 → 6 and previews invalid diameter 12 without writing it.
+Existing strict state/bounds restoration and 1e-6 mm³ volume readback rule apply.
+Any failure stops with the fixture and raw reports preserved; no retry, automatic
+geometry recovery or save. Existing capture and own-receipt unsaved close follow
+only a successful separately approved live run.
+
+T/E/C edits are offline-tested only; raw manual parameter edits are not guarded.
+Nominal stock, clearance and dog-bones do not prove physical fit or router
+manufacturability. No hardware, furniture retrofit, CNC/DXF output or load claim.
+Runner installation/configuration and ALL live jobs require new owner approval.

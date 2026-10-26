@@ -401,6 +401,11 @@ def run_rounded_panel(app, output_dir, guard):
     return run(app, output_dir, guard)
 
 
+def run_tab_slot(app, output_dir, guard):
+    from .tab_slot import run_tab_slot as run
+    return run(app, output_dir, guard)
+
+
 def measure_phase_a_reopened(app, guard):
     from .storage_box import measure_storage
     from .test_envelope import snapshot
