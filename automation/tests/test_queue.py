@@ -122,6 +122,18 @@ class QueueTests(TmpDirCase):
         w = wait_for(q, j["job_id"], timeout_s=0.2, poll_s=0.05, heartbeat_max_age_s=60)
         self.assertEqual(w["wait"], "timeout_running")
 
+    def test_silent_heartbeat_never_declares_a_claimed_job_lost(self):
+        """Regression: Fusion starves the watcher thread while busy; the job still completes."""
+        q = self.q()
+        j = prepare({"command": "ping", "args": {}})
+        q.submit(j); q.claim(j["job_id"])                # claimed, no heartbeat at all
+        w = wait_for(q, j["job_id"], timeout_s=0.3, poll_s=0.05, heartbeat_max_age_s=0.05)
+        self.assertEqual(w["wait"], "timeout_running")
+        self.assertEqual(q.read_state(j["job_id"])["status"], "running")
+        q.write_state(j["job_id"], "completed")
+        w = wait_for(q, j["job_id"], timeout_s=1, poll_s=0.05, heartbeat_max_age_s=0.05)
+        self.assertEqual(w["wait"], "done")
+
     def test_prepare_assigns_unique_ids(self):
         ids = {prepare({"command": "ping", "args": {}})["job_id"] for _ in range(50)}
         self.assertEqual(len(ids), 50)
