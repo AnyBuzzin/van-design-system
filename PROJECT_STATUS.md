@@ -1,6 +1,6 @@
 # VanDesign current status
 
-**19 October 2026.** Issue #60 Phase A accepted under the owner-revised persistence scope; reviewed Runner 4081cb3 installed. `main` is unchanged. Rules: [AGENTS.md](AGENTS.md). Next work: [ROADMAP.md](docs/ROADMAP.md).
+**26 October 2026.** Issue #61 default B1 live qualification passed; reviewed Runner 94f5ea4 installed. `main` is unchanged. Rules: [AGENTS.md](AGENTS.md). Next work: [ROADMAP.md](docs/ROADMAP.md).
 
 ## Works today
 
@@ -14,11 +14,12 @@
 | Five-panel under-bed storage box; width 600 -> 700 -> 600 mm, eight butt contacts, safe restoration and collision refusal | Live Fusion: 452/452 checks, [results](https://github.com/AnyBuzzin/van-design-system/issues/56#issuecomment-6257745990); both existing documents and owner panel moves preserved |
 | Full-scale dimensioned cutaway with readable plan labels; reference-only walls/roof and explicit assumptions | Live Fusion: 226/226 checks and independent image review, [results](https://github.com/AnyBuzzin/van-design-system/issues/60#issuecomment-6258304297) |
 | Base width 1200 -> 1210 -> 1200 restored; combined scene saved/reopened clean at version 1 with unchanged geometry and affected-body ownership | Live Fusion: base 3 x 63 checks ([results](https://github.com/AnyBuzzin/van-design-system/issues/60#issuecomment-6258570019)); revised persistence 226/226 ([R2 results](https://github.com/AnyBuzzin/van-design-system/issues/60#issuecomment-6265892095)); configured participant-list persistence UNKNOWN |
+| Flat lined-interior envelope; width edit/restore and unsafe storage move refused; both pre-existing documents preserved | Live Fusion: 480/480 checks, [B1 results](https://github.com/AnyBuzzin/van-design-system/issues/61#issuecomment-6405273183); finished nominal 1748 × 3008 × 1989 mm, 405 mm deck/arch and 598 mm right strip |
 | Nominal cut lists (CSV/JSON) | Offline; not CNC toolpaths |
 
 ## Now
 
-Jack independently accepted and closed #60 under the revised owner-approved criterion: exact pre-save participants, clean reopen, unchanged measured geometry/state and exact affected-body ownership. Configured participant-list persistence remains UNKNOWN. The [original dirty-state failure](https://github.com/AnyBuzzin/van-design-system/issues/60#issuecomment-6258570019), failed fixture and historical evidence remain preserved. R2 is open, saved and clean; capacity was 4/10, owner read-only action pending. #61 stays queued pending owner progression; no further live work is assigned. Preserve all earlier fixtures and owner edits. Vehicle fit, access, loads and manufacturing remain unqualified.
+B1 default flat-ceiling qualification passed after the scoped readback correction: width 1784 → 1794 → 1784, exact parameter/timeline restoration, guarded collision refusal, new fixture closed unsaved and final full inspection identical to baseline. Jack independently accepted and closed #61 within this scope. The [original B1 FAIL](https://github.com/AnyBuzzin/van-design-system/issues/61#issuecomment-6405161330), dirty failed fixture and clean owner blank remain preserved; capacity 2/10. Stepped ceilings and door keep-outs are offline-tested only, NOT RUN live. Raw manual parameter edits are not automatically guarded. Phase A remains accepted under its revised scope; configured participant-list persistence is UNKNOWN. No further live work assigned; vehicle fit, support/load, anchoring and manufacturing remain unqualified.
 
 ## Owner to-do
 
