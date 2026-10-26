@@ -195,6 +195,25 @@ def build_lined_envelope(spec):
     operations = tuple(replace(op, cut=raised(op.cut)) for op in source.operations)
     parameters = ParameterSet(tuple(p for p in source.parameters.params
                                     if not p.name.startswith("Test_")) + _lined_parameters(spec))
+    panels.extend(lined_reference_panels(spec))
+    identity = canonical_json(dict(source=source.spec_hash, envelope=spec.to_json(),
+                                   generator="lined-envelope@1", furniture_z="Env_Tolerance"))
+    assembly = replace(source, assembly_id="reference.lined_interior.001",
+                       spec_hash=hashlib.sha256(identity.encode()).hexdigest(),
+                       parameters=parameters, panels=tuple(panels), operations=operations)
+    preflight(assembly)
+    preview_lined_fit(assembly, spec, parameters.resolve())
+    return assembly
+
+
+def lined_parameters(spec):
+    """B1 envelope parameters (base and derived, finished-frame mm)."""
+    return _lined_parameters(spec)
+
+
+def lined_reference_panels(spec):
+    """Reference-only guide/obstruction panels for an EnvelopeSpec (never cut)."""
+    panels = []
     w, l, h = map(Param, ("Env_Width", "Env_Length", "Env_Height"))
     aw, al, ah, ay = map(Param, ("Env_Arch_Width", "Env_Arch_Length", "Env_Arch_Height", "Env_Arch_Y"))
     zero, guide = Mm(0), Mm(10)
@@ -215,14 +234,7 @@ def build_lined_envelope(spec):
     for k in spec.keepouts:
         ref("keepout."+k.name, tuple(Param(f"Env_{k.name}_{a}") for a in "XYZ"),
             tuple(Param(f"Env_{k.name}_{a}_Size") for a in "XYZ"), "reference_obstruction")
-    identity = canonical_json(dict(source=source.spec_hash, envelope=spec.to_json(),
-                                   generator="lined-envelope@1", furniture_z="Env_Tolerance"))
-    assembly = replace(source, assembly_id="reference.lined_interior.001",
-                       spec_hash=hashlib.sha256(identity.encode()).hexdigest(),
-                       parameters=parameters, panels=tuple(panels), operations=operations)
-    preflight(assembly)
-    preview_lined_fit(assembly, spec, parameters.resolve())
-    return assembly
+    return panels
 
 
 def _observed_spec(spec, env):
