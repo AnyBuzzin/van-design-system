@@ -20,11 +20,11 @@ Accepted on installed Runner `7392a67`: the shipped four-instance Crafter reques
 
 ## M2 — Joinery foundation (was E1)
 
-E1.1 passed live (#70); E1.2 tab-slot coupon in progress (#73). Then joinery driven by the profile model: tab-and-slot with automatic dog-bones (including tab roots) from tool diameter, clearance and **measured** sheet thickness; one hardware connector (Lamello Cabineo or confirmat) as cut geometry. **First physical coupon cut from VanDesign DXF** and its fit measured.
+E1.1 passed live (#70). Joinery is driven by the profile model: a reusable tab-and-slot generator with automatic dog-bones (including tab roots) from tool diameter, clearance and **measured** sheet thickness (#85); profile panels built and verified in Fusion (#84); then one hardware connector (Lamello Cabineo or confirmat) as cut geometry. Fit is proven virtually: exact clearance and zero assembled overlap offline, measured BRep bodies in Fusion, and DXF re-read against the core.
 
 ## M3 — First manufacturable module
 
-A kitchen base cabinet run in the reference van: arrangement + tab-and-slot carcass + DXF pack. Cut one cabinet and dry-assemble it; record panel accuracy and assembly time. This is the early end-to-end demonstration.
+A kitchen base cabinet run in the reference van: arrangement + tab-and-slot carcass + DXF pack, built and verified live in Fusion (bodies, joints, clearances, interference). The DXF pack is checked by importing it into CAM or nesting software. This is the virtual end-to-end demonstration, with no physical cut.
 
 ## M4 — Furniture library and materials (was D + E2, B2)
 
@@ -39,6 +39,8 @@ Arrangement JSON in → build and verify → DXF pack and cut list out. Nesting 
 Measure the finished lined interior; retarget the envelope data; build the arrangement and confirm 3–5 tape checks within tolerance. First real fit claim.
 
 ## M7 — Physical validation (was H)
+
+**Owner decision (26 October 2026): no physical CNC cutting until the software is complete; all physical validation happens here.** Start with a joint test coupon (measured sheet, actual bit) before the full arrangement. Joinery fit on real plywood stays unproven until this point; conservative clearances are the mitigation meanwhile.
 
 Cut, assemble and install one complete arrangement in the van. Measure panels against DXF, joinery fit, assembly sequence and installed clearances. Each heavy item has a documented load path into vehicle structure, reviewed by a competent person; capacities come from tests or calculation.
 
