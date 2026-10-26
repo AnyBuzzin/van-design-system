@@ -3,12 +3,16 @@ import json
 import os
 import tempfile
 import unittest
+from copy import deepcopy
 
 from vandesign.arrangement import SCHEMA, ArrangementError
 from vandesign.arrangement_job import plan_request, preview_values
 from vandesign.manufacturing.assembly import assembly_profiles
 from vandesign.manufacturing.dxf import export_profiles
 from vandesign.schemas.envelope_spec import EnvelopeSpec
+from vandesign.core.geometry import Box
+from vandesign.modules.test_envelope import preview_lined_fit
+from vandesign.verification.readback import COORDINATE_READBACK_MM
 
 CABINET = {"schema_version": "0.2", "module": "cabinet@1", "variant": "base",
            "profile_version": 1, "parameters": {"width_mm": 1100}}
@@ -43,6 +47,56 @@ INTO_ARCH = {"parameter": "K1_Pos_Y", "value_mm": 2100, "expect": "refused"}
 
 
 class PlanRequests(unittest.TestCase):
+    def test_captured_rotated_back_readback_keeps_inset_without_rounding(self):
+        plan = plan_request(request([EDIT_OK, INTO_ARCH], tool_diameter_mm=6))
+        asm = plan.arrangement.assembly
+        values = {p.name: p.value_mm for p in asm.parameters.base()}
+        # Exact differing base values from failed live job vd-20261026T143054-eef89a.
+        values.update(K1_Cab_Back=6.000000000000001, K1_Cab_Gap=3.0000000000000004,
+                      K1_Cab_Dado_Depth=6.000000000000001, K2_Cab_Back=6.000000000000001,
+                      K2_Cab_Gap=3.0000000000000004, K2_Cab_Dado_Depth=6.000000000000001,
+                      Env_Bare_Width=1832.0000000000002, Env_Bare_Height=1961.0000000000002,
+                      K1_Cab_Width=1000.0)
+        before = deepcopy(values)
+        self.assertEqual(preview_values(plan.arrangement, plan.envelope, values)['outcome'], 'PASS')
+        env = asm.parameters.resolve(values)
+        fit = preview_lined_fit(asm, plan.envelope, env)
+        gap = fit['clearance_to_inset_planes_mm']['kitchen.left.panel.back.001']['left']
+        self.assertEqual(gap, 4.999999999999999 - 5.0)
+        self.assertEqual(fit['margin_mm'], 5.0)
+        self.assertEqual(values, before)
+        self.assertEqual(preview_values(plan.arrangement, plan.envelope,
+                         dict(values, K1_Pos_X=5.0-1e-6))['outcome'], 'REFUSED')
+        self.assertEqual(preview_values(plan.arrangement, plan.envelope,
+                         dict(values, K1_Pos_Y=2100.0))['outcome'], 'REFUSED')
+
+    def test_all_inset_planes_accept_only_coordinate_noise(self):
+        plan = plan_request(request())
+        asm = plan.arrangement.assembly
+        env = asm.parameters.resolve()
+        boxes = {p.stable_id: p.box.resolve(env) for p in asm.panels}
+        sid = 'kitchen.left.panel.back.001'
+        limits = plan.envelope.finished_size
+        for axis in range(3):
+            for side in ('low', 'high'):
+                for outside in (-1e-6, 0.0, COORDINATE_READBACK_MM/2, 2*COORDINATE_READBACK_MM, 1e-6):
+                    with self.subTest(axis=axis, side=side, outside=outside):
+                        lo, hi = [10.0]*3, [20.0]*3
+                        if side == 'low':lo[axis] = 5.0-outside
+                        else:
+                            hi[axis] = limits[axis]-5.0+outside
+                            lo[axis] = hi[axis]-10.0
+                        observed = dict(boxes, **{sid: Box(tuple(lo), tuple(hi))})
+                        before = deepcopy(observed)
+                        if outside > COORDINATE_READBACK_MM:
+                            with self.assertRaisesRegex(ValueError, 'Outside inset'):
+                                preview_lined_fit(asm, plan.envelope, env, observed)
+                        else:
+                            fit = preview_lined_fit(asm, plan.envelope, env, observed)
+                            self.assertEqual(fit['outcome'], 'PASS')
+                            self.assertEqual(fit['margin_mm'], 5.0)
+                        self.assertEqual(observed, before)
+
     def test_valid_plan_with_pass_and_refused_edits(self):
         plan = plan_request(request([EDIT_OK, INTO_ARCH], tool_diameter_mm=6))
         self.assertEqual(plan.arrangement.fit["outcome"], "PASS")
