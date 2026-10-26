@@ -130,6 +130,7 @@ def modules(cfg):
 
 ARRANGEMENT_VALUE_MM = 1e-6     # measured parameter readback vs requested value
 ARRANGEMENT_BOX_MM = 0.01       # measured body bounds vs model (MODEL_EPSILON_MM)
+ARRANGEMENT_VOLUME_REL = 1e-6   # body volume vs model: max(1 mm3, rel), as validate() (VOLUME_REL_TOL)
 
 
 def _finite(v):
@@ -160,6 +161,9 @@ def _complete_stage(stage, plan, expected):
         want_lo, want_hi = plan['boxes'][pid]
         if any(abs(a - b) > ARRANGEMENT_BOX_MM for a, b in zip(list(lo) + list(hi), want_lo + want_hi)):
             return False
+        want_volume = plan['volumes'][pid]          # model blank minus its own cuts
+        if abs(volume - want_volume) > max(1.0, ARRANGEMENT_VOLUME_REL * want_volume):
+            return False
     counts = stage.get('counts')
     if not isinstance(counts, dict) or any(counts.get(k) != v for k, v in expected['inventory'].items()):
         return False
@@ -173,7 +177,16 @@ def _complete_stage(stage, plan, expected):
         by_id[c.get('check_id')] = c
     if any(cid not in by_id for cid in expected['required_checks']):
         return False
-    return all(_finite(by_id[cid].get('observed')) for cid in expected['numeric_checks'])
+    # Numeric observations are judged against model-derived values and validate()
+    # tolerances; report-supplied expected/tolerance fields are never trusted.
+    for cid, (value, tolerance) in plan['numeric'].items():
+        observed = by_id[cid].get('observed') if cid in by_id else None
+        allowed = ARRANGEMENT_VALUE_MM if tolerance is None else tolerance
+        if not _finite(observed) or abs(observed - value) > allowed + ARRANGEMENT_VALUE_MM:
+            return False
+    # Each volume check must report the volume of the body it describes.
+    return all(by_id[pid + '.volume'].get('observed') == bodies[pid]['volume_mm3']
+               for pid in bodies if pid + '.volume' in by_id)
 
 
 def verified_arrangement(report, expected):

@@ -156,16 +156,16 @@ class DemoTests(TmpDirCase):
         with open(path, encoding='utf-8') as fh:
             request = json.load(fh)
         expected = json.loads(json.dumps(expected_evidence(plan_request(request))))
-        numeric = set(expected['numeric_checks'])
         stages = []
         for plan in expected['stages']:
+            # Coherent: volumes and numeric observations are the model's own values.
             stages.append(dict(
                 label=plan['label'], outcome='PASS', parameters_mm=dict(plan['parameters_mm']),
-                bodies={pid: dict(min=list(lo), max=list(hi),
-                                  volume_mm3=(hi[0]-lo[0])*(hi[1]-lo[1])*(hi[2]-lo[2]))
+                bodies={pid: dict(min=list(lo), max=list(hi), volume_mm3=plan['volumes'][pid])
                         for pid, (lo, hi) in plan['boxes'].items()},
                 counts=dict(expected['inventory']),
-                checks=[dict(check_id=c, status='PASS', observed=0.0 if c in numeric else None)
+                checks=[dict(check_id=c, status='PASS',
+                             observed=plan['numeric'][c][0] if c in plan['numeric'] else None)
                         for c in expected['required_checks']]))
         edits = [dict(e, outcome='PASS', preview=dict(outcome='REFUSED' if e['expect'] == 'refused' else 'PASS'))
                  for e in expected['edits']]
@@ -210,9 +210,53 @@ class DemoTests(TmpDirCase):
         self.assertTrue(verify(report, expected))
         noisy = copy.deepcopy(report)                                      # readback noise is fine
         for stage in noisy['stages']:
-            for body in stage['bodies'].values():
+            checks = {c['check_id']: c for c in stage['checks']}
+            for pid, body in stage['bodies'].items():
                 body['min'][0] += 1e-7; body['volume_mm3'] += 1e-8
+                checks[pid + '.volume']['observed'] = body['volume_mm3']
         self.assertTrue(verify(noisy, expected))
+        # Review regression: every body volume 1 mm3 (volume checks kept consistent with it).
+        tiny = copy.deepcopy(report)
+        for stage in tiny['stages']:
+            checks = {c['check_id']: c for c in stage['checks']}
+            for pid, body in stage['bodies'].items():
+                body['volume_mm3'] = 1.0
+                checks[pid + '.volume']['observed'] = 1.0
+        self.assertFalse(verify(tiny, expected))
+        # Every numeric observation 0 (the previous fixture) is contradictory evidence.
+        zeros = copy.deepcopy(report)
+        for stage in zeros['stages']:
+            for c in stage['checks']:
+                if c['observed'] is not None:
+                    c['observed'] = 0.0
+        self.assertFalse(verify(zeros, expected))
+        vol_id = expected['body_ids'][0] + '.volume'
+        num = next(c for c in expected['numeric_checks'] if '.dado.' in c and c.endswith('.penetration'))
+        def check(r, stage, cid):
+            return next(c for c in r['stages'][stage]['checks'] if c['check_id'] == cid)
+        numeric_cases = {
+            'volume check observing zero': lambda r: check(r, 0, vol_id).__setitem__('observed', 0.0),
+            'volume check not matching its body': lambda r: check(r, 1, vol_id).__setitem__(
+                'observed', check(r, 1, vol_id)['observed'] + 0.5),
+            'one body volume 5 mm3 off the model': lambda r: (
+                r['stages'][0]['bodies'][expected['body_ids'][0]].__setitem__(
+                    'volume_mm3', r['stages'][0]['bodies'][expected['body_ids'][0]]['volume_mm3'] + 5e6),
+                check(r, 0, vol_id).__setitem__('observed', r['stages'][0]['bodies'][expected['body_ids'][0]]['volume_mm3'])),
+            'finite penetration 1 mm out of tolerance': lambda r: check(r, 0, num).__setitem__(
+                'observed', check(r, 0, num)['observed'] + 1.0),
+            'report-supplied tolerance cannot widen acceptance': lambda r: check(r, 0, num).update(
+                observed=check(r, 0, num)['observed'] + 1.0, expected=check(r, 0, num)['observed'] + 1.0,
+                tolerance=1e9),
+            'bbox deviation beyond model epsilon': lambda r: check(r, 2, expected['body_ids'][0] + '.bbox').__setitem__(
+                'observed', 0.5),
+        }
+        for name, mutate in numeric_cases.items():
+            bad = copy.deepcopy(report)
+            mutate(bad)
+            self.assertFalse(verify(bad, expected), name)
+        # Boolean probes stay status-based (no numeric observation needed).
+        self.assertTrue(any('.probe.' in c for c in expected['required_checks']))
+        self.assertFalse(any('.probe.' in c for c in expected['numeric_checks']))
         jack = {'outcome': 'PASS', 'stages': [{'label': 'baseline', 'outcome': 'PASS',
                 'checks': [{'check_id': 'anything', 'status': 'PASS'}]}],
                 'planned_edits': [], 'edits': [], 'baseline_state': {}, 'final_state': {}}

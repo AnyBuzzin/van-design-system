@@ -87,9 +87,15 @@ def expected_evidence(plan):
     stages = []
     for label, values in steps:
         env = asm.parameters.resolve(values)
-        stages.append(dict(label=label, parameters_mm=env,
-                           boxes={p.stable_id: [list(b.lo), list(b.hi)] for p in asm.panels
-                                  for b in (p.box.resolve(env),)}))
+        source = ModelGeometrySource(asm, values)
+        model_checks = validate(asm, source).checks
+        stages.append(dict(
+            label=label, parameters_mm=env,
+            boxes={p.stable_id: [list(b.lo), list(b.hi)] for p in asm.panels for b in (p.box.resolve(env),)},
+            # Net volume of each body: its blank minus its own cuts.
+            volumes={p.stable_id: source.body(p.stable_id).volume_mm3 for p in asm.panels},
+            # Model value and validate() tolerance of every numeric check at this stage.
+            numeric={c.check_id: [c.observed, c.tolerance] for c in model_checks if c.observed is not None}))
     return dict(spec_hash=asm.spec_hash,
                 instances=[i.instance_id for i in plan.arrangement.instances],
                 body_ids=sorted(p.stable_id for p in asm.panels),
