@@ -15,6 +15,7 @@ from dataclasses import dataclass
 import math
 
 from ..core.geometry import Box
+from .assembly import Tracked
 from .profile import Arc, Line, ProfileError, boundary_distance, CLOSURE_TOL_MM
 
 NOMINAL_THICKNESSES_MM = (5, 10, 12, 15, 18)
@@ -23,7 +24,8 @@ _AXES = {"x": 0, "y": 1, "z": 2}
 
 
 def _number(v, name, lo=None, hi=None):
-    if type(v) not in (int, float) or not math.isfinite(v):
+    # Tracked: tab offsets that keep their parameter provenance (#95 bindings).
+    if (type(v) not in (int, float) and not isinstance(v, Tracked)) or not math.isfinite(v):
         raise ProfileError("%s must be a finite number" % name)
     if (lo is not None and v < lo) or (hi is not None and v > hi):
         raise ProfileError("%s must be within [%s, %s]" % (name, lo, hi))

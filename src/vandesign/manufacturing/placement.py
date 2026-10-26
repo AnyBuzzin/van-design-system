@@ -11,9 +11,9 @@ from dataclasses import replace
 
 from ..arrangement import MODULES, PROFILE_MODULES, _canonical, tab_slot_parts
 from ..components.ids import make_id
-from ..core.expr import Param
+from ..core.expr import Param, substitute
 from .assembly import assembly_profiles
-from .carcass import cabinet_tab_slot_profiles
+from .carcass import WIDTH, cabinet_tab_slot_profiles, cabinet_tab_slot_width_bindings
 from .profile import PanelFrame, ProfileError
 
 
@@ -80,3 +80,55 @@ def arrangement_profiles(arrangement, values=None, *, tool_diameter):
     if set(order) != set(placed):
         raise ProfileError("Profiled panels do not match the arrangement")
     return tuple(placed[pid] for pid in order), joints
+
+
+def arrangement_width_bindings(arrangement, instance_id, values=None, *, interval=(1000.0, 1100.0)):
+    """World-frame PanelBindings for one tab-and-slot cabinet's native width edit (#95).
+
+    The module-frame bindings are renamed to the instance's parameters and
+    placed with the same quarter-turn and position mapping as the profiles;
+    the result is checked against ``arrangement_profiles`` at both interval
+    ends. ``interval`` is a preflight bound, not a live-qualified range.
+    Returns {world panel id: PanelBinding}.
+    """
+    inst = next((i for i in arrangement.instances if i.instance_id == instance_id), None)
+    if inst is None or inst.module != "cabinet_tab_slot":
+        raise ProfileError("%r is not a tab-and-slot cabinet in this arrangement" % (instance_id,))
+    env = arrangement.assembly.parameters.resolve(values)
+    builder, footprint = MODULES[inst.module]
+    module = builder(_canonical(inst.spec))
+    pre = inst.param_prefix + "_"
+    _, joinery = tab_slot_parts(inst.spec)
+    local = cabinet_tab_slot_width_bindings(module, joinery, {p.name: env[pre + p.name]
+                                                              for p in module.parameters.base()},
+                                            interval=interval)
+    names = {name: Param(pre + name) for name in module.parameters.names()}
+
+    def rename(e):
+        return substitute(e, names)
+    w, d, _ = (rename(e) for e in footprint(Param))
+    position = tuple(Param(pre + "Pos_" + a) for a in "XYZ")
+    k = inst.quarter_turns
+    out = {}
+    for pid, b in local.items():
+        world = make_id(inst.instance_id, pid)
+        out[world] = replace(
+            b, panel_id=world, parameter=pre + b.parameter,
+            frame_origin=place_point(tuple(rename(e) for e in b.frame_origin), k, w, d, position),
+            frame_axes=tuple(place_axis(a, k) for a in b.frame_axes), thickness=rename(b.thickness),
+            outline=b.outline.rename(rename),
+            features=tuple(replace(f, feature_id=world + f.feature_id[len(pid):],
+                                   depth=None if f.depth is None else rename(f.depth),
+                                   loop=f.loop.rename(rename)) for f in b.features))
+    base = {p.name: p.value_mm for p in arrangement.assembly.parameters.base()}
+    base.update(values or {})
+    for x in interval:
+        at = dict(base, **{pre + WIDTH: float(x)})
+        profiles, _ = arrangement_profiles(arrangement, at, tool_diameter=joinery.tool_diameter_mm)
+        world_env = arrangement.assembly.parameters.resolve(at)
+        for p in profiles:
+            if p.panel_id in out:
+                problem = out[p.panel_id].mismatch(p, world_env)
+                if problem:
+                    raise ProfileError("%s binding differs at %s=%g: %s" % (p.panel_id, pre + WIDTH, x, problem))
+    return out
