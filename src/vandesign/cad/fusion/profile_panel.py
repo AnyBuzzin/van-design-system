@@ -1,7 +1,8 @@
-"""Profile-driven fixed XY sketches; only trusted thickness Expr is editable.
+"""Profile sketches: accepted fixed XY path and offline oriented-width helpers.
 
 Uses existing Fusion extrusion/ownership machinery. No document lifecycle API.
-New CAD behaviour is UNKNOWN until separately authorised live qualification.
+The bound-loop helper is not dispatched by Runner yet. New CAD behaviour is
+UNKNOWN until separately authorised live qualification.
 """
 import math
 from types import SimpleNamespace
@@ -50,6 +51,131 @@ class ProfileAdapter(FusionAdapter):
             raise ValueError('Validated PanelFrame required')
         return tuple(sum(a*b for a, b in zip(frame.origin, axis))
                      for axis in (frame.u, frame.v, frame.w))
+
+    def _bound_loop_sketch(self, comp, name, binding, offset, env, interval_envs, guard):
+        """Native dimensions from reviewed affine bindings; never freeze moving geometry.
+
+        Bounded #95 loops have a line between each pair of arcs. Arc endpoints
+        are shared with their neighbouring lines, avoiding duplicate endpoint
+        constraints. A constant construction datum below every coordinate makes
+        driving distances positive even for negative local/world placement.
+        No lifecycle operations or recovery are performed here.
+        """
+        if len(interval_envs) != 2:
+            raise ValueError('Both reviewed interval endpoints are required')
+        loops = [binding.resolve(e) for e in (env, *interval_envs)]
+        sources = binding.sources
+        if not sources or any(s[0] not in ('line', 'arc') for s in sources):
+            raise ValueError('Unsupported native loop binding')
+        if any(a[0] == b[0] == 'arc' for a, b in zip(sources, sources[1:] + sources[:1])):
+            raise ValueError('Adjacent bound arcs are not supported')
+
+        def at(source):
+            i, delta = source
+            return tuple(binding.vertices[i][j] + Mm(delta[j]) + offset[j] for j in range(2))
+
+        coords = [at(s[1]) for s in sources]
+        coords += [at(s[2]) for s in sources if s[0] == 'line']
+        values = [e.eval(v) for xy in coords for e in xy for v in (env, *interval_envs)]
+        if not values or not all(math.isfinite(v) for v in values):
+            raise ValueError('Incomplete native coordinate observations')
+        datum = min(values) - 100.0
+        if not math.isfinite(datum) or any(v - datum <= 0 for v in values):
+            raise ValueError('No positive native dimension datum')
+        # Source topology must remain closed throughout the reviewed interval.
+        for loop in loops:
+            if len(loop.segments) != len(sources) or any(
+                    math.dist(a.end, b.start) > 1e-7
+                    for a, b in zip(loop.segments, loop.segments[1:] + loop.segments[:1])):
+                raise ValueError('Bound loop is not closed')
+        guard()
+        sketch = comp.sketches.add(comp.xYConstructionPlane)
+        sketch.name = name + ' - native profile'
+        def point(x, y):
+            return adsk.core.Point3D.create(x / 10, y / 10, 0)
+        anchor = sketch.sketchPoints.add(point(datum, datum))
+        if anchor is None:
+            raise RuntimeError('Construction datum creation failed')
+        anchor.isFixed = True  # Constant reference only; never a profile point.
+        if anchor.isFullyConstrained is not True:
+            raise RuntimeError('Construction datum is not constrained')
+        dims, constraints = sketch.sketchDimensions, sketch.geometricConstraints
+        orientations = (adsk.fusion.DimensionOrientations.HorizontalDimensionOrientation,
+                        adsk.fusion.DimensionOrientations.VerticalDimensionOrientation)
+        def coordinate(p, xy):
+            for e, orientation in zip(xy, orientations):
+                d = dims.addDistanceDimension(anchor, p, orientation, point(datum - 10, datum - 10))
+                if d is None:
+                    raise RuntimeError('Native coordinate dimension failed')
+                d.parameter.expression = (e - Mm(datum)).render()
+
+        # Each loop junction has exactly one SketchPoint. Arcs own their two
+        # endpoint junctions; lines reuse those API objects directly.
+        junctions = {}
+        for i, (s, segment) in enumerate(zip(sources, loops[0].segments)):
+            if s[0] != 'arc':
+                continue
+            guard()
+            center = at(s[1]); cx, cy = (e.eval(env) for e in center)
+            ox, oy = (e.eval(env) for e in offset)
+            arc = sketch.sketchCurves.sketchArcs.addByCenterStartSweep(
+                point(cx, cy), point(segment.start[0] + ox, segment.start[1] + oy), segment.sweep)
+            if arc is None:
+                raise RuntimeError('Native arc creation failed')
+            # Fusion normalises negative sweeps to CCW, reversing API endpoints:
+            # fusion_SketchArcs_addByCenterStartSweep.htm in Autodesk's API docs.
+            start, end = arc.startSketchPoint, arc.endSketchPoint
+            if segment.sweep < 0:
+                start, end = end, start
+            for p, expected in ((start, segment.start), (end, segment.end)):
+                g = p.geometry
+                actual = (g.x * 10, g.y * 10, g.z * 10)
+                target = (expected[0] + ox, expected[1] + oy, 0)
+                if not all(math.isfinite(v) for v in actual) or math.dist(actual, target) > 1e-6:
+                    raise RuntimeError('Native arc endpoint/sweep readback differs')
+            coordinate(arc.centerSketchPoint, center)
+            radial = dims.addRadialDimension(arc, point(cx + segment.radius, cy + segment.radius))
+            if radial is None:
+                raise RuntimeError('Native radius dimension failed')
+            radial.parameter.expression = Mm(segment.radius).render()
+            for endpoint, angle in ((start, segment.start_angle),
+                                    (end, segment.start_angle + segment.sweep)):
+                ray = sketch.sketchCurves.sketchLines.addByTwoPoints(arc.centerSketchPoint, endpoint)
+                reference = sketch.sketchCurves.sketchLines.addByTwoPoints(
+                    point(datum, datum), point(datum + 10 * math.cos(angle), datum + 10 * math.sin(angle)))
+                if ray is None or reference is None:
+                    raise RuntimeError('Native arc direction construction failed')
+                ray.isConstruction = reference.isConstruction = True
+                reference.isFixed = True  # Constant direction, independent of width.
+                for p in (reference.startSketchPoint, reference.endSketchPoint):
+                    if p.isFullyConstrained is False:
+                        p.isFixed = True
+                    if p.isFullyConstrained is not True:
+                        raise RuntimeError('Arc direction reference is not constrained')
+                if constraints.addParallel(ray, reference) is None:
+                    raise RuntimeError('Native arc direction constraint failed')
+            junctions[i] = start
+            junctions[(i + 1) % len(sources)] = end
+        for i, s in enumerate(sources):
+            if s[0] != 'line':
+                continue
+            guard()
+            points = []
+            for j, src in ((i, s[1]), ((i + 1) % len(sources), s[2])):
+                if j not in junctions:
+                    xy = at(src)
+                    p = sketch.sketchPoints.add(point(*(e.eval(env) for e in xy)))
+                    if p is None:
+                        raise RuntimeError('Native endpoint creation failed')
+                    coordinate(p, xy)
+                    junctions[j] = p
+                points.append(junctions[j])
+            if sketch.sketchCurves.sketchLines.addByTwoPoints(*points) is None:
+                raise RuntimeError('Native line creation failed')
+        if sketch.profiles.count != 1 or sketch.isFullyConstrained is not True:
+            raise RuntimeError('Native loop must be one fully constrained profile')
+        guard()
+        return sketch
 
     def _loop_sketch(self, comp, name, loop, origin):
         sketch=comp.sketches.add(comp.xYConstructionPlane);sketch.name=name+' - profile'
