@@ -11,59 +11,15 @@ from ..core.geometry import Box, BoxExpr
 from ..core.params import ParameterSet, ParamDef
 from ..schemas.storage_box_spec import StorageBoxSpec, NOTICE
 from .test_envelope import build_test_envelope, preview_fit, ARCHES
+from ..verification.readback import VOLUME_READBACK_MM3, same_except_volume_noise
 
 PREFIX = 'storage.001.'
 PLACEMENT = (592, 600, 0)
-RESTORATION_VOLUME_EPSILON_MM3 = 1e-6
+RESTORATION_VOLUME_EPSILON_MM3 = VOLUME_READBACK_MM3
 
 
-def restored_storage_measurements(before, after):
-    """Only BRep volume readback noise may differ; never rewrite raw evidence."""
-    if not isinstance(before,dict) or not isinstance(after,dict):
-        return False
-    if before.get('outcome')!='PASS' or after.get('outcome')!='PASS':
-        return False
-    if {k:v for k,v in before.items() if k not in ('bodies','checks')} != {
-            k:v for k,v in after.items() if k not in ('bodies','checks')}:
-        return False
-    bodies=before.get('bodies'); other=after.get('bodies')
-    if not isinstance(bodies,dict) or not bodies or not isinstance(other,dict) or bodies.keys()!=other.keys():
-        return False
-    def finite(v):
-        return type(v) in (int,float) and math.isfinite(v)
-    for sid,body in bodies.items():
-        restored=other[sid]
-        if not isinstance(body,dict) or not isinstance(restored,dict):
-            return False
-        a,b=body.get('volume_mm3'),restored.get('volume_mm3')
-        if not finite(a) or not finite(b) or min(a,b)<=0 or abs(a-b)>RESTORATION_VOLUME_EPSILON_MM3:
-            return False
-        if {k:v for k,v in body.items() if k!='volume_mm3'} != {k:v for k,v in restored.items() if k!='volume_mm3'}:
-            return False
-    checks=before.get('checks'); others=after.get('checks')
-    if not isinstance(checks,list) or not isinstance(others,list) or len(checks)!=len(others):
-        return False
-    volume_ids={sid+'.volume':sid for sid in bodies}
-    seen=set()
-    for a,b in zip(checks,others):
-        if not isinstance(a,dict) or not isinstance(b,dict) or a.get('status')!='PASS' or b.get('status')!='PASS':
-            return False
-        cid=a.get('check_id')
-        if cid in volume_ids:
-            sid=volume_ids[cid]
-            if cid in seen or a.get('unit')!='mm3' or a.get('object_ids')!=[sid]:
-                return False
-            seen.add(cid)
-            for check,body in ((a,bodies[sid]),(b,other[sid])):
-                obs,expected,tol=(check.get(k) for k in ('observed','expected','tolerance'))
-                if (not all(finite(v) for v in (obs,expected,tol)) or tol<0
-                        or obs!=body['volume_mm3'] or abs(obs-expected)>tol):
-                    return False
-            if {k:v for k,v in a.items() if k!='observed'} != {k:v for k,v in b.items() if k!='observed'}:
-                return False
-        elif a!=b:
-            return False
-    return seen==set(volume_ids)
+# Shared readback policy (verification/readback.py); name kept for existing callers.
+restored_storage_measurements = same_except_volume_noise
 
 
 def build_storage_box(spec: StorageBoxSpec):
