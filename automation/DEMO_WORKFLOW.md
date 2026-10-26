@@ -217,3 +217,23 @@ capacity and vehicle fit are unqualified.
 
 NOT RUN in Fusion. Separate owner approval is required before installation **and**
 any live job (including inspect). No installed configuration or designs changed.
+
+### E1.1 rounded panel candidate (Issue #70; offline only)
+
+`RoundedPanel` is a fixed `run_approved_demo` entry accepting only `demo_id` and
+`entry_point`. Existing baseline/capacity/owned-empty-unsaved guards apply. It
+builds one 600 × 800 × 18 mm panel with one upper-right quarter-circle (R50),
+measures actual BRep bounds/net volume, stable identity, feature inventory and
+inside/outside corner probes, then edits radius 50 → 75 → 50. A radius of 600 is
+previewed and refused without writing it. Restored snapshots and bounds must be
+exact; only the existing 1e-6 mm³ volume readback allowance applies. Reports are
+preserved on failure, with no retry, automatic restoration or cleanup. Save is
+refused. After a separately approved successful live run, the existing capture
+and own-receipt unsaved close commands apply.
+
+Width/length/radius are parameter-bound; raw manual edits are not automatically
+guarded. The separate versioned spec and contour preview distinguish the enclosing
+blank from finished area/volume; the rectangular cut-list extractor refuses this
+shape. This is unqualified geometry, not CNC output or a furniture joint.
+Separate owner approval is required for installation and all live jobs. The
+candidate has not changed the installed Runner or any Fusion document.

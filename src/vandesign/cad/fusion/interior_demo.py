@@ -396,6 +396,11 @@ def run_lined_envelope(app, output_dir, guard):
     return run(app, output_dir, guard)
 
 
+def run_rounded_panel(app, output_dir, guard):
+    from .rounded_panel import run_rounded_panel as run
+    return run(app, output_dir, guard)
+
+
 def measure_phase_a_reopened(app, guard):
     from .storage_box import measure_storage
     from .test_envelope import snapshot

@@ -11,6 +11,7 @@ NOTE: written against the documented Fusion API; the parts that are new in V5
 
 from __future__ import annotations
 
+import math
 from typing import Dict, List, Optional, Sequence
 
 import adsk.core
@@ -18,7 +19,7 @@ import adsk.fusion
 
 from ... import GENERATOR_ID
 from ...components.model import AssemblyDefinition, DadoOperation, Panel
-from ...core.geometry import Box, Vec
+from ...core.geometry import Box, Vec, RoundedCornerOutline
 from ...core.expr import _fmt
 from ...core.units import cm3_to_mm3, cm_to_mm
 from ...verification.geometry_source import MeasuredBody
@@ -159,6 +160,39 @@ class FusionAdapter:
         dd.parameter.expression = depth
         return sketch
 
+    def _rounded_profile(self, comp, name, width, length, radius):
+        w, l, r = (self._eval_cm(e) for e in (width, length, radius))
+        RoundedCornerOutline(w * 10, l * 10, r * 10)
+        point = adsk.core.Point3D.create
+        sketch = comp.sketches.add(comp.xYConstructionPlane)
+        sketch.name = name + " - parametric rounded profile"
+        arc = sketch.sketchCurves.sketchArcs.addByCenterStartSweep(
+            point(w-r, l-r, 0), point(w, l-r, 0), math.pi/2)
+        if arc is None:
+            raise FusionAdapterError("Rounded arc creation failed")
+        cons, dims = sketch.geometricConstraints, sketch.sketchDimensions
+        cons.addHorizontalPoints(arc.centerSketchPoint, arc.startSketchPoint)
+        cons.addVerticalPoints(arc.centerSketchPoint, arc.endSketchPoint)
+        H = adsk.fusion.DimensionOrientations.HorizontalDimensionOrientation
+        V = adsk.fusion.DimensionOrientations.VerticalDimensionOrientation
+        for axis, expression, text in ((H, "(%s - %s)" % (width, radius), point(w/2, -2, 0)),
+                                       (V, "(%s - %s)" % (length, radius), point(-2, l/2, 0))):
+            dim = dims.addDistanceDimension(sketch.originPoint, arc.centerSketchPoint, axis, text)
+            dim.parameter.expression = expression
+        dims.addRadialDimension(arc, point(w+2, l+2, 0)).parameter.expression = radius
+        lines = sketch.sketchCurves.sketchLines
+        bottom = lines.addByTwoPoints(sketch.originPoint, point(w, 0, 0))
+        right = lines.addByTwoPoints(bottom.endSketchPoint, arc.startSketchPoint)
+        top = lines.addByTwoPoints(arc.endSketchPoint, point(0, l, 0))
+        left = lines.addByTwoPoints(top.endSketchPoint, sketch.originPoint)
+        for line in (bottom, top):
+            cons.addHorizontal(line)
+        for line in (right, left):
+            cons.addVertical(line)
+        if sketch.profiles.count != 1:
+            raise FusionAdapterError("Rounded outline must produce exactly one closed profile")
+        return sketch
+
     def _extrude(self, comp, sketch, name: str, z: str, height: str, operation, participants=None):
         features = comp.features.extrudeFeatures
         inp = features.createInput(sketch.profiles.item(0), operation)
@@ -182,9 +216,12 @@ class FusionAdapter:
         comp.name = panel.display_name
         ox, oy, oz = (e.render() for e in panel.box.origin)
         sx, sy, sz = (e.render() for e in panel.box.size)
-        sketch = self._rectangle_profile(comp, panel.display_name, ox, oy, sx, sy,
-                                         x_dynamic=bool(panel.box.origin[0].refs()),
-                                         y_dynamic=bool(panel.box.origin[1].refs()))
+        if panel.corner_radius is None:
+            sketch = self._rectangle_profile(comp, panel.display_name, ox, oy, sx, sy,
+                                             x_dynamic=bool(panel.box.origin[0].refs()),
+                                             y_dynamic=bool(panel.box.origin[1].refs()))
+        else:
+            sketch = self._rounded_profile(comp, panel.display_name, sx, sy, panel.corner_radius.render())
         feat = self._extrude(comp, sketch, panel.display_name + " - solid", oz, sz,
                              adsk.fusion.FeatureOperations.NewBodyFeatureOperation)
         feat.bodies.item(0).name = panel.display_name
