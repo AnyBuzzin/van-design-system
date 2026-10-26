@@ -12,13 +12,15 @@ Already proven in live Fusion (2026-10-14 to 10-19): cabinets (base/tall/overhea
 2. Done (Issue #60): PR #49 adapter regression: offline pre-#49 trace parity for base/tall/overhead/bed; live base checkpoint 1200 → 1210 → 1200.
 3. Done (Issue #60, owner-revised scope): combined scene saved and reopened clean with unchanged geometry and affected-body ownership; configured participant-list persistence remains UNKNOWN.
 
-## Phase B — Parametric lined-interior envelope (B1 current)
+## Phase B — Parametric lined-interior envelope (B1 complete, 26 October 2026; B2 when Phase D needs it)
+
+B1 accepted live for the default flat-ceiling envelope (Issue #61); stepped ceilings and door keep-outs are offline-tested only.
 
 Generalise the Issue #51 test envelope into a measured-envelope spec, in two steps: B1 ([#61](https://github.com/AnyBuzzin/van-design-system/issues/61)) flat planes and keep-outs; B2 angled upper-wall planes, which need non-axis-aligned reference bodies in the adapter. Contents: floor plane, lower walls, angled upper-wall planes (B2), flat or segmented ceiling, front/rear limits, wheel arches and obstructions as boxes, door openings with clearance keep-out volumes, an installation tolerance inset, and mounting points/rails as geometric data only. Editable `Env_*` Fusion parameters; reference-only bodies never enter cut lists. Fit check: every furniture panel corner inside all planes (exact for the convex usable space) and no positive-volume overlap between any panel box and any keep-out box; violations refused before CAD mutation.
 
 **Reference van (owner decision, 19 October 2026):** until the target van is acquired, build and test every feature against published dimensions: Ford Transit L2H3 load space 1784 W × 3044 L × 2025 H mm, 1392 mm between arches (arch length, height and position remain assumed). A lining-allowance parameter derives the lined interior from the bare load space. Every value stays an editable parameter labelled PUBLISHED-NOMINAL, so retargeting to the acquired van is a data change, not new code.
 
-## Phase E1 — Joinery foundation (owner decision: next after B1, before most of Phase D)
+## Phase E1 — Joinery foundation (current; owner decision: next after B1, before most of Phase D)
 
 New modules must be born with real joinery rather than retrofitted from butt joints. In order:
 1. **2D panel outlines:** a flat panel defined by a profile of lines and arcs (not only an axis-aligned box) in the core and Fusion adapter, verified against real BRep bodies. This is the base for tabs, slots, notches, cut-outs and radiused edges.

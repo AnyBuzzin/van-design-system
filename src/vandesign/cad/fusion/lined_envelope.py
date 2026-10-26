@@ -7,8 +7,9 @@ import adsk.fusion
 from .adapter import FusionAdapter
 from .test_envelope import measure_test, snapshot
 from ...core.geometry import Box
-from ...modules.storage_box import storage_contacts, restored_storage_measurements
-from ...modules.test_envelope import build_lined_envelope, preview_lined_fit, furniture_rows
+from ...modules.storage_box import storage_contacts
+from ...modules.test_envelope import (build_lined_envelope, preview_lined_fit, furniture_rows,
+                                     restored_lined_measurements)
 from ...schemas.envelope_spec import EnvelopeSpec
 
 
@@ -61,7 +62,7 @@ def run_lined_envelope(app, output_dir, guard):
             if len(payload["stages"])==1:
                 payload["baseline_state"] = snapshot(design)
         payload["restored_state"] = snapshot(design)
-        if (not restored_storage_measurements(payload["stages"][0], payload["stages"][-1])
+        if (not restored_lined_measurements(payload["stages"][0], payload["stages"][-1])
                 or payload["baseline_state"]!=payload["restored_state"]):
             raise RuntimeError("B1 restoration differs")
         before = payload["stages"][-1]
@@ -82,7 +83,7 @@ def run_lined_envelope(app, output_dir, guard):
         after = measure_lined(design, assembly, spec, guard, 1784)
         payload["after_refusal"] = after
         payload["final_state"] = snapshot(design)
-        if (not restored_storage_measurements(before, after)
+        if (not restored_lined_measurements(before, after)
                 or payload["restored_state"]!=payload["final_state"]):
             raise RuntimeError("Refusal changed geometry or state")
         guard()
