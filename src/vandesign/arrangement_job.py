@@ -19,7 +19,7 @@ from dataclasses import dataclass
 import json
 import math
 
-from .arrangement import ArrangementError, build_arrangement, collisions, load_arrangement
+from .arrangement import PROFILE_MODULES, ArrangementError, build_arrangement, collisions, load_arrangement
 from .core.expr import ExprError
 from .core.params import ParameterError
 from .schemas.envelope_spec import load_envelope_spec
@@ -126,7 +126,7 @@ def preview_values(arrangement, envelope, values):
     return dict(outcome="PASS", reason="constraints, collisions and envelope fit pass")
 
 
-def plan_request(request):
+def plan_request(request, *, allow_profile_modules=False):
     """Validate a request fully and return a Plan, or raise ArrangementError."""
     if not isinstance(request, dict) or not (_REQUEST_KEYS <= set(request) <= _REQUEST_KEYS | {"tool_diameter_mm"}):
         raise ArrangementError("Request needs arrangement, envelope, edits and optional tool_diameter_mm")
@@ -137,6 +137,10 @@ def plan_request(request):
     if len(text) > 262144:
         raise ArrangementError("Request larger than 256 KiB")
     instances = load_arrangement(json.dumps(request["arrangement"]))
+    profiled = sorted({i.module for i in instances} & PROFILE_MODULES)
+    if profiled and not allow_profile_modules:
+        raise ArrangementError("%s needs the oriented profile Fusion builder (#84 follow-up); "
+                               "plan offline with allow_profile_modules=True" % ", ".join(profiled))
     try:
         envelope = load_envelope_spec(json.dumps(request["envelope"]))
     except ValueError as exc:

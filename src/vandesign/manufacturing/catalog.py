@@ -17,6 +17,7 @@ from ..schemas.storage_box_spec import StorageBoxSpec
 from ..schemas.tab_slot_spec import TabSlotSpec
 from ..core.geometry import Box
 from .assembly import assembly_profiles
+from .carcass import TabSlotJoinery, cabinet_tab_slot_profiles
 from .joints import Sheet, TabSlot, apply_joints
 from .profile import ProfileError
 
@@ -58,37 +59,13 @@ def tab_slot_profiles(spec=None, *, tool_diameter=None):
 
 def tab_slot_carcass_profiles(sheet, *, tool_diameter, spec=None, clearance_mm=0.2, tabs_per_edge=2,
                               tab_width_mm=None):
-    """A cabinet whose bottom and top tab through both sides (flush, through
-    the measured side thickness) instead of butt joints. Shelves keep their
-    dados; doors and back are unchanged. Geometry uses ``sheet.measured_mm``.
-
-    Returns (profiles, joint results).
-    """
+    """A cabinet built from ``sheet`` (measured thickness) with bottom and top
+    tabbing flush through both sides. Returns (profiles, joint results)."""
     if type(sheet) is not Sheet:
         raise ProfileError("A Sheet with measured thickness is required")
-    if type(tabs_per_edge) is not int or not 1 <= tabs_per_edge <= 6:
-        raise ProfileError("tabs_per_edge must be 1-6")
-    asm = build_cabinet(spec or CabinetSpec())
-    values = {"Cab_Ply": sheet.measured_mm}
-    env = asm.parameters.resolve(values)
-    failed = [c.constraint_id for c, ok, _, _ in asm.check_constraints(env) if not ok]
-    if failed:
-        raise ProfileError("Cabinet invalid at measured thickness: " + ", ".join(failed))
-    boxes = {p.stable_id: p.box.resolve(env) for p in asm.panels}
-    depth = boxes["panel.bottom.001"].size[1]
-    width = tab_width_mm if tab_width_mm is not None else min(120.0, depth / (2 * tabs_per_edge))
-    width = float(width)
-    tabs = tuple(((k + 0.5) * depth / tabs_per_edge - width / 2, width) for k in range(tabs_per_edge))
-    t = sheet.measured_mm
-    joints = [TabSlot(panel, side, direction, tabs, t, clearance_mm)
-              for panel in ("panel.bottom.001", "panel.top.001")
-              for side, direction in (("panel.left.001", "-x"), ("panel.right.001", "+x"))]
-    overrides, cuts, results = apply_joints(joints, boxes)
-    profiles = assembly_profiles(asm, values, tool_diameter=tool_diameter, extra_cuts=cuts,
-                                 box_overrides=overrides)
-    out = tuple(replace(p, notes=p.notes + (sheet.note,)) if abs(p.thickness - t) <= 1e-9 else p
-                for p in profiles)
-    return out, results
+    joinery = TabSlotJoinery(sheet, tool_diameter, clearance_mm, tabs_per_edge, tab_width_mm)
+    return cabinet_tab_slot_profiles(build_cabinet(spec or CabinetSpec()), joinery,
+                                     {"Cab_Ply": sheet.measured_mm})
 
 
 def module_profiles(name, *, tool_diameter, relief=True):
