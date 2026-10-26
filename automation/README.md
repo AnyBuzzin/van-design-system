@@ -61,7 +61,7 @@ executes Python supplied in jobs (enforced by schema and lifecycle tests).
 * **Restore journal** (`<queue>/journal/`): `pending` -> `applied` -> cleared after verified restore. A `pending` or `restore_unverified` entry blocks all further mutation of that design until a human resolves it. Edits are never stacked.
 * **Exactly-once:** `ledger/<id>.submitted` and `ledger/<id>.claimed` are created with `O_EXCL` and never deleted, so an id can be submitted once and executed once, even after restarts or a stray file reappearing in the inbox.
 * **Interruption:** at start-up any job still in `claimed/` is marked `interrupted` / outcome `UNKNOWN` and is **not** re-run.
-* **Timeouts:** `wait` cancels a still-queued job (so it cannot run late); a running job is reported `timeout_running`. A missing/stale heartbeat is reported as `runner_not_running` / `runner_lost`.
+* **Timeouts:** `wait` cancels a still-queued job (so it cannot run late); a running job is reported `timeout_running`. A missing/stale heartbeat cancels a still-queued job as `runner_not_running`; a claimed job is never declared lost on heartbeat silence alone (it ends `done` or `timeout_running`; a crash is marked `interrupted` at the next start).
 * **No inferred success:** a job is `completed` only when every step's own evidence met its expectations; otherwise `failed`, `rejected` or `REFUSED`.
 
 ## Install and start
