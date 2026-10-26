@@ -1,6 +1,6 @@
 # VanDesign current status
 
-**26 October 2026.** Issue #61 default B1 live qualification passed; reviewed Runner 94f5ea4 installed. `main` is unchanged. Rules: [AGENTS.md](AGENTS.md). Next work: [ROADMAP.md](docs/ROADMAP.md).
+**26 October 2026.** E1.1 rounded-panel live qualification passed; reviewed Runner f24df89 installed. `main` is unchanged. Rules: [AGENTS.md](AGENTS.md). Next work: [ROADMAP.md](docs/ROADMAP.md).
 
 ## Works today
 
@@ -15,11 +15,12 @@
 | Full-scale dimensioned cutaway with readable plan labels; reference-only walls/roof and explicit assumptions | Live Fusion: 226/226 checks and independent image review, [results](https://github.com/AnyBuzzin/van-design-system/issues/60#issuecomment-6258304297) |
 | Base width 1200 -> 1210 -> 1200 restored; combined scene saved/reopened clean at version 1 with unchanged geometry and affected-body ownership | Live Fusion: base 3 x 63 checks ([results](https://github.com/AnyBuzzin/van-design-system/issues/60#issuecomment-6258570019)); revised persistence 226/226 ([R2 results](https://github.com/AnyBuzzin/van-design-system/issues/60#issuecomment-6265892095)); configured participant-list persistence UNKNOWN |
 | Flat lined-interior envelope; width edit/restore and unsafe storage move refused; both pre-existing documents preserved | Live Fusion: 480/480 checks, [B1 results](https://github.com/AnyBuzzin/van-design-system/issues/61#issuecomment-6405273183); finished nominal 1748 × 3008 × 1989 mm, 405 mm deck/arch and 598 mm right strip |
+| One 600 × 800 × 18 mm panel with an upper-right rounded corner; radius 50 → 75 → 50 and invalid-radius preview refusal | Live Fusion: 72/72 checks, [E1.1 results](https://github.com/AnyBuzzin/van-design-system/issues/70#issuecomment-6405976728); actual bounds/volume, material probes, stable identity and exact state restoration; own fixture closed unsaved, full final inspection identical to baseline |
 | Nominal cut lists (CSV/JSON) | Offline; not CNC toolpaths |
 
 ## Now
 
-B1 default flat-ceiling qualification passed after the scoped readback correction: width 1784 → 1794 → 1784, exact parameter/timeline restoration, guarded collision refusal, new fixture closed unsaved and final full inspection identical to baseline. Jack independently accepted and closed #61 within this scope. The [original B1 FAIL](https://github.com/AnyBuzzin/van-design-system/issues/61#issuecomment-6405161330), dirty failed fixture and clean owner blank remain preserved; capacity 2/10. Stepped ceilings and door keep-outs are offline-tested only, NOT RUN live. Raw manual parameter edits are not automatically guarded. Phase A remains accepted under its revised scope; configured participant-list persistence is UNKNOWN. No further live work assigned; vehicle fit, support/load, anchoring and manufacturing remain unqualified.
+E1.1 passed the bounded nominal 18 mm rounded-panel test; Jack independently confirmed the raw results and full final baseline. Width/length edits remain offline-tested only, NOT RUN live; no saved persistence, joinery or CNC qualification. The [original B1 FAIL](https://github.com/AnyBuzzin/van-design-system/issues/61#issuecomment-6405161330), dirty failed fixture and clean owner blank remain preserved; capacity 2/10. B1 stepped ceilings and door keep-outs remain offline-only. Raw manual edits are not automatically guarded; configured participant-list persistence is UNKNOWN. Runner remains running; no further live work assigned. Vehicle fit, loads, anchoring and manufacturing remain unqualified.
 
 ## Owner to-do
 
