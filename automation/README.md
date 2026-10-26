@@ -136,3 +136,34 @@ Earlier Computer Use workflow, from the timestamps of consecutive real reports (
 * Validated on the base@1 fixture only; tall/overhead jobs are expected to work through the same G3 code but were not run through the runner.
 * Protected-design ids are not yet populated in `config.json`; mutation is still impossible on them because only allowlisted designs can be mutated.
 * Fusion Desktop integration tests are not part of cloud CI (no Fusion runtime there).
+
+## M2.1 profile fixture (offline candidate)
+
+`BuildArrangement` also accepts the exact request in `jobs/requests/profile_fixture_request.json`.
+It selects a trusted built-in fixture, not arbitrary profile JSON, expressions or code.
+The two resolved `PanelProfile` objects feed CAD expectations and DXF unchanged: an
+E1.1-sized rounded outline and a relieved through-slot panel with top pocket and bottom blind hole.
+XY loops are fixed; only `Profile_Thickness` is newly parametric (18 -> 20 -> 18 mm).
+20 mm is a geometric test, not new material/joint qualification. Invalid 5 mm thickness
+is refused before mutation. Overlapping/touching feature bounding rectangles, overlapping
+panel bounds and ambiguous probes are unsupported and refused before CAD construction.
+Cuts set exact participant bodies, verify material removed and unchanged mates, and read
+stable feature attributes plus affected bodies without timeline movement. This does not
+claim configured participant-list persistence. Missing evidence cannot pass.
+The existing owned unsaved-session, no-retry/no-save and stop-on-failure rules apply.
+New Fusion behaviour remains UNKNOWN until owner-approved deployment and live qualification;
+all existing box arrangements and the earlier rounded-panel parameter path are unchanged.
+
+### Read-only profile failure inspection
+
+The existing `inspect` command adds `profile_diagnostics` only after recognising the
+active unsaved parametric fixture's exact two stable IDs, 18 mm thickness parameter,
+1/2/3/12 parameter/occurrence/component/timeline census and end-of-timeline marker.
+Signature mismatch reports NOT_RUN; unavailable/invalid properties or changed document
+state report UNKNOWN. Complete property reads report OBSERVED, **not model PASS**:
+negative health, suppression, constraint and count observations remain visible.
+This reads component/body counts and extrusion/sketch properties only; it does not
+measure geometry, activate documents, move the timeline, edit, save or close anything.
+Recognition grants no ownership. Restarted Runner sessions never adopt old receipts.
+Installation requires separate owner approval; no build replay is needed or authorised
+by diagnostic permission. Existing failed fixtures and original reports remain protected.

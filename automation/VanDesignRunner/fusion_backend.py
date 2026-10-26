@@ -122,7 +122,7 @@ class FusionBackend:
         tl = design.timeline
         src = adapter.geometry_source()
         from demo_workflow import destinations, inventory
-        return {
+        inspection = {
             "cloud_destinations": destinations(self.app),
             "identity": self.identity(),
             "design_type": "parametric" if design.designType == adsk.fusion.DesignTypes.ParametricDesignType else "direct",
@@ -134,6 +134,79 @@ class FusionBackend:
             "user_parameters": params,
             "session": inventory(self.app),
         }
+        inspection['profile_diagnostics'] = self._profile_diagnostics(design, inspection, g3['adapter'])
+        return inspection
+
+    def _profile_diagnostics(self, design, inspection, adapter_module):
+        """Property reads only; recognition never grants ownership or edit authority."""
+        result = dict(outcome='NOT_RUN', scope='profile feature properties only', components=[])
+        expected_ids = {'profile.rounded.001': 1, 'profile.relieved.001': 1}
+        params = inspection['user_parameters']
+        if (inspection['identity']['is_saved'] is not False or inspection['design_type'] != 'parametric'
+                or inspection['managed_ids'] != expected_ids
+                or inspection['design_counts'] != dict(user_parameters=1, root_occurrences=2,
+                                                       all_components=3, timeline_items=12)
+                or inspection['timeline'] != dict(count=12, marker_position=12)
+                or len(params) != 1 or params[0]['name'] != 'Profile_Thickness'
+                or params[0]['unit'] != 'mm' or params[0]['value_mm'] != 18.0):
+            result['reason'] = 'Active document does not match the bounded profile fixture signature'
+            return result
+        errors = []
+        def read(getter, kind, label):
+            try:
+                value = getter()
+                if type(value) is not kind or (kind is int and value < 0):
+                    raise ValueError('Missing or invalid property')
+                return value
+            except Exception as exc:
+                errors.append(dict(property=label, error=type(exc).__name__ + ': ' + str(exc)))
+                return None
+        try:
+            from demo_workflow import documents, document_state, unchanged
+            doc = self._doc()
+            before = dict(app=self.app, existing=[(d, document_state(d)) for d in documents(self.app)])
+            if not doc.isValid or not doc.isActive or design.rootComponent.bRepBodies.count or design.rootComponent.sketches.count:
+                raise BackendError('Invalid active profile fixture')
+            occurrences = adapter_module._find_occurrences(design.rootComponent)
+            if {k: len(v) for k, v in occurrences.items()} != expected_ids:
+                raise BackendError('Ambiguous profile identity')
+            healthy = int(adsk.fusion.FeatureHealthStates.HealthyFeatureHealthState)
+            for pid in sorted(expected_ids):
+                comp = occurrences[pid][0].component
+                observed = dict(stable_id=pid, bodies=[], extrusions=[], sketches=[])
+                result['components'].append(observed)
+                for key, getter in (('body_count', lambda: comp.bRepBodies.count),
+                                    ('feature_count', lambda: comp.features.count),
+                                    ('extrusion_count', lambda: comp.features.extrudeFeatures.count),
+                                    ('sketch_count', lambda: comp.sketches.count)):
+                    observed[key] = read(getter, int, pid + '.' + key)
+                for i in range(observed['body_count'] or 0):
+                    body = comp.bRepBodies.item(i)
+                    observed['bodies'].append(dict(index=i,
+                        valid=read(lambda: body.isValid, bool, pid + '.body.valid'),
+                        solid=read(lambda: body.isSolid, bool, pid + '.body.solid')))
+                for i in range(observed['extrusion_count'] or 0):
+                    f = comp.features.extrudeFeatures.item(i)
+                    observed['extrusions'].append(dict(index=i,
+                        health_state=read(lambda: int(f.healthState), int, pid + '.extrusion.health'),
+                        suppressed=read(lambda: f.isSuppressed, bool, pid + '.extrusion.suppressed'),
+                        operation=read(lambda: int(f.operation), int, pid + '.extrusion.operation')))
+                for i in range(observed['sketch_count'] or 0):
+                    s = comp.sketches.item(i)
+                    observed['sketches'].append(dict(index=i,
+                        profile_count=read(lambda: s.profiles.count, int, pid + '.sketch.profiles'),
+                        health_state=read(lambda: int(s.healthState), int, pid + '.sketch.health'),
+                        fully_constrained=read(lambda: s.isFullyConstrained, bool, pid + '.sketch.constrained')))
+            # OBSERVED means complete property reads, never a geometry qualification.
+            unchanged(before)
+            if self.app.activeDocument != doc:
+                raise BackendError('Active document changed during profile inspection')
+            result.update(outcome='UNKNOWN' if errors else 'OBSERVED', healthy_state=healthy)
+        except Exception as exc:
+            errors.append(dict(property='profile_diagnostics', error=type(exc).__name__ + ': ' + str(exc)))
+            result['outcome'] = 'UNKNOWN'
+        result['errors'] = errors
+        return result
 
     # ------------------------------------------------------------ measurement (G3 logic, measure path only)
     def measure(self, out_dir, label):
