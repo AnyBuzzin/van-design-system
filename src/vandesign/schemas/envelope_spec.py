@@ -132,9 +132,11 @@ class EnvelopeSpec:
             insets.append(inset)
         if sum(insets) >= w - 2*self.tolerance_mm:
             raise ValueError("Upper wall insets consume the ceiling width")
-        # Reference obstacles must fit the actual, un-inset space too.
-        for origin, size in [((0, ay, 0), (aw, self.arch_length_mm, ah))] + [
-                (k.origin_mm, k.size_mm) for k in self.keepouts]:
+        # Reference obstacles must fit the actual, un-inset space too. Both
+        # arches are checked: the upper walls need not be symmetric.
+        arches = [((0, ay, 0), (aw, self.arch_length_mm, ah)),
+                  ((w - aw, ay, 0), (aw, self.arch_length_mm, ah))]
+        for origin, size in arches + [(k.origin_mm, k.size_mm) for k in self.keepouts]:
             if (any(o+s > d for o, s, d in zip(origin, size, (w, l, max(self.heights))))
                     or any(origin[2]+size[2] > height for start, end, height in self.segments
                            if origin[1] < end and origin[1]+size[1] > start)

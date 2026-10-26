@@ -69,6 +69,26 @@ class Schema(unittest.TestCase):
                 upper_right_break_mm=None, upper_right_inset_mm=None))))
         self.assertEqual(json.loads(CRAFTER.to_json())["schema_version"], SCHEMA)
 
+    def test_each_wheel_arch_is_checked_against_its_own_sloped_wall(self):
+        """Review regression: the right arch was never checked (asymmetric walls)."""
+        ah = CRAFTER.arch_height_mm - CRAFTER.lining_mm             # exposed arch top, 282 mm
+        with self.assertRaisesRegex(ValueError, "Obstruction outside"):
+            replace(CRAFTER, upper_right_break_mm=100, upper_right_inset_mm=500)   # Jack's repro
+        with self.assertRaisesRegex(ValueError, "Obstruction outside"):
+            replace(CRAFTER, upper_left_break_mm=100, upper_left_inset_mm=500)
+        # Valid asymmetric cases: one low steep wall above the arch top, the other vertical.
+        for side in ("left", "right"):
+            ok = replace(CRAFTER, **{"upper_%s_break_mm" % side: ah + 1, "upper_%s_inset_mm" % side: 500})
+            self.assertEqual(ok.upper_walls, (side,))
+            # The arch corner nearest the slope is just inside the plane.
+            w = ok.finished_size[0]
+            x = 0 if side == "left" else w
+            self.assertGreater(ok.upper_wall_distance(side, x, ah), 0)
+        # The other side's slope may not reach its arch either (break just under the arch top).
+        for side in ("left", "right"):
+            with self.assertRaisesRegex(ValueError, "Obstruction outside"):
+                replace(CRAFTER, **{"upper_%s_break_mm" % side: ah - 1, "upper_%s_inset_mm" % side: 500})
+
     def test_obstruction_must_stay_inside_the_sloped_wall(self):
         high = KeepOut("cab_light", "obstruction", (0, 1000, 1700), (40, 100, 50))  # in the leaning corner
         with self.assertRaisesRegex(ValueError, "Obstruction outside"):
