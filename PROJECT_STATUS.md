@@ -19,7 +19,7 @@
 
 ## Now
 
-B1 default flat-ceiling qualification passed after the scoped readback correction: width 1784 → 1794 → 1784, exact parameter/timeline restoration, guarded collision refusal, new fixture closed unsaved and final full inspection identical to baseline. Jack has the evidence for independent acceptance. The [original B1 FAIL](https://github.com/AnyBuzzin/van-design-system/issues/61#issuecomment-6405161330), dirty failed fixture and clean owner blank remain preserved; capacity 2/10. Stepped ceilings and door keep-outs are offline-tested only, NOT RUN live. Raw manual parameter edits are not automatically guarded. Phase A remains accepted under its revised scope; configured participant-list persistence is UNKNOWN. No further live work assigned; vehicle fit, support/load, anchoring and manufacturing remain unqualified.
+B1 default flat-ceiling qualification passed after the scoped readback correction: width 1784 → 1794 → 1784, exact parameter/timeline restoration, guarded collision refusal, new fixture closed unsaved and final full inspection identical to baseline. Jack independently accepted and closed #61 within this scope. The [original B1 FAIL](https://github.com/AnyBuzzin/van-design-system/issues/61#issuecomment-6405161330), dirty failed fixture and clean owner blank remain preserved; capacity 2/10. Stepped ceilings and door keep-outs are offline-tested only, NOT RUN live. Raw manual parameter edits are not automatically guarded. Phase A remains accepted under its revised scope; configured participant-list persistence is UNKNOWN. No further live work assigned; vehicle fit, support/load, anchoring and manufacturing remain unqualified.
 
 ## Owner to-do
 
