@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 from dataclasses import dataclass
+import math
 from typing import Mapping, Optional, Tuple
 
 from .expr import Expr
@@ -12,6 +13,39 @@ Vec = Tuple[float, float, float]
 
 class GeometryError(ValueError):
     pass
+
+
+@dataclass(frozen=True)
+class RoundedCornerOutline:
+    """Fixed CCW upper-right quarter-circle family in local XY millimetres."""
+    width: float
+    length: float
+    radius: float
+
+    def __post_init__(self):
+        if (any(type(v) not in (int, float) or not 0 < v <= 10000 or not math.isfinite(v)
+                for v in (self.width, self.length, self.radius))
+                or self.radius >= min(self.width, self.length)):
+            raise GeometryError('Require finite positive W,L and 0 < R < min(W,L)')
+
+    @property
+    def vertices(self):
+        w,l,r = self.width,self.length,self.radius
+        return ((0,0),(w,0),(w,l-r),(w-r,l),(0,l))
+
+    @property
+    def lines(self):
+        a,b,c,d,e = self.vertices
+        return ((a,b),(b,c),(d,e),(e,a))
+
+    @property
+    def arc(self):
+        return dict(center=(self.width-self.radius,self.length-self.radius),
+                    start=self.vertices[2],end=self.vertices[3],sweep_radians=math.pi/2)
+
+    @property
+    def area_mm2(self):
+        return self.width*self.length-(1-math.pi/4)*self.radius**2
 
 
 @dataclass(frozen=True)

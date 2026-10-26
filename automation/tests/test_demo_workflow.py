@@ -118,6 +118,35 @@ class DemoTests(TmpDirCase):
             self.run_cmd('create_demo_design')
         self.assertEqual(self.app.documents.add.call_count, 1)
 
+    def test_rounded_panel_fixed_owned_unsaved_and_fail_stop(self):
+        args=dict(demo_id='demo-001',entry_point='RoundedPanel')
+        validate_job(job('run_approved_demo',args,target=None))
+        for extra in ({'radius_mm':75},{'layout_mm':{}},{'script':'arbitrary.py'}):
+            with self.assertRaises(JobSchemaError):
+                validate_job(job('run_approved_demo',dict(args,**extra),target=None))
+        with self.assertRaises(PolicyError):self.run_cmd('run_approved_demo',args)
+        self.run_cmd('create_demo_design')
+        module=NS(run_rounded_panel=Mock(return_value=self.report_path))
+        with open(self.report_path,'w') as fh:json.dump({'outcome':'FAIL'},fh)
+        with patch.object(workflow,'modules',return_value=module):
+            with self.assertRaises(PolicyError):self.run_cmd('run_approved_demo',args)
+            with self.assertRaises(PolicyError):self.run_cmd('run_approved_demo',args)
+            with self.assertRaises(PolicyError):self.run_cmd('save_demo_design',self.args)
+        module.run_rounded_panel.assert_called_once()
+        self.doc.saveAs.assert_not_called();self.protected.close.assert_not_called()
+        self.protected.saveAs.assert_not_called()
+
+    def test_rounded_panel_success_cannot_save_or_repeat(self):
+        args=dict(demo_id='demo-001',entry_point='RoundedPanel')
+        self.run_cmd('create_demo_design')
+        with open(self.report_path,'w') as fh:json.dump({'outcome':'PASS'},fh)
+        module=NS(run_rounded_panel=Mock(return_value=self.report_path))
+        with patch.object(workflow,'modules',return_value=module):
+            self.assertEqual(self.run_cmd('run_approved_demo',args)['outcome'],'PASS')
+            with self.assertRaises(PolicyError):self.run_cmd('run_approved_demo',args)
+            with self.assertRaises(PolicyError):self.run_cmd('save_demo_design',self.args)
+        self.doc.saveAs.assert_not_called();self.protected.close.assert_not_called()
+
     def test_build_refuses_nonempty_saved_wrong_tab_and_unknown_entry(self):
         self.run_cmd('create_demo_design')
         for attr, value in [('isSaved', True), ('isModified', True), ('isActive', False)]:

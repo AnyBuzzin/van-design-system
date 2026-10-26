@@ -2,11 +2,11 @@
 
 from __future__ import annotations
 
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from typing import Dict, List, Mapping, Optional, Tuple
 
 from ..core.expr import Expr
-from ..core.geometry import BoxExpr, GeometryError
+from ..core.geometry import BoxExpr, GeometryError, RoundedCornerOutline
 from ..core.params import ParameterSet
 from .ids import IdError, make_id
 
@@ -27,6 +27,9 @@ class Panel:
     material_ref: str
     box: BoxExpr
     grain_axis: Optional[str] = None  # not used yet
+    # Excluded from Python hash to preserve existing rectangular Panel hashes;
+    # equality still compares the shape. Unequal shapes may safely share a hash.
+    corner_radius: Optional[Expr] = field(default=None, hash=False)
 
 
 @dataclass(frozen=True)
@@ -103,6 +106,10 @@ class AssemblyDefinition:
         refs = set()
         for p in self.panels:
             refs |= p.box.refs()
+            if p.corner_radius is not None:
+                if not isinstance(p.corner_radius, Expr):
+                    raise StructureError('Rounded radius must be a length expression')
+                refs |= p.corner_radius.refs()
         for o in self.operations:
             refs |= o.cut.refs() | o.groove_depth.refs()
             refs |= o.end_clearance.refs() | o.slot_clearance.refs()
@@ -125,6 +132,16 @@ class AssemblyDefinition:
         env = self.parameters.resolve()
         try:
             boxes: Dict[str, object] = {p.stable_id: p.box.resolve(env) for p in self.panels}
+            for p in self.panels:
+                if p.corner_radius is None:
+                    if p.role == 'rounded_panel':raise GeometryError('Rounded panel requires a radius')
+                    continue
+                b = boxes[p.stable_id]
+                if (len(self.panels)!=1 or self.operations or p.role!='rounded_panel'
+                        or b.lo!=(0,0,0) or any(e.refs() for e in p.box.origin)
+                        or b.size[2]!=18 or p.box.size[2].refs()):
+                    raise GeometryError('E1.1 requires standalone local XY panel, fixed 18 mm, no cuts')
+                RoundedCornerOutline(b.size[0], b.size[1], p.corner_radius.eval(env))
             cuts = [(o, o.cut.resolve(env)) for o in self.operations]
         except GeometryError as e:
             raise StructureError("default geometry invalid: %s" % e) from None
