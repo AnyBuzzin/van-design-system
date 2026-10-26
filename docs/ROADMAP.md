@@ -1,16 +1,60 @@
 # VanDesign product direction
 
-Present capability and blockers belong in [PROJECT_STATUS.md](../PROJECT_STATUS.md); working rules belong in [AGENTS.md](../AGENTS.md). Work top to bottom; each item is done when it works in Fusion.
+Present capability and blockers belong in [PROJECT_STATUS.md](../PROJECT_STATUS.md); working rules belong in [AGENTS.md](../AGENTS.md). Milestones run in dependency order; each is done when it works in Fusion and, from M3, on real plywood.
 
-Deliver these outcomes through small verified increments:
+**Strategy ([ADR-0002](decisions/ADR-0002-lined-interior-envelope.md)):** van shell → structural timber framework → plywood-lined interior → measured planar envelope → configurable furniture → verified joinery → CNC panel output → secure installation. Keep the core/adapter/Runner; extend, do not replace.
 
-1. Build the existing bed/cabinet composition together in live Fusion by extending the Runner's demo commands; measure solids, cuts, contacts and clearance; close the test document without saving.
-2. Demonstrate combined size/position changes and restoration, rechecking collisions.
-3. Fit furniture to the owner's confirmed vehicle and measured envelope, including access and wheel arches.
-4. Add one useful drawer/storage module.
-5. Support 5, 10, 12, 15 and 18 mm plywood where appropriate, including tolerances and valid joinery.
-6. Export individual panel contours; validate tooling allowances, assembly and anchoring before claiming CNC readiness.
+**Reference van:** until the target van is acquired, build and test against the published VW Crafter CR35 long wheelbase maxi, high roof: load length 4855 mm at floor level / 4606 mm minimum (use 4606 for full-height furniture), width 1832 mm, 1380 mm between arches, height 1961 mm; side door 1311 × 1822 mm, rear doors 1552 × 1840 mm. Arch length, height and position stay ASSUMED. All vehicle values are editable data, so retargeting is a data change. The Transit L2H3 fixtures (#51, #56, #61) remain historical evidence.
 
-Keep the existing core/adapter/Runner. Interlocking assembly and secure vehicle anchoring remain product goals requiring further qualification. Later layout automation and manufacturing traceability follow demonstrated needs.
+**Proven live (14–26 October 2026):** cabinets (base/tall/overhead, width and shelf edits), resizable bed, bed + cabinet composition with collision refusal, under-bed storage box, lined envelope B1 (flat ceiling), E1.1 rounded panel. Phase A (stabilisation, #60) and B1 (#61) are complete.
 
-This page records direction, not a duplicate milestone log or blanket release/manufacturing approval. Follow [AGENTS.md](../AGENTS.md) for workflow.
+## M1 — Platform consolidation (current)
+
+Removes the bottlenecks found in the October review so new modules become mostly data.
+1. **Manufacturing output from the core:** panel profiles (lines/arcs, through-cuts, pockets, holes), automatic dog-bone relief, per-panel DXF + cut list, independently re-read (PR #76).
+2. **Arrangements:** any number of instances, per-instance parameter namespaces, positions, quarter-turns, cross-instance collision and B1 fit; verification in each module's frame (PR #77).
+3. **One generic Runner entry point** (`BuildAndVerify`): build any arrangement spec in a fresh owned document and verify it generically (bodies, cuts, probes, interference, census, exact restore); replaces per-feature entry points and hard-coded check counts. Fix misleading `runner_lost` heartbeats. One owner deployment approval.
+4. **One tolerance policy:** shared readback comparator; offline fakes inject realistic float noise; Python 3.14 (Fusion's interpreter) in CI.
+
+Done when an arrangement JSON builds and verifies live through the one entry point and its DXF pack re-reads exactly.
+
+## M2 — Joinery foundation (was E1)
+
+E1.1 passed live (#70); E1.2 tab-slot coupon in progress (#73). Then joinery driven by the profile model: tab-and-slot with automatic dog-bones (including tab roots) from tool diameter, clearance and **measured** sheet thickness; one hardware connector (Lamello Cabineo or confirmat) as cut geometry. **First physical coupon cut from VanDesign DXF** and its fit measured.
+
+## M3 — First manufacturable module
+
+A kitchen base cabinet run in the reference van: arrangement + tab-and-slot carcass + DXF pack. Cut one cabinet and dry-assemble it; record panel accuracy and assembly time. This is the early end-to-end demonstration.
+
+## M4 — Furniture library and materials (was D + E2, B2)
+
+Only what a working van needs: overhead cabinets (with B2 angled upper-wall planes), drawer unit (one slide type), wardrobe/tall unit, bed variants. Per-panel thickness 5/10/12/15/18 mm (others only when justified), grain direction, hardware library.
+
+## M5 — Layout workflow (was G)
+
+Arrangement JSON in → build and verify → DXF pack and cut list out. Nesting and CAM use existing tools (deepnest or MapBoards nesting; VCarve or the CNC shop's CAM), not built here.
+
+## M6 — Real vehicle (was C; when the van is acquired, always before M7)
+
+Measure the finished lined interior; retarget the envelope data; build the arrangement and confirm 3–5 tape checks within tolerance. First real fit claim.
+
+## M7 — Physical validation (was H)
+
+Cut, assemble and install one complete arrangement in the van. Measure panels against DXF, joinery fit, assembly sequence and installed clearances. Each heavy item has a documented load path into vehicle structure, reviewed by a competent person; capacities come from tests or calculation.
+
+## M8 — First usable release (was I)
+
+Accepted when:
+1. A completed measurement sheet produces a Fusion envelope matching every entered value (±0.1 mm).
+2. Bed, kitchen base, overhead cabinet and storage are configurable; envelope and collision violations are refused before mutation.
+3. Every furniture panel exports as DXF + cut list with stable IDs; reference geometry excluded; round-trip check PASS.
+4. The M7 arrangement is installed: panels within ±0.5 mm of export, joinery assembles without re-cutting, installed clearances within ±3 mm of the model.
+5. The full design saves and reopens unchanged; the owner approves the release to `main`.
+
+## Owner gates (outside software)
+
+Fusion commercial licence before selling designs or kits; structural review of fixings before heavy items are installed; repository privacy and licence; seats and seat-belt mounts stay on dedicated tested hardware.
+
+## Later (not blockers)
+
+Per-model framing and lining templates, generated battens and lining panels, nesting optimisation, costing, more modules, layout automation.

@@ -144,6 +144,21 @@ class Scale(Expr):
         return self.e.refs()
 
 
+def substitute(expr: Expr, mapping: Mapping[str, Expr]) -> Expr:
+    """Copy of ``expr`` with parameters replaced (e.g. per-instance renaming)."""
+    if isinstance(expr, Param):
+        return mapping.get(expr.name, expr)
+    if isinstance(expr, Mm):
+        return expr
+    if isinstance(expr, Sum):
+        return Sum(tuple((s, substitute(t, mapping)) for s, t in expr.terms))
+    if isinstance(expr, Scale):
+        return Scale(expr.k, substitute(expr.e, mapping))
+    if isinstance(expr, Div):
+        return Div(substitute(expr.e, mapping), expr.k)
+    raise ExprError("cannot substitute into %r" % (expr,))
+
+
 @dataclass(frozen=True)
 class Div(Expr):
     e: Expr

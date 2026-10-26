@@ -14,8 +14,9 @@ from ..components.model import AssemblyDefinition
 from ..core.expr import ExprError
 from ..core.geometry import Box, GeometryError, RoundedCornerOutline
 from ..core.params import ParameterError
+from ..core.placement import box_to_local, point_to_world
 from ..core.units import MODEL_EPSILON_MM, VOLUME_REL_TOL
-from .geometry_source import GeometrySource
+from .geometry_source import GeometrySource, MeasuredBody
 from .report import FAIL, PASS, UNKNOWN, Check, ValidationReport
 
 PROBE_OFFSET_MM = 0.1
@@ -149,9 +150,14 @@ def validate(assembly: AssemblyDefinition, source: GeometrySource, eps_mm: float
              "rounded contour area times thickness" if p.corner_radius is not None else
              "blank minus its own grooves only")
 
-    # 6. Dado joint relationships measured on the actual solids.
-    for o, cut in cuts:
+    # 6. Dado joint relationships measured on the actual solids, evaluated in
+    #    the module's own frame (identity for unrotated modules).
+    for o, world_cut in cuts:
+        k = o.quarter_turns
+        cut = box_to_local(world_cut, k)
         mate = bodies.get(o.mating_panel_id)
+        if mate is not None and k:
+            mate = MeasuredBody(box_to_local(mate.box, k), mate.volume_mm3)
         ids = (o.target_panel_id, o.mating_panel_id)
         oid = o.operation_id
         depth, ec, sc = o.groove_depth.eval(env), o.end_clearance.eval(env), o.slot_clearance.eval(env)
@@ -186,7 +192,7 @@ def validate(assembly: AssemblyDefinition, source: GeometrySource, eps_mm: float
             ("rear_wall_solid", (cx, cut.hi[1] + PROBE_OFFSET_MM, cz), True),
         ]
         for tag, pt, want in probes:
-            got = source.point_in_material(o.target_panel_id, pt)
+            got = source.point_in_material(o.target_panel_id, point_to_world(pt, k))
             cid = "%s.probe.%s" % (oid, tag)
             if got is None:
                 rep.add(Check(cid, UNKNOWN, object_ids=(o.target_panel_id,), note="containment unavailable"))

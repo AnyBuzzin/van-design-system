@@ -41,6 +41,14 @@ def wait_for(q: JobQueue, job_id: str, timeout_s: float, poll_s: float = 0.25, h
 
     On timeout a still-queued job is cancelled (so it can never run late);
     a running job cannot be cancelled and is reported as ``timeout_running``.
+
+    A silent heartbeat only cancels a job that is still queued. Once the
+    runner has claimed a job, heartbeat silence is not evidence of loss:
+    Fusion can starve the watcher thread while its main thread is busy, and
+    every live session since Issue #56 logged such false ``runner_lost``
+    reports for jobs that then completed. A claimed job therefore ends as
+    ``done`` or ``timeout_running``; a real crash is marked ``interrupted``
+    at the runner's next start.
     """
     t0 = time.time()
     while True:
@@ -48,10 +56,9 @@ def wait_for(q: JobQueue, job_id: str, timeout_s: float, poll_s: float = 0.25, h
         if st.get("status") in TERMINAL:
             return {"wait": "done", "state": st, "waited_s": round(time.time() - t0, 3)}
         rs = q.runner_status(heartbeat_max_age_s)
-        if not rs.get("alive") and time.time() - t0 > heartbeat_max_age_s:
-            if st.get("status") == "queued" and q.cancel(job_id):
-                return {"wait": "runner_not_running", "state": q.read_state(job_id), "runner": rs}
-            return {"wait": "runner_lost", "state": st, "runner": rs}
+        if (st.get("status") == "queued" and not rs.get("alive")
+                and time.time() - t0 > heartbeat_max_age_s and q.cancel(job_id)):
+            return {"wait": "runner_not_running", "state": q.read_state(job_id), "runner": rs}
         if time.time() - t0 > timeout_s:
             if st.get("status") == "queued" and q.cancel(job_id):
                 return {"wait": "timeout_cancelled", "state": q.read_state(job_id)}
