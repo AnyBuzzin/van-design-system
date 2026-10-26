@@ -332,6 +332,20 @@ def polygon_loop(vertices, *, waste_inside, relief_radius=None, open_points=()):
     tool reaches the sharp corner a mating part needs. Corners listed in
     ``open_points`` (e.g. on an open pocket edge) are left unrelieved.
     """
+    return polygon_loop_with_sources(vertices, waste_inside=waste_inside, relief_radius=relief_radius,
+                                     open_points=open_points)[0]
+
+
+def polygon_loop_with_sources(vertices, *, waste_inside, relief_radius=None, open_points=()):
+    """``polygon_loop`` plus where every segment point comes from.
+
+    Returns (loop, sources), one source per segment, in order:
+    ``("line", (i, offset), (j, offset))`` for a Line from vertex i + offset to
+    vertex j + offset, and ``("arc", (i, offset), radius, start_angle, sweep)``
+    for a relief Arc centred at vertex i + offset. Offsets depend only on the
+    corner turn, the relief flag and the radius, so a vertex moved by a
+    parameter moves its segment points with it (width bindings, #95).
+    """
     pts = [_finite_point(v) for v in vertices]
     if len(pts) < 4:
         raise ProfileError("Polygon needs at least four vertices")
@@ -361,34 +375,41 @@ def polygon_loop(vertices, *, waste_inside, relief_radius=None, open_points=()):
         is_open = any(math.dist(v, p) <= CLOSURE_TOL_MM for p in open_set)
         corners.append((v, u1, u2, bool(r) and narrow_waste and not is_open))
 
+    zero = (0.0, 0.0)
     if r is None:
-        return Loop(tuple(Line(pts[i], pts[(i + 1) % n]) for i in range(n)))
+        return (Loop(tuple(Line(pts[i], pts[(i + 1) % n]) for i in range(n))),
+                tuple(("line", (i, zero), ((i + 1) % n, zero)) for i in range(n)))
 
     reach = r * math.sqrt(2)  # where the relief circle crosses each edge
-    entry, exit_ = [], []
+    entry, exit_ = [], []     # (point, offset from its vertex)
     for v, u1, u2, relieved in corners:
         if relieved:
-            entry.append((v[0] - reach * u1[0], v[1] - reach * u1[1]))
-            exit_.append((v[0] + reach * u2[0], v[1] + reach * u2[1]))
+            a, b = (-(reach * u1[0]), -(reach * u1[1])), (reach * u2[0], reach * u2[1])
+            entry.append(((v[0] + a[0], v[1] + a[1]), a))
+            exit_.append(((v[0] + b[0], v[1] + b[1]), b))
         else:
-            entry.append(v)
-            exit_.append(v)
-    segments = []
+            entry.append((v, zero))
+            exit_.append((v, zero))
+    segments, sources = [], []
     for i, (v, u1, u2, relieved) in enumerate(corners):
         if relieved:
             bis = ((u2[0] - u1[0]) / math.sqrt(2), (u2[1] - u1[1]) / math.sqrt(2))
-            c = (v[0] + r * bis[0], v[1] + r * bis[1])
-            a_in = math.atan2(entry[i][1] - c[1], entry[i][0] - c[0])
+            off = (r * bis[0], r * bis[1])
+            c = (v[0] + off[0], v[1] + off[1])
+            a_in = math.atan2(entry[i][0][1] - c[1], entry[i][0][0] - c[0])
             # Half-turn through the corner: counter-clockwise inside a cut loop,
             # clockwise for an outline, so the arc always bulges into material.
-            segments.append(Arc(c, r, a_in, math.pi if waste_inside else -math.pi))
+            sweep = math.pi if waste_inside else -math.pi
+            segments.append(Arc(c, r, a_in, sweep))
+            sources.append(("arc", (i, off), r, a_in, sweep))
         j = (i + 1) % n
-        if math.dist(exit_[i], entry[j]) <= CLOSURE_TOL_MM:
+        if math.dist(exit_[i][0], entry[j][0]) <= CLOSURE_TOL_MM:
             raise ProfileError("Edge too short for dog-bone relief near %r" % (v,))
-        if _dot((entry[j][0] - exit_[i][0], entry[j][1] - exit_[i][1]), u2) <= 0:
+        if _dot((entry[j][0][0] - exit_[i][0][0], entry[j][0][1] - exit_[i][0][1]), u2) <= 0:
             raise ProfileError("Dog-bone relief circles overlap near %r" % (v,))
-        segments.append(Line(exit_[i], entry[j]))
-    return Loop(tuple(segments))
+        segments.append(Line(exit_[i][0], entry[j][0]))
+        sources.append(("line", (i, exit_[i][1]), (j, entry[j][1])))
+    return Loop(tuple(segments)), tuple(sources)
 
 
 def _dot(a, b):
