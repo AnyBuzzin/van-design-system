@@ -13,12 +13,12 @@ import unittest
 from unittest.mock import Mock, patch
 
 from vandesign.core.geometry import Box
-from vandesign.manufacturing.profile import (Arc, Hole, Pocket, ThroughCut, contains_point)
+from vandesign.manufacturing.profile import (Arc, Hole, Pocket, ThroughCut, PanelFrame, contains_point)
 from vandesign.manufacturing.dxf import export_profiles, read_dxf, loop_areas, pocket_layer
 from vandesign.modules.profile_fixture import (FIXTURE,PARAMETER,PARAMETERS,resolve_profiles,validate_panels,
     feature_loop,feature_depth,feature_start,feature_id,request_valid,inventory,spec_hash)
 from vandesign.verification.geometry_source import MeasuredBody
-from vandesign.verification.profile_panel import probes,measure_profiles,expected_evidence
+from vandesign.verification.profile_panel import probes,world_probes,measure_profiles,expected_evidence
 
 
 class IdealSource:
@@ -47,6 +47,25 @@ class Items:
 
 
 class Profiles(unittest.TestCase):
+    def test_world_probes_use_core_oracle_for_six_normals(self):
+        from vandesign.manufacturing.profile import contains_world_point
+        axes=[tuple(sign if j==i else 0 for j in range(3)) for i in range(3) for sign in (-1,1)]
+        for u in axes:
+            for v in axes:
+                if sum(a*b for a,b in zip(u,v)):continue
+                w=(u[1]*v[2]-u[2]*v[1],u[2]*v[0]-u[0]*v[2],u[0]*v[1]-u[1]*v[0])
+                for panel in resolve_profiles():
+                    p=replace(panel.profile,frame=PanelFrame((-200,300,150),u,v,w))
+                    checks=world_probes(p)
+                    self.assertEqual(len(checks),len(probes(panel)))
+                    self.assertEqual({expected for _,_,expected in checks},{False,True})
+                    for _,world,expected in checks:
+                        self.assertIs(contains_world_point(p,world),expected)
+        with self.assertRaises(ValueError):world_probes(resolve_profiles()[0].profile)
+        framed=replace(resolve_profiles()[0].profile,frame=PanelFrame((0,0,0),(1,0,0),(0,1,0),(0,0,1)))
+        with patch('vandesign.verification.profile_panel.contains_world_point',return_value=None),self.assertRaises(ValueError):
+            world_probes(framed)
+
     def test_geometry_regeneration_and_thickness(self):
         a,b=resolve_profiles(),resolve_profiles({PARAMETER:20})
         self.assertEqual(a,resolve_profiles());self.assertEqual(spec_hash(),spec_hash())
@@ -104,6 +123,43 @@ class ProfileAPI(unittest.TestCase):
             self.run=importlib.import_module('vandesign.cad.fusion.profile_build')
         for m in (self.adapter,self.run):
             p=patch.object(m,'adsk',self.fake);p.start();self.addCleanup(p.stop)
+
+    def test_oriented_component_all_six_normals_and_in_plane_turns(self):
+        axes=[tuple(sign if j==i else 0 for j in range(3)) for i in range(3) for sign in (-1,1)]
+        normals=set();cases=0
+        for u in axes:
+            for v in axes:
+                if sum(a*b for a,b in zip(u,v)):continue
+                w=(u[1]*v[2]-u[2]*v[1],u[2]*v[0]-u[0]*v[2],u[0]*v[1]-u[1]*v[0])
+                frame=PanelFrame((-130,240,51),u,v,w);normals.add(w);cases+=1
+                matrix=NS(setWithCoordinateSystem=Mock(return_value=True))
+                comp=NS(attributes=NS(add=Mock()));add=Mock(return_value=NS(component=comp))
+                adapter=self.adapter.ProfileAdapter.__new__(self.adapter.ProfileAdapter)
+                adapter.root=NS(occurrences=NS(addNewComponent=add));guard=Mock()
+                profile=replace(resolve_profiles()[0].profile,frame=frame)
+                with patch.object(self.fake.core.Matrix3D,'create',return_value=matrix), \
+                     patch.object(self.fake.core,'Vector3D',NS(create=lambda *p:p),create=True):
+                    self.assertIs(adapter._oriented_component(profile,guard),comp)
+                guard.assert_called_once();add.assert_called_once_with(matrix)
+                matrix.setWithCoordinateSystem.assert_called_once_with((0,0,0),u,v,w)
+                offset=adapter._frame_offset(frame)
+                # The occurrence rotates local sketch + positive extrusion back to world mm.
+                for local in ((0,0,0),(600,800,18),(50,125,9)):
+                    placed=tuple(sum((offset[j]+local[j])*axis[i] for j,axis in enumerate((u,v,w))) for i in range(3))
+                    self.assertEqual(placed,frame.to_world(*local))
+                comp.attributes.add.assert_any_call(self.adapter.ATTR_GROUP,self.adapter.ATTR_ID,profile.panel_id)
+        self.assertEqual(cases,24);self.assertEqual(set(axes),normals)
+
+    def test_oriented_frame_and_transform_failure_precede_component_write(self):
+        adapter=self.adapter.ProfileAdapter.__new__(self.adapter.ProfileAdapter)
+        add=Mock();adapter.root=NS(occurrences=NS(addNewComponent=add));guard=Mock()
+        with self.assertRaises(ValueError):adapter._oriented_component(resolve_profiles()[0].profile,guard)
+        matrix=NS(setWithCoordinateSystem=Mock(return_value=False))
+        profile=replace(resolve_profiles()[0].profile,frame=PanelFrame((0,0,0),(1,0,0),(0,1,0),(0,0,1)))
+        with patch.object(self.fake.core.Matrix3D,'create',return_value=matrix), \
+             patch.object(self.fake.core,'Vector3D',NS(create=lambda *p:p),create=True),self.assertRaises(RuntimeError):
+            adapter._oriented_component(profile,guard)
+        guard.assert_not_called();add.assert_not_called()
 
     def test_loop_api_units_fixed_curves_signed_arcs_and_failures(self):
         curves=[];lines=[];arcs=[]
