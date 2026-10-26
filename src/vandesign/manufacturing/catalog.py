@@ -2,6 +2,7 @@
 from __future__ import annotations
 
 from dataclasses import replace
+import math
 
 from ..core.tab_slot import RECEIVER, UPRIGHT
 from ..modules.bed_platform import build_bed_platform
@@ -15,6 +16,7 @@ from ..schemas.rounded_panel_spec import RoundedPanelSpec
 from ..schemas.storage_box_spec import StorageBoxSpec
 from ..schemas.tab_slot_spec import TabSlotSpec
 from .assembly import assembly_profiles
+from .profile import ProfileError
 
 MODULES = ("cabinet", "bed", "storage-box", "rounded-panel", "tab-slot-coupon")
 
@@ -28,7 +30,13 @@ def tab_slot_profiles(spec=None, *, tool_diameter=None):
     """
     coupon = build_tab_slot(spec or TabSlotSpec())
     g = coupon.geometry()
-    d = tool_diameter or g.tool_diameter
+    if tool_diameter is None:
+        d = g.tool_diameter
+    elif type(tool_diameter) in (int, float) and math.isfinite(tool_diameter) and tool_diameter > 0:
+        d = tool_diameter
+    else:
+        raise ProfileError("Explicit tool diameter must be a finite positive number, got %r"
+                           % (tool_diameter,))
     cuts = [(UPRIGHT, s) for s in g.shoulders] + [(RECEIVER, g.slot)]
     out = []
     for p in assembly_profiles(coupon.blanks, tool_diameter=d, extra_cuts=cuts):

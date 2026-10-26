@@ -11,7 +11,7 @@ from vandesign.manufacturing.assembly import assembly_profiles, panel_profile, r
 from vandesign.manufacturing.catalog import MODULES, module_profiles, tab_slot_profiles
 from vandesign.manufacturing.dxf import (dxf_text, export_profiles, loop_areas, pocket_layer,
                                          read_dxf)
-from vandesign.manufacturing.profile import (Arc, Line, Loop, Pocket, PanelProfile, ProfileError,
+from vandesign.manufacturing.profile import (Arc, Hole, Line, Loop, Pocket, PanelProfile, ProfileError,
                                              ThroughCut, polygon_loop, rect_vertices,
                                              rounded_corner_outline)
 from vandesign.modules.cabinet import build_cabinet
@@ -75,6 +75,58 @@ class LoopGeometry(unittest.TestCase):
         with self.assertRaises(ProfileError):
             PanelProfile("p", "p", "ply", 18, outline,
                          (ThroughCut(polygon_loop(rect_vertices(90, 40, 120, 45), waste_inside=True)),))
+
+
+class FeatureContainment(unittest.TestCase):
+    """Regressions from review: features must lie in actual material, not just its bounds."""
+
+    def profile(self, outline, *features):
+        return PanelProfile("p", "p", "ply", 18, outline, features)
+
+    def cut(self, x0, y0, x1, y1, relief=None):
+        return polygon_loop(rect_vertices(x0, y0, x1, y1), waste_inside=True, relief_radius=relief)
+
+    def test_through_cut_beyond_rounded_corner_refused(self):
+        outline = rounded_corner_outline(100, 100, 90)       # corner (90,90)..(100,100) is not material
+        with self.assertRaisesRegex(ProfileError, "outside the outline material"):
+            self.profile(outline, ThroughCut(self.cut(90, 90, 99, 99)))
+        with self.assertRaisesRegex(ProfileError, "outside the outline material"):
+            self.profile(outline, ThroughCut(self.cut(60, 60, 85, 85)))  # partly past the arc
+        ok = self.profile(outline, ThroughCut(self.cut(10, 10, 40, 40)))
+        self.assertAlmostEqual(ok.net_area_mm2, outline.area - 900, places=6)
+
+    def test_relieved_cut_must_keep_its_relief_inside(self):
+        outline = polygon_loop(rect_vertices(0, 0, 100, 50), waste_inside=False)
+        self.profile(outline, ThroughCut(self.cut(1, 10, 40, 30, relief=3)))  # bone reaches x = 0.12: inside
+        with self.assertRaisesRegex(ProfileError, "touches|outside"):
+            self.profile(outline, ThroughCut(self.cut(0.5, 10, 40, 30, relief=3)))  # bone reaches x = -0.38
+
+    def test_edge_contact_rules(self):
+        outline = polygon_loop(rect_vertices(0, 0, 100, 50), waste_inside=False)
+        with self.assertRaisesRegex(ProfileError, "notch"):
+            self.profile(outline, ThroughCut(self.cut(0, 10, 20, 30)))           # edge-touching through-cut
+        open_pocket = polygon_loop(rect_vertices(0, 10, 20, 30), waste_inside=True, relief_radius=3,
+                                   open_points=[(0, 10), (0, 30)])
+        self.assertEqual(len(self.profile(outline, Pocket(open_pocket, 6, "top")).features), 1)
+        with self.assertRaisesRegex(ProfileError, "outside"):
+            self.profile(outline, Pocket(self.cut(80, 10, 120, 30), 6, "top"))   # overhangs the edge
+
+    def test_holes_need_material_all_round(self):
+        outline = rounded_corner_outline(100, 100, 90)
+        self.profile(outline, Hole((20, 20), 8))
+        with self.assertRaisesRegex(ProfileError, "outside"):
+            self.profile(outline, Hole((96, 96), 4))
+        with self.assertRaisesRegex(ProfileError, "touches"):
+            self.profile(outline, Hole((4, 50), 8))
+
+    def test_explicit_tool_diameter_is_never_replaced(self):
+        for bad in (0, -1, float("nan"), float("inf"), True, "6"):
+            with self.assertRaises(ProfileError, msg=repr(bad)):
+                tab_slot_profiles(tool_diameter=bad)
+        default = {p.panel_id: p for p in tab_slot_profiles()}
+        explicit = {p.panel_id: p for p in tab_slot_profiles(tool_diameter=6.35)}
+        self.assertNotAlmostEqual(default[RECEIVER].volume_mm3, explicit[RECEIVER].volume_mm3, places=3)
+        self.assertIn("6.350 mm tool", explicit[RECEIVER].notes[0])
 
 
 class PanelConversion(unittest.TestCase):

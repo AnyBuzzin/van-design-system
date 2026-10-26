@@ -124,6 +124,117 @@ def _turn(d1, d2):
     return d1[0] * d2[1] - d1[1] * d2[0]
 
 
+# --------------------------------------------------------------- containment
+_SAMPLE_STEP = math.radians(2)
+_RAY_ANGLES = (0.3721, 1.1093, 2.0517, 2.7183, 4.0411, 5.3337)
+
+
+def _arc_param(seg, q):
+    """Fraction (0..1) along ``seg`` of a point ``q`` on its circle, or None."""
+    theta = math.atan2(q[1] - seg.center[1], q[0] - seg.center[0])
+    rel = ((theta - seg.start_angle) * math.copysign(1, seg.sweep)) % (2 * math.pi)
+    return rel / abs(seg.sweep) if rel <= abs(seg.sweep) + 1e-12 else None
+
+
+def _distance(p, seg):
+    if isinstance(seg, Line):
+        (ax, ay), (bx, by) = seg.start, seg.end
+        dx, dy = bx - ax, by - ay
+        t = max(0.0, min(1.0, ((p[0] - ax) * dx + (p[1] - ay) * dy) / (dx * dx + dy * dy)))
+        return math.hypot(p[0] - ax - t * dx, p[1] - ay - t * dy)
+    d = math.dist(p, seg.center)
+    if d > 0 and _arc_param(seg, (seg.center[0] + (p[0] - seg.center[0]) * seg.radius / d,
+                                  seg.center[1] + (p[1] - seg.center[1]) * seg.radius / d)) is not None:
+        return abs(d - seg.radius)
+    return min(math.dist(p, seg.start), math.dist(p, seg.end))
+
+
+def boundary_distance(p, loop):
+    return min(_distance(p, s) for s in loop.segments)
+
+
+def _crossings(p, loop, angle):
+    """Ray crossings from p, or None when the ray grazes a vertex or tangent."""
+    d = (math.cos(angle), math.sin(angle))
+    count = 0
+    for seg in loop.segments:
+        if isinstance(seg, Line):
+            (ax, ay), (bx, by) = seg.start, seg.end
+            ex, ey = bx - ax, by - ay
+            den = d[0] * ey - d[1] * ex
+            if abs(den) < 1e-15:
+                continue
+            wx, wy = ax - p[0], ay - p[1]
+            t = (wx * ey - wy * ex) / den
+            s = (wx * d[1] - wy * d[0]) / den
+            if t > 1e-12 and -1e-9 <= s <= 1 + 1e-9:
+                if s < 1e-9 or s > 1 - 1e-9:
+                    return None
+                count += 1
+        else:
+            fx, fy = p[0] - seg.center[0], p[1] - seg.center[1]
+            b = d[0] * fx + d[1] * fy
+            disc = b * b - (fx * fx + fy * fy - seg.radius ** 2)
+            if disc < -1e-12:
+                continue
+            if abs(disc) <= 1e-12:
+                return None
+            for t in (-b - math.sqrt(disc), -b + math.sqrt(disc)):
+                if t <= 1e-12:
+                    continue
+                f = _arc_param(seg, (p[0] + t * d[0], p[1] + t * d[1]))
+                if f is None:
+                    continue
+                if f < 1e-9 or f > 1 - 1e-9:
+                    return None
+                count += 1
+    return count
+
+
+def contains_point(loop, p):
+    """Exact: True inside, False outside (points on the boundary are not resolved)."""
+    for angle in _RAY_ANGLES:
+        n = _crossings(p, loop, angle)
+        if n is not None:
+            return n % 2 == 1
+    raise ProfileError("Could not classify point %r" % (p,))
+
+
+def _samples(loop):
+    out = []
+    for s in loop.segments:
+        out.extend(s.sample(_SAMPLE_STEP) if isinstance(s, Arc) else s.sample())
+    return out
+
+
+def _circle_samples(center, radius):
+    n = int(2 * math.pi / _SAMPLE_STEP)
+    return [(center[0] + radius * math.cos(2 * math.pi * i / n),
+             center[1] + radius * math.sin(2 * math.pi * i / n)) for i in range(n)]
+
+
+def check_contained(outline, boundary_points, inner_loop=None, *, may_touch):
+    """Feature boundary inside the outline material; the outline never inside the feature.
+
+    ``may_touch`` allows boundary contact (open pockets); through-cuts and
+    holes must stay clear of the outline, since an edge-touching through-cut
+    is a notch and belongs in the outline itself.
+    """
+    for q in boundary_points:
+        gap = boundary_distance(q, outline)
+        if gap <= CLOSURE_TOL_MM:
+            if not may_touch:
+                return "touches the outline (model it as a notch in the outline)"
+            continue
+        if not contains_point(outline, q):
+            return "lies outside the outline material"
+    if inner_loop is not None:
+        for q in _samples(outline):
+            if boundary_distance(q, inner_loop) > CLOSURE_TOL_MM and contains_point(inner_loop, q):
+                return "contains part of the outline"
+    return None
+
+
 def polygon_loop(vertices, *, waste_inside, relief_radius=None, open_points=()):
     """Counter-clockwise loop through axis-aligned ``vertices``.
 
@@ -263,18 +374,19 @@ class PanelProfile:
         t = self.thickness
         if type(t) not in (int, float) or not math.isfinite(t) or t <= 0:
             raise ProfileError("%s: thickness must be finite and positive" % self.panel_id)
-        (ox0, oy0), (ox1, oy1) = self.outline.bounds
         for f in self.features:
             if type(f) not in (ThroughCut, Pocket, Hole):
                 raise ProfileError("%s: unknown feature %r" % (self.panel_id, f))
             if isinstance(f, Hole):
-                (x, y), rr = f.center, f.diameter / 2
-                lo, hi = (x - rr, y - rr), (x + rr, y + rr)
+                r = f.diameter / 2
+                circle = Loop((Arc(f.center, r, 0.0, math.pi), Arc(f.center, r, math.pi, math.pi)))
+                problem = check_contained(self.outline, _circle_samples(f.center, r), circle,
+                                          may_touch=False)
             else:
-                lo, hi = f.loop.bounds
-            if (lo[0] < ox0 - CLOSURE_TOL_MM or lo[1] < oy0 - CLOSURE_TOL_MM
-                    or hi[0] > ox1 + CLOSURE_TOL_MM or hi[1] > oy1 + CLOSURE_TOL_MM):
-                raise ProfileError("%s: feature lies outside the outline" % self.panel_id)
+                problem = check_contained(self.outline, _samples(f.loop), f.loop,
+                                          may_touch=isinstance(f, Pocket))
+            if problem:
+                raise ProfileError("%s: %s %s" % (self.panel_id, type(f).__name__, problem))
             depth = f.depth if isinstance(f, Pocket) else (f.depth if isinstance(f, Hole) else None)
             if depth is not None and depth >= t:
                 raise ProfileError("%s: blind depth must be less than the thickness" % self.panel_id)
