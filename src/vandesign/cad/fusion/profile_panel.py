@@ -32,6 +32,18 @@ class ProfileAdapter(FusionAdapter):
             # Resolved XY geometry is explicitly fixed, never advertised as shape-parametric.
             curve.isFixed=True
         if sketch.profiles.count!=1:raise RuntimeError('Profile must produce one closed region')
+        # Fixed curves do not establish that every sketch point is constrained.
+        # Only these fresh fixed-XY loops use this path; thickness stays an Expr.
+        for i in range(sketch.sketchPoints.count):
+            point=sketch.sketchPoints.item(i)
+            constrained=point.isFullyConstrained
+            if type(constrained) is not bool:raise RuntimeError('Point constraint state unavailable')
+            if not constrained:
+                point.isFixed=True
+                if point.isFullyConstrained is not True:
+                    raise RuntimeError('Profile point remains unconstrained')
+        if sketch.isFullyConstrained is not True:
+            raise RuntimeError('Profile sketch remains unconstrained')
         return sketch
 
     def compile_profiles(self, panels, guard, records):
