@@ -155,15 +155,22 @@ def panel_profile(panel, box, cuts, *, tool_diameter=None, relief=True, corner_r
                         outline, tuple(features), reliefs, tuple(notes))
 
 
-def assembly_profiles(assembly, values=None, *, tool_diameter=None, relief=True, extra_cuts=()):
+def assembly_profiles(assembly, values=None, *, tool_diameter=None, relief=True, extra_cuts=(),
+                      box_overrides=None):
     """Profiles for every panel of ``assembly`` at the given base-parameter values.
 
     Owned cuts come from the assembly's DadoOperations plus ``extra_cuts``
     (``(target_panel_id, world Box)`` pairs) for modules whose cuts are not
     dado operations. A cut is assigned only to its named target panel.
+    ``box_overrides`` (panel id -> world Box) replaces a panel blank, e.g. a
+    panel extended by joint tabs.
     """
     env = assembly.parameters.resolve(values)
     boxes = {p.stable_id: p.box.resolve(env) for p in assembly.panels}
+    for pid, box in (box_overrides or {}).items():
+        if pid not in boxes or type(box) is not Box:
+            raise ProfileError("Box override must name a known panel and a Box")
+        boxes[pid] = box
     owned = {pid: [] for pid in boxes}
     for op in assembly.operations:
         owned[op.target_panel_id].append(op.cut.resolve(env))
