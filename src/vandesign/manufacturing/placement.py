@@ -1,0 +1,82 @@
+"""Manufacturing profiles for a whole arrangement, each with its world frame.
+
+Box-model instances take their profiles from the placed assembly. Profile
+modules (cabinet_tab_slot) are profiled in their own module frame at the
+instance's current parameter values, then placed with the same quarter-turn
+and position mapping the arrangement uses for its box model.
+"""
+from __future__ import annotations
+
+from dataclasses import replace
+
+from ..arrangement import MODULES, PROFILE_MODULES, _canonical, tab_slot_parts
+from ..components.ids import make_id
+from ..core.expr import Param
+from .assembly import assembly_profiles
+from .carcass import cabinet_tab_slot_profiles
+from .profile import PanelFrame, ProfileError
+
+
+def place_point(p, k, w, d, position):
+    """Module-frame point -> world, matching core.placement.place_box."""
+    x, y, z = p
+    x, y = ((x, y), (d - y, x), (w - x, d - y), (y, w - x))[k]
+    return (position[0] + x, position[1] + y, position[2] + z)
+
+
+def place_axis(a, k):
+    x, y, z = a
+    x, y = ((x, y), (-y, x), (-x, -y), (y, -x))[k]
+    return (x + 0.0, y + 0.0, z)
+
+
+def place_frame(frame, k, w, d, position):
+    return PanelFrame(place_point(frame.origin, k, w, d, position), place_axis(frame.u, k),
+                      place_axis(frame.v, k), place_axis(frame.w, k))
+
+
+def _profiled_instance(arrangement, inst, env):
+    builder, footprint = MODULES[inst.module]
+    module = builder(_canonical(inst.spec))
+    pre = inst.param_prefix + "_"
+    values = {p.name: env[pre + p.name] for p in module.parameters.base()}
+    local = module.parameters.resolve(values)
+    w, d, _ = (e.eval(local) for e in footprint(Param))
+    position = tuple(env[pre + "Pos_" + a] for a in "XYZ")
+    _, joinery = tab_slot_parts(inst.spec)
+    profiles, results = cabinet_tab_slot_profiles(module, joinery, values)
+    placed = {}
+    for p in profiles:
+        pid = make_id(inst.instance_id, p.panel_id)
+        placed[pid] = replace(p, panel_id=pid,
+                              frame=place_frame(p.frame, inst.quarter_turns, w, d, position))
+    return placed, joinery, results
+
+
+def arrangement_profiles(arrangement, values=None, *, tool_diameter):
+    """Profiles (with world frames) for every furniture panel, in arrangement order.
+
+    ``tool_diameter`` relieves box-model parts and must equal the joinery tool
+    of every tab-and-slot instance (their relief is part of the joint geometry).
+    Returns (profiles, {instance_id: joint results}).
+    """
+    asm = arrangement.assembly
+    env = asm.parameters.resolve(values)
+    placed, joints = {}, {}
+    for inst in arrangement.instances:
+        if inst.module in PROFILE_MODULES:
+            parts, joinery, results = _profiled_instance(arrangement, inst, env)
+            if abs(joinery.tool_diameter_mm - tool_diameter) > 1e-9:
+                raise ProfileError("%s joinery tool %.3f mm differs from the export tool %.3f mm"
+                                   % (inst.instance_id, joinery.tool_diameter_mm, tool_diameter))
+            placed.update(parts)
+            joints[inst.instance_id] = results
+    profiled_ids = {pid for pid, owner in arrangement.owners.items()
+                    if next(i for i in arrangement.instances if i.instance_id == owner).module in PROFILE_MODULES}
+    for p in assembly_profiles(asm, values, tool_diameter=tool_diameter):
+        if p.panel_id not in profiled_ids:
+            placed[p.panel_id] = p
+    order = [p.stable_id for p in asm.panels if p.material_ref != "reference_only"]
+    if set(order) != set(placed):
+        raise ProfileError("Profiled panels do not match the arrangement")
+    return tuple(placed[pid] for pid in order), joints

@@ -447,6 +447,48 @@ class Hole:
             raise ProfileError("Hole face must be 'top' or 'bottom'")
 
 
+def _axis(v):
+    if (not isinstance(v, (tuple, list)) or len(v) != 3 or sorted(abs(x) for x in v) != [0, 0, 1]
+            or any(type(x) not in (int, float) for x in v)):
+        raise ProfileError("Frame axes must be signed world unit axes, got %r" % (v,))
+    return tuple(float(x) for x in v)
+
+
+@dataclass(frozen=True)
+class PanelFrame:
+    """Where a flat profile sits in 3D.
+
+    A local point (a, b) at height c above the profile's bottom face maps to
+    ``origin + a*u + b*v + c*w``. u, v, w are signed world unit axes with
+    u x v = w; w points from the bottom face to the machined ("top") face.
+    """
+    origin: tuple
+    u: tuple
+    v: tuple
+    w: tuple
+
+    def __post_init__(self):
+        o = self.origin
+        if not isinstance(o, (tuple, list)) or len(o) != 3 or any(
+                type(x) not in (int, float) or not math.isfinite(x) for x in o):
+            raise ProfileError("Frame origin must be three finite numbers")
+        u, v, w = _axis(self.u), _axis(self.v), _axis(self.w)
+        cross = (u[1] * v[2] - u[2] * v[1], u[2] * v[0] - u[0] * v[2], u[0] * v[1] - u[1] * v[0])
+        if cross != w:
+            raise ProfileError("Frame must be right-handed (u x v = w)")
+        object.__setattr__(self, "origin", tuple(float(x) for x in o))
+        object.__setattr__(self, "u", u)
+        object.__setattr__(self, "v", v)
+        object.__setattr__(self, "w", w)
+
+    def to_world(self, a, b, c):
+        return tuple(self.origin[i] + a * self.u[i] + b * self.v[i] + c * self.w[i] for i in range(3))
+
+    def to_local(self, p):
+        d = [p[i] - self.origin[i] for i in range(3)]
+        return tuple(sum(d[i] * axis[i] for i in range(3)) for axis in (self.u, self.v, self.w))
+
+
 @dataclass(frozen=True)
 class PanelProfile:
     panel_id: str
@@ -457,11 +499,14 @@ class PanelProfile:
     features: tuple = ()
     reliefs: int = 0      # dog-bone arcs added for manufacture
     notes: tuple = ()     # e.g. why this differs from the CAD body
+    frame: PanelFrame | None = None   # where the part sits in the design, when known
 
     def __post_init__(self):
         t = self.thickness
         if type(t) not in (int, float) or not math.isfinite(t) or t <= 0:
             raise ProfileError("%s: thickness must be finite and positive" % self.panel_id)
+        if self.frame is not None and type(self.frame) is not PanelFrame:
+            raise ProfileError("%s: frame must be a PanelFrame" % self.panel_id)
         for f in self.features:
             if type(f) not in (ThroughCut, Pocket, Hole):
                 raise ProfileError("%s: unknown feature %r" % (self.panel_id, f))
@@ -498,3 +543,53 @@ class PanelProfile:
     def faces_machined(self):
         return tuple(sorted({f.face for f in self.features if isinstance(f, (Pocket, Hole))
                              and not (isinstance(f, Hole) and f.depth is None)}))
+
+
+def _feature_loop(f):
+    if isinstance(f, Hole):
+        r = f.diameter / 2
+        return Loop((Arc(f.center, r, 0.0, math.pi), Arc(f.center, r, math.pi, math.pi)))
+    return f.loop
+
+
+def world_box(profile):
+    """Exact world bounds of the placed part (outline bounds x thickness)."""
+    if profile.frame is None:
+        raise ProfileError("%s: no frame" % profile.panel_id)
+    (a0, b0), (a1, b1) = profile.outline.bounds
+    pts = [profile.frame.to_world(a, b, c) for a in (a0, a1) for b in (b0, b1) for c in (0.0, profile.thickness)]
+    return (tuple(min(p[i] for p in pts) for i in range(3)), tuple(max(p[i] for p in pts) for i in range(3)))
+
+
+def contains_world_point(profile, p, tol=1e-6):
+    """Exact solid test for a placed part: True in material, False in air or a
+    cut, None within ``tol`` of any face, edge or cut wall (ambiguous)."""
+    if profile.frame is None:
+        raise ProfileError("%s: no frame" % profile.panel_id)
+    a, b, c = profile.frame.to_local(p)
+    t = profile.thickness
+    if c < -tol or c > t + tol:
+        return False
+    if c <= tol or c >= t - tol:
+        return None
+    q = (a, b)
+    if boundary_distance(q, profile.outline) <= tol:
+        return None
+    if not contains_point(profile.outline, q):
+        return False
+    for f in profile.features:
+        loop = _feature_loop(f)
+        depth = f.depth if isinstance(f, (Pocket, Hole)) else None
+        if depth is None:
+            band = (0.0, t)
+        else:
+            band = (t - depth, t) if f.face == "top" else (0.0, depth)
+        if c < band[0] - tol or c > band[1] + tol:
+            continue
+        if boundary_distance(q, loop) <= tol:
+            return None
+        if contains_point(loop, q):
+            if abs(c - band[0]) <= tol or abs(c - band[1]) <= tol:
+                return None
+            return False
+    return True

@@ -9,7 +9,7 @@ from __future__ import annotations
 import math
 
 from ..core.geometry import Box
-from .profile import (CLOSURE_TOL_MM, Arc, Pocket, PanelProfile, ProfileError,
+from .profile import (CLOSURE_TOL_MM, Arc, Pocket, PanelFrame, PanelProfile, ProfileError,
                       ThroughCut, polygon_loop, rect_vertices, rounded_corner_outline)
 
 _EPS = CLOSURE_TOL_MM
@@ -151,8 +151,15 @@ def panel_profile(panel, box, cuts, *, tool_diameter=None, relief=True, corner_r
     if reliefs:
         notes.append("dog-bone relief for a %.3f mm tool added at %d inside corner(s); "
                      "not present in the CAD body" % (tool_diameter, reliefs))
+    e = [tuple(1.0 if i == k else 0.0 for i in range(3)) for k in range(3)]
+    if faces == {"bottom"}:
+        # Viewed from the old bottom face: a runs along v, b along u, c downwards.
+        origin = tuple(box.hi[k] if k == t else box.lo[k] for k in range(3))
+        frame = PanelFrame(origin, e[v], e[u], tuple(-x for x in e[t]))
+    else:
+        frame = PanelFrame(box.lo, e[u], e[v], e[t])
     return PanelProfile(panel.stable_id, panel.display_name, panel.material_ref, thick,
-                        outline, tuple(features), reliefs, tuple(notes))
+                        outline, tuple(features), reliefs, tuple(notes), frame)
 
 
 def assembly_profiles(assembly, values=None, *, tool_diameter=None, relief=True, extra_cuts=(),
