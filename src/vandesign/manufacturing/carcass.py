@@ -10,9 +10,11 @@ from __future__ import annotations
 from dataclasses import dataclass, replace
 import math
 
-from .assembly import assembly_profiles
+from ..core.expr import Expr
+from ..modules.profile_fixture import feature_id
+from .assembly import _assembly_profiles, _resolve, Tracked, expr_of, recording_decisions, tracked_box
 from .joints import Sheet, TabSlot, apply_joints
-from .profile import ProfileError
+from .profile import Arc, Line, Loop, Pocket, ProfileError, ThroughCut
 
 _JOINERY_KEYS = {"sheet", "clearance_mm", "tabs_per_edge", "tab_width_mm", "tool_diameter_mm"}
 _SHEET_KEYS = {"name", "nominal_mm", "measured_mm"}
@@ -61,7 +63,8 @@ def cabinet_joints(boxes, joinery):
     """Four TabSlot joints for a cabinet's resolved panel boxes (module frame)."""
     depth = boxes["panel.bottom.001"].size[1]
     n = joinery.tabs_per_edge
-    width = float(joinery.tab_width_mm if joinery.tab_width_mm is not None else min(120.0, depth / (2 * n)))
+    width = joinery.tab_width_mm if joinery.tab_width_mm is not None else min(120.0, depth / (2 * n))
+    width = width if isinstance(width, Tracked) else float(width)   # keep depth provenance
     tabs = tuple(((k + 0.5) * depth / n - width / 2, width) for k in range(n))
     t = joinery.sheet.measured_mm
     return [TabSlot(panel, side, direction, tabs, t, joinery.clearance_mm)
@@ -74,6 +77,10 @@ def cabinet_tab_slot_profiles(assembly, joinery, values=None):
     The cabinet's Cab_Ply must equal the sheet's measured thickness.
     Returns (profiles, joint results).
     """
+    return _profiles(assembly, joinery, values, _resolve, None)
+
+
+def _profiles(assembly, joinery, values, resolve, captures):
     env = assembly.parameters.resolve(values)
     if abs(env["Cab_Ply"] - joinery.sheet.measured_mm) > 1e-9:
         raise ProfileError("Cab_Ply %.3f mm must equal the measured sheet thickness %.3f mm"
@@ -81,11 +88,175 @@ def cabinet_tab_slot_profiles(assembly, joinery, values=None):
     failed = [c.constraint_id for c, ok, _, _ in assembly.check_constraints(env) if not ok]
     if failed:
         raise ProfileError("Cabinet constraints fail: " + ", ".join(failed))
-    boxes = {p.stable_id: p.box.resolve(env) for p in assembly.panels}
+    boxes = {p.stable_id: resolve(p.box, env) for p in assembly.panels}
     overrides, cuts, results = apply_joints(cabinet_joints(boxes, joinery), boxes)
-    profiles = assembly_profiles(assembly, values, tool_diameter=joinery.tool_diameter_mm,
-                                 extra_cuts=cuts, box_overrides=overrides)
+    profiles = _assembly_profiles(assembly, values, joinery.tool_diameter_mm, True, cuts, overrides,
+                                  resolve, captures)
     t = joinery.sheet.measured_mm
     out = tuple(replace(p, notes=p.notes + (joinery.sheet.note,)) if abs(p.thickness - t) <= 1e-9 else p
                 for p in profiles)
     return out, results
+
+
+# --- Width bindings (#95): native Fusion width edits at fixed topology -------
+
+WIDTH = "Cab_Width"
+_TOL = 1e-9
+
+
+def _point(p, q, tol):
+    return math.dist(p, q) <= tol
+
+
+@dataclass(frozen=True)
+class LoopBinding:
+    """A profile loop as Exprs: ``vertices`` are the polygon_loop input
+    (local u, v); ``sources`` say how each segment is built from them
+    (see ``profile.polygon_loop_with_sources``)."""
+    vertices: tuple
+    sources: tuple
+
+    def resolve(self, env):
+        pts = [(u.eval(env), v.eval(env)) for u, v in self.vertices]
+
+        def at(src):
+            i, (du, dv) = src
+            return (pts[i][0] + du, pts[i][1] + dv)
+        segments = []
+        for s in self.sources:
+            if s[0] == "line":
+                segments.append(Line(at(s[1]), at(s[2])))
+            else:
+                segments.append(Arc(at(s[1]), s[2], s[3], s[4]))
+        return Loop(tuple(segments))
+
+    def rename(self, f):
+        return replace(self, vertices=tuple((f(u), f(v)) for u, v in self.vertices))
+
+
+@dataclass(frozen=True)
+class FeatureBinding:
+    feature_id: str            # profile_fixture.feature_id: <panel_id>.cut.NNN
+    kind: str                  # "through" or "pocket"
+    face: str | None
+    depth: Expr | None
+    loop: LoopBinding
+
+
+@dataclass(frozen=True)
+class PanelBinding:
+    """One panel's profile with Expr provenance, valid for ``parameter`` in
+    ``interval`` with every other parameter fixed. Trusted Python only: no
+    schema, nothing serialised. The numeric PanelProfile stays the oracle."""
+    panel_id: str
+    parameter: str
+    interval: tuple
+    frame_origin: tuple        # three Exprs
+    frame_axes: tuple          # fixed signed unit axes (u, v, w)
+    thickness: Expr
+    outline: LoopBinding
+    features: tuple
+
+    def mismatch(self, profile, env, tol=_TOL):
+        """None when the binding at ``env`` reproduces ``profile``, else why not."""
+        f = profile.frame
+        if profile.panel_id != self.panel_id or f is None:
+            return "panel or frame"
+        if (f.u, f.v, f.w) != self.frame_axes or not all(
+                abs(e.eval(env) - o) <= tol for e, o in zip(self.frame_origin, f.origin)):
+            return "frame"
+        if abs(self.thickness.eval(env) - profile.thickness) > tol:
+            return "thickness"
+        if len(self.features) != len(profile.features):
+            return "feature count"
+        pairs = [(self.outline, profile.outline)]
+        for b, feature in zip(self.features, profile.features):
+            kind = "pocket" if isinstance(feature, Pocket) else "through" if isinstance(feature, ThroughCut) else None
+            if kind != b.kind or getattr(feature, "face", None) != b.face:
+                return b.feature_id + " kind"
+            if kind == "pocket" and abs(b.depth.eval(env) - feature.depth) > tol:
+                return b.feature_id + " depth"
+            pairs.append((b.loop, feature.loop))
+        for binding, loop in pairs:
+            mine = binding.resolve(env).segments
+            if len(mine) != len(loop.segments):
+                return "segment count"
+            for a, b in zip(mine, loop.segments):
+                if type(a) is not type(b):
+                    return "segment kind"
+                if isinstance(a, Line):
+                    if not (_point(a.start, b.start, tol) and _point(a.end, b.end, tol)):
+                        return "line"
+                elif not (_point(a.center, b.center, tol) and abs(a.radius - b.radius) <= tol
+                          and abs(a.start_angle - b.start_angle) <= tol and a.sweep == b.sweep):
+                    return "arc"
+        return None
+
+
+def _loop_binding(captured):
+    verts, sources = captured
+    return LoopBinding(tuple((expr_of(u), expr_of(v)) for u, v in verts), sources)
+
+
+def _sign(x):
+    return 0 if abs(x) <= _TOL else (1 if x > 0 else -1)
+
+
+def check_decisions(decisions, here, ends):
+    """Refuse unless every logged (Expr, Expr) comparison has the same sign
+    (<, = or >, within 1e-9 mm) at ``here`` and at each env in ``ends``.
+    The Exprs are affine, so equal signs at both ends hold in between."""
+    for a, b in decisions:
+        d = _sign(a.eval(here) - b.eval(here))
+        if any(_sign(a.eval(env) - b.eval(env)) != d for env in ends):
+            raise ProfileError("A geometry decision changes within the interval: %s vs %s"
+                               % (a.render(), b.render()))
+
+
+def cabinet_tab_slot_width_bindings(assembly, joinery, values=None, *, parameter=WIDTH,
+                                    interval=(1000.0, 1100.0)):
+    """Module-frame PanelBindings for a native cabinet-width edit (#95).
+
+    The numeric producer runs once on Tracked boxes, so every coordinate
+    keeps the Expr it was built from: no fitting, no second geometry formula.
+    Every value-based decision it takes (selections, ties, notch and grid
+    tests) must come out the same at both interval ends; all Exprs are affine
+    in the parameters, so the code path, topology and bindings then hold on
+    the whole interval. The bindings are also checked against the numeric
+    producer at both ends. Anything else is refused. Returns {panel_id: PanelBinding}.
+    """
+    if parameter != WIDTH:
+        raise ProfileError("Only %s bindings are supported" % WIDTH)
+    base = {p.name: p.value_mm for p in assembly.parameters.base()}
+    base.update(values or {})
+    if (not isinstance(interval, (tuple, list)) or len(interval) != 2
+            or any(type(x) not in (int, float) or not math.isfinite(x) for x in interval)
+            or not interval[0] < interval[1] or not interval[0] <= base[WIDTH] <= interval[1]):
+        raise ProfileError("interval must be finite (lo, hi) with lo < hi containing the current width")
+    captures = {}
+    with recording_decisions() as decisions:
+        tracked, _ = _profiles(assembly, joinery, base, tracked_box, captures)
+    numeric, _ = cabinet_tab_slot_profiles(assembly, joinery, base)
+    if tracked != numeric:
+        raise ProfileError("Tracked producer differs from the numeric producer")
+    out = {}
+    for p in numeric:
+        cap = captures[p.panel_id]
+        if cap["loops"][0] is None:
+            raise ProfileError("%s: rounded outlines have no width binding" % p.panel_id)
+        features = tuple(
+            FeatureBinding(feature_id(p, i), kind, face, None if depth is None else expr_of(depth),
+                           _loop_binding(loop))
+            for i, ((kind, face, depth), loop) in enumerate(zip(cap["features"], cap["loops"][1:])))
+        out[p.panel_id] = PanelBinding(
+            p.panel_id, parameter, tuple(float(x) for x in interval), tuple(expr_of(x) for x in cap["origin"]),
+            (p.frame.u, p.frame.v, p.frame.w), expr_of(cap["thickness"]), _loop_binding(cap["loops"][0]),
+            features)
+    envs = [assembly.parameters.resolve(dict(base, **{WIDTH: float(x)})) for x in interval]
+    check_decisions(decisions, assembly.parameters.resolve(base), envs)
+    for x, env in zip(interval, envs):
+        for p in cabinet_tab_slot_profiles(assembly, joinery, dict(base, **{WIDTH: float(x)}))[0]:
+            problem = out[p.panel_id].mismatch(p, env)
+            if problem:
+                raise ProfileError("%s binding differs at %s=%g: %s" % (p.panel_id, WIDTH, x, problem))
+    return out
