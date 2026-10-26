@@ -43,7 +43,7 @@ class Example(unittest.TestCase):
                          ["bed.rear", "storage.under_bed", "kitchen.base", "kitchen.overhead"])
 
     def test_live_planning_still_refuses_profile_modules(self):
-        with self.assertRaisesRegex(ArrangementError, "oriented profile Fusion builder"):
+        with self.assertRaisesRegex(ArrangementError, "Oriented build supports one tab-and-slot base cabinet only"):
             plan_request(example())
 
     def test_overhead_cabinet_is_limited_by_the_right_sloped_wall(self):
