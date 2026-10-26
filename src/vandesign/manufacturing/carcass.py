@@ -10,13 +10,15 @@ from __future__ import annotations
 from dataclasses import dataclass, replace
 import math
 
-from ..core.expr import Expr
+from ..core.expr import Expr, Param
+from ..core.geometry import Box
 from ..modules.profile_fixture import feature_id
 from .assembly import _assembly_profiles, _resolve, Tracked, expr_of, recording_decisions, tracked_box
-from .joints import Sheet, TabSlot, apply_joints
+from .joints import MIN_SKIN_MM, Sheet, TabSlot, apply_joints
 from .profile import Arc, Line, Loop, Pocket, ProfileError, ThroughCut
 
 _JOINERY_KEYS = {"sheet", "clearance_mm", "tabs_per_edge", "tab_width_mm", "tool_diameter_mm"}
+_OPTIONAL_KEYS = {"blind_slot_depth_mm", "dado_stop_mm", "back_rabbet_mm"}
 _SHEET_KEYS = {"name", "nominal_mm", "measured_mm"}
 SIDES = (("panel.left.001", "-x"), ("panel.right.001", "+x"))
 TABBED = ("panel.bottom.001", "panel.top.001")
@@ -31,12 +33,22 @@ class TabSlotJoinery:
     tab_width_mm: float | None = None
     # ADR-0003: slots stop this deep inside the sides (None = through slots).
     blind_slot_depth_mm: float | None = None
+    # ADR-0003: shelf dados stop this far behind the front edge (None = open at the front).
+    dado_stop_mm: float | None = None
+    # ADR-0003: the back sits in rabbets this deep in both sides (None = back butts between them).
+    back_rabbet_mm: float | None = None
 
     def __post_init__(self):
         b = self.blind_slot_depth_mm
         if b is not None and (type(b) not in (int, float) or not math.isfinite(b)
                               or b <= self.clearance_mm / 2):
             raise ProfileError("blind_slot_depth_mm must be a number greater than clearance_mm / 2")
+        for name in ("dado_stop_mm", "back_rabbet_mm"):
+            v = getattr(self, name)
+            if v is not None and (type(v) not in (int, float) or not math.isfinite(v) or v <= 0):
+                raise ProfileError("%s must be a positive number" % name)
+        if self.back_rabbet_mm is not None and self.back_rabbet_mm <= self.clearance_mm / 2:
+            raise ProfileError("back_rabbet_mm must be greater than clearance_mm / 2")
         if type(self.sheet) is not Sheet:
             raise ProfileError("Joinery needs a Sheet")
         for name in ("tool_diameter_mm", "clearance_mm"):
@@ -55,17 +67,17 @@ class TabSlotJoinery:
 
     @classmethod
     def from_json(cls, data):
-        """Strict: exact keys (tab_width_mm may be null), plus optional
-        blind_slot_depth_mm."""
-        if not isinstance(data, dict) or not _JOINERY_KEYS <= set(data) <= _JOINERY_KEYS | {"blind_slot_depth_mm"}:
+        """Strict: exact keys (tab_width_mm may be null), plus the optional
+        ADR-0003 keys."""
+        if not isinstance(data, dict) or not _JOINERY_KEYS <= set(data) <= _JOINERY_KEYS | _OPTIONAL_KEYS:
             raise ProfileError("joinery needs exactly: " + ", ".join(sorted(_JOINERY_KEYS))
-                               + " (and optionally blind_slot_depth_mm)")
+                               + " (and optionally " + ", ".join(sorted(_OPTIONAL_KEYS)) + ")")
         sheet = data["sheet"]
         if not isinstance(sheet, dict) or set(sheet) != _SHEET_KEYS:
             raise ProfileError("sheet needs exactly: " + ", ".join(sorted(_SHEET_KEYS)))
         return cls(Sheet(sheet["name"], sheet["nominal_mm"], sheet["measured_mm"]), data["tool_diameter_mm"],
                    data["clearance_mm"], data["tabs_per_edge"], data["tab_width_mm"],
-                   data.get("blind_slot_depth_mm"))
+                   data.get("blind_slot_depth_mm"), data.get("dado_stop_mm"), data.get("back_rabbet_mm"))
 
 
 def cabinet_joints(boxes, joinery):
@@ -101,12 +113,91 @@ def _profiles(assembly, joinery, values, resolve, captures):
         raise ProfileError("Cabinet constraints fail: " + ", ".join(failed))
     boxes = {p.stable_id: resolve(p.box, env) for p in assembly.panels}
     overrides, cuts, results = apply_joints(cabinet_joints(boxes, joinery), boxes)
-    profiles = _assembly_profiles(assembly, values, joinery.tool_diameter_mm, True, cuts, overrides,
-                                  resolve, captures)
+    more_overrides, more_cuts, dados = housings(assembly, boxes, joinery, env, resolve)
+    overrides.update(more_overrides)
+    profiles = _assembly_profiles(assembly, values, joinery.tool_diameter_mm, True, cuts + more_cuts, overrides,
+                                  resolve, captures, dados)
+    for p in profiles:
+        _features_apart(p)
     t = joinery.sheet.measured_mm
     out = tuple(replace(p, notes=p.notes + (joinery.sheet.note,)) if abs(p.thickness - t) <= 1e-9 else p
                 for p in profiles)
     return out, results
+
+
+def _param(name, env, resolve):
+    """A cabinet parameter value, Tracked when the boxes are (width bindings)."""
+    return Tracked(env[name], Param(name)) if resolve is tracked_box else env[name]
+
+
+def _inside(inner, outer, tol=1e-9):
+    return all(o_lo - tol <= i_lo and i_hi <= o_hi + tol
+               for i_lo, i_hi, o_lo, o_hi in zip(inner.lo, inner.hi, outer.lo, outer.hi))
+
+
+def housings(assembly, boxes, joinery, env, resolve=_resolve):
+    """ADR-0003 stopped dados and back rabbets (module frame).
+
+    Stopped dado: the shelf groove starts ``dado_stop_mm`` behind the side's
+    front edge; the shelf is notched at its front corners so its tongue stops
+    Cab_End_Clearance short of the groove end. Back rabbet: the back grows
+    ``back_rabbet_mm - clearance/2`` into each side, which gets a rabbet open
+    only to its rear edge (clearance/2 on every closed face). With a rabbet,
+    each dado also stops one tool diameter short of it (rear notches on the
+    shelf), so no two machined features overlap. Every tongue is proved to lie
+    inside its housing. Returns (box overrides, extra cuts, dado cut overrides).
+    """
+    stop, rabbet = joinery.dado_stop_mm, joinery.back_rabbet_mm
+    over, cuts, dados = {}, [], {}
+    if stop is None and rabbet is None:
+        return over, (), dados
+    c, land = joinery.clearance_mm, joinery.tool_diameter_mm
+    ec = _param("Cab_End_Clearance", env, resolve)
+    sides = {"left": boxes["panel.left.001"], "right": boxes["panel.right.001"]}
+    rear = None
+    if rabbet is not None:
+        if rabbet > joinery.sheet.measured_mm - MIN_SKIN_MM + 1e-9:
+            raise ProfileError("back_rabbet_mm leaves less than %g mm of side panel" % MIN_SKIN_MM)
+        back = boxes["panel.back.001"]
+        grow = rabbet - c / 2
+        tongue = Box((back.lo[0] - grow, back.lo[1], back.lo[2]), (back.hi[0] + grow, back.hi[1], back.hi[2]))
+        over["panel.back.001"] = tongue
+        rear = back.lo[1] - c / 2
+        for side, s in sides.items():
+            x = (s.hi[0] - rabbet, s.hi[0]) if side == "left" else (s.lo[0], s.lo[0] + rabbet)
+            cut = Box((x[0], rear, back.lo[2] - c / 2), (x[1], s.hi[1], back.hi[2] + c / 2))
+            if not _inside(cut.intersection(tongue), cut):
+                raise ProfileError("Back tongue leaves its rabbet")
+            cuts.append(("panel.%s.001" % side, cut))
+    for op in assembly.operations:
+        cut, shelf, side = resolve(op.cut, env), boxes[op.mating_panel_id], sides[op.side]
+        y0 = cut.lo[1] + stop if stop is not None else cut.lo[1]
+        y1 = rear - land if rear is not None else cut.hi[1]
+        if not y0 + ec < y1 - ec:
+            raise ProfileError("%s: stopped dado leaves no groove" % op.operation_id)
+        groove = Box((cut.lo[0], y0, cut.lo[2]), (cut.hi[0], y1, cut.hi[2]))
+        dados[op.operation_id] = groove
+        x = (shelf.lo[0], side.hi[0]) if op.side == "left" else (side.lo[0], shelf.hi[0])
+        lo, hi = shelf.lo[1], shelf.hi[1]
+        if y0 > shelf.lo[1]:
+            lo = y0 + ec
+            cuts.append((op.mating_panel_id, Box((x[0], shelf.lo[1], shelf.lo[2]), (x[1], lo, shelf.hi[2]))))
+        if y1 < shelf.hi[1]:
+            hi = y1 - ec
+            cuts.append((op.mating_panel_id, Box((x[0], hi, shelf.lo[2]), (x[1], shelf.hi[1], shelf.hi[2]))))
+        if not _inside(Box((x[0], lo, shelf.lo[2]), (x[1], hi, shelf.hi[2])), groove):
+            raise ProfileError("%s: shelf tongue leaves its stopped dado" % op.operation_id)
+    return over, tuple(cuts), dados
+
+
+def _features_apart(profile):
+    """Refuse machined features whose extents (relief included) overlap: each
+    cut must remove exactly its own area, in CAM and in the live Fusion check."""
+    bounds = [f.loop.bounds for f in profile.features if hasattr(f, "loop")]
+    for i, ((ax0, ay0), (ax1, ay1)) in enumerate(bounds):
+        for (bx0, by0), (bx1, by1) in bounds[i + 1:]:
+            if min(ax1, bx1) - max(ax0, bx0) > 1e-9 and min(ay1, by1) - max(ay0, by0) > 1e-9:
+                raise ProfileError("%s: machined features overlap" % profile.panel_id)
 
 
 # --- Width bindings (#95): native Fusion width edits at fixed topology -------
