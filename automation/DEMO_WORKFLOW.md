@@ -281,7 +281,10 @@ Verification is generic: model-vs-BRep validation, interference, arches, the lin
 fit, cross-instance shared material, inventory derived from the model (3 timeline
 items per panel, 2 per cut) and read-only cut ownership. Each passing edit is
 applied, verified, restored and compared with the baseline under the shared
-readback policy. Refused edits are never written. Acceptance has no per-feature
+readback policy. Refused edits are never written. Acceptance re-plans the same
+request and requires its derived evidence in every stage (stage order, parameter
+values, body bounds, inventory, and the check ids validate() produces for the
+model, numeric ones finite), with no per-feature
 check counts. Same guards as every entry: owned fresh unsaved document, stop on
 failure, no retry or automatic restoration, unsaved-only. Live use requires the
 owner's deployment approval.
