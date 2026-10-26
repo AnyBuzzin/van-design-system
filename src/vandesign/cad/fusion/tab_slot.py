@@ -114,8 +114,9 @@ class CouponSource(FusionGeometrySource):
         return result
 
 
-def measure_coupon(design,coupon,guard,diameter):
-    guard();source=CouponSource(design);report=measure_coupon_geometry(coupon,source)
+def measure_coupon(design,coupon,guard,diameter,partial=None):
+    report={} if partial is None else partial
+    guard();source=CouponSource(design);report.update(measure_coupon_geometry(coupon,source))
     expected=coupon.blanks.parameters.resolve({'Joint_Tool_Diameter':diameter})
     checks=report['checks']
     def check(name,ok,**data):checks.append(dict(check_id=name,status='PASS' if ok else 'FAIL',**data))
@@ -126,7 +127,8 @@ def measure_coupon(design,coupon,guard,diameter):
     occ=_find_occurrences(root)
     if set(occ)!={RECEIVER,UPRIGHT} or any(len(v)!=1 for v in occ.values()):
         raise RuntimeError('Ambiguous ownership')
-    features={}
+    features={};duplicate=False
+    report.update(counts=counts,expected_cut_ids=list(CUT_IDS),feature_inventory=[])
     for pid,items in occ.items():
         comp=items[0].component;n=6 if pid==RECEIVER else 3
         check(pid+'.inventory',comp.bRepBodies.count==1 and comp.bRepBodies.item(0).isSolid
@@ -134,14 +136,18 @@ def measure_coupon(design,coupon,guard,diameter):
               and comp.features.extrudeFeatures.count==n and comp.sketches.count==n)
         for i in range(comp.features.extrudeFeatures.count):
             f=comp.features.extrudeFeatures.item(i)
+            parent=f.parentComponent.attributes.itemByName(ATTR_GROUP,ATTR_ID)
+            report['feature_inventory'].append(dict(name=f.name,operation=int(f.operation),
+                component_id=pid,parent_component_id=parent.value if parent else None))
             check(pid+'.feature.%d'%i,f.healthState==adsk.fusion.FeatureHealthStates.HealthyFeatureHealthState and not f.isSuppressed)
             if f.operation==adsk.fusion.FeatureOperations.CutFeatureOperation:
-                if f.name in features:raise RuntimeError('Duplicate cut identity')
+                if f.name in features:duplicate=True
                 features[f.name]=f
         for i in range(comp.sketches.count):
             sketch=comp.sketches.item(i)
             check(pid+'.sketch.%d'%i,sketch.isFullyConstrained and sketch.profiles.count==1
                   and sketch.healthState==adsk.fusion.FeatureHealthStates.HealthyFeatureHealthState)
+    if duplicate:raise RuntimeError('Duplicate cut identity')
     if set(features)!=set(CUT_IDS):raise RuntimeError('Unexpected cut inventory')
     if any(c['status']!='PASS' for c in checks):
         report.update(counts=counts,outcome='FAIL')
@@ -188,7 +194,10 @@ def run_tab_slot(app,output_dir,guard):
                 preview_tab_slot(coupon.blanks.parameters.resolve({'Joint_Tool_Diameter':diameter}))
                 guard();p.expression=original if diameter==6 else '8 mm'
                 guard();adsk.doEvents()
-            stage=measure_coupon(design,coupon,guard,diameter);payload['stages'].append(stage)
+            stage={};payload['stages'].append(stage)
+            try:stage.update(measure_coupon(design,coupon,guard,diameter,partial=stage))
+            except Exception as exc:
+                stage.update(outcome='FAIL',error=str(exc));raise
             if stage['outcome']!='PASS':raise RuntimeError('Coupon measurement failed; no automatic restoration')
             if len(payload['stages'])==1:payload['baseline_state']=snapshot(design)
         payload['restored_state']=snapshot(design)

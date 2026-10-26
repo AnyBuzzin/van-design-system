@@ -155,13 +155,13 @@ class CouponRunnerTests(unittest.TestCase):
         male.pop();recv.pop()
         with self.assertRaisesRegex(RuntimeError,'Missing'):source.coupon_faces(g)
 
-    def test_measured_cut_ownership_and_first_failure_stopping(self):
+    def measured_components(self):
         comps=self.components();cut_features=[]
         self.design.timeline=NS(count=20,markerPosition=20)
         self.design.allComponents=NS(count=3);self.design.userParameters.count=4
         self.design.rootComponent.occurrences=Items([NS(component=c) for c in comps.values()])
         for pid,comp in comps.items():
-            features=[NS(name='base',operation=0,healthState=0,isSuppressed=False)]
+            features=[NS(name='base',operation=0,healthState=0,isSuppressed=False,parentComponent=comp)]
             for cid,owner in zip(CUT_IDS,OWNERS):
                 if owner!=pid:continue
                 feature=NS(name=cid,operation=1,healthState=0,isSuppressed=False,parentComponent=comp,
@@ -169,6 +169,10 @@ class CouponRunnerTests(unittest.TestCase):
                 features.append(feature);cut_features.append(feature)
             comp.features=NS(count=len(features),extrudeFeatures=Items(features))
             comp.sketches=Items([NS(isFullyConstrained=True,profiles=NS(count=1),healthState=0) for f in features])
+        return comps,cut_features
+
+    def test_measured_cut_ownership_and_first_failure_stopping(self):
+        comps,cut_features=self.measured_components()
         source=IdealCouponSource(self.coupon)
         with patch.object(self.m,'CouponSource',return_value=source):
             r=self.m.measure_coupon(self.design,self.coupon,self.guard,6)
@@ -185,6 +189,52 @@ class CouponRunnerTests(unittest.TestCase):
             r=self.m.measure_coupon(self.design,self.coupon,self.guard,6)
             self.assertEqual(r['outcome'],'FAIL')
             self.assertEqual(sum(f.timelineObject.rollTo.call_count for f in cut_features),0)
+
+    def test_inventory_failure_preserves_partial_stage_without_later_operations(self):
+        class ReadOnlyTimeline:
+            count=20
+            @property
+            def markerPosition(self):return 20
+            @markerPosition.setter
+            def markerPosition(self,value):raise AssertionError('Unexpected timeline write')
+        class ReadOnlyParameter:
+            @property
+            def expression(self):return '6 mm'
+            @expression.setter
+            def expression(self,value):raise AssertionError('Unexpected parameter edit')
+        for defect in ('unexpected','duplicate','wrong_operation'):
+            with self.subTest(defect=defect):
+                self.design.rootComponent.occurrences=Items()
+                self.design.userParameters.count=0;self.design.timeline=NS(count=0)
+                self.param=ReadOnlyParameter()
+                cut_features=[]
+                def compile_fixture(*args):
+                    _,features=self.measured_components();cut_features.extend(features)
+                    self.design.timeline=ReadOnlyTimeline()
+                    if defect=='unexpected':features[0].name='unexpected-name'
+                    elif defect=='duplicate':features[0].name=features[1].name
+                    else:features[0].operation=0
+                with tempfile.TemporaryDirectory() as out,patch.object(self.m,'CouponAdapter') as adapter, \
+                        patch.object(self.m,'CouponSource',return_value=IdealCouponSource(self.coupon)), \
+                        patch.object(self.m,'snapshot') as snap,patch.object(self.m,'preview_tab_slot') as preview:
+                    adapter.return_value.compile_coupon.side_effect=compile_fixture
+                    with self.assertRaisesRegex(RuntimeError,'cut inventory|Duplicate cut identity'):
+                        self.m.run_tab_slot(self.app,out,self.guard)
+                    result=json.loads((Path(out)/'tab_slot.json').read_text())
+                self.assertEqual(result['outcome'],'FAIL');self.assertEqual(len(result['stages']),1)
+                stage=result['stages'][0];self.assertEqual(stage['outcome'],'FAIL')
+                self.assertTrue(stage['checks']);self.assertEqual(stage['expected_cut_ids'],list(CUT_IDS))
+                inventory=stage['feature_inventory'];self.assertEqual(len(inventory),9)
+                self.assertEqual({f['component_id'] for f in inventory},{RECEIVER,UPRIGHT})
+                self.assertTrue(all(f['component_id']==f['parent_component_id'] for f in inventory))
+                self.assertTrue(all(type(f['operation']) is int for f in inventory))
+                self.assertEqual([f['name'] for f in inventory].count(cut_features[0].name),
+                                 2 if defect=='duplicate' else 1)
+                self.assertEqual(self.param.expression,'6 mm');self.assertIsNone(result['refusal'])
+                self.assertEqual(self.design.timeline.markerPosition,20)
+                for f in cut_features:f.timelineObject.rollTo.assert_not_called()
+                snap.assert_not_called();preview.assert_not_called();self.fake.doEvents.assert_not_called()
+                self.app.activeViewport.fit.assert_not_called();self.doc.save.assert_not_called();self.doc.close.assert_not_called()
 
     def test_partial_cut_evidence_survives_construction_failure(self):
         def failure(coupon,guard,records):
