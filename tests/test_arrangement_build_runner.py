@@ -9,7 +9,7 @@ from types import SimpleNamespace as NS
 import unittest
 from unittest.mock import Mock, patch
 
-from vandesign.arrangement_job import plan_request
+from vandesign.arrangement_job import expected_evidence, plan_request
 from test_arrangement_job import EDIT_OK, INTO_ARCH, request
 
 
@@ -77,7 +77,14 @@ class BuildArrangementRunner(unittest.TestCase):
         adapter.return_value.compile.assert_called_once()
         furniture = [p for p in self.plan.arrangement.assembly.panels if p.material_ref != "reference_only"]
         self.assertEqual(len(dxf), len(furniture) + 1)
-        self.assertEqual(r["inventory"]["panels"], len(self.plan.arrangement.assembly.panels))
+        self.assertEqual(r["inventory"]["root_occurrences"], len(self.plan.arrangement.assembly.panels))
+        # The report the Fusion path writes is what Runner acceptance expects.
+        expected = expected_evidence(plan_request(request([EDIT_OK, INTO_ARCH], tool_diameter_mm=6)))
+        self.assertEqual([s["label"] for s in r["stages"]], [s["label"] for s in expected["stages"]])
+        self.assertEqual((r["spec_hash"], r["instances"]), (expected["spec_hash"], expected["instances"]))
+        for record in (r["planned_edits"], r["edits"]):
+            self.assertEqual([{k: e[k] for k in ("parameter", "value_mm", "expect")} for e in record],
+                             expected["edits"])
 
     def test_failed_edit_stops_without_automatic_restore(self):
         bad = self.report({"K1_Cab_Width": 1000.0}); bad["outcome"] = "FAIL"

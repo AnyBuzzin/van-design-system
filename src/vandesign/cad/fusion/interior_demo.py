@@ -412,6 +412,12 @@ def run_arrangement(app, output_dir, guard, request):
     return run(app, output_dir, guard, request)
 
 
+def arrangement_evidence(request):
+    """Expected evidence for a request (plain data), for Runner acceptance."""
+    from ...arrangement_job import expected_evidence, plan_request
+    return expected_evidence(plan_request(request))
+
+
 def measure_phase_a_reopened(app, guard):
     from .storage_box import measure_storage
     from .test_envelope import snapshot

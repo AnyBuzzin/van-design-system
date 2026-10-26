@@ -45,6 +45,62 @@ class Plan:
     tool_diameter_mm: float | None
 
 
+def expected_inventory(assembly):
+    """Design counts the compiled model must show: each panel adds an occurrence,
+    a sketch and an extrude; each cut a sketch and an extrude."""
+    panels, cuts = len(assembly.panels), len(assembly.operations)
+    return dict(user_parameters=len(assembly.parameters.params), root_occurrences=panels,
+                all_components=panels + 1, timeline_items=3 * panels + 2 * cuts)
+
+
+def measurement_extras(assembly):
+    """Check ids added to validate() by the arrangement measurement path:
+    cad.fusion.test_envelope.measure_test (lined envelope, read-only ownership)
+    plus arrangement_build's shared-material check."""
+    from .modules.test_envelope import ARCHES
+    return (["lined_clearances", "furniture_interference", "inventory", "instances.no_shared_material"]
+            + [arch + ".interference" for arch in ARCHES]
+            + [op.operation_id + ".affected_body_ownership" for op in assembly.operations])
+
+
+def expected_evidence(plan):
+    """Everything a complete BuildArrangement report must contain, derived from
+    the validated request and the existing verification definitions (plain data).
+
+    Required check ids are the ones validate() produces for this model (run on
+    ideal model geometry) plus the measurement extras; numeric ones must carry
+    finite observations. Stage labels, per-stage parameter values and body boxes
+    follow the planned edits in order.
+    """
+    from .verification.model_source import ModelGeometrySource
+    from .verification.validate import validate
+    asm = plan.arrangement.assembly
+    base = {p.name: p.value_mm for p in asm.parameters.base()}
+    ideal = validate(asm, ModelGeometrySource(asm)).checks
+    steps = [("baseline", base)]
+    for e in plan.edits:
+        if e.expect == "pass":
+            steps += [("edit_" + e.parameter, dict(base, **{e.parameter: e.value_mm})),
+                      ("restore_" + e.parameter, base)]
+        else:
+            steps.append(("after_refusal_" + e.parameter, base))
+    stages = []
+    for label, values in steps:
+        env = asm.parameters.resolve(values)
+        stages.append(dict(label=label, parameters_mm=env,
+                           boxes={p.stable_id: [list(b.lo), list(b.hi)] for p in asm.panels
+                                  for b in (p.box.resolve(env),)}))
+    return dict(spec_hash=asm.spec_hash,
+                instances=[i.instance_id for i in plan.arrangement.instances],
+                body_ids=sorted(p.stable_id for p in asm.panels),
+                parameter_names=sorted(asm.parameters.names()),
+                inventory=expected_inventory(asm),
+                required_checks=sorted({c.check_id for c in ideal} | set(measurement_extras(asm))),
+                numeric_checks=sorted(c.check_id for c in ideal if c.observed is not None),
+                stages=stages,
+                edits=[dict(parameter=e.parameter, value_mm=e.value_mm, expect=e.expect) for e in plan.edits])
+
+
 def preview_values(arrangement, envelope, values):
     """Offline verdict for base-parameter ``values``: PASS or REFUSED with reason."""
     from .modules.test_envelope import preview_lined_fit

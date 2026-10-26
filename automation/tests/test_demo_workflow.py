@@ -147,25 +147,38 @@ class DemoTests(TmpDirCase):
             with self.assertRaises(PolicyError):self.run_cmd('save_demo_design',self.args)
         self.doc.saveAs.assert_not_called();self.protected.close.assert_not_called()
 
+    # ------------------------------------------------ BuildArrangement (generic)
     @staticmethod
-    def arrangement_report():
-        checks = [dict(check_id=c, status='PASS') for c in ('a.volume', 'b.volume', 'interference')]
-        stage = lambda label: dict(label=label, outcome='PASS', checks=copy.deepcopy(checks))  # noqa: E731
-        return dict(outcome='PASS',
-                    stages=[stage('baseline'), stage('edit_K1_Cab_Width'), stage('restore_K1_Cab_Width'),
-                            stage('after_refusal_K1_Pos_Y')],
-                    planned_edits=[dict(parameter='K1_Cab_Width', expect='pass'),
-                                   dict(parameter='K1_Pos_Y', expect='refused')],
-                    edits=[dict(parameter='K1_Cab_Width', expect='pass', outcome='PASS'),
-                           dict(parameter='K1_Pos_Y', expect='refused', outcome='PASS',
-                                preview=dict(outcome='REFUSED'))],
-                    baseline_state={'s': 0}, final_state={'s': 0})
+    def arrangement_case():
+        """Expected evidence for the shipped example request, plus a complete report."""
+        from vandesign.arrangement_job import expected_evidence, plan_request
+        path = os.path.join(AUTOMATION, 'jobs', 'requests', 'arrangement_request_crafter.json')
+        with open(path, encoding='utf-8') as fh:
+            request = json.load(fh)
+        expected = json.loads(json.dumps(expected_evidence(plan_request(request))))
+        numeric = set(expected['numeric_checks'])
+        stages = []
+        for plan in expected['stages']:
+            stages.append(dict(
+                label=plan['label'], outcome='PASS', parameters_mm=dict(plan['parameters_mm']),
+                bodies={pid: dict(min=list(lo), max=list(hi),
+                                  volume_mm3=(hi[0]-lo[0])*(hi[1]-lo[1])*(hi[2]-lo[2]))
+                        for pid, (lo, hi) in plan['boxes'].items()},
+                counts=dict(expected['inventory']),
+                checks=[dict(check_id=c, status='PASS', observed=0.0 if c in numeric else None)
+                        for c in expected['required_checks']]))
+        edits = [dict(e, outcome='PASS', preview=dict(outcome='REFUSED' if e['expect'] == 'refused' else 'PASS'))
+                 for e in expected['edits']]
+        report = dict(outcome='PASS', spec_hash=expected['spec_hash'], instances=list(expected['instances']),
+                      stages=stages, planned_edits=[dict(e) for e in expected['edits']], edits=edits,
+                      baseline_state={'s': 0}, final_state={'s': 0})
+        return request, expected, report
 
     def test_build_arrangement_schema_owned_unsaved_and_no_retry(self):
-        req = dict(arrangement={'schema_version': 'x', 'instances': []}, envelope={}, edits=[])
-        args = dict(demo_id='demo-001', entry_point='BuildArrangement', request=req)
+        request, expected, report = self.arrangement_case()
+        args = dict(demo_id='demo-001', entry_point='BuildArrangement', request=request)
         validate_job(job('run_approved_demo', args, target=None))
-        validate_job(job('run_approved_demo', dict(args, request=dict(req, tool_diameter_mm=6)), target=None))
+        req = dict(arrangement={'schema_version': 'x', 'instances': []}, envelope={}, edits=[])
         for bad in (dict(demo_id='demo-001', entry_point='BuildArrangement'),
                     dict(args, layout_mm={}), dict(args, script='x.py'),
                     dict(args, request=dict(req, extra=1)), dict(args, request=dict(req, edits=[{}] * 7)),
@@ -177,8 +190,9 @@ class DemoTests(TmpDirCase):
             self.run_cmd('run_approved_demo', args)                      # no owned session yet
         self.run_cmd('create_demo_design')
         with open(self.report_path, 'w') as fh:
-            json.dump(self.arrangement_report(), fh)
-        module = NS(run_arrangement=Mock(return_value=self.report_path))
+            json.dump(report, fh)
+        module = NS(run_arrangement=Mock(return_value=self.report_path),
+                    arrangement_evidence=Mock(return_value=expected))
         with patch.object(workflow, 'modules', return_value=module):
             self.assertEqual(self.run_cmd('run_approved_demo', args)['outcome'], 'PASS')
             with self.assertRaises(PolicyError):
@@ -186,36 +200,82 @@ class DemoTests(TmpDirCase):
             with self.assertRaises(PolicyError):
                 self.run_cmd('save_demo_design', self.args)
         module.run_arrangement.assert_called_once()
-        self.assertEqual(module.run_arrangement.call_args[0][3], req)
+        self.assertEqual(module.run_arrangement.call_args[0][3], request)
+        module.arrangement_evidence.assert_called_once_with(request)       # bound to the same request
         self.doc.saveAs.assert_not_called(); self.protected.close.assert_not_called()
 
-    def test_build_arrangement_generic_verifier_refuses_incomplete_reports(self):
-        self.assertTrue(workflow.verified_arrangement(self.arrangement_report()))
-        def broken(fn):
-            r = self.arrangement_report(); fn(r); return r
-        for bad in (
-                broken(lambda r: r.update(outcome='FAIL')),
-                broken(lambda r: r['stages'][2]['checks'].pop()),                    # check set differs
-                broken(lambda r: r['stages'][1]['checks'][0].update(status='FAIL')),
-                broken(lambda r: r['stages'].pop(2)),                                 # no restore stage
-                broken(lambda r: r.update(final_state={'s': 1})),
-                broken(lambda r: r['edits'][1]['preview'].update(outcome='PASS')),
-                broken(lambda r: r['edits'].pop()),
-                broken(lambda r: r['stages'][0].update(label='edit_x')),
-                broken(lambda r: r['stages'][1]['checks'].append(dict(check_id='a.volume', status='PASS'))),
-                {'outcome': 'PASS'}):
-            self.assertFalse(workflow.verified_arrangement(bad))
+    def test_build_arrangement_acceptance_requires_complete_request_bound_evidence(self):
+        _, expected, report = self.arrangement_case()
+        verify = workflow.verified_arrangement
+        self.assertTrue(verify(report, expected))
+        noisy = copy.deepcopy(report)                                      # readback noise is fine
+        for stage in noisy['stages']:
+            for body in stage['bodies'].values():
+                body['min'][0] += 1e-7; body['volume_mm3'] += 1e-8
+        self.assertTrue(verify(noisy, expected))
+        jack = {'outcome': 'PASS', 'stages': [{'label': 'baseline', 'outcome': 'PASS',
+                'checks': [{'check_id': 'anything', 'status': 'PASS'}]}],
+                'planned_edits': [], 'edits': [], 'baseline_state': {}, 'final_state': {}}
+        self.assertFalse(verify(jack, expected))
+        required = expected['required_checks']
+        numeric = expected['numeric_checks'][0]
+        body = expected['body_ids'][0]
+        label = next(p['label'] for p in expected['stages'] if p['label'].startswith('after_refusal_'))
+        def every(fn):
+            def apply(r):
+                for s in r['stages']:
+                    fn(s)
+            return apply
+        cases = {
+            'required check removed from every stage': every(lambda s: s.__setitem__(
+                'checks', [c for c in s['checks'] if c['check_id'] != required[0]])),
+            'interference evidence removed from every stage': every(lambda s: s.__setitem__(
+                'checks', [c for c in s['checks'] if c['check_id'] != 'furniture_interference'])),
+            'body removed from every stage': every(lambda s: s['bodies'].pop(body)),
+            'parameter removed from every stage': every(lambda s: s['parameters_mm'].pop(
+                expected['parameter_names'][0])),
+            'counts removed from every stage': every(lambda s: s.pop('counts')),
+            'nonfinite numeric observation': lambda r: next(c for c in r['stages'][1]['checks']
+                                                          if c['check_id'] == numeric).__setitem__('observed', float('nan')),
+            'missing numeric observation': every(lambda s: next(c for c in s['checks']
+                                                                if c['check_id'] == numeric).__setitem__('observed', None)),
+            'nonfinite body bound': lambda r: r['stages'][0]['bodies'][body]['max'].__setitem__(0, float('inf')),
+            'body 1 mm from the model': every(lambda s: s['bodies'][body]['max'].__setitem__(
+                1, s['bodies'][body]['max'][1] + 1)),
+            'edit not reflected in parameters': lambda r: r['stages'][1]['parameters_mm'].__setitem__(
+                expected['edits'][0]['parameter'], r['stages'][0]['parameters_mm'][expected['edits'][0]['parameter']]),
+            'missing refusal stage': lambda r: r.__setitem__('stages', [s for s in r['stages'] if s['label'] != label]),
+            'stages out of order': lambda r: r['stages'].insert(1, r['stages'].pop(2)),
+            'mismatched edit value': lambda r: r['edits'][0].__setitem__('value_mm', r['edits'][0]['value_mm'] + 1),
+            'mismatched planned edit': lambda r: r['planned_edits'][1].__setitem__('expect', 'pass'),
+            'refusal without refused preview': lambda r: r['edits'][1]['preview'].__setitem__('outcome', 'PASS'),
+            'other request (spec hash)': lambda r: r.__setitem__('spec_hash', '0' * 64),
+            'timeline count differs': every(lambda s: s['counts'].__setitem__('timeline_items', 1)),
+            'duplicate check id': lambda r: r['stages'][0]['checks'].append(dict(r['stages'][0]['checks'][0])),
+            'failing check': lambda r: r['stages'][2]['checks'][0].__setitem__('status', 'FAIL'),
+            'state not restored': lambda r: r.__setitem__('final_state', {'s': 1}),
+        }
+        for name, mutate in cases.items():
+            bad = copy.deepcopy(report)
+            mutate(bad)
+            self.assertFalse(verify(bad, expected), name)
+
+    def test_build_arrangement_incomplete_report_is_refused_and_not_retried(self):
+        request, expected, report = self.arrangement_case()
+        for s in report['stages']:
+            s['checks'] = [c for c in s['checks'] if c['check_id'] != 'inventory']
         with open(self.report_path, 'w') as fh:
-            json.dump(broken(lambda r: r.update(final_state={'s': 1})), fh)
+            json.dump(report, fh)
         self.run_cmd('create_demo_design')
-        module = NS(run_arrangement=Mock(return_value=self.report_path))
-        args = dict(demo_id='demo-001', entry_point='BuildArrangement',
-                    request=dict(arrangement={}, envelope={}, edits=[]))
+        module = NS(run_arrangement=Mock(return_value=self.report_path),
+                    arrangement_evidence=Mock(return_value=expected))
+        args = dict(demo_id='demo-001', entry_point='BuildArrangement', request=request)
         with patch.object(workflow, 'modules', return_value=module):
             with self.assertRaises(PolicyError):
                 self.run_cmd('run_approved_demo', args)
             with self.assertRaises(PolicyError):
                 self.run_cmd('run_approved_demo', args)                      # no retry after failure
+        module.run_arrangement.assert_called_once()
 
     def test_tab_slot_fixed_owned_candidate_no_retry_or_save(self):
         args=dict(demo_id='demo-001',entry_point='TabSlotCoupon')

@@ -16,23 +16,18 @@ import adsk.fusion
 from .adapter import FusionAdapter
 from .test_envelope import measure_test, snapshot
 from ...arrangement import collisions
-from ...arrangement_job import plan_request, preview_values
+from ...arrangement_job import expected_inventory, plan_request, preview_values
 from ...core.geometry import Box
-from ...modules.test_envelope import restored_lined_measurements
+from ...verification.readback import same_except_readback_noise as restored_lined_measurements
 
 REPORT = "arrangement.json"
-
-
-def expected_inventory(assembly):
-    panels, cuts = len(assembly.panels), len(assembly.operations)
-    return dict(panels=panels, timeline=3 * panels + 2 * cuts)
 
 
 def measure_arrangement(design, plan, guard):
     asm = plan.arrangement.assembly
     inventory = expected_inventory(asm)
-    report = measure_test(design, asm, guard, expected_panels=inventory["panels"],
-                          expected_timeline=inventory["timeline"], read_only_ownership=True,
+    report = measure_test(design, asm, guard, expected_panels=inventory["root_occurrences"],
+                          expected_timeline=inventory["timeline_items"], read_only_ownership=True,
                           lined_spec=plan.envelope)
     boxes = {k: Box(tuple(v["min"]), tuple(v["max"])) for k, v in report["bodies"].items()}
     hits = collisions(asm, report["parameters_mm"], plan.arrangement.owners, boxes)

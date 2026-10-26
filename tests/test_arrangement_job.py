@@ -100,6 +100,33 @@ class PlanRequests(unittest.TestCase):
         self.assertEqual(len(plan.arrangement.instances), 4)
         self.assertEqual(sum(i.quarter_turns != 0 for i in plan.arrangement.instances), 2)
 
+    def test_expected_evidence_is_derived_from_the_model_and_request(self):
+        from vandesign.arrangement_job import expected_evidence
+        from vandesign.verification.model_source import ModelGeometrySource
+        from vandesign.verification.validate import validate
+        plan = plan_request(request([EDIT_OK, INTO_ARCH]))
+        ev = expected_evidence(plan)
+        asm = plan.arrangement.assembly
+        self.assertEqual([s["label"] for s in ev["stages"]],
+                         ["baseline", "edit_K1_Cab_Width", "restore_K1_Cab_Width", "after_refusal_K1_Pos_Y"])
+        self.assertEqual(ev["stages"][1]["parameters_mm"]["K1_Cab_Width"], 1000.0)
+        self.assertNotEqual(ev["stages"][1]["parameters_mm"]["K1_Cab_Shelf_Length"],
+                            ev["stages"][0]["parameters_mm"]["K1_Cab_Shelf_Length"])   # derived follow
+        self.assertEqual(ev["body_ids"], sorted(p.stable_id for p in asm.panels))
+        ideal = {c.check_id for c in validate(asm, ModelGeometrySource(asm)).checks}
+        self.assertTrue(ideal <= set(ev["required_checks"]))
+        for extra in ("furniture_interference", "inventory", "lined_clearances", "instances.no_shared_material",
+                      "reference.arch.left.interference"):
+            self.assertIn(extra, ev["required_checks"])
+        self.assertTrue(all(op.operation_id + ".affected_body_ownership" in ev["required_checks"]
+                            for op in asm.operations))
+        self.assertTrue(set(ev["numeric_checks"]) <= set(ev["required_checks"]))
+        self.assertTrue(any(c.endswith(".volume") for c in ev["numeric_checks"]))
+        self.assertEqual(ev["inventory"]["timeline_items"], 3 * len(asm.panels) + 2 * len(asm.operations))
+        self.assertEqual(json.loads(json.dumps(ev)), ev)                      # plain JSON data
+        # The ideal model source itself passes every validate() check.
+        self.assertTrue(all(c.status == "PASS" for c in validate(asm, ModelGeometrySource(asm)).checks))
+
     def test_dxf_pack_excludes_reference_geometry(self):
         plan = plan_request(request(tool_diameter_mm=6))
         asm = plan.arrangement.assembly
