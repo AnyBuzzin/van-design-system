@@ -18,6 +18,31 @@ from vandesign.schemas.cabinet_spec import CabinetSpec
 
 ROOT = Path(__file__).resolve().parents[1]
 
+# Runtime files that have deliberately evolved past the preserved prototype.
+# The prototype itself stays byte-identical under prototypes/ and keeps its own
+# tests; these maintained files only need to keep the historical API, with
+# behaviour pinned by the functional tests. Add one line, with the reason.
+EVOLVED = {
+    'core/expr.py': 'substitute() for per-instance parameter namespaces (arrangements)',
+    'components/model.py': 'E1.1 corner_radius; DadoOperation.quarter_turns (0 = historical frame)',
+    'verification/validate.py': 'E1.1 rounded volume; dado checks in the module frame (identity at 0)',
+}
+
+
+def _api(tree):
+    """Top-level function/class names plus each class's attribute and method names."""
+    names = set()
+    for node in tree.body:
+        if isinstance(node, (ast.FunctionDef, ast.ClassDef)):
+            names.add(node.name)
+        if isinstance(node, ast.ClassDef):
+            for item in node.body:
+                if isinstance(item, ast.FunctionDef):
+                    names.add(node.name + '.' + item.name)
+                elif isinstance(item, ast.AnnAssign) and isinstance(item.target, ast.Name):
+                    names.add(node.name + '.' + item.target.id)
+    return names
+
 
 def without_e11(tree):
     """Remove ONLY the optional rounded extension for historical AST comparison.
@@ -82,6 +107,14 @@ class MigrationTests(unittest.TestCase):
                             self.assertEqual([k.arg for k in calls[0].keywords], ['x_dynamic', 'y_dynamic'])
                             calls[0].keywords = []
                     self.assertEqual(ast.dump(old), ast.dump(new))
+                    continue
+                rel = source.relative_to(historical).as_posix()
+                if rel in EVOLVED:
+                    # Deliberately evolved runtime file: the historical API must
+                    # survive (names below), behaviour is pinned by functional tests.
+                    old = _api(ast.parse(source.read_text(encoding='utf-8')))
+                    new = _api(ast.parse((installed / rel).read_text(encoding='utf-8')))
+                    self.assertTrue(old <= new, sorted(old - new))
                     continue
                 if source.relative_to(historical).as_posix() in ('core/geometry.py','components/model.py','verification/validate.py'):
                     old=ast.parse(source.read_text(encoding='utf-8'))
