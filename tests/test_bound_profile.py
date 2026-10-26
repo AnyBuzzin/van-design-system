@@ -40,11 +40,13 @@ class Sketch:
         return line
 
     def arc(self, c, start, sweep):
+        center = c if isinstance(c, Point) else self.point(c)
+        c = center.xyz
         r = math.dist(c, start); angle = math.atan2(start[1]-c[1], start[0]-c[0])
         end = (c[0]+r*math.cos(angle+sweep), c[1]+r*math.sin(angle+sweep), 0)
         if sweep < 0:
             start, end = end, start  # Autodesk always returns a CCW arc.
-        a = NS(centerSketchPoint=self.point(c), startSketchPoint=self.point(start),
+        a = NS(centerSketchPoint=center, startSketchPoint=self.point(start),
                endSketchPoint=self.point(end), sweep=sweep, isFixed=False)
         self.arcs.append(a)
         return a
@@ -167,6 +169,78 @@ class BoundProfile(unittest.TestCase):
         s = Sketch(); s.geometricConstraints.addParallel = Mock(return_value=None)
         with self.assertRaises(RuntimeError):
             self.compile(loop, sketch=s)
+
+    def test_arc_centres_are_driven_before_becoming_curve_owned(self):
+        # A boundary fake, NOT a reproduction of Fusion's unidentified solver
+        # constraint: reject all post-arc centre dimensioning explicitly.
+        s = Sketch()
+        original_distance, original_arc = s.distance, s.arc
+        def distance(anchor, p, axis, text):
+            if any(a.centerSketchPoint is p for a in s.arcs):
+                raise RuntimeError('post-arc centre dimension rejected')
+            return original_distance(anchor, p, axis, text)
+        def arc(center, start, sweep):
+            self.assertIsInstance(center, Point)
+            dims = [d for d in s.dimensions if d.point is center]
+            self.assertEqual({d.axis for d in dims}, {0, 1})
+            self.assertEqual(len(dims), 2)
+            self.assertTrue(all(d.parameter.expression for d in dims))
+            self.assertFalse(center.isFixed)
+            return original_arc(center, start, sweep)
+        s.sketchDimensions.addDistanceDimension = distance
+        s.sketchCurves.sketchArcs.addByCenterStartSweep = arc
+        self.compile(self.bindings['panel.bottom.001'].outline, sketch=s)
+        self.assertTrue(s.arcs)
+
+    def test_arc_centre_substitution_refuses_before_radius_or_lines(self):
+        s = Sketch(); original = s.arc
+        def substitute(center, start, sweep):
+            arc = original(center, start, sweep)
+            arc.centerSketchPoint = s.point(arc.centerSketchPoint.xyz)
+            return arc
+        s.sketchCurves.sketchArcs.addByCenterStartSweep = substitute
+        with self.assertRaisesRegex(RuntimeError, 'centre identity'):
+            self.compile(self.bindings['panel.bottom.001'].outline, sketch=s)
+        self.assertFalse(s.lines)
+        self.assertTrue(all(not hasattr(a, 'radial') for a in s.arcs))
+
+    def test_centre_creation_and_driving_failures_stop_before_arc(self):
+        loop = self.bindings['panel.bottom.001'].outline
+        s = Sketch(); original = s.point
+        s.sketchPoints.add = lambda xyz: original(xyz) if not s.points else None
+        with self.assertRaisesRegex(RuntimeError, 'centre creation failed'):
+            self.compile(loop, sketch=s)
+        self.assertFalse(s.arcs)
+        for axis in (0, 1):
+            for null in (False, True):
+                s = Sketch(); original = s.distance
+                error = RuntimeError('VCS_SKETCH_OVER_CONSTRAINTS')
+                def dimension(a, p, direction, text):
+                    if direction == axis:
+                        if null: return None
+                        raise error
+                    return original(a, p, direction, text)
+                s.sketchDimensions.addDistanceDimension = dimension
+                with self.assertRaisesRegex(RuntimeError, f'test: arc .* centre {"XY"[axis]} coordinate') as caught:
+                    self.compile(loop, sketch=s)
+                if not null:
+                    self.assertIs(caught.exception.__cause__, error)
+                self.assertFalse(s.arcs)
+                self.assertTrue(all(not d.point.isFixed for d in s.dimensions))
+
+    def test_centre_equality_accepts_another_wrapper_for_same_entity(self):
+        class Wrapper(Point):
+            def __init__(self, point): self.point = point
+            def __eq__(self, other): return self.point is other
+            def __getattr__(self, name): return getattr(self.point, name)
+        s = Sketch(); original = s.arc
+        def wrapped(center, start, sweep):
+            arc = original(center, start, sweep)
+            arc.centerSketchPoint = Wrapper(center)
+            return arc
+        s.sketchCurves.sketchArcs.addByCenterStartSweep = wrapped
+        self.compile(self.bindings['panel.bottom.001'].outline, sketch=s)
+        self.assertTrue(s.arcs)
 
     def test_clockwise_arc_api_normalisation_and_missing_readback(self):
         loop = self.bindings['panel.bottom.001'].outline
