@@ -22,7 +22,14 @@ M1 was accepted on Runner `7392a67`: the shipped four-instance Crafter request p
 
 E1.1 passed live (#70). E1.2 (#73) is superseded, not qualified; its failure evidence remains preserved. M2.1 (#84) is accepted on installed Runner/runtime `a6d3b2f`: fixed-XY rounded/relieved-slot/pocket/blind-hole fixture, thickness 18 -> 20 -> 18 mm and invalid 5 mm refusal, 404/404 live checks, five fully constrained sketches and three exact cut owners. Two DXFs were independently re-read; only the successful fixture was closed unsaved and all five protected states were preserved ([results](https://github.com/AnyBuzzin/van-design-system/issues/84#issuecomment-6423328030), [acceptance](https://github.com/AnyBuzzin/van-design-system/issues/84#issuecomment-6423342354)). This does not qualify general XY parametrisation, arbitrary profiles, saved persistence or physical CNC assembly.
 
-Remaining M2 work follows the approved roadmap: joinery driven by the profile model: tab-and-slot with automatic dog-bones (including tab roots) from tool diameter, clearance and **measured** sheet thickness; one hardware connector (Lamello Cabineo or confirmat) as cut geometry. Fit is proven virtually: exact clearance and zero assembled overlap offline, measured BRep bodies in Fusion, and DXF re-read against the core. The physical coupon cut moves to M7.
+**Owner decision (26 October 2026, [ADR-0003](decisions/ADR-0003-joinery-and-finish.md)):** traditional CNC joinery, no visible hardware, exposed ply edges. Tab-and-slot with automatic dog-bones from tool diameter, clearance and **measured** thickness is done offline (#86, #90). Remaining M2 work, in order (each an offline PR, then live verification by Astra when authorised):
+1. **Blind tab-and-slot**: slots stop short of the outer face.
+2. **Stopped dados and rabbets**: shelves and backs with no visible joint edges.
+3. **Finger joints**: drawer and storage boxes.
+4. **Half-lap joints**: dividers and frames.
+5. **Hidden connector** (Lamello Cabineo, from inside faces) as cut geometry, once the CNC shop confirms it can mill the pockets.
+
+Fit is proven virtually: exact clearance and zero assembled overlap offline, measured BRep bodies in Fusion, and DXF re-read against the core. The physical coupon cut moves to M7. Native width editing of profile panels (#95; producer bindings #97) continues in parallel.
 
 ## M3 — First manufacturable module
 
@@ -30,7 +37,16 @@ A kitchen base cabinet run in the reference van: arrangement + tab-and-slot carc
 
 ## M4 — Furniture library and materials (was D + E2, B2)
 
-Only what a working van needs: overhead cabinets (with B2 angled upper-wall planes), drawer unit (one slide type), wardrobe/tall unit, bed variants. Per-panel thickness 5/10/12/15/18 mm (others only when justified), grain direction, hardware library.
+Only what a working van needs:
+- overhead cabinets, with B2 angled upper-wall planes and a hidden fixing rail screwed through the lining into battens at recorded mounting points (refused if a fixing misses a batten; capacity unqualified until M7);
+- drawer unit (one slide type);
+- wardrobe/tall unit;
+- bed variants.
+
+Also in M4:
+- per-panel thickness 5/10/12/15/18 mm (others only when justified);
+- grain direction and face quality, since exposed edges are part of the finish;
+- hardware library, with all hardware hidden.
 
 ## M5 — Layout workflow (was G)
 
