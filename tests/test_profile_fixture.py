@@ -109,7 +109,8 @@ class ProfileAPI(unittest.TestCase):
         curves=[];lines=[];arcs=[]
         def add(target,*args):
             target.append(args);c=NS(isFixed=False);curves.append(c);return c
-        sketch=NS(profiles=Items([1]),sketchCurves=NS(sketchLines=NS(addByTwoPoints=lambda *a:add(lines,*a)),
+        sketch=NS(profiles=Items([1]),sketchPoints=Items(),isFullyConstrained=True,
+                  sketchCurves=NS(sketchLines=NS(addByTwoPoints=lambda *a:add(lines,*a)),
                     sketchArcs=NS(addByCenterStartSweep=lambda *a:add(arcs,*a))))
         comp=NS(xYConstructionPlane='XY',sketches=NS(add=lambda plane:sketch))
         panel=resolve_profiles()[0]
@@ -119,6 +120,67 @@ class ProfileAPI(unittest.TestCase):
         sketch.profiles=Items()
         with self.assertRaisesRegex(RuntimeError,'one closed'):
             self.adapter.ProfileAdapter._loop_sketch(None,comp,'outline',panel.profile.outline,(0,0,0))
+
+    def test_fixed_curves_leave_independent_points_until_explicitly_constrained(self):
+        class Point:
+            def __init__(self,role,constrained=False):
+                self.role=role;self.constrained=constrained;self.writes=0
+            @property
+            def isFullyConstrained(self):return self.constrained
+            @property
+            def isFixed(self):return self.writes>0
+            @isFixed.setter
+            def isFixed(self,value):
+                self.writes+=1;self.constrained=value
+        class Sketch(NS):
+            @property
+            def isFullyConstrained(self):
+                return all(c.isFixed for c in self.curves) and all(p.isFullyConstrained for p in self.sketchPoints.values)
+        for panel in resolve_profiles():
+            for loop in (panel.profile.outline,*(feature_loop(f) for f in panel.profile.features)):
+                with self.subTest(panel=panel.profile.panel_id,segments=len(loop.segments)):
+                    origin=Point('origin/reference',True);points=Items([origin]);curves=[]
+                    def add(arc,*args):
+                        points.values.extend(Point(role) for role in (('start','end','centre') if arc else ('start','end')))
+                        c=NS(isFixed=False);curves.append(c);return c
+                    sketch=Sketch(profiles=Items([1]),sketchPoints=points,curves=curves,
+                        sketchCurves=NS(sketchLines=NS(addByTwoPoints=lambda *a:add(False,*a)),
+                                        sketchArcs=NS(addByCenterStartSweep=lambda *a:add(True,*a))))
+                    comp=NS(xYConstructionPlane='XY',sketches=NS(add=lambda plane:sketch))
+                    self.adapter.ProfileAdapter._loop_sketch(None,comp,'fixed',loop,panel.origin)
+                    self.assertTrue(sketch.isFullyConstrained)
+                    self.assertEqual(origin.writes,0)
+                    self.assertTrue(all(p.writes==1 for p in points.values[1:]))
+                    # Curve fixing alone cannot satisfy this solver model.
+                    points.values[-1].constrained=False
+                    self.assertTrue(all(c.isFixed for c in curves));self.assertFalse(sketch.isFullyConstrained)
+
+    def test_point_constraint_unavailable_noop_exception_and_whole_sketch_refuse(self):
+        class NoOp:
+            isFullyConstrained=False
+            @property
+            def isFixed(self):return False
+            @isFixed.setter
+            def isFixed(self,value):pass
+        class Rejected(NoOp):
+            @NoOp.isFixed.setter
+            def isFixed(self,value):raise RuntimeError('Solver rejected constraint')
+        class MissingReadback:
+            isFixed=False
+            @property
+            def isFullyConstrained(self):return None if self.isFixed else False
+        class Unavailable:
+            @property
+            def isFullyConstrained(self):raise RuntimeError('Constraint API unavailable')
+        for point,whole in ((NS(isFullyConstrained=None),True),(NoOp(),True),(Rejected(),True),
+                            (MissingReadback(),True),(Unavailable(),True),
+                            (NS(isFullyConstrained=True),False),(NS(isFullyConstrained=True),None)):
+            sketch=NS(profiles=Items([1]),sketchPoints=Items([point]),isFullyConstrained=whole,
+                sketchCurves=NS(sketchLines=NS(addByTwoPoints=lambda *a:NS(isFixed=False)),
+                                sketchArcs=NS(addByCenterStartSweep=lambda *a:NS(isFixed=False))))
+            comp=NS(xYConstructionPlane='XY',sketches=NS(add=lambda plane:sketch))
+            with self.subTest(point=type(point).__name__,whole=whole),self.assertRaises(RuntimeError):
+                self.adapter.ProfileAdapter._loop_sketch(None,comp,'fixed',resolve_profiles()[0].profile.outline,(0,0,0))
 
     def test_compile_explicit_targets_depth_bindings_and_mate_failure(self):
         for bad in (False,True):
