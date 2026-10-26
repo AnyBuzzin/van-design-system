@@ -123,9 +123,9 @@ def validate_args(command: str, args: Any, path: str) -> None:
             _str(args[key], path + "." + key, 300)
         if "demo_id" in args and not JOB_ID_RE.fullmatch(args["demo_id"]):
             _fail(path + ".demo_id", "must be the create job id")
-        if command == "run_approved_demo" and args["entry_point"] not in ("FirstInteriorDemo", "BedCabinetComposition", "TestTransitEnvelope", "TestStorageBox", "DimensionedCutaway", "PhaseABaseCheckpoint", "PhaseACombinedPersistence", "LinedInteriorEnvelope", "RoundedPanel"):
+        if command == "run_approved_demo" and args["entry_point"] not in ("FirstInteriorDemo", "BedCabinetComposition", "TestTransitEnvelope", "TestStorageBox", "DimensionedCutaway", "PhaseABaseCheckpoint", "PhaseACombinedPersistence", "LinedInteriorEnvelope", "RoundedPanel", "TabSlotCoupon"):
             _fail(path + ".entry_point", "unapproved entry point")
-        if args.get('entry_point') in ('BedCabinetComposition', 'TestTransitEnvelope', 'TestStorageBox', 'DimensionedCutaway', 'PhaseABaseCheckpoint', 'LinedInteriorEnvelope', 'RoundedPanel') and set(args) != {'demo_id', 'entry_point'}:
+        if args.get('entry_point') in ('BedCabinetComposition', 'TestTransitEnvelope', 'TestStorageBox', 'DimensionedCutaway', 'PhaseABaseCheckpoint', 'LinedInteriorEnvelope', 'RoundedPanel', 'TabSlotCoupon') and set(args) != {'demo_id', 'entry_point'}:
             _fail(path, 'composition uses fixed reviewed inputs')
         if 'layout_mm' in args:
             _keys(args['layout_mm'], path+'.layout_mm', (), ('Bed_Width', 'Bed_Length', 'Bed_Height', 'Kitchen_X', 'Kitchen_Y'))

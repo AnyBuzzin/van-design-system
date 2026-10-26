@@ -21,7 +21,8 @@ for name in ('core.expr', 'core.frames', 'core.geometry', 'core.params', 'core.u
              'modules.variants', 'modules.interior_demo', 'modules.bed_platform',
              'schemas.bed_platform_spec', 'schemas.storage_box_spec', 'schemas.envelope_spec',
              'modules.test_envelope', 'modules.storage_box', 'modules.rounded_panel',
-             'schemas.rounded_panel_spec', 'verification.validate',
+             'schemas.rounded_panel_spec', 'core.tab_slot', 'modules.tab_slot',
+             'schemas.tab_slot_spec', 'verification.tab_slot', 'verification.validate',
              'verification.geometry_source', 'verification.report'):
     module = importlib.import_module('vandesign.' + name)
     assert Path(module.__file__).resolve().is_relative_to(origin.parent)
