@@ -208,6 +208,26 @@ def verified_arrangement(report, expected):
         return False
     if not all(_complete_stage(s, p, expected) for s, p in zip(stages, expected['stages'])):
         return False
+    if 'construction_cuts' in expected:
+        cuts=report.get('construction_cuts')
+        if not isinstance(cuts,list) or len(cuts)!=len(expected['construction_cuts']):
+            return False
+        for observed,want in zip(cuts,expected['construction_cuts']):
+            if (not isinstance(observed,dict) or observed.get('outcome')!='PASS'
+                    or any(observed.get(k)!=want[k] for k in ('cut_id','owner'))):
+                return False
+            before,after=observed.get('before_mm3'),observed.get('after_mm3')
+            if any(not isinstance(v,dict) or sorted(v)!=expected['body_ids']
+                   or any(not _finite(x) or x<=0 for x in v.values()) for v in (before,after)):
+                return False
+            owner=want['owner'];removed=want['removed_mm3']
+            if (abs(before[owner]-after[owner]-removed)>max(1,removed*ARRANGEMENT_VOLUME_REL)
+                    or any(abs(before[pid]-after[pid])>1e-6 for pid in before if pid!=owner)):
+                return False
+            ownership=observed.get('ownership',{})
+            if (not isinstance(ownership,dict) or ownership.get('status')!='PASS'
+                    or ownership.get('affected_bodies')!=[owner] or ownership.get('feature_parent')!=owner):
+                return False
     ids = [sorted(c['check_id'] for c in s['checks']) for s in stages]
     if any(i != ids[0] for i in ids):
         return False

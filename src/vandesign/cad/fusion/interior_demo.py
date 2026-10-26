@@ -408,12 +408,20 @@ def run_tab_slot(app, output_dir, guard):
 
 def run_arrangement(app, output_dir, guard, request):
     """Generic entry: any arrangement request, planned and refused before CAD writes."""
+    if isinstance(request, dict) and 'fixture' in request:
+        from .profile_build import run_profile_fixture
+        return run_profile_fixture(app, output_dir, guard, request)
     from .arrangement_build import run_arrangement as run
     return run(app, output_dir, guard, request)
 
 
 def arrangement_evidence(request):
     """Expected evidence for a request (plain data), for Runner acceptance."""
+    if isinstance(request, dict) and 'fixture' in request:
+        from ...modules.profile_fixture import request_valid
+        from ...verification.profile_panel import expected_evidence
+        request_valid(request)
+        return expected_evidence()
     from ...arrangement_job import expected_evidence, plan_request
     return expected_evidence(plan_request(request))
 
