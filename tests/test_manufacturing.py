@@ -111,6 +111,58 @@ class FeatureContainment(unittest.TestCase):
         with self.assertRaisesRegex(ProfileError, "outside"):
             self.profile(outline, Pocket(self.cut(80, 10, 120, 30), 6, "top"))   # overhangs the edge
 
+    def test_edge_crossing_missing_material_refused(self):
+        """Review regression: every vertex passes, but the cut spans a 2 mm notch."""
+        outline = polygon_loop(((0, 0), (100, 0), (100, 100), (51, 100),
+                                (51, 40), (49, 40), (49, 100), (0, 100)), waste_inside=False)
+        with self.assertRaises(ProfileError):
+            self.profile(outline, ThroughCut(self.cut(10, 50, 90, 60)))
+        with self.assertRaisesRegex(ProfileError, "outside|contains part"):
+            self.profile(outline, Pocket(self.cut(10, 50, 90, 60), 6, "top"))
+        ok = self.profile(outline, ThroughCut(self.cut(10, 50, 40, 60)))   # left leg only
+        self.assertAlmostEqual(ok.volume_mm3, (outline.area - 300) * 18, places=6)
+
+    def test_line_crossing_an_outline_relief_arc_refused(self):
+        # Notch (40,0)-(60,20) with r=3 dog-bones: the bones bulge to y = 20.88.
+        outline = polygon_loop(rectilinear_outline(100, 50, [(40, 0, 60, 20)]),
+                               waste_inside=False, relief_radius=3)
+        with self.assertRaises(ProfileError):
+            self.profile(outline, ThroughCut(self.cut(30, 20.5, 70, 30)))   # corners in material
+        self.profile(outline, ThroughCut(self.cut(30, 21, 70, 30)))          # clears the bones
+
+    def test_randomised_rectangles_match_exact_answer(self):
+        """Seeded cross-check against rectangle arithmetic (no sampling anywhere)."""
+        import random
+        rng = random.Random(20261026)
+        checked = 0
+        while checked < 300:
+            w, h = 100.0, 60.0
+            notches = []
+            for _ in range(rng.randint(1, 3)):
+                x0, y0 = rng.uniform(5, 90), rng.uniform(5, 50)
+                side = rng.choice("BTLR")
+                x1, y1 = x0 + rng.uniform(2, 15), y0 + rng.uniform(2, 15)
+                notches.append({"B": (x0, -1, x1, y1), "T": (x0, y0, x1, h + 1),
+                                "L": (-1, y0, x1, y1), "R": (x0, y0, w + 1, y1)}[side])
+            try:
+                outline = polygon_loop(rectilinear_outline(w, h, notches), waste_inside=False)
+            except ProfileError:
+                continue  # split or pinched panels are refused upstream
+            fx0, fy0 = rng.uniform(1, 80), rng.uniform(1, 45)
+            f = (fx0, fy0, fx0 + rng.uniform(2, 30), fy0 + rng.uniform(2, 20))
+            clipped = [(max(a, 0), max(b, 0), min(c, w), min(d, h)) for a, b, c, d in notches]
+            inside = (f[0] > 0 and f[1] > 0 and f[2] < w and f[3] < h and not any(
+                a < f[2] and f[0] < c and b < f[3] and f[1] < d for a, b, c, d in clipped))
+            clear = inside and all(  # through-cuts must not even touch a notch
+                a > f[2] or c < f[0] or b > f[3] or d < f[1] for a, b, c, d in clipped)
+            try:
+                self.profile(outline, ThroughCut(self.cut(*f)))
+                accepted = True
+            except ProfileError:
+                accepted = False
+            self.assertEqual(accepted, clear, (notches, f))
+            checked += 1
+
     def test_holes_need_material_all_round(self):
         outline = rounded_corner_outline(100, 100, 90)
         self.profile(outline, Hole((20, 20), 8))

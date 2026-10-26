@@ -43,9 +43,6 @@ class Line:
         (x1, y1), (x2, y2) = self.start, self.end
         return 0.5 * (x1 * y2 - x2 * y1)
 
-    def sample(self):
-        return (self.start, self.end)
-
 
 @dataclass(frozen=True)
 class Arc:
@@ -82,10 +79,6 @@ class Arc:
         return 0.5 * (r * (cx * (math.sin(a2) - math.sin(a1)) - cy * (math.cos(a2) - math.cos(a1)))
                       + r * r * self.sweep)
 
-    def sample(self, step=math.pi / 36):
-        n = max(2, int(math.ceil(abs(self.sweep) / step)) + 1)
-        return tuple(self._point(self.start_angle + self.sweep * i / (n - 1)) for i in range(n))
-
 
 @dataclass(frozen=True)
 class Loop:
@@ -107,15 +100,18 @@ class Loop:
     def area(self) -> float:
         return sum(s.area_term() for s in self.segments)
 
-    def points(self):
-        out = []
-        for s in self.segments:
-            out.extend(s.sample()[:-1])
-        return tuple(out)
-
     @property
     def bounds(self):
-        pts = self.points()
+        """Exact: segment end points plus each arc's axis extremes within its sweep."""
+        pts = []
+        for s in self.segments:
+            pts.extend((s.start, s.end))
+            if isinstance(s, Arc):
+                for k in range(-8, 9):
+                    a = k * math.pi / 2
+                    rel = (a - s.start_angle) * math.copysign(1, s.sweep)
+                    if 0 < rel < abs(s.sweep):
+                        pts.append(s._point(a))
         xs, ys = [p[0] for p in pts], [p[1] for p in pts]
         return (min(xs), min(ys)), (max(xs), max(ys))
 
@@ -125,7 +121,6 @@ def _turn(d1, d2):
 
 
 # --------------------------------------------------------------- containment
-_SAMPLE_STEP = math.radians(2)
 _RAY_ANGLES = (0.3721, 1.1093, 2.0517, 2.7183, 4.0411, 5.3337)
 
 
@@ -200,38 +195,131 @@ def contains_point(loop, p):
     raise ProfileError("Could not classify point %r" % (p,))
 
 
-def _samples(loop):
-    out = []
-    for s in loop.segments:
-        out.extend(s.sample(_SAMPLE_STEP) if isinstance(s, Arc) else s.sample())
-    return out
+def _on_arc(arc, q, tol=CLOSURE_TOL_MM):
+    """Fraction along ``arc`` of a point q on (within tol of) it, else None."""
+    if abs(math.dist(q, arc.center) - arc.radius) > tol:
+        return None
+    theta = math.atan2(q[1] - arc.center[1], q[0] - arc.center[0])
+    rel = ((theta - arc.start_angle) * math.copysign(1, arc.sweep)) % (2 * math.pi)
+    slack = tol / arc.radius
+    if rel > 2 * math.pi - slack:
+        rel = 0.0
+    if rel > abs(arc.sweep) + slack:
+        return None
+    return min(rel / abs(arc.sweep), 1.0)
 
 
-def _circle_samples(center, radius):
-    n = int(2 * math.pi / _SAMPLE_STEP)
-    return [(center[0] + radius * math.cos(2 * math.pi * i / n),
-             center[1] + radius * math.sin(2 * math.pi * i / n)) for i in range(n)]
+def _on_line(line, q, tol=CLOSURE_TOL_MM):
+    """Fraction along ``line`` of a point q on (within tol of) it, else None."""
+    (ax, ay), (bx, by) = line.start, line.end
+    dx, dy = bx - ax, by - ay
+    length2 = dx * dx + dy * dy
+    t = ((q[0] - ax) * dx + (q[1] - ay) * dy) / length2
+    slack = tol / math.sqrt(length2)
+    if t < -slack or t > 1 + slack or math.hypot(ax + t * dx - q[0], ay + t * dy - q[1]) > tol:
+        return None
+    return min(max(t, 0.0), 1.0)
 
 
-def check_contained(outline, boundary_points, inner_loop=None, *, may_touch):
-    """Feature boundary inside the outline material; the outline never inside the feature.
+def _param(seg, q):
+    return _on_line(seg, q) if isinstance(seg, Line) else _on_arc(seg, q)
 
-    ``may_touch`` allows boundary contact (open pockets); through-cuts and
-    holes must stay clear of the outline, since an edge-touching through-cut
-    is a notch and belongs in the outline itself.
+
+def _point_at(seg, f):
+    if isinstance(seg, Line):
+        (ax, ay), (bx, by) = seg.start, seg.end
+        return (ax + f * (bx - ax), ay + f * (by - ay))
+    return seg._point(seg.start_angle + f * seg.sweep)
+
+
+def _circle_points(c, r, p, d):
+    """Points where the infinite line p + t*d meets circle (c, r)."""
+    fx, fy = p[0] - c[0], p[1] - c[1]
+    a = d[0] * d[0] + d[1] * d[1]
+    b = 2 * (d[0] * fx + d[1] * fy)
+    disc = b * b - 4 * a * (fx * fx + fy * fy - r * r)
+    if disc < -1e-9 * max(1.0, b * b):
+        return []
+    root = math.sqrt(max(disc, 0.0))
+    return [(p[0] + t * d[0], p[1] + t * d[1]) for t in {(-b - root) / (2 * a), (-b + root) / (2 * a)}]
+
+
+def _intersections(s1, s2):
+    """Every point where two segments meet, including overlap end points."""
+    pts = []
+    if isinstance(s1, Line) and isinstance(s2, Line):
+        (ax, ay), (bx, by) = s1.start, s1.end
+        (cx, cy), (dx_, dy_) = s2.start, s2.end
+        rx, ry, sx, sy = bx - ax, by - ay, dx_ - cx, dy_ - cy
+        den = rx * sy - ry * sx
+        if abs(den) > 1e-12 * math.hypot(rx, ry) * math.hypot(sx, sy):
+            t = ((cx - ax) * sy - (cy - ay) * sx) / den
+            pts.append((ax + t * rx, ay + t * ry))
+        else:  # parallel: only collinear overlaps meet
+            pts.extend(q for q in (s2.start, s2.end) if _on_line(s1, q) is not None)
+            pts.extend(q for q in (s1.start, s1.end) if _on_line(s2, q) is not None)
+    elif isinstance(s1, Arc) and isinstance(s2, Arc):
+        (c1, r1), (c2, r2) = (s1.center, s1.radius), (s2.center, s2.radius)
+        d = math.dist(c1, c2)
+        if d <= CLOSURE_TOL_MM and abs(r1 - r2) <= CLOSURE_TOL_MM:   # same circle: overlaps
+            pts.extend(q for q in (s2.start, s2.end) if _on_arc(s1, q) is not None)
+            pts.extend(q for q in (s1.start, s1.end) if _on_arc(s2, q) is not None)
+        elif d > CLOSURE_TOL_MM and abs(r1 - r2) - CLOSURE_TOL_MM <= d <= r1 + r2 + CLOSURE_TOL_MM:
+            a = (r1 * r1 - r2 * r2 + d * d) / (2 * d)
+            h = math.sqrt(max(r1 * r1 - a * a, 0.0))
+            ux, uy = (c2[0] - c1[0]) / d, (c2[1] - c1[1]) / d
+            mx, my = c1[0] + a * ux, c1[1] + a * uy
+            pts.extend(((mx - h * uy, my + h * ux), (mx + h * uy, my - h * ux)))
+    else:
+        line, arc = (s1, s2) if isinstance(s1, Line) else (s2, s1)
+        d = (line.end[0] - line.start[0], line.end[1] - line.start[1])
+        pts.extend(_circle_points(arc.center, arc.radius, line.start, d))
+    return [q for q in pts if _param(s1, q) is not None and _param(s2, q) is not None]
+
+
+def _pieces(loop, other):
+    """Midpoints of the pieces of ``loop`` between its intersections with ``other``.
+
+    No piece crosses ``other``, so each lies wholly inside, outside or on it,
+    and its midpoint classifies all of it exactly (up to CLOSURE_TOL_MM).
     """
-    for q in boundary_points:
-        gap = boundary_distance(q, outline)
-        if gap <= CLOSURE_TOL_MM:
+    contact = False
+    mids = []
+    for seg in loop.segments:
+        cuts = {0.0, 1.0}
+        for o in other.segments:
+            for q in _intersections(seg, o):
+                cuts.add(_param(seg, q))
+                contact = True
+        cuts = sorted(cuts)
+        mids.extend(_point_at(seg, (a + b) / 2) for a, b in zip(cuts, cuts[1:]) if b - a > 1e-12)
+    return mids, contact
+
+
+def check_contained(outline, feature, *, may_touch):
+    """Exact containment of a feature loop in the outline material.
+
+    Both boundaries are split at every line/arc intersection; each piece is
+    then classified by an exact point test at its midpoint. The feature must
+    lie inside the material and the outline must never enter the feature.
+    ``may_touch`` allows boundary contact (open pockets); through-cuts and
+    holes must stay clear, since an edge-touching through-cut is a notch and
+    belongs in the outline itself.
+    """
+    touch = "touches the outline (model it as a notch in the outline)"
+    mids, contact = _pieces(feature, outline)
+    for q in mids:
+        if boundary_distance(q, outline) <= CLOSURE_TOL_MM:
             if not may_touch:
-                return "touches the outline (model it as a notch in the outline)"
-            continue
+                return touch
+            continue  # shared boundary of an open pocket
         if not contains_point(outline, q):
             return "lies outside the outline material"
-    if inner_loop is not None:
-        for q in _samples(outline):
-            if boundary_distance(q, inner_loop) > CLOSURE_TOL_MM and contains_point(inner_loop, q):
-                return "contains part of the outline"
+    if contact and not may_touch:
+        return touch
+    for q in _pieces(outline, feature)[0]:
+        if boundary_distance(q, feature) > CLOSURE_TOL_MM and contains_point(feature, q):
+            return "contains part of the outline"
     return None
 
 
@@ -380,11 +468,9 @@ class PanelProfile:
             if isinstance(f, Hole):
                 r = f.diameter / 2
                 circle = Loop((Arc(f.center, r, 0.0, math.pi), Arc(f.center, r, math.pi, math.pi)))
-                problem = check_contained(self.outline, _circle_samples(f.center, r), circle,
-                                          may_touch=False)
+                problem = check_contained(self.outline, circle, may_touch=False)
             else:
-                problem = check_contained(self.outline, _samples(f.loop), f.loop,
-                                          may_touch=isinstance(f, Pocket))
+                problem = check_contained(self.outline, f.loop, may_touch=isinstance(f, Pocket))
             if problem:
                 raise ProfileError("%s: %s %s" % (self.panel_id, type(f).__name__, problem))
             depth = f.depth if isinstance(f, Pocket) else (f.depth if isinstance(f, Hole) else None)
