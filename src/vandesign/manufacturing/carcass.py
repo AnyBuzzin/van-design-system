@@ -14,11 +14,12 @@ from ..core.expr import Expr, Param
 from ..core.geometry import Box
 from ..modules.profile_fixture import feature_id
 from .assembly import _assembly_profiles, _resolve, Tracked, expr_of, recording_decisions, tracked_box
+from .fronts import InsetFronts, add_hardware, inset_boxes
 from .joints import MIN_SKIN_MM, Sheet, TabSlot, apply_joints
-from .profile import Arc, Line, Loop, Pocket, ProfileError, ThroughCut
+from .profile import Arc, Hole, Line, Loop, Pocket, ProfileError, ThroughCut
 
 _JOINERY_KEYS = {"sheet", "clearance_mm", "tabs_per_edge", "tab_width_mm", "tool_diameter_mm"}
-_OPTIONAL_KEYS = {"blind_slot_depth_mm", "dado_stop_mm", "back_rabbet_mm"}
+_OPTIONAL_KEYS = {"blind_slot_depth_mm", "dado_stop_mm", "back_rabbet_mm", "fronts"}
 _SHEET_KEYS = {"name", "nominal_mm", "measured_mm"}
 SIDES = (("panel.left.001", "-x"), ("panel.right.001", "+x"))
 TABBED = ("panel.bottom.001", "panel.top.001")
@@ -37,8 +38,12 @@ class TabSlotJoinery:
     dado_stop_mm: float | None = None
     # ADR-0003: the back sits in rabbets this deep in both sides (None = back butts between them).
     back_rabbet_mm: float | None = None
+    # ADR-0003: inset doors with hidden hardware bores (None = the module's overlay doors).
+    fronts: InsetFronts | None = None
 
     def __post_init__(self):
+        if self.fronts is not None and type(self.fronts) is not InsetFronts:
+            raise ProfileError("fronts must be InsetFronts")
         b = self.blind_slot_depth_mm
         if b is not None and (type(b) not in (int, float) or not math.isfinite(b)
                               or b <= self.clearance_mm / 2):
@@ -77,7 +82,8 @@ class TabSlotJoinery:
             raise ProfileError("sheet needs exactly: " + ", ".join(sorted(_SHEET_KEYS)))
         return cls(Sheet(sheet["name"], sheet["nominal_mm"], sheet["measured_mm"]), data["tool_diameter_mm"],
                    data["clearance_mm"], data["tabs_per_edge"], data["tab_width_mm"],
-                   data.get("blind_slot_depth_mm"), data.get("dado_stop_mm"), data.get("back_rabbet_mm"))
+                   data.get("blind_slot_depth_mm"), data.get("dado_stop_mm"), data.get("back_rabbet_mm"),
+                   None if data.get("fronts") is None else InsetFronts.from_json(data["fronts"]))
 
 
 def cabinet_joints(boxes, joinery):
@@ -112,11 +118,17 @@ def _profiles(assembly, joinery, values, resolve, captures):
     if failed:
         raise ProfileError("Cabinet constraints fail: " + ", ".join(failed))
     boxes = {p.stable_id: resolve(p.box, env) for p in assembly.panels}
-    overrides, cuts, results = apply_joints(cabinet_joints(boxes, joinery), boxes)
+    fronts = inset_boxes(boxes, joinery.fronts) if joinery.fronts is not None else {}
+    boxes.update(fronts)
+    joint_overrides, cuts, results = apply_joints(cabinet_joints(boxes, joinery), boxes)
     more_overrides, more_cuts, dados = housings(assembly, boxes, joinery, env, resolve)
+    overrides = dict(fronts, **joint_overrides)
     overrides.update(more_overrides)
+    captures = {} if captures is None else captures       # hardware needs each frame's origin
     profiles = _assembly_profiles(assembly, values, joinery.tool_diameter_mm, True, cuts + more_cuts, overrides,
                                   resolve, captures, dados)
+    if joinery.fronts is not None:
+        profiles = add_hardware(profiles, boxes, joinery.fronts, captures)
     for p in profiles:
         _features_apart(p)
     t = joinery.sheet.measured_mm
@@ -172,6 +184,8 @@ def housings(assembly, boxes, joinery, env, resolve=_resolve):
     for op in assembly.operations:
         cut, shelf, side = resolve(op.cut, env), boxes[op.mating_panel_id], sides[op.side]
         y0 = cut.lo[1] + stop if stop is not None else cut.lo[1]
+        if stop is not None and y0 < shelf.lo[1] + land:
+            y0 = shelf.lo[1]       # shelf already set back (inset doors): groove starts at its hidden front
         y1 = rear - land if rear is not None else cut.hi[1]
         if not y0 + ec < y1 - ec:
             raise ProfileError("%s: stopped dado leaves no groove" % op.operation_id)
@@ -193,7 +207,9 @@ def housings(assembly, boxes, joinery, env, resolve=_resolve):
 def _features_apart(profile):
     """Refuse machined features whose extents (relief included) overlap: each
     cut must remove exactly its own area, in CAM and in the live Fusion check."""
-    bounds = [f.loop.bounds for f in profile.features if hasattr(f, "loop")]
+    bounds = [f.loop.bounds if hasattr(f, "loop") else
+              ((f.center[0] - f.diameter / 2, f.center[1] - f.diameter / 2),
+               (f.center[0] + f.diameter / 2, f.center[1] + f.diameter / 2)) for f in profile.features]
     for i, ((ax0, ay0), (ax1, ay1)) in enumerate(bounds):
         for (bx0, by0), (bx1, by1) in bounds[i + 1:]:
             if min(ax1, bx1) - max(ax0, bx0) > 1e-9 and min(ay1, by1) - max(ay0, by0) > 1e-9:
@@ -242,10 +258,17 @@ class LoopBinding:
 @dataclass(frozen=True)
 class FeatureBinding:
     feature_id: str            # profile_fixture.feature_id: <panel_id>.cut.NNN
-    kind: str                  # "through" or "pocket"
+    kind: str                  # "through", "pocket" or "hole"
     face: str | None
     depth: Expr | None
-    loop: LoopBinding
+    loop: LoopBinding | None   # None for a hole
+    center: tuple | None = None    # hole centre (Expr u, Expr v)
+    diameter: float | None = None
+
+    def rename(self, f, feature_id):
+        return replace(self, feature_id=feature_id, depth=None if self.depth is None else f(self.depth),
+                       loop=None if self.loop is None else self.loop.rename(f),
+                       center=None if self.center is None else tuple(f(e) for e in self.center))
 
 
 @dataclass(frozen=True)
@@ -276,11 +299,17 @@ class PanelBinding:
             return "feature count"
         pairs = [(self.outline, profile.outline)]
         for b, feature in zip(self.features, profile.features):
-            kind = "pocket" if isinstance(feature, Pocket) else "through" if isinstance(feature, ThroughCut) else None
+            kind = ("pocket" if isinstance(feature, Pocket) else "through" if isinstance(feature, ThroughCut)
+                    else "hole" if isinstance(feature, Hole) else None)
             if kind != b.kind or getattr(feature, "face", None) != b.face:
                 return b.feature_id + " kind"
-            if kind == "pocket" and abs(b.depth.eval(env) - feature.depth) > tol:
+            if kind in ("pocket", "hole") and abs(b.depth.eval(env) - feature.depth) > tol:
                 return b.feature_id + " depth"
+            if kind == "hole":
+                if b.diameter != feature.diameter or not _point(
+                        tuple(e.eval(env) for e in b.center), feature.center, tol):
+                    return b.feature_id + " hole"
+                continue
             pairs.append((b.loop, feature.loop))
         for binding, loop in pairs:
             mine = binding.resolve(env).segments
@@ -353,6 +382,10 @@ def cabinet_tab_slot_width_bindings(assembly, joinery, values=None, *, parameter
             FeatureBinding(feature_id(p, i), kind, face, None if depth is None else expr_of(depth),
                            _loop_binding(loop))
             for i, ((kind, face, depth), loop) in enumerate(zip(cap["features"], cap["loops"][1:])))
+        features += tuple(
+            FeatureBinding(feature_id(p, len(features) + i), "hole", face, expr_of(depth), None,
+                           (expr_of(a), expr_of(b)), float(diameter))
+            for i, (a, b, diameter, depth, face) in enumerate(cap.get("holes", ())))
         out[p.panel_id] = PanelBinding(
             p.panel_id, parameter, tuple(float(x) for x in interval), tuple(expr_of(x) for x in cap["origin"]),
             (p.frame.u, p.frame.v, p.frame.w), expr_of(cap["thickness"]), _loop_binding(cap["loops"][0]),

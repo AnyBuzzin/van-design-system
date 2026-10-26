@@ -117,9 +117,7 @@ def arrangement_width_bindings(arrangement, instance_id, values=None, *, interva
             frame_origin=place_point(tuple(rename(e) for e in b.frame_origin), k, w, d, position),
             frame_axes=tuple(place_axis(a, k) for a in b.frame_axes), thickness=rename(b.thickness),
             outline=b.outline.rename(rename),
-            features=tuple(replace(f, feature_id=world + f.feature_id[len(pid):],
-                                   depth=None if f.depth is None else rename(f.depth),
-                                   loop=f.loop.rename(rename)) for f in b.features))
+            features=tuple(f.rename(rename, world + f.feature_id[len(pid):]) for f in b.features))
     base = {p.name: p.value_mm for p in arrangement.assembly.parameters.base()}
     base.update(values or {})
     for x in interval:
