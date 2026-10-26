@@ -8,15 +8,15 @@ Present capability and blockers belong in [PROJECT_STATUS.md](../PROJECT_STATUS.
 
 **Proven live (14–26 October 2026):** cabinets (base/tall/overhead, width and shelf edits), resizable bed, bed + cabinet composition with collision refusal, under-bed storage box, lined envelope B1 (flat ceiling), E1.1 rounded panel. Phase A (stabilisation, #60) and B1 (#61) are complete.
 
-## M1 — Platform consolidation (current)
+## M1 — Platform consolidation (bounded qualification complete)
 
 Removes the bottlenecks found in the October review so new modules become mostly data.
 1. **Manufacturing output from the core:** panel profiles (lines/arcs, through-cuts, pockets, holes), automatic dog-bone relief, per-panel DXF + cut list, independently re-read (PR #76).
 2. **Arrangements:** any number of instances, per-instance parameter namespaces, positions, quarter-turns, cross-instance collision and B1 fit; verification in each module's frame (PR #77).
-3. **One generic Runner entry point** (`BuildAndVerify`): build any arrangement spec in a fresh owned document and verify it generically (bodies, cuts, probes, interference, census, exact restore); replaces per-feature entry points and hard-coded check counts. Fix misleading `runner_lost` heartbeats. One owner deployment approval.
+3. **One generic Runner entry point** (`BuildArrangement`): build any arrangement spec in a fresh owned document and verify it generically (bodies, cuts, probes, interference, census, exact restore); replaces per-feature entry points and hard-coded check counts. Fix misleading `runner_lost` heartbeats. One owner deployment approval.
 4. **One tolerance policy:** shared readback comparator; offline fakes inject realistic float noise; Python 3.14 (Fusion's interpreter) in CI.
 
-Done when an arrangement JSON builds and verifies live through the one entry point and its DXF pack re-reads exactly.
+Accepted on installed Runner `7392a67`: the shipped four-instance Crafter request passed 684 live checks, width edit/restoration and unsafe-move refusal; 24 panel DXFs / 28 loops independently re-read against core profiles. Only the successful unsaved fixture was closed; the full four-document baseline was preserved. [Results](https://github.com/AnyBuzzin/van-design-system/issues/78#issuecomment-6418911961) / [Independent acceptance](https://github.com/AnyBuzzin/van-design-system/issues/78#issuecomment-6418934844). This is bounded evidence, not qualification of arbitrary arrangements, saved persistence, physical CNC assembly or vehicle fit; the original failed fixture remains protected.
 
 ## M2 — Joinery foundation (was E1)
 
