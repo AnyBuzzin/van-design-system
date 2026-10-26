@@ -147,6 +147,76 @@ class DemoTests(TmpDirCase):
             with self.assertRaises(PolicyError):self.run_cmd('save_demo_design',self.args)
         self.doc.saveAs.assert_not_called();self.protected.close.assert_not_called()
 
+    @staticmethod
+    def arrangement_report():
+        checks = [dict(check_id=c, status='PASS') for c in ('a.volume', 'b.volume', 'interference')]
+        stage = lambda label: dict(label=label, outcome='PASS', checks=copy.deepcopy(checks))  # noqa: E731
+        return dict(outcome='PASS',
+                    stages=[stage('baseline'), stage('edit_K1_Cab_Width'), stage('restore_K1_Cab_Width'),
+                            stage('after_refusal_K1_Pos_Y')],
+                    planned_edits=[dict(parameter='K1_Cab_Width', expect='pass'),
+                                   dict(parameter='K1_Pos_Y', expect='refused')],
+                    edits=[dict(parameter='K1_Cab_Width', expect='pass', outcome='PASS'),
+                           dict(parameter='K1_Pos_Y', expect='refused', outcome='PASS',
+                                preview=dict(outcome='REFUSED'))],
+                    baseline_state={'s': 0}, final_state={'s': 0})
+
+    def test_build_arrangement_schema_owned_unsaved_and_no_retry(self):
+        req = dict(arrangement={'schema_version': 'x', 'instances': []}, envelope={}, edits=[])
+        args = dict(demo_id='demo-001', entry_point='BuildArrangement', request=req)
+        validate_job(job('run_approved_demo', args, target=None))
+        validate_job(job('run_approved_demo', dict(args, request=dict(req, tool_diameter_mm=6)), target=None))
+        for bad in (dict(demo_id='demo-001', entry_point='BuildArrangement'),
+                    dict(args, layout_mm={}), dict(args, script='x.py'),
+                    dict(args, request=dict(req, extra=1)), dict(args, request=dict(req, edits=[{}] * 7)),
+                    dict(args, request=dict(req, arrangement=[])), dict(args, request='{}'),
+                    dict(args, request=dict(req, tool_diameter_mm=float('nan')))):
+            with self.assertRaises(JobSchemaError, msg=str(bad)[:100]):
+                validate_job(job('run_approved_demo', bad, target=None))
+        with self.assertRaises(PolicyError):
+            self.run_cmd('run_approved_demo', args)                      # no owned session yet
+        self.run_cmd('create_demo_design')
+        with open(self.report_path, 'w') as fh:
+            json.dump(self.arrangement_report(), fh)
+        module = NS(run_arrangement=Mock(return_value=self.report_path))
+        with patch.object(workflow, 'modules', return_value=module):
+            self.assertEqual(self.run_cmd('run_approved_demo', args)['outcome'], 'PASS')
+            with self.assertRaises(PolicyError):
+                self.run_cmd('run_approved_demo', args)
+            with self.assertRaises(PolicyError):
+                self.run_cmd('save_demo_design', self.args)
+        module.run_arrangement.assert_called_once()
+        self.assertEqual(module.run_arrangement.call_args[0][3], req)
+        self.doc.saveAs.assert_not_called(); self.protected.close.assert_not_called()
+
+    def test_build_arrangement_generic_verifier_refuses_incomplete_reports(self):
+        self.assertTrue(workflow.verified_arrangement(self.arrangement_report()))
+        def broken(fn):
+            r = self.arrangement_report(); fn(r); return r
+        for bad in (
+                broken(lambda r: r.update(outcome='FAIL')),
+                broken(lambda r: r['stages'][2]['checks'].pop()),                    # check set differs
+                broken(lambda r: r['stages'][1]['checks'][0].update(status='FAIL')),
+                broken(lambda r: r['stages'].pop(2)),                                 # no restore stage
+                broken(lambda r: r.update(final_state={'s': 1})),
+                broken(lambda r: r['edits'][1]['preview'].update(outcome='PASS')),
+                broken(lambda r: r['edits'].pop()),
+                broken(lambda r: r['stages'][0].update(label='edit_x')),
+                broken(lambda r: r['stages'][1]['checks'].append(dict(check_id='a.volume', status='PASS'))),
+                {'outcome': 'PASS'}):
+            self.assertFalse(workflow.verified_arrangement(bad))
+        with open(self.report_path, 'w') as fh:
+            json.dump(broken(lambda r: r.update(final_state={'s': 1})), fh)
+        self.run_cmd('create_demo_design')
+        module = NS(run_arrangement=Mock(return_value=self.report_path))
+        args = dict(demo_id='demo-001', entry_point='BuildArrangement',
+                    request=dict(arrangement={}, envelope={}, edits=[]))
+        with patch.object(workflow, 'modules', return_value=module):
+            with self.assertRaises(PolicyError):
+                self.run_cmd('run_approved_demo', args)
+            with self.assertRaises(PolicyError):
+                self.run_cmd('run_approved_demo', args)                      # no retry after failure
+
     def test_tab_slot_fixed_owned_candidate_no_retry_or_save(self):
         args=dict(demo_id='demo-001',entry_point='TabSlotCoupon')
         validate_job(job('run_approved_demo',args,target=None))

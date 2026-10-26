@@ -173,6 +173,8 @@ def assembly_profiles(assembly, values=None, *, tool_diameter=None, relief=True,
         owned[pid].append(cut)
     out = []
     for p in assembly.panels:
+        if p.material_ref == "reference_only":
+            continue  # envelope guides and keep-outs are never manufactured
         radius = p.corner_radius.eval(env) if p.corner_radius is not None else None
         out.append(panel_profile(p, boxes[p.stable_id], owned[p.stable_id],
                                  tool_diameter=tool_diameter, relief=relief, corner_radius=radius))

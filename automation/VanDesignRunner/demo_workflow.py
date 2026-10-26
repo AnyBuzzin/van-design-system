@@ -128,6 +128,50 @@ def modules(cfg):
     return module
 
 
+def verified_arrangement(report):
+    """Generic acceptance for BuildArrangement: derived from the report itself.
+
+    No per-feature check counts: every stage must PASS with every check PASS,
+    all stages must carry the identical check-id set, every planned edit must
+    have its PASS record (and edit/restore stages when expected to pass), and
+    the final model state must equal the baseline state.
+    """
+    stages = report.get('stages')
+    if report.get('outcome') != 'PASS' or not isinstance(stages, list) or not stages:
+        return False
+    if stages[0].get('label') != 'baseline':
+        return False
+    ids = None
+    for stage in stages:
+        checks = stage.get('checks')
+        if stage.get('outcome') != 'PASS' or not isinstance(checks, list) or not checks:
+            return False
+        if any(not isinstance(c, dict) or c.get('status') != 'PASS' for c in checks):
+            return False
+        stage_ids = [c.get('check_id') for c in checks]
+        if len(set(stage_ids)) != len(stage_ids):
+            return False
+        if ids is None:
+            ids = set(stage_ids)
+        elif set(stage_ids) != ids:
+            return False
+    planned, done = report.get('planned_edits'), report.get('edits')
+    if not isinstance(planned, list) or not isinstance(done, list) or len(planned) != len(done):
+        return False
+    labels = [s.get('label') for s in stages]
+    for plan, edit in zip(planned, done):
+        if (edit.get('outcome') != 'PASS' or edit.get('parameter') != plan.get('parameter')
+                or edit.get('expect') != plan.get('expect')):
+            return False
+        name = edit['parameter']
+        if plan['expect'] == 'pass' and not ('edit_' + name in labels and 'restore_' + name in labels):
+            return False
+        if plan['expect'] == 'refused' and (edit.get('preview') or {}).get('outcome') != 'REFUSED':
+            return False
+    return (report.get('baseline_state') is not None
+            and report.get('baseline_state') == report.get('final_state'))
+
+
 def verified(report, composition=False):
     stages = report.get('stages', [])
     labels = ['baseline', 'edit_Bed_Length', 'restore_Bed_Length', 'edit_Cab_Width', 'restore_Cab_Width']
@@ -404,6 +448,16 @@ def execute(backend, command, args, out_dir, job_id):
                     closed_document=before, open_documents=remaining)
     design = adsk.fusion.Design.cast(app.activeProduct)
     if command == 'run_approved_demo':
+        if args['entry_point']=='BuildArrangement':
+            if state['status']!='created' or set(args)!={'demo_id','entry_point','request'}:
+                raise PolicyError('Unused owned session and one arrangement request required')
+            empty(design,doc);capacity(app)
+            module=modules(backend.cfg);state['status']='build_attempted'
+            path=module.run_arrangement(app,out_dir,lambda:session(args['demo_id']),args['request'])
+            with open(path,encoding='utf-8') as fh:report=json.load(fh)
+            if not verified_arrangement(report):raise PolicyError('Arrangement verification failed')
+            session(args['demo_id']);state.update(status='verified',entry_point='BuildArrangement')
+            return dict(outcome='PASS',demo_id=args['demo_id'],report_path=path,verification=report)
         if args['entry_point']=='TabSlotCoupon':
             if state['status']!='created' or set(args)!={'demo_id','entry_point'}:
                 raise PolicyError('Unused owned session and fixed coupon entry required')
@@ -513,7 +567,7 @@ def execute(backend, command, args, out_dir, job_id):
                     verification=report, identity=backend.identity(), existing_documents=unchanged(state))
 
     if command == 'save_demo_design':
-        if state.get('entry_point') in ('BedCabinetComposition','TestTransitEnvelope','TestStorageBox','DimensionedCutaway','PhaseABaseCheckpoint','PhaseACombinedPersistence','LinedInteriorEnvelope','RoundedPanel','TabSlotCoupon'):
+        if state.get('entry_point') in ('BedCabinetComposition','TestTransitEnvelope','TestStorageBox','DimensionedCutaway','PhaseABaseCheckpoint','PhaseACombinedPersistence','LinedInteriorEnvelope','RoundedPanel','TabSlotCoupon','BuildArrangement'):
             raise PolicyError('Composition demonstration is unsaved-only')
         if state['status'] != 'verified':
             raise PolicyError("Only a successfully verified build can be saved")

@@ -166,13 +166,15 @@ class Arrangement:
     owners: dict      # furniture panel id -> instance id, recorded at placement
 
 
-def collisions(assembly, env, owners):
+def collisions(assembly, env, owners, measured=None):
     """Pairs of panels from different instances that share positive volume.
 
     Membership comes from ``owners`` (recorded when each instance is placed),
     never from id prefixes, so no instance id can capture another's panels.
+    ``measured`` (panel id -> Box) checks actual bodies instead of the model.
     """
-    boxes = [(p.stable_id, owners[p.stable_id], p.box.resolve(env))
+    boxes = [(p.stable_id, owners[p.stable_id],
+              measured[p.stable_id] if measured is not None else p.box.resolve(env))
              for p in assembly.panels if p.material_ref != "reference_only"]
     hits = []
     for i, (a, ia, ba) in enumerate(boxes):

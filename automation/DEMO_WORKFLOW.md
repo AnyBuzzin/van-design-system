@@ -266,3 +266,22 @@ T/E/C edits are offline-tested only; raw manual parameter edits are not guarded.
 Nominal stock, clearance and dog-bones do not prove physical fit or router
 manufacturability. No hardware, furniture retrofit, CNC/DXF output or load claim.
 Runner installation/configuration and ALL live jobs require new owner approval.
+
+## Generic `BuildArrangement` (M1, #78; offline candidate)
+
+One entry point for any arrangement, replacing per-feature entries for new work:
+`run_approved_demo {"demo_id": <create job id>, "entry_point": "BuildArrangement",
+"request": {...}}`. The request holds the arrangement instances, a lined envelope,
+up to six `edits` (`expect` `pass` or `refused`) and an optional `tool_diameter_mm`
+for the DXF pack. Example: `jobs/examples/arrangement_request_crafter.json`.
+
+Everything is planned before any CAD write: collisions, envelope fit, constraints
+and every edit's preview must match their expectations or the job is refused.
+Verification is generic: model-vs-BRep validation, interference, arches, the lined
+fit, cross-instance shared material, inventory derived from the model (3 timeline
+items per panel, 2 per cut) and read-only cut ownership. Each passing edit is
+applied, verified, restored and compared with the baseline under the shared
+readback policy. Refused edits are never written. Acceptance has no per-feature
+check counts. Same guards as every entry: owned fresh unsaved document, stop on
+failure, no retry or automatic restoration, unsaved-only. Live use requires the
+owner's deployment approval.

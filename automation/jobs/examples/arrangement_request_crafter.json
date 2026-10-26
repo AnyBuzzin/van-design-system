@@ -1,0 +1,121 @@
+{
+  "arrangement": {
+    "instances": [
+      {
+        "instance_id": "bed.rear",
+        "module": "bed",
+        "param_prefix": "Bed1",
+        "position_mm": [
+          213,
+          5,
+          5
+        ],
+        "quarter_turns": 0,
+        "spec": {
+          "module": "bed-platform@1",
+          "parameters": {
+            "height_mm": 700.0,
+            "length_mm": 1900.0,
+            "ply_mm": 18.0,
+            "width_mm": 1400.0
+          },
+          "schema_version": "vandesign.bed-platform/1"
+        }
+      },
+      {
+        "instance_id": "storage.under",
+        "module": "storage_box",
+        "param_prefix": "Box1",
+        "position_mm": [
+          600,
+          400,
+          5
+        ],
+        "quarter_turns": 0,
+        "spec": {
+          "module": "storage-box@1",
+          "parameters": {
+            "height_mm": 250.0,
+            "length_mm": 800.0,
+            "ply_mm": 18.0,
+            "width_mm": 600.0
+          },
+          "schema_version": "vandesign.storage-box/1"
+        }
+      },
+      {
+        "instance_id": "kitchen.left",
+        "module": "cabinet",
+        "param_prefix": "K1",
+        "position_mm": [
+          5,
+          2800,
+          5
+        ],
+        "quarter_turns": 1,
+        "spec": {
+          "module": "cabinet@1",
+          "parameters": {
+            "width_mm": 1100
+          },
+          "profile_version": 1,
+          "schema_version": "0.2",
+          "variant": "base"
+        }
+      },
+      {
+        "instance_id": "kitchen.right",
+        "module": "cabinet",
+        "param_prefix": "K2",
+        "position_mm": [
+          1223,
+          2800,
+          5
+        ],
+        "quarter_turns": 3,
+        "spec": {
+          "module": "cabinet@1",
+          "parameters": {
+            "width_mm": 1100
+          },
+          "profile_version": 1,
+          "schema_version": "0.2",
+          "variant": "base"
+        }
+      }
+    ],
+    "schema_version": "vandesign.arrangement/1"
+  },
+  "edits": [
+    {
+      "expect": "pass",
+      "parameter": "K1_Cab_Width",
+      "value_mm": 1000
+    },
+    {
+      "expect": "refused",
+      "parameter": "K1_Pos_Y",
+      "value_mm": 2100
+    }
+  ],
+  "envelope": {
+    "parameters": {
+      "arch_height_mm": 300,
+      "arch_length_mm": 800,
+      "arch_y_mm": 2000,
+      "bare_between_arches_mm": 1380,
+      "bare_height_mm": 1961,
+      "bare_length_mm": 4606,
+      "bare_width_mm": 1832,
+      "ceiling_split_mm": null,
+      "keepouts": [],
+      "lining_mm": 18,
+      "mounting_points": [],
+      "provenance": "TEST ONLY: published Crafter CR35 LWB; arches ASSUMED",
+      "second_bare_height_mm": null,
+      "tolerance_mm": 5
+    },
+    "schema_version": "vandesign.lined-envelope/1"
+  },
+  "tool_diameter_mm": 6
+}
