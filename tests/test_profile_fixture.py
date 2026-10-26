@@ -109,7 +109,8 @@ class ProfileAPI(unittest.TestCase):
         curves=[];lines=[];arcs=[]
         def add(target,*args):
             target.append(args);c=NS(isFixed=False);curves.append(c);return c
-        sketch=NS(profiles=Items([1]),sketchCurves=NS(sketchLines=NS(addByTwoPoints=lambda *a:add(lines,*a)),
+        sketch=NS(profiles=Items([1]),sketchPoints=Items(),isFullyConstrained=True,
+                  sketchCurves=NS(sketchLines=NS(addByTwoPoints=lambda *a:add(lines,*a)),
                     sketchArcs=NS(addByCenterStartSweep=lambda *a:add(arcs,*a))))
         comp=NS(xYConstructionPlane='XY',sketches=NS(add=lambda plane:sketch))
         panel=resolve_profiles()[0]
@@ -119,6 +120,67 @@ class ProfileAPI(unittest.TestCase):
         sketch.profiles=Items()
         with self.assertRaisesRegex(RuntimeError,'one closed'):
             self.adapter.ProfileAdapter._loop_sketch(None,comp,'outline',panel.profile.outline,(0,0,0))
+
+    def test_fixed_curves_leave_independent_points_until_explicitly_constrained(self):
+        class Point:
+            def __init__(self,role,constrained=False):
+                self.role=role;self.constrained=constrained;self.writes=0
+            @property
+            def isFullyConstrained(self):return self.constrained
+            @property
+            def isFixed(self):return self.writes>0
+            @isFixed.setter
+            def isFixed(self,value):
+                self.writes+=1;self.constrained=value
+        class Sketch(NS):
+            @property
+            def isFullyConstrained(self):
+                return all(c.isFixed for c in self.curves) and all(p.isFullyConstrained for p in self.sketchPoints.values)
+        for panel in resolve_profiles():
+            for loop in (panel.profile.outline,*(feature_loop(f) for f in panel.profile.features)):
+                with self.subTest(panel=panel.profile.panel_id,segments=len(loop.segments)):
+                    origin=Point('origin/reference',True);points=Items([origin]);curves=[]
+                    def add(arc,*args):
+                        points.values.extend(Point(role) for role in (('start','end','centre') if arc else ('start','end')))
+                        c=NS(isFixed=False);curves.append(c);return c
+                    sketch=Sketch(profiles=Items([1]),sketchPoints=points,curves=curves,
+                        sketchCurves=NS(sketchLines=NS(addByTwoPoints=lambda *a:add(False,*a)),
+                                        sketchArcs=NS(addByCenterStartSweep=lambda *a:add(True,*a))))
+                    comp=NS(xYConstructionPlane='XY',sketches=NS(add=lambda plane:sketch))
+                    self.adapter.ProfileAdapter._loop_sketch(None,comp,'fixed',loop,panel.origin)
+                    self.assertTrue(sketch.isFullyConstrained)
+                    self.assertEqual(origin.writes,0)
+                    self.assertTrue(all(p.writes==1 for p in points.values[1:]))
+                    # Curve fixing alone cannot satisfy this solver model.
+                    points.values[-1].constrained=False
+                    self.assertTrue(all(c.isFixed for c in curves));self.assertFalse(sketch.isFullyConstrained)
+
+    def test_point_constraint_unavailable_noop_exception_and_whole_sketch_refuse(self):
+        class NoOp:
+            isFullyConstrained=False
+            @property
+            def isFixed(self):return False
+            @isFixed.setter
+            def isFixed(self,value):pass
+        class Rejected(NoOp):
+            @NoOp.isFixed.setter
+            def isFixed(self,value):raise RuntimeError('Solver rejected constraint')
+        class MissingReadback:
+            isFixed=False
+            @property
+            def isFullyConstrained(self):return None if self.isFixed else False
+        class Unavailable:
+            @property
+            def isFullyConstrained(self):raise RuntimeError('Constraint API unavailable')
+        for point,whole in ((NS(isFullyConstrained=None),True),(NoOp(),True),(Rejected(),True),
+                            (MissingReadback(),True),(Unavailable(),True),
+                            (NS(isFullyConstrained=True),False),(NS(isFullyConstrained=True),None)):
+            sketch=NS(profiles=Items([1]),sketchPoints=Items([point]),isFullyConstrained=whole,
+                sketchCurves=NS(sketchLines=NS(addByTwoPoints=lambda *a:NS(isFixed=False)),
+                                sketchArcs=NS(addByCenterStartSweep=lambda *a:NS(isFixed=False))))
+            comp=NS(xYConstructionPlane='XY',sketches=NS(add=lambda plane:sketch))
+            with self.subTest(point=type(point).__name__,whole=whole),self.assertRaises(RuntimeError):
+                self.adapter.ProfileAdapter._loop_sketch(None,comp,'fixed',resolve_profiles()[0].profile.outline,(0,0,0))
 
     def test_compile_explicit_targets_depth_bindings_and_mate_failure(self):
         for bad in (False,True):
@@ -188,6 +250,36 @@ class ProfileAPI(unittest.TestCase):
              patch.object(self.adapter,'_design_counts',return_value=counts):
             r=self.adapter.measure_profile_design(design,panels,Mock(),18)
             self.assertEqual(r['outcome'],'PASS')
+            comp=occurrences[0].component
+            body=comp.bRepBodies.item(0);extrusion=comp.features.extrudeFeatures.item(0);sketch=comp.sketches.item(0)
+            cases=[(body,'isValid',False,'body_valid',False),
+                   (body,'isSolid',False,'body_solid',False),
+                   (comp,'bRepBodies',Items([]),'body_count',0),
+                   (comp.features,'count',2,'feature_count',2),
+                   (comp.features,'extrudeFeatures',Items([]),'extrusion_count',0),
+                   (comp,'sketches',Items([]),'sketch_count',0),
+                   (extrusion,'healthState',1,'extrusions',dict(health_state=1,healthy=False)),
+                   (extrusion,'isSuppressed',True,'extrusions',dict(suppressed=True)),
+                   (extrusion,'operation',2,'extrusions',dict(operation=2)),
+                   (sketch,'profiles',Items([]),'sketches',dict(profile_count=0)),
+                   (sketch,'healthState',1,'sketches',dict(health_state=1,healthy=False)),
+                   (sketch,'isFullyConstrained',False,'sketches',dict(fully_constrained=False))]
+            for target,attribute,value,key,expected in cases:
+                with self.subTest(attribute=attribute,key=key):
+                    original=getattr(target,attribute)
+                    try:
+                        setattr(target,attribute,value)
+                        failed=self.adapter.measure_profile_design(design,panels,Mock(),18)
+                        self.assertEqual(failed['outcome'],'FAIL')
+                        check=next(c for c in failed['checks'] if c['check_id']=='profile.rounded.001.features')
+                        self.assertEqual(check['status'],'FAIL')
+                        observed=json.loads(json.dumps(check))['observed']
+                        self.assertEqual(observed['expected_count'],1)
+                        if isinstance(expected,dict):
+                            for k,v in expected.items():self.assertEqual(observed[key][0][k],v)
+                        else:self.assertEqual(observed[key],expected)
+                    finally:setattr(target,attribute,original)
+            self.assertEqual(self.adapter.measure_profile_design(design,panels,Mock(),18)['outcome'],'PASS')
             cuts[0].bodies=occurrences[0].component.bRepBodies
             self.assertEqual(self.adapter.measure_profile_design(design,panels,Mock(),18)['outcome'],'FAIL')
             cuts[0].bodies=occurrences[1].component.bRepBodies
@@ -202,6 +294,8 @@ class ProfileAPI(unittest.TestCase):
             app=NS(activeDocument=doc,activeProduct=design,activeViewport=NS(fit=Mock()))
             reports=[self.report(t) for t in (18,20,18,18)]
             if bad:reports[1]['outcome']='FAIL'
+            if bad:reports[1]['checks'].append(dict(check_id='profile.rounded.001.features',status='FAIL',
+                observed=dict(sketches=[dict(index=0,fully_constrained=False)])))
             with tempfile.TemporaryDirectory() as d,patch.object(self.run,'ProfileAdapter'), \
                  patch.object(self.run,'measure_profile_design',side_effect=reports) as measure,patch.object(self.run,'snapshot',return_value={'same':True}):
                 if bad:
@@ -210,6 +304,7 @@ class ProfileAPI(unittest.TestCase):
                 result=json.loads((Path(d)/'arrangement.json').read_text())
                 self.assertEqual(result['outcome'],'FAIL' if bad else 'PASS')
                 self.assertEqual(measure.call_count,2 if bad else 4)
+                if bad:self.assertEqual(result['stages'][1]['checks'][-1],reports[1]['checks'][-1])
                 self.assertEqual(parameter.expression,'20 mm' if bad else '18 mm')
                 with self.assertRaisesRegex(RuntimeError,'no retry'):self.run.run_profile_fixture(app,d,Mock(),{'fixture':FIXTURE})
             doc.save.assert_not_called();doc.close.assert_not_called()
