@@ -47,6 +47,9 @@ class DadoOperation:
     slot_clearance: Expr
     open_at: str = "front"
     process: str = "cnc_pocket"
+    # Module frame: quarter-turns about Z from the cabinet-local frame (X =
+    # groove depth, Y = front-to-back, Z = up). Verification works in it.
+    quarter_turns: int = 0
 
 
 @dataclass(frozen=True)
