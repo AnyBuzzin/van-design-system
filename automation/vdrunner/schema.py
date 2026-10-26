@@ -9,6 +9,7 @@ job is queued) and the Fusion add-in (before a job is executed).
 
 from __future__ import annotations
 
+import json
 import math
 import re
 from typing import Any, Dict, List
@@ -109,6 +110,26 @@ def validate_expect(exp: Any, path: str) -> None:
         _fail(path + ".stable_counts", "must be a boolean")
 
 
+MAX_REQUEST_BYTES = 262144
+
+
+def _arrangement_request(req: Any, path: str) -> None:
+    """Structural check only; the full plan is validated inside Fusion before any write."""
+    _keys(req, path, ("arrangement", "envelope", "edits"), ("tool_diameter_mm",))
+    if not isinstance(req["arrangement"], dict) or not isinstance(req["envelope"], dict):
+        _fail(path, "arrangement and envelope must be objects")
+    if not isinstance(req["edits"], list) or len(req["edits"]) > 6:
+        _fail(path + ".edits", "must be a list of at most 6 edits")
+    if "tool_diameter_mm" in req:
+        _number(req["tool_diameter_mm"], path + ".tool_diameter_mm")
+    try:
+        size = len(json.dumps(req, allow_nan=False))
+    except (TypeError, ValueError):
+        _fail(path, "must be finite JSON")
+    if size > MAX_REQUEST_BYTES:
+        _fail(path, "larger than %d bytes" % MAX_REQUEST_BYTES)
+
+
 def validate_args(command: str, args: Any, path: str) -> None:
     if command == "ping":
         _keys(args, path, ())
@@ -118,12 +139,17 @@ def validate_args(command: str, args: Any, path: str) -> None:
                     "close_demo_design": ("demo_id",), "capture_demo_viewport": ("demo_id",), "verify_demo_persistence": ("design_id",)}[command]
         if command=='run_approved_demo' and isinstance(args,dict) and args.get('entry_point')=='PhaseACombinedPersistence':
             required=('demo_id','entry_point','name','project_id','folder_id')
+        if command=='run_approved_demo' and isinstance(args,dict) and args.get('entry_point')=='BuildArrangement':
+            required=('demo_id','entry_point','request')
         _keys(args, path, required, ('layout_mm','vehicle_mm') if command=='run_approved_demo' and args.get('entry_point')=='FirstInteriorDemo' else ())
         for key in required:
-            _str(args[key], path + "." + key, 300)
+            if key != 'request':
+                _str(args[key], path + "." + key, 300)
+        if 'request' in args:
+            _arrangement_request(args['request'], path + '.request')
         if "demo_id" in args and not JOB_ID_RE.fullmatch(args["demo_id"]):
             _fail(path + ".demo_id", "must be the create job id")
-        if command == "run_approved_demo" and args["entry_point"] not in ("FirstInteriorDemo", "BedCabinetComposition", "TestTransitEnvelope", "TestStorageBox", "DimensionedCutaway", "PhaseABaseCheckpoint", "PhaseACombinedPersistence", "LinedInteriorEnvelope", "RoundedPanel", "TabSlotCoupon"):
+        if command == "run_approved_demo" and args["entry_point"] not in ("FirstInteriorDemo", "BedCabinetComposition", "TestTransitEnvelope", "TestStorageBox", "DimensionedCutaway", "PhaseABaseCheckpoint", "PhaseACombinedPersistence", "LinedInteriorEnvelope", "RoundedPanel", "TabSlotCoupon", "BuildArrangement"):
             _fail(path + ".entry_point", "unapproved entry point")
         if args.get('entry_point') in ('BedCabinetComposition', 'TestTransitEnvelope', 'TestStorageBox', 'DimensionedCutaway', 'PhaseABaseCheckpoint', 'LinedInteriorEnvelope', 'RoundedPanel', 'TabSlotCoupon') and set(args) != {'demo_id', 'entry_point'}:
             _fail(path, 'composition uses fixed reviewed inputs')

@@ -128,6 +128,105 @@ def modules(cfg):
     return module
 
 
+ARRANGEMENT_VALUE_MM = 1e-6     # measured parameter readback vs requested value
+ARRANGEMENT_BOX_MM = 0.01       # measured body bounds vs model (MODEL_EPSILON_MM)
+ARRANGEMENT_VOLUME_REL = 1e-6   # body volume vs model: max(1 mm3, rel), as validate() (VOLUME_REL_TOL)
+
+
+def _finite(v):
+    return type(v) in (int, float) and math.isfinite(v)
+
+
+def _complete_stage(stage, plan, expected):
+    """One measured stage against its expected evidence (derived from the request)."""
+    if stage.get('label') != plan['label'] or stage.get('outcome') != 'PASS':
+        return False
+    params = stage.get('parameters_mm')
+    if not isinstance(params, dict) or sorted(params) != expected['parameter_names']:
+        return False
+    if any(not _finite(params[n]) or abs(params[n] - plan['parameters_mm'][n]) > ARRANGEMENT_VALUE_MM
+           for n in params):
+        return False
+    bodies = stage.get('bodies')
+    if not isinstance(bodies, dict) or sorted(bodies) != expected['body_ids']:
+        return False
+    for pid, body in bodies.items():
+        if not isinstance(body, dict):
+            return False
+        lo, hi, volume = body.get('min'), body.get('max'), body.get('volume_mm3')
+        if (not isinstance(lo, (list, tuple)) or not isinstance(hi, (list, tuple)) or len(lo) != 3
+                or len(hi) != 3 or not all(_finite(v) for v in list(lo) + list(hi))
+                or not _finite(volume) or volume <= 0 or any(h <= l for l, h in zip(lo, hi))):
+            return False
+        want_lo, want_hi = plan['boxes'][pid]
+        if any(abs(a - b) > ARRANGEMENT_BOX_MM for a, b in zip(list(lo) + list(hi), want_lo + want_hi)):
+            return False
+        want_volume = plan['volumes'][pid]          # model blank minus its own cuts
+        if abs(volume - want_volume) > max(1.0, ARRANGEMENT_VOLUME_REL * want_volume):
+            return False
+    counts = stage.get('counts')
+    if not isinstance(counts, dict) or any(counts.get(k) != v for k, v in expected['inventory'].items()):
+        return False
+    checks = stage.get('checks')
+    if not isinstance(checks, list) or not checks:
+        return False
+    by_id = {}
+    for c in checks:
+        if not isinstance(c, dict) or c.get('status') != 'PASS' or c.get('check_id') in by_id:
+            return False
+        by_id[c.get('check_id')] = c
+    if any(cid not in by_id for cid in expected['required_checks']):
+        return False
+    # Numeric observations are judged against model-derived values and validate()
+    # tolerances; report-supplied expected/tolerance fields are never trusted.
+    for cid, (value, tolerance) in plan['numeric'].items():
+        observed = by_id[cid].get('observed') if cid in by_id else None
+        allowed = ARRANGEMENT_VALUE_MM if tolerance is None else tolerance
+        if not _finite(observed) or abs(observed - value) > allowed + ARRANGEMENT_VALUE_MM:
+            return False
+    # Each volume check must report the volume of the body it describes.
+    return all(by_id[pid + '.volume'].get('observed') == bodies[pid]['volume_mm3']
+               for pid in bodies if pid + '.volume' in by_id)
+
+
+def verified_arrangement(report, expected):
+    """Acceptance for BuildArrangement, bound to the validated request.
+
+    ``expected`` comes from re-planning the same request in the approved
+    package (vandesign.arrangement_job.expected_evidence): body ids, parameter
+    names and per-stage values, model boxes, inventory, the exact ordered stage
+    labels, the requested edits, and the check ids validate() and the
+    measurement path must produce (numeric ones with finite observations). No
+    per-feature counts; nothing is inferred from the report alone.
+    """
+    if not isinstance(report, dict) or not isinstance(expected, dict):
+        return False
+    stages = report.get('stages')
+    if (report.get('outcome') != 'PASS' or report.get('spec_hash') != expected['spec_hash']
+            or report.get('instances') != expected['instances'] or not isinstance(stages, list)
+            or [s.get('label') for s in stages if isinstance(s, dict)] != [p['label'] for p in expected['stages']]):
+        return False
+    if not all(_complete_stage(s, p, expected) for s, p in zip(stages, expected['stages'])):
+        return False
+    ids = [sorted(c['check_id'] for c in s['checks']) for s in stages]
+    if any(i != ids[0] for i in ids):
+        return False
+    planned, done = report.get('planned_edits'), report.get('edits')
+    if not isinstance(planned, list) or not isinstance(done, list) or len(planned) != len(expected['edits']) \
+            or len(done) != len(expected['edits']):
+        return False
+    for want, plan, edit in zip(expected['edits'], planned, done):
+        for record in (plan, edit):
+            if not isinstance(record, dict) or any(record.get(k) != want[k] for k in ('parameter', 'value_mm', 'expect')):
+                return False
+        if edit.get('outcome') != 'PASS':
+            return False
+        if want['expect'] == 'refused' and (edit.get('preview') or {}).get('outcome') != 'REFUSED':
+            return False
+    return (report.get('baseline_state') is not None
+            and report.get('baseline_state') == report.get('final_state'))
+
+
 def verified(report, composition=False):
     stages = report.get('stages', [])
     labels = ['baseline', 'edit_Bed_Length', 'restore_Bed_Length', 'edit_Cab_Width', 'restore_Cab_Width']
@@ -404,6 +503,16 @@ def execute(backend, command, args, out_dir, job_id):
                     closed_document=before, open_documents=remaining)
     design = adsk.fusion.Design.cast(app.activeProduct)
     if command == 'run_approved_demo':
+        if args['entry_point']=='BuildArrangement':
+            if state['status']!='created' or set(args)!={'demo_id','entry_point','request'}:
+                raise PolicyError('Unused owned session and one arrangement request required')
+            empty(design,doc);capacity(app)
+            module=modules(backend.cfg);state['status']='build_attempted'
+            path=module.run_arrangement(app,out_dir,lambda:session(args['demo_id']),args['request'])
+            with open(path,encoding='utf-8') as fh:report=json.load(fh)
+            if not verified_arrangement(report,module.arrangement_evidence(args['request'])):raise PolicyError('Arrangement verification failed')
+            session(args['demo_id']);state.update(status='verified',entry_point='BuildArrangement')
+            return dict(outcome='PASS',demo_id=args['demo_id'],report_path=path,verification=report)
         if args['entry_point']=='TabSlotCoupon':
             if state['status']!='created' or set(args)!={'demo_id','entry_point'}:
                 raise PolicyError('Unused owned session and fixed coupon entry required')
@@ -513,7 +622,7 @@ def execute(backend, command, args, out_dir, job_id):
                     verification=report, identity=backend.identity(), existing_documents=unchanged(state))
 
     if command == 'save_demo_design':
-        if state.get('entry_point') in ('BedCabinetComposition','TestTransitEnvelope','TestStorageBox','DimensionedCutaway','PhaseABaseCheckpoint','PhaseACombinedPersistence','LinedInteriorEnvelope','RoundedPanel','TabSlotCoupon'):
+        if state.get('entry_point') in ('BedCabinetComposition','TestTransitEnvelope','TestStorageBox','DimensionedCutaway','PhaseABaseCheckpoint','PhaseACombinedPersistence','LinedInteriorEnvelope','RoundedPanel','TabSlotCoupon','BuildArrangement'):
             raise PolicyError('Composition demonstration is unsaved-only')
         if state['status'] != 'verified':
             raise PolicyError("Only a successfully verified build can be saved")
