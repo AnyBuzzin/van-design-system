@@ -18,6 +18,7 @@ from ..core.expr import Param, substitute
 from .assembly import assembly_profiles
 from .carcass import WIDTH, cabinet_tab_slot_profiles, cabinet_tab_slot_width_bindings
 from .profile import Hole, PanelFrame, ProfileError, ThroughCut, contains_point
+from .corner import SIDES
 from .worktop import worktop_profiles
 
 
@@ -70,7 +71,7 @@ def arrangement_profiles(arrangement, values=None, *, tool_diameter):
     """
     asm = arrangement.assembly
     env = asm.parameters.resolve(values)
-    placed, joints, merged, tops = {}, {}, set(), {}
+    placed, joints, merged, tops, corners = {}, {}, set(), {}, []
     for inst in arrangement.instances:
         if inst.module in PROFILE_MODULES:
             parts, joinery, results, gone = _profiled_instance(arrangement, inst, env, tool_diameter)
@@ -82,6 +83,10 @@ def arrangement_profiles(arrangement, values=None, *, tool_diameter):
                 joints[inst.instance_id] = results
                 if joinery.top is not None:
                     tops[make_id(inst.instance_id, "panel.top.001")] = joinery.top
+                if joinery.corner_fixings is not None:
+                    corners.append(make_id(inst.instance_id, SIDES[joinery.corner_fixings.side]))
+                if joinery.fronts is not None and joinery.fronts.blind is not None:
+                    corners.extend(pid for pid in parts if ".panel.door." in pid)
             placed.update(parts)
     profiled_ids = {pid for pid, owner in arrangement.owners.items()
                     if next(i for i in arrangement.instances if i.instance_id == owner).module in PROFILE_MODULES}
@@ -95,7 +100,24 @@ def arrangement_profiles(arrangement, values=None, *, tool_diameter):
         if inst.module == "worktop_l":
             pid = make_id(inst.instance_id, "panel.worktop.001")
             placed[pid] = _fix_worktop(placed[pid], {t: (placed[t], spec) for t, spec in tops.items()})
+    _check_corners([placed[pid] for pid in corners])
     return tuple(placed[pid] for pid in order), joints
+
+
+def _check_corners(panels):
+    """Every corner clearance hole (through a side) must meet a blind-panel
+    pilot (front face) at the same world point, and every pilot a hole."""
+    holes, pilots = set(), set()
+    for p in panels:
+        door = ".panel.door." in p.panel_id
+        for h in p.features:
+            if isinstance(h, Hole) and ((door and h.face == "bottom") or (not door and h.depth is None)):
+                c = 0.0 if h.face == "bottom" else p.thickness
+                point = tuple(round(v, 6) for v in p.frame.to_world(h.center[0], h.center[1], c))
+                (pilots if door else holes).add(point)
+    if holes != pilots:
+        raise ProfileError("Corner fixings do not line up: %d clearance hole(s) and %d blind-panel pilot(s) "
+                           "without a partner" % (len(holes - pilots), len(pilots - holes)))
 
 
 def _world_rect(profile, loop):

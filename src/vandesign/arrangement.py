@@ -60,7 +60,29 @@ def _cabinet_tab_slot(text):
     if abs(ply - joinery.sheet.measured_mm) > 1e-9:
         raise ArrangementError("cabinet ply_mm %.3f must equal the measured sheet thickness %.3f"
                                % (ply, joinery.sheet.measured_mm))
+    if joinery.fronts is not None:
+        assembly = _inset_box_model(assembly, joinery.fronts)
     return assembly
+
+
+def _inset_box_model(assembly, fronts):
+    """Box model with the inset doors (and set-back shelves) where they are made,
+    so fit and collisions see the real fronts; Exprs come from the same
+    inset_boxes code via Tracked coordinates (no second formula)."""
+    from .core.geometry import BoxExpr
+    from .manufacturing.assembly import expr_of, tracked_box
+    from .manufacturing.fronts import inset_boxes
+    from .manufacturing.profile import ProfileError
+    env = assembly.parameters.resolve()
+    try:
+        moved = inset_boxes({p.stable_id: tracked_box(p.box, env) for p in assembly.panels}, fronts)
+    except ProfileError as exc:
+        raise ArrangementError("Invalid inset fronts: %s" % exc) from None
+    def expr_box(b):
+        lo = tuple(expr_of(v) for v in b.lo)
+        return BoxExpr(lo, tuple(expr_of(h) - l for h, l in zip(b.hi, lo)))
+    return replace(assembly, panels=tuple(replace(p, box=expr_box(moved[p.stable_id])) if p.stable_id in moved
+                                          else p for p in assembly.panels))
 
 
 # module -> (builder from spec JSON text, local footprint (width, depth, height))

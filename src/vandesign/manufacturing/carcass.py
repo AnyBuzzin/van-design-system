@@ -14,13 +14,14 @@ from ..core.expr import Expr, Param
 from ..core.geometry import Box
 from ..modules.profile_fixture import feature_id
 from .assembly import _assembly_profiles, _resolve, Tracked, expr_of, recording_decisions, tracked_box
+from .corner import CornerFixings, corner_holes
 from .fronts import InsetFronts, add_hardware, hardware, inset_boxes
 from .joints import MIN_SKIN_MM, Sheet, TabSlot, apply_joints
 from .top import CarcassTop, fixing_holes, sink_opening
 from .profile import Arc, Hole, Line, Loop, Pocket, ProfileError, ThroughCut
 
 _JOINERY_KEYS = {"sheet", "clearance_mm", "tabs_per_edge", "tab_width_mm", "tool_diameter_mm"}
-_OPTIONAL_KEYS = {"blind_slot_depth_mm", "dado_stop_mm", "back_rabbet_mm", "fronts", "top"}
+_OPTIONAL_KEYS = {"blind_slot_depth_mm", "dado_stop_mm", "back_rabbet_mm", "fronts", "top", "corner_fixings"}
 _SHEET_KEYS = {"name", "nominal_mm", "measured_mm"}
 SIDES = (("panel.left.001", "-x"), ("panel.right.001", "+x"))
 TABBED = ("panel.bottom.001", "panel.top.001")
@@ -43,8 +44,12 @@ class TabSlotJoinery:
     fronts: InsetFronts | None = None
     # ADR-0003: worktop fixing holes and an optional sink opening in the carcass top.
     top: CarcassTop | None = None
+    # ADR-0003: clearance holes in a side that butts another cabinet's blind panel.
+    corner_fixings: CornerFixings | None = None
 
     def __post_init__(self):
+        if self.corner_fixings is not None and type(self.corner_fixings) is not CornerFixings:
+            raise ProfileError("corner_fixings must be CornerFixings")
         if self.top is not None and type(self.top) is not CarcassTop:
             raise ProfileError("top must be CarcassTop")
         if self.fronts is not None and type(self.fronts) is not InsetFronts:
@@ -89,7 +94,8 @@ class TabSlotJoinery:
                    data["clearance_mm"], data["tabs_per_edge"], data["tab_width_mm"],
                    data.get("blind_slot_depth_mm"), data.get("dado_stop_mm"), data.get("back_rabbet_mm"),
                    None if data.get("fronts") is None else InsetFronts.from_json(data["fronts"]),
-                   None if data.get("top") is None else CarcassTop.from_json(data["top"]))
+                   None if data.get("top") is None else CarcassTop.from_json(data["top"]),
+                   None if data.get("corner_fixings") is None else CornerFixings.from_json(data["corner_fixings"]))
 
 
 def cabinet_joints(boxes, joinery):
@@ -136,8 +142,11 @@ def _profiles(assembly, joinery, values, resolve, captures):
     profiles = _assembly_profiles(assembly, values, joinery.tool_diameter_mm, True, cuts + more_cuts, overrides,
                                   resolve, captures, dados)
     holes = hardware(boxes, joinery.fronts) if joinery.fronts is not None else {}
-    for pid, found in (fixing_holes(boxes, joinery.top) if joinery.top is not None else {}).items():
-        holes.setdefault(pid, []).extend(found)
+    extra = [fixing_holes(boxes, joinery.top) if joinery.top is not None else {},
+             corner_holes(boxes, joinery.corner_fixings) if joinery.corner_fixings is not None else {}]
+    for more in extra:
+        for pid, found in more.items():
+            holes.setdefault(pid, []).extend(found)
     if holes:
         profiles = add_hardware(profiles, holes, captures)
     for p in profiles:

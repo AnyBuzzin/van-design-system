@@ -15,6 +15,7 @@ from dataclasses import dataclass, fields, replace
 import math
 
 from ..core.geometry import Box
+from .corner import Blind, blind_pilots
 from .joints import MIN_SKIN_MM
 from .profile import Hole, ProfileError
 
@@ -22,7 +23,7 @@ from .profile import Hole, ProfileError
 def _positive(obj):
     for f in fields(obj):
         v = getattr(obj, f.name)
-        if isinstance(v, (Hinge, Latch)):
+        if v is None or isinstance(v, (Hinge, Latch, Blind, tuple, list)):
             continue
         if type(v) not in (int, float) or not math.isfinite(v) or v <= 0:
             raise ProfileError("%s must be a positive number" % f.name)
@@ -71,25 +72,52 @@ class InsetFronts:
     setback_mm: float = 2.0
     hinge: Hinge = Hinge()
     latch: Latch = Latch()
+    blind: Blind | None = None          # corner.Blind: a fixed blind panel in place of the corner door
+    hinge_sides: tuple | None = None    # "left"/"right" per (non-blind) door; default: the halves rule
 
     def __post_init__(self):
         _positive(self)
         if type(self.hinge) is not Hinge or type(self.latch) is not Latch:
             raise ProfileError("fronts need Hinge and Latch records")
+        if self.blind is not None and type(self.blind) is not Blind:
+            raise ProfileError("blind must be a Blind record")
+        if self.hinge_sides is not None:
+            if not isinstance(self.hinge_sides, (tuple, list)) or any(
+                    s not in ("left", "right") for s in self.hinge_sides):
+                raise ProfileError("hinge_sides must list 'left' or 'right' per door")
+            object.__setattr__(self, "hinge_sides", tuple(self.hinge_sides))
 
     @classmethod
     def from_json(cls, data):
         """``{"style": "inset", ...}``; omitted values take the defaults above."""
-        if not isinstance(data, dict) or data.get("style") != "inset" or not set(data) <= {
-                "style", "gap_mm", "setback_mm", "hinge", "latch"}:
-            raise ProfileError('fronts need style "inset" and only gap_mm, setback_mm, hinge, latch')
-        rest = {k: v for k, v in data.items() if k in ("gap_mm", "setback_mm")}
+        keys = {"style", "gap_mm", "setback_mm", "hinge", "latch", "blind", "hinge_sides"}
+        if not isinstance(data, dict) or data.get("style") != "inset" or not set(data) <= keys:
+            raise ProfileError('fronts need style "inset" and only ' + ", ".join(sorted(keys - {"style"})))
+        rest = {k: v for k, v in data.items() if k in ("gap_mm", "setback_mm", "hinge_sides")}
+        blind = data.get("blind")
         return cls(hinge=_strict(Hinge, data.get("hinge"), "hinge"),
-                   latch=_strict(Latch, data.get("latch"), "latch"), **rest)
+                   latch=_strict(Latch, data.get("latch"), "latch"),
+                   blind=None if blind is None else Blind.from_json(blind), **rest)
 
 
 def door_ids(boxes):
     return sorted(pid for pid in boxes if pid.startswith("panel.door."))
+
+
+def _layout(boxes, fronts):
+    """(blind panel id or None, opening x range for the doors, hinging doors)."""
+    left, right = boxes["panel.left.001"], boxes["panel.right.001"]
+    g, doors, blind = fronts.gap_mm, door_ids(boxes), fronts.blind
+    x0, x1 = left.hi[0] + g, right.lo[0] - g
+    if blind is None:
+        return None, (x0, x1), doors
+    if len(doors) < 2:
+        raise ProfileError("A blind corner needs a cabinet with two door panels")
+    if blind.side == "left":
+        xb = left.lo[0] + blind.width_mm
+        return doors[0], (xb + g / 2, x1), doors[1:]
+    xb = right.hi[0] - blind.width_mm
+    return doors[-1], (x0, xb - g / 2), doors[:-1]
 
 
 def hinge_count(height):
@@ -100,17 +128,22 @@ def inset_boxes(boxes, fronts):
     """Door and set-back shelf boxes (module frame) for inset fronts."""
     left, right = boxes["panel.left.001"], boxes["panel.right.001"]
     bottom, top = boxes["panel.bottom.001"], boxes["panel.top.001"]
-    doors = door_ids(boxes)
-    if not doors:
+    if not door_ids(boxes):
         raise ProfileError("Inset fronts need at least one door")
+    blind, (x0, x1), doors = _layout(boxes, fronts)
     g, n = fronts.gap_mm, len(doors)
     thick = boxes[doors[0]].size[1]
     front = left.lo[1]
-    x0, x1, z0, z1 = left.hi[0] + g, right.lo[0] - g, bottom.hi[2] + g, top.lo[2] - g
+    z0, z1 = bottom.hi[2] + g, top.lo[2] - g
     width = (x1 - x0 - (n - 1) * g) / n
     if width < 2 * fronts.hinge.cup_edge_mm or z1 - z0 < 2 * fronts.hinge.end_offset_mm:
         raise ProfileError("Inset doors are too small for their hinges")
     over = {}
+    if blind is not None:                   # fixed panel between the opening edge and the doors
+        a, b = ((left.hi[0] + g, x0 - g) if fronts.blind.side == "left" else (x1 + g, right.lo[0] - g))
+        if b - a < 4 * fronts.blind.pilot_mm:
+            raise ProfileError("Blind panel is too narrow")
+        over[blind] = Box((a, front, z0), (b, front + thick, z1))
     for i, pid in enumerate(doors):
         a = x0 + i * (width + g)
         over[pid] = Box((a, front, z0), (a + width, front + thick, z1))
@@ -124,15 +157,29 @@ def inset_boxes(boxes, fronts):
 def hardware(boxes, fronts):
     """{panel id: [(module-frame centre, outward face normal, diameter, depth)]}.
 
-    Door i hinges on the left for the left half of the doors, on the right
-    otherwise; its latch sits behind the opposite (free) edge."""
-    doors = door_ids(boxes)
+    Door i hinges on the side ``hinge_sides[i]`` names, else on the left for
+    the left half of the doors and on the right otherwise (a single door next
+    to a blind panel hinges away from it); a door may hinge only against a
+    carcass side. Its latch sits behind the opposite (free) edge. A blind
+    panel gets the corner pilot holes instead."""
+    blind, (x0, x1), doors = _layout(boxes, fronts)
     h, l = fronts.hinge, fronts.latch
     left, right, bottom = boxes["panel.left.001"], boxes["panel.right.001"], boxes["panel.bottom.001"]
-    out = {}
+    out = blind_pilots(boxes, fronts.blind, blind) if blind is not None else {}
+    sides = fronts.hinge_sides
+    if sides is not None and len(sides) != len(doors):
+        raise ProfileError("hinge_sides needs one entry per hinged door (%d)" % len(doors))
     for i, pid in enumerate(doors):
         d = boxes[pid]
-        on_left = i < len(doors) / 2
+        if sides is not None:
+            on_left = sides[i] == "left"
+        elif blind is not None and len(doors) == 1:
+            on_left = fronts.blind.side == "right"
+        else:
+            on_left = i < len(doors) / 2
+        if abs((d.lo[0] - (left.hi[0] + fronts.gap_mm)) if on_left
+               else (d.hi[0] - (right.lo[0] - fronts.gap_mm))) > 1e-6:
+            raise ProfileError("%s can only hinge against a carcass side" % pid)
         sign = 1 if on_left else -1                      # from the hinge edge towards the free edge
         edge, free = (d.lo[0], d.hi[0]) if on_left else (d.hi[0], d.lo[0])
         height = d.size[2]
