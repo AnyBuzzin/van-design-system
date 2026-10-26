@@ -10,11 +10,12 @@ from ..core.expr import Mm, Param
 from ..core.geometry import Box, BoxExpr
 from ..core.params import ParamDef, ParameterSet
 from ..panel_preview import canonical_json, panel_rows
+from ..verification.readback import COORDINATE_READBACK_MM, same_except_readback_noise
 
 NOTICE = "TEST ONLY - UNMEASURED"
 CABINET_SPEC = '{"schema_version":"0.2","module":"cabinet@1","variant":"base","profile_version":1,"parameters":{"width_mm":1100}}'
 REFERENCE = "reference."
-B1_RESTORATION_COORDINATE_EPSILON_MM = 1e-9
+B1_RESTORATION_COORDINATE_EPSILON_MM = COORDINATE_READBACK_MM
 ARCHES = ("reference.arch.left", "reference.arch.right")
 DEFAULTS = dict(Test_Width=1784, Test_Length=3044, Test_Height=2025,
                 Test_Arch_Width=196, Test_Arch_Length=800, Test_Arch_Height=300,
@@ -121,40 +122,8 @@ _ENV_FIELDS = dict(
     second_bare_height_mm="Env_Second_Bare_Height")
 
 
-def restored_lined_measurements(before, after):
-    """B1-only coordinate readback allowance; original reports remain untouched.
-
-    Validate every bound before aligning comparison-only copies within 1e-9 mm.
-    The unchanged storage comparator still enforces its 1e-6 mm3 volume rule
-    and exact equality of all other report fields. Caller snapshots stay exact.
-    """
-    from copy import deepcopy
-    from .storage_box import restored_storage_measurements
-    if not isinstance(before, dict) or not isinstance(after, dict):
-        return False
-    bodies, restored = before.get("bodies"), after.get("bodies")
-    if (not isinstance(bodies, dict) or not bodies or not isinstance(restored, dict)
-            or bodies.keys() != restored.keys()):
-        return False
-    aligned = deepcopy(after)
-    for sid in bodies:
-        a, b = bodies[sid], restored[sid]
-        for body in (a, b):
-            if not isinstance(body, dict):
-                return False
-            for side in ("min", "max"):
-                values = body.get(side)
-                if (not isinstance(values, (list, tuple)) or len(values) != 3
-                        or any(type(v) not in (int, float) or not math.isfinite(v) for v in values)):
-                    return False
-            if any(hi <= lo for lo, hi in zip(body["min"], body["max"])):
-                return False
-        for side in ("min", "max"):
-            if type(a[side]) is not type(b[side]) or any(
-                    abs(x-y) > B1_RESTORATION_COORDINATE_EPSILON_MM for x, y in zip(a[side], b[side])):
-                return False
-            aligned["bodies"][sid][side] = deepcopy(a[side])
-    return restored_storage_measurements(before, aligned)
+# Shared readback policy (verification/readback.py); name kept for existing callers.
+restored_lined_measurements = same_except_readback_noise
 
 
 def _lined_parameters(spec):
