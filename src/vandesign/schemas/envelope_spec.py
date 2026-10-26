@@ -5,6 +5,8 @@ import math
 import re
 
 SCHEMA = "vandesign.lined-envelope/1"
+SCHEMA2 = "vandesign.lined-envelope/2"    # adds optional angled upper walls (B2)
+UPPER_FIELDS = ("upper_left_break_mm", "upper_left_inset_mm", "upper_right_break_mm", "upper_right_inset_mm")
 NOTICE = "PUBLISHED-NOMINAL Transit L2H3; lining, margin and arches ASSUMED; UNMEASURED"
 
 
@@ -73,11 +75,18 @@ class EnvelopeSpec:
     keepouts: tuple = ()
     mounting_points: tuple = ()
     provenance: str = NOTICE
+    # B2 angled upper walls (finished frame, optional per side): the lining
+    # leans inward from the break height, reaching ``inset`` horizontally at
+    # the main finished ceiling height. Absent on both sides = schema /1.
+    upper_left_break_mm: float | None = None
+    upper_left_inset_mm: float | None = None
+    upper_right_break_mm: float | None = None
+    upper_right_inset_mm: float | None = None
 
     def __post_init__(self):
         values = asdict(self)
         for key in ("keepouts", "mounting_points", "provenance",
-                    "ceiling_split_mm", "second_bare_height_mm"):
+                    "ceiling_split_mm", "second_bare_height_mm") + UPPER_FIELDS:
             values.pop(key)
         if any(not number(v) for v in values.values()):
             raise ValueError("Complete finite envelope dimensions required")
@@ -111,12 +120,26 @@ class EnvelopeSpec:
         if not isinstance(self.mounting_points, (tuple, list)) or any(
                 type(m) is not MountingPoint for m in self.mounting_points):
             raise ValueError("Explicit mounting records required")
+        insets = []
+        for side in ("left", "right"):
+            brk, inset = getattr(self, "upper_%s_break_mm" % side), getattr(self, "upper_%s_inset_mm" % side)
+            if (brk is None) != (inset is None):
+                raise ValueError("Upper %s wall needs both break and inset" % side)
+            if brk is None:
+                continue
+            if not number(brk) or not number(inset) or not 0 < brk < self.heights[0] or inset < 0:
+                raise ValueError("Upper %s wall: 0 < break < finished height and inset >= 0" % side)
+            insets.append(inset)
+        if sum(insets) >= w - 2*self.tolerance_mm:
+            raise ValueError("Upper wall insets consume the ceiling width")
         # Reference obstacles must fit the actual, un-inset space too.
         for origin, size in [((0, ay, 0), (aw, self.arch_length_mm, ah))] + [
                 (k.origin_mm, k.size_mm) for k in self.keepouts]:
             if (any(o+s > d for o, s, d in zip(origin, size, (w, l, max(self.heights))))
                     or any(origin[2]+size[2] > height for start, end, height in self.segments
-                           if origin[1] < end and origin[1]+size[1] > start)):
+                           if origin[1] < end and origin[1]+size[1] > start)
+                    or any(self.upper_wall_distance(side, x, z) < 0 for side in self.upper_walls
+                           for x in (origin[0], origin[0]+size[0]) for z in (origin[2], origin[2]+size[2]))):
                 raise ValueError("Obstruction outside finished envelope")
         for m in self.mounting_points:
             x, y, z = m.position_mm
@@ -144,8 +167,30 @@ class EnvelopeSpec:
         return ((0, self.ceiling_split_mm, self.heights[0]),
                 (self.ceiling_split_mm, length, self.heights[1]))
 
+    @property
+    def upper_walls(self):
+        return tuple(side for side in ("left", "right")
+                     if getattr(self, "upper_%s_break_mm" % side) is not None)
+
+    def upper_wall_distance(self, side, x, z):
+        """Signed distance (mm) of finished-frame point (x, z) from a sloped
+        upper wall plane; positive inside the van. The plane passes through
+        the wall at the break height and is ``inset`` from it at the main
+        finished ceiling height; it is unbounded, so below the break it lies
+        outside the vertical lower wall and constrains nothing extra."""
+        brk = getattr(self, "upper_%s_break_mm" % side)
+        inset = getattr(self, "upper_%s_inset_mm" % side)
+        rise = self.heights[0] - brk
+        across = x if side == "left" else self.finished_size[0] - x
+        return (across * rise - (z - brk) * inset) / math.hypot(rise, inset)
+
     def to_json(self):
-        return json.dumps(dict(schema_version=SCHEMA, parameters=asdict(self)),
+        params = asdict(self)
+        if not self.upper_walls:
+            # Byte-identical to schema /1: existing specs keep their hashes.
+            for key in UPPER_FIELDS:
+                params.pop(key)
+        return json.dumps(dict(schema_version=SCHEMA2 if self.upper_walls else SCHEMA, parameters=params),
                           sort_keys=True, separators=(",", ":"), allow_nan=False)
 
 
@@ -161,11 +206,14 @@ def load_envelope_spec(text):
         raise ValueError("Envelope JSON required, at most 64 KiB")
     raw = json.loads(text, object_pairs_hook=unique)
     if (not isinstance(raw, dict) or set(raw) != {"schema_version", "parameters"}
-            or raw["schema_version"] != SCHEMA or not isinstance(raw["parameters"], dict)):
+            or raw["schema_version"] not in (SCHEMA, SCHEMA2) or not isinstance(raw["parameters"], dict)):
         raise ValueError("Invalid envelope schema")
     fields = raw["parameters"]
-    if set(fields) != set(EnvelopeSpec.__dataclass_fields__):
+    known = set(EnvelopeSpec.__dataclass_fields__)
+    if set(fields) != (known if raw["schema_version"] == SCHEMA2 else known - set(UPPER_FIELDS)):
         raise ValueError("Complete known envelope fields required")
+    if raw["schema_version"] == SCHEMA2 and all(fields[k] is None for k in UPPER_FIELDS):
+        raise ValueError("Schema /2 requires at least one upper wall; use /1")
     try:
         fields["keepouts"] = tuple(KeepOut(**k) for k in fields["keepouts"])
         fields["mounting_points"] = tuple(MountingPoint(**m) for m in fields["mounting_points"])
