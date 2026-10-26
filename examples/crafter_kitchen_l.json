@@ -1,0 +1,180 @@
+{
+  "arrangement": {
+    "schema_version": "vandesign.arrangement/1",
+    "instances": [
+      {
+        "instance_id": "kitchen.bulkhead",
+        "module": "cabinet_tab_slot",
+        "param_prefix": "KA",
+        "spec": {
+          "cabinet": {
+            "schema_version": "0.2",
+            "module": "cabinet@1",
+            "variant": "base",
+            "profile_version": 1,
+            "parameters": {
+              "width_mm": 1150.0,
+              "height_mm": 850.0,
+              "depth_mm": 550.0,
+              "ply_mm": 17.6,
+              "door_count": 2
+            }
+          },
+          "joinery": {
+            "sheet": {
+              "name": "birch ply",
+              "nominal_mm": 18,
+              "measured_mm": 17.6
+            },
+            "clearance_mm": 0.2,
+            "tabs_per_edge": 2,
+            "tab_width_mm": null,
+            "tool_diameter_mm": 6,
+            "blind_slot_depth_mm": 12,
+            "dado_stop_mm": 20,
+            "back_rabbet_mm": 8,
+            "fronts": {
+              "style": "inset",
+              "blind": {
+                "side": "right",
+                "width_mm": 600.0
+              }
+            },
+            "top": {}
+          }
+        },
+        "position_mm": [
+          641.0,
+          3997.4,
+          5.0
+        ],
+        "quarter_turns": 0
+      },
+      {
+        "instance_id": "kitchen.side",
+        "module": "cabinet_tab_slot",
+        "param_prefix": "KB",
+        "spec": {
+          "cabinet": {
+            "schema_version": "0.2",
+            "module": "cabinet@1",
+            "variant": "base",
+            "profile_version": 1,
+            "parameters": {
+              "width_mm": 800.0,
+              "height_mm": 850.0,
+              "depth_mm": 550.0,
+              "ply_mm": 17.6,
+              "door_count": 1
+            }
+          },
+          "joinery": {
+            "sheet": {
+              "name": "birch ply",
+              "nominal_mm": 18,
+              "measured_mm": 17.6
+            },
+            "clearance_mm": 0.2,
+            "tabs_per_edge": 2,
+            "tab_width_mm": null,
+            "tool_diameter_mm": 6,
+            "blind_slot_depth_mm": 12,
+            "dado_stop_mm": 20,
+            "back_rabbet_mm": 8,
+            "fronts": {
+              "style": "inset",
+              "hinge_sides": [
+                "right"
+              ]
+            },
+            "top": {
+              "sink_rail_mm": 80
+            },
+            "corner_fixings": {
+              "side": "left"
+            }
+          }
+        },
+        "position_mm": [
+          1223.4,
+          3215.0,
+          5.0
+        ],
+        "quarter_turns": 3
+      },
+      {
+        "instance_id": "kitchen.worktop",
+        "module": "worktop_l",
+        "param_prefix": "WT",
+        "spec": {
+          "schema_version": "vandesign.worktop-l/1",
+          "material_ref": "ply_main",
+          "parameters": {
+            "leg_a_length_mm": 1150.0,
+            "leg_a_depth_mm": 570.0,
+            "leg_b_length_mm": 1350.0,
+            "leg_b_depth_mm": 570.0,
+            "thickness_mm": 17.6,
+            "front_corner_radius_mm": 10,
+            "inside_corner_radius_mm": 25
+          },
+          "sink": {
+            "leg": "b",
+            "centre_x_mm": 300,
+            "centre_y_mm": 950.0,
+            "width_mm": 340,
+            "length_mm": 400,
+            "corner_radius_mm": 15,
+            "margin_mm": 50
+          }
+        },
+        "position_mm": [
+          641.0,
+          3215.0,
+          855.0
+        ],
+        "quarter_turns": 2
+      }
+    ]
+  },
+  "envelope": {
+    "parameters": {
+      "arch_height_mm": 300,
+      "arch_length_mm": 800,
+      "arch_y_mm": 2000,
+      "bare_between_arches_mm": 1380,
+      "bare_height_mm": 1961,
+      "bare_length_mm": 4606,
+      "bare_width_mm": 1832,
+      "ceiling_split_mm": null,
+      "keepouts": [
+        {
+          "kind": "door",
+          "name": "sliding_door",
+          "origin_mm": [
+            0,
+            2900,
+            0
+          ],
+          "size_mm": [
+            600,
+            1311,
+            1800
+          ]
+        }
+      ],
+      "lining_mm": 18,
+      "mounting_points": [],
+      "provenance": "EXAMPLE: published VW Crafter CR35 LWB maxi high roof; lining 18 mm, arches, door position and upper walls ASSUMED; UNMEASURED",
+      "second_bare_height_mm": null,
+      "tolerance_mm": 5,
+      "upper_left_break_mm": 1830,
+      "upper_left_inset_mm": 60,
+      "upper_right_break_mm": 1250,
+      "upper_right_inset_mm": 120
+    },
+    "schema_version": "vandesign.lined-envelope/2"
+  },
+  "edits": [],
+  "tool_diameter_mm": 6
+}
