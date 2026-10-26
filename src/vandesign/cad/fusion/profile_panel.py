@@ -16,10 +16,41 @@ from ...core.expr import Mm
 from ...modules.profile_fixture import (PARAMETERS, PARAMETER, THICKNESS, feature_loop, feature_depth,
                                        feature_start, feature_id, inventory, validate_panels)
 from ...verification.profile_panel import measure_profiles, probes
-from ...manufacturing.profile import Line
+from ...manufacturing.profile import Line, PanelFrame
 
 
 class ProfileAdapter(FusionAdapter):
+    def _oriented_component(self, profile, guard):
+        """Rotate component axes only; origin offsets stay in sketch/extrude space.
+
+        This leaves room for native Expr-driven placement without changing an
+        occurrence transform after creation. Existing fixed-XY builds bypass it.
+        """
+        frame = profile.frame
+        if type(frame) is not PanelFrame:
+            raise ValueError('Oriented profile requires a validated PanelFrame')
+        matrix = adsk.core.Matrix3D.create()
+        axes = [adsk.core.Vector3D.create(*axis) for axis in (frame.u, frame.v, frame.w)]
+        if matrix.setWithCoordinateSystem(adsk.core.Point3D.create(0, 0, 0), *axes) is not True:
+            raise RuntimeError('Cannot establish profile coordinate system')
+        guard()
+        occurrence = self.root.occurrences.addNewComponent(matrix)
+        if occurrence is None:
+            raise RuntimeError('Oriented component creation failed')
+        comp = occurrence.component
+        comp.name = profile.display_name
+        comp.attributes.add(ATTR_GROUP, ATTR_ID, profile.panel_id)
+        comp.attributes.add(ATTR_GROUP, ATTR_GEN, GENERATOR_ID)
+        return comp
+
+    @staticmethod
+    def _frame_offset(frame):
+        """World origin projected into the rotated component's local axes (mm)."""
+        if type(frame) is not PanelFrame:
+            raise ValueError('Validated PanelFrame required')
+        return tuple(sum(a*b for a, b in zip(frame.origin, axis))
+                     for axis in (frame.u, frame.v, frame.w))
+
     def _loop_sketch(self, comp, name, loop, origin):
         sketch=comp.sketches.add(comp.xYConstructionPlane);sketch.name=name+' - profile'
         def point(xy):return adsk.core.Point3D.create((xy[0]+origin[0])/10,(xy[1]+origin[1])/10,0)

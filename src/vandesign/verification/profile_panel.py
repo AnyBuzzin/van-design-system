@@ -1,9 +1,24 @@
 """CAD-neutral expected profile measurements and material-side probes."""
 import math
+from types import SimpleNamespace
 
-from ..manufacturing.profile import Arc, Hole, Pocket, contains_point
+from ..manufacturing.profile import Arc, Hole, Pocket, PanelFrame, contains_point, contains_world_point
 from ..modules.profile_fixture import (PARAMETER, PARAMETERS, feature_loop, feature_depth,
                                        feature_id, feature_start, inventory, resolve_profiles, spec_hash)
+
+
+def world_probes(profile):
+    """Reuse boundary sampling, with exact core material truth in world space."""
+    if type(profile.frame) is not PanelFrame:
+        raise ValueError('World probes require a validated PanelFrame')
+    result = []
+    for cid, local, _ in probes(SimpleNamespace(profile=profile, origin=(0, 0, 0))):
+        world = profile.frame.to_world(*local)
+        expected = contains_world_point(profile, world)
+        if type(expected) is not bool:
+            raise ValueError('Ambiguous world material probe')
+        result.append((cid, world, expected))
+    return result
 
 
 def probes(panel):
