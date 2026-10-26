@@ -1,6 +1,6 @@
 # VanDesign current status
 
-**26 October 2026.** E1.1 rounded-panel live qualification passed; reviewed Runner f24df89 installed. Adopted strategy: design to a plywood-lined interior ([ADR-0002](docs/decisions/ADR-0002-lined-interior-envelope.md)); reference van is the published VW Crafter CR35 LWB maxi, high roof, until the target van is acquired. `main` is unchanged. Rules: [AGENTS.md](AGENTS.md). Next work: [ROADMAP.md](docs/ROADMAP.md) M1 platform consolidation (PRs #76, #77).
+**26 October 2026.** E1.2 tab-slot live qualification FAILED safely (`Unexpected cut inventory`); reviewed Runner `07536e4` installed. Adopted strategy: design to a plywood-lined interior ([ADR-0002](docs/decisions/ADR-0002-lined-interior-envelope.md)); reference van is the published VW Crafter CR35 LWB maxi, high roof, until the target van is acquired. `main` is unchanged. Rules: [AGENTS.md](AGENTS.md). Next work: [ROADMAP.md](docs/ROADMAP.md) M1 platform consolidation (PRs #76, #77).
 
 ## Works today
 
@@ -20,7 +20,9 @@
 
 ## Now
 
-E1.1 passed the bounded nominal 18 mm rounded-panel test; Jack independently confirmed the raw results and full final baseline. Width/length edits remain offline-tested only, NOT RUN live; no saved persistence, joinery or CNC qualification. The [original B1 FAIL](https://github.com/AnyBuzzin/van-design-system/issues/61#issuecomment-6405161330), dirty failed fixture and clean owner blank remain preserved; capacity 2/10. B1 stepped ceilings and door keep-outs remain offline-only. Raw manual edits are not automatically guarded; configured participant-list persistence is UNKNOWN. Runner remains running; no further live work assigned. Vehicle fit, loads, anchoring and manufacturing remain unqualified.
+E1.2 ([#73](https://github.com/AnyBuzzin/van-design-system/issues/73)): the [live run](https://github.com/AnyBuzzin/van-design-system/issues/73#issuecomment-6406410165) on `07536e4` stopped with FAIL `Unexpected cut inventory` during the first measurement. All seven construction cuts passed their volume checks, but full validation was not reported, and the diameter edit/restoration and refusal checks were NOT RUN. Cause UNKNOWN; draft PR #75 preserves diagnostics and is not a fix. Its new dirty failed fixture is protected like the earlier ones; post-failure inventory is UNKNOWN (capacity was 2/10 before the run).
+
+E1.1 passed the bounded nominal 18 mm rounded-panel test; Jack independently confirmed the raw results and full final baseline. Width/length edits remain offline-tested only, NOT RUN live; no saved persistence, joinery or CNC qualification. The [original B1 FAIL](https://github.com/AnyBuzzin/van-design-system/issues/61#issuecomment-6405161330), its dirty failed fixture and the clean owner blank remain preserved. M1 work (PRs #76, #77, tracked in #78) is offline only: no DXF export or arrangement is live-qualified. B1 stepped ceilings and door keep-outs remain offline-only. Raw manual edits are not automatically guarded; configured participant-list persistence is UNKNOWN. Runner remains running; no further live work assigned. Vehicle fit, loads, anchoring and manufacturing remain unqualified.
 
 ## Owner to-do
 
