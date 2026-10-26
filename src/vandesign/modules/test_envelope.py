@@ -259,7 +259,8 @@ def preview_lined_fit(assembly, spec, env, boxes=None):
     for sid, b in furniture.items():
         gaps = dict(left=b.lo[0]-t, right=w-t-b.hi[0], rear=b.lo[1]-t,
                     front=length-t-b.hi[1], floor=b.lo[2]-t)
-        if min(gaps.values()) < 0:
+        # Admit coordinate readback noise only; retain the inset and raw gaps.
+        if min(gaps.values()) < -COORDINATE_READBACK_MM:
             raise ValueError("Outside inset envelope: "+sid)
         ceiling_gaps = []
         for start, end, height in current.segments:
@@ -268,7 +269,7 @@ def preview_lined_fit(assembly, spec, env, boxes=None):
             # either step direction without treating the space as convex.
             if b.lo[1] < end+t and b.hi[1] > start-t:
                 ceiling_gaps.append(height-t-b.hi[2])
-        if not ceiling_gaps or min(ceiling_gaps) < 0:
+        if not ceiling_gaps or min(ceiling_gaps) < -COORDINATE_READBACK_MM:
             raise ValueError("Outside inset ceiling or step: "+sid)
         gaps["ceiling"] = min(ceiling_gaps)
         for kid, obstacle in keepouts.items():
