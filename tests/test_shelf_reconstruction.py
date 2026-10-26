@@ -125,6 +125,12 @@ class ReconstructionTests(unittest.TestCase):
         original=ast.parse(textwrap.dedent(inspect.getsource(self.mod.FusionAdapter._make_panel))).body[0]
         tracked=ast.parse(textwrap.dedent(inspect.getsource(self.mod.ShelfFixtureAdapter._make_panel))).body[0]
         original.args.args[1].annotation=None
+        # The tracked cabinet-only wrapper retains the rectangular path exactly;
+        # E1.1's separate rounded branch is tested in test_rounded_panel_runner.
+        for i,node in enumerate(original.body):
+            if isinstance(node,ast.If) and ast.unparse(node.test)=='panel.corner_radius is None':
+                original.body[i:i+1]=node.body
+                break
         self.assertEqual(ast.unparse(tracked.body[1]), "if hasattr(self, '_structural_created'):\n    self._structural_created.append(occ)")
         del tracked.body[1]
         self.assertEqual(ast.dump(original),ast.dump(tracked))

@@ -12,7 +12,7 @@ from typing import Dict, Mapping, Optional, Tuple
 
 from ..components.model import AssemblyDefinition
 from ..core.expr import ExprError
-from ..core.geometry import Box, GeometryError
+from ..core.geometry import Box, GeometryError, RoundedCornerOutline
 from ..core.params import ParameterError
 from ..core.units import MODEL_EPSILON_MM, VOLUME_REL_TOL
 from .geometry_source import GeometrySource
@@ -118,6 +118,13 @@ def validate(assembly: AssemblyDefinition, source: GeometrySource, eps_mm: float
     expected_volume: Dict[str, float] = {}
     for p in assembly.panels:
         v = blank[p.stable_id].volume
+        if p.corner_radius is not None:
+            try:
+                w, l, t = blank[p.stable_id].size
+                v = RoundedCornerOutline(w, l, p.corner_radius.eval(env)).area_mm2 * t
+            except GeometryError as e:
+                rep.add(Check("geometry.expected", FAIL, note=str(e)))
+                return rep
         for o, c in cuts:
             if o.target_panel_id == p.stable_id:
                 v -= blank[p.stable_id].overlap_volume(c)
@@ -139,6 +146,7 @@ def validate(assembly: AssemblyDefinition, source: GeometrySource, eps_mm: float
         exp_v = expected_volume[pid]
         tol = max(1.0, VOLUME_REL_TOL * exp_v)
         _cmp(rep, "%s.volume" % pid, m.volume_mm3, exp_v, tol, "mm3", (pid,),
+             "rounded contour area times thickness" if p.corner_radius is not None else
              "blank minus its own grooves only")
 
     # 6. Dado joint relationships measured on the actual solids.

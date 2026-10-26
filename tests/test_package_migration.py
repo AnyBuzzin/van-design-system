@@ -19,6 +19,42 @@ from vandesign.schemas.cabinet_spec import CabinetSpec
 ROOT = Path(__file__).resolve().parents[1]
 
 
+def without_e11(tree):
+    """Remove ONLY the optional rounded extension for historical AST comparison.
+
+    E1.1 geometry/API/refusal tests independently exercise the removed branch.
+    Existing rectangular logic must still compare exactly to the archive.
+    """
+    class Extension(ast.NodeTransformer):
+        def visit_Import(self,node):
+            return None if [n.name for n in node.names]==['math'] else node
+        def visit_ImportFrom(self,node):
+            node.names=[n for n in node.names if n.name not in ('RoundedCornerOutline','field')]
+            return node
+        def visit_ClassDef(self,node):
+            return None if node.name=='RoundedCornerOutline' else self.generic_visit(node)
+        def visit_FunctionDef(self,node):
+            return None if node.name=='_rounded_profile' else self.generic_visit(node)
+        def visit_AnnAssign(self,node):
+            if isinstance(node.target,ast.Name) and node.target.id=='corner_radius':return None
+            return self.generic_visit(node)
+        def visit_If(self,node):
+            condition=ast.unparse(node.test)
+            if condition=='panel.corner_radius is None':return node.body
+            if condition=='p.corner_radius is not None':return None
+            return self.generic_visit(node)
+        def visit_For(self,node):
+            if (ast.unparse(node.target)=='p' and ast.unparse(node.iter)=='self.panels'
+                    and node.body and isinstance(node.body[0],ast.If)
+                    and ast.unparse(node.body[0].test)=='p.corner_radius is None'):
+                return None
+            return self.generic_visit(node)
+        def visit_IfExp(self,node):
+            if ast.unparse(node.test)=='p.corner_radius is not None':return node.orelse
+            return self.generic_visit(node)
+    return Extension().visit(tree)
+
+
 class MigrationTests(unittest.TestCase):
     def test_v5_runtime_matches_preserved_source(self):
         historical = ROOT / 'prototypes/claude-v5/VanCabinetJoineryV5/vandesign'
@@ -32,7 +68,7 @@ class MigrationTests(unittest.TestCase):
                     # Only rectangle binding and its two dependency-forwarding
                     # callers differ; all other adapter code stays historical.
                     old = ast.parse(source.read_text(encoding='utf-8'))
-                    new = ast.parse((installed / source.relative_to(historical)).read_text(encoding='utf-8'))
+                    new = without_e11(ast.parse((installed / source.relative_to(historical)).read_text(encoding='utf-8')))
                     old_cls = next(n for n in old.body if isinstance(n, ast.ClassDef) and n.name == 'FusionAdapter')
                     new_cls = next(n for n in new.body if isinstance(n, ast.ClassDef) and n.name == 'FusionAdapter')
                     original = {n.name: n for n in old_cls.body if isinstance(n, ast.FunctionDef)}
@@ -46,6 +82,11 @@ class MigrationTests(unittest.TestCase):
                             self.assertEqual([k.arg for k in calls[0].keywords], ['x_dynamic', 'y_dynamic'])
                             calls[0].keywords = []
                     self.assertEqual(ast.dump(old), ast.dump(new))
+                    continue
+                if source.relative_to(historical).as_posix() in ('core/geometry.py','components/model.py','verification/validate.py'):
+                    old=ast.parse(source.read_text(encoding='utf-8'))
+                    new=without_e11(ast.parse((installed/source.relative_to(historical)).read_text(encoding='utf-8')))
+                    self.assertEqual(ast.dump(old),ast.dump(new))
                     continue
                 if source.relative_to(historical).as_posix() == 'cad/fusion/interior_demo.py':
                     # Issue #43 extends this adapter entry module. The original
