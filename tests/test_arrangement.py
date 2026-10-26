@@ -129,6 +129,27 @@ class Arrangements(unittest.TestCase):
         with self.assertRaisesRegex(ArrangementError, "Envelope fit refused"):
             build_arrangement(moved, CRAFTER)
 
+    def test_nested_instance_ids_refused_in_either_order(self):
+        """Review regression: 'a' must never capture the panels of 'a.b'."""
+        a, ab = cab("a", "A", (0, 0, 0), 0), cab("a.b", "B", (0, 0, 0), 0)
+        for pair in ((a, ab), (ab, a)):
+            with self.assertRaisesRegex(ArrangementError, "Nested instance ids"):
+                build_arrangement(pair)
+
+    def test_overlap_refused_and_touching_allowed_in_either_order(self):
+        for x, ok in ((500, False), (1100, True)):
+            first, second = cab("left", "L", (0, 0, 0), 0), cab("right", "R", (x, 0, 0), 0)
+            for pair in ((first, second), (second, first)):
+                if ok:
+                    arr = build_arrangement(pair)
+                    furniture = [p.stable_id for p in arr.assembly.panels]
+                    self.assertEqual(set(arr.owners), set(furniture))
+                    for pid, owner in arr.owners.items():
+                        self.assertTrue(pid.startswith(owner + "."), pid)
+                else:
+                    with self.assertRaisesRegex(ArrangementError, "share material"):
+                        build_arrangement(pair)
+
     def test_duplicates_and_bad_records_refused(self):
         with self.assertRaises(ArrangementError):
             build_arrangement((cab("a", "A", (0, 0, 0), 0), cab("a", "B", (2000, 0, 0), 0)))

@@ -163,18 +163,16 @@ class Arrangement:
     assembly: AssemblyDefinition
     instances: tuple
     fit: dict | None  # B1 fit report when an envelope was supplied
+    owners: dict      # furniture panel id -> instance id, recorded at placement
 
 
-def instance_of(panel_id, instances):
-    for inst in instances:
-        if panel_id.startswith(inst.instance_id + "."):
-            return inst.instance_id
-    return None
+def collisions(assembly, env, owners):
+    """Pairs of panels from different instances that share positive volume.
 
-
-def collisions(assembly, env, instances):
-    """Pairs of panels from different instances that share positive volume."""
-    boxes = [(p.stable_id, instance_of(p.stable_id, instances), p.box.resolve(env))
+    Membership comes from ``owners`` (recorded when each instance is placed),
+    never from id prefixes, so no instance id can capture another's panels.
+    """
+    boxes = [(p.stable_id, owners[p.stable_id], p.box.resolve(env))
              for p in assembly.panels if p.material_ref != "reference_only"]
     hits = []
     for i, (a, ia, ba) in enumerate(boxes):
@@ -193,10 +191,17 @@ def build_arrangement(instances, envelope=None):
         values = [getattr(i, attr) for i in instances]
         if len(set(values)) != len(values):
             raise ArrangementError("Duplicate %s" % attr)
-    params, panels, ops, cons, sources = [], [], [], [], []
+    # Nested ids ('a' and 'a.b') would make '<instance>.<module id>' ambiguous.
+    ids = sorted(i.instance_id for i in instances)
+    for a in ids:
+        for b in ids:
+            if b.startswith(a + "."):
+                raise ArrangementError("Nested instance ids are not allowed: %r inside %r" % (b, a))
+    params, panels, ops, cons, sources, owners = [], [], [], [], [], {}
     for inst in instances:
         source, p, pa, o, c = _place_instance(inst)
         params += p; panels += pa; ops += o; cons += c
+        owners.update((panel.stable_id, inst.instance_id) for panel in pa)
         sources.append(dict(instance_id=inst.instance_id, module=inst.module, spec_hash=source.spec_hash,
                             prefix=inst.param_prefix, position_mm=list(inst.position_mm),
                             quarter_turns=inst.quarter_turns))
@@ -214,7 +219,7 @@ def build_arrangement(instances, envelope=None):
     failed = [c.constraint_id for c, ok, _, _ in assembly.check_constraints(env) if not ok]
     if failed:
         raise ArrangementError("Constraint violations: " + ", ".join(failed))
-    hits = collisions(assembly, env, instances)
+    hits = collisions(assembly, env, owners)
     if hits:
         raise ArrangementError("Instances share material: " + "; ".join("%s / %s" % h for h in hits[:5]))
     fit = None
@@ -224,4 +229,4 @@ def build_arrangement(instances, envelope=None):
             fit = preview_lined_fit(assembly, envelope, env)
         except ValueError as exc:
             raise ArrangementError("Envelope fit refused: %s" % exc) from None
-    return Arrangement(assembly, instances, fit)
+    return Arrangement(assembly, instances, fit, owners)
