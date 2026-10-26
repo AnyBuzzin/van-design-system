@@ -16,7 +16,7 @@ import adsk.fusion
 from .adapter import FusionAdapter
 from .test_envelope import measure_test, snapshot
 from ...arrangement import collisions
-from ...arrangement_job import expected_inventory, plan_request, preview_values
+from ...arrangement_job import expected_inventory, plan_request, preview_edit
 from ...core.geometry import Box
 from ...verification.readback import same_except_readback_noise as restored_lined_measurements
 
@@ -24,6 +24,9 @@ REPORT = "arrangement.json"
 
 
 def measure_arrangement(design, plan, guard):
+    if plan.profile_bindings is not None:
+        from .profile_panel import measure_oriented_design
+        return measure_oriented_design(design, plan, guard)
     asm = plan.arrangement.assembly
     inventory = expected_inventory(asm)
     report = measure_test(design, asm, guard, expected_panels=inventory["root_occurrences"],
@@ -40,7 +43,11 @@ def measure_arrangement(design, plan, guard):
 def _export_dxf(plan, output_dir):
     from ...manufacturing.assembly import assembly_profiles
     from ...manufacturing.dxf import export_profiles
-    profiles = assembly_profiles(plan.arrangement.assembly, tool_diameter=plan.tool_diameter_mm)
+    if plan.profile_bindings is None:
+        profiles = assembly_profiles(plan.arrangement.assembly, tool_diameter=plan.tool_diameter_mm)
+    else:
+        from ...manufacturing.placement import arrangement_profiles
+        profiles, _ = arrangement_profiles(plan.arrangement, tool_diameter=plan.tool_diameter_mm)
     files = export_profiles(profiles, str(Path(output_dir) / "dxf"))
     return dict(tool_diameter_mm=plan.tool_diameter_mm, panels=len(profiles),
                 reliefs=sum(p.reliefs for p in profiles), files=[Path(f).name for f in files])
@@ -61,12 +68,21 @@ def run_arrangement(app, output_dir, guard, request):
             raise RuntimeError("New empty unsaved parametric fixture required")
         plan = plan_request(request)          # every refusal happens before CAD writes
         asm = plan.arrangement.assembly
+        profiles = None
+        if plan.profile_bindings is not None:
+            from ...manufacturing.placement import arrangement_profiles
+            profiles, _ = arrangement_profiles(plan.arrangement, tool_diameter=plan.tool_diameter_mm)
         payload.update(spec_hash=asm.spec_hash, instances=[i.instance_id for i in plan.arrangement.instances],
-                       inventory=expected_inventory(asm), fit=plan.arrangement.fit,
+                       inventory=expected_inventory(asm, profiles), fit=plan.arrangement.fit,
                        planned_edits=[dict(parameter=e.parameter, value_mm=e.value_mm, expect=e.expect,
                                            preview=e.preview) for e in plan.edits])
         guard()
-        FusionAdapter(design).compile(asm)
+        if plan.profile_bindings is None:
+            FusionAdapter(design).compile(asm)
+        else:
+            from .profile_panel import ProfileAdapter
+            payload['construction_cuts'] = []
+            ProfileAdapter(design).compile_oriented(plan, guard, payload['construction_cuts'])
         baseline = measure_arrangement(design, plan, guard)
         payload["stages"].append(dict(label="baseline", **baseline))
         if baseline["outcome"] != "PASS":
@@ -79,7 +95,8 @@ def run_arrangement(app, output_dir, guard, request):
             payload["edits"].append(record)
             # Re-preview against the values Fusion currently reports, never only the plan.
             current = {n: last["parameters_mm"][n] for n in base_values}
-            preview = preview_values(plan.arrangement, plan.envelope, dict(current, **{edit.parameter: edit.value_mm}))
+            preview = preview_edit(plan.arrangement, plan.envelope, current, edit.parameter, edit.value_mm,
+                                   plan.profile_bindings)
             record["preview"] = preview
             if edit.expect == "refused":
                 if preview["outcome"] != "REFUSED":

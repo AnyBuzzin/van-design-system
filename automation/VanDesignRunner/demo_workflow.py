@@ -184,6 +184,36 @@ def _complete_stage(stage, plan, expected):
         allowed = ARRANGEMENT_VALUE_MM if tolerance is None else tolerance
         if not _finite(observed) or abs(observed - value) > allowed + ARRANGEMENT_VALUE_MM:
             return False
+    # Oriented profiles retain raw probes and occurrence-frame observations.
+    # Judge them against the independently re-planned oracle, not PASS labels.
+    for cid, want in plan.get('point_checks', {}).items():
+        c = by_id.get(cid, {})
+        if (c.get('observed') is not want['expected'] or c.get('expected') is not want['expected']
+                or c.get('object_ids') != want['object_ids']):
+            return False
+        point = c.get('point_mm')
+        if (not isinstance(point, (tuple, list)) or len(point) != 3
+                or any(not _finite(a) or abs(a-b) > ARRANGEMENT_VALUE_MM for a,b in zip(point,want['point_mm']))):
+            return False
+    if 'frames' in plan:
+        for cut in expected.get('construction_cuts', []):
+            ownership = by_id.get(cut['cut_id']+'.affected_body_ownership', {})
+            if ownership.get('affected_bodies') != [cut['owner']] or ownership.get('feature_parent') != cut['owner']:
+                return False
+        frames = stage.get('frames')
+        if not isinstance(frames, dict) or set(frames) != set(plan['frames']):
+            return False
+        for pid, want in plan['frames'].items():
+            frame = frames[pid]
+            if not isinstance(frame, dict) or set(frame) != {'origin_mm','axes'}:
+                return False
+            axes = frame['axes']
+            if not isinstance(axes, list) or len(axes) != 3:
+                return False
+            for actual, target in zip([frame['origin_mm']]+axes, [want['origin_mm']]+want['axes']):
+                if (not isinstance(actual, (tuple,list)) or len(actual) != 3
+                        or any(not _finite(a) or abs(a-b) > 1e-9 for a,b in zip(actual,target))):
+                    return False
     # Each volume check must report the volume of the body it describes.
     return all(by_id[pid + '.volume'].get('observed') == bodies[pid]['volume_mm3']
                for pid in bodies if pid + '.volume' in by_id)
