@@ -115,6 +115,11 @@ MAX_REQUEST_BYTES = 262144
 
 def _arrangement_request(req: Any, path: str) -> None:
     """Structural check only; the full plan is validated inside Fusion before any write."""
+    if isinstance(req, dict) and 'fixture' in req:
+        _keys(req, path, ('fixture',))
+        if req['fixture'] != 'profile-panels/1':
+            _fail(path, 'unknown profile fixture')
+        return
     _keys(req, path, ("arrangement", "envelope", "edits"), ("tool_diameter_mm",))
     if not isinstance(req["arrangement"], dict) or not isinstance(req["envelope"], dict):
         _fail(path, "arrangement and envelope must be objects")

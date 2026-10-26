@@ -204,6 +204,50 @@ class DemoTests(TmpDirCase):
         module.arrangement_evidence.assert_called_once_with(request)       # bound to the same request
         self.doc.saveAs.assert_not_called(); self.protected.close.assert_not_called()
 
+    def test_profile_fixture_uses_existing_owned_workflow_and_complete_evidence(self):
+        from vandesign.verification.profile_panel import expected_evidence
+        request={'fixture':'profile-panels/1'}
+        expected=json.loads(json.dumps(expected_evidence()))
+        args=dict(demo_id='demo-001',entry_point='BuildArrangement',request=request)
+        validate_job(job('run_approved_demo',args,target=None))
+        for bad in ({'fixture':'unknown'},dict(request,code='x'),dict(request,thickness=20)):
+            with self.assertRaises(JobSchemaError):
+                validate_job(job('run_approved_demo',dict(args,request=bad),target=None))
+        stages=[]
+        for plan in expected['stages']:
+            stages.append(dict(label=plan['label'],outcome='PASS',parameters_mm=plan['parameters_mm'],
+                counts=expected['inventory'],bodies={pid:dict(min=box[0],max=box[1],volume_mm3=plan['volumes'][pid])
+                    for pid,box in plan['boxes'].items()},checks=[dict(check_id=cid,status='PASS',
+                    observed=plan['numeric'][cid][0] if cid in plan['numeric'] else None) for cid in expected['required_checks']]))
+        report=dict(outcome='PASS',spec_hash=expected['spec_hash'],instances=expected['instances'],stages=stages,
+                    planned_edits=expected['edits'],edits=[dict(e,outcome='PASS',preview={'outcome':'REFUSED' if e['expect']=='refused' else 'PASS'}) for e in expected['edits']],
+                    baseline_state={'s':0},final_state={'s':0})
+        report['construction_cuts']=[]
+        for c in expected['construction_cuts']:
+            before=dict.fromkeys(expected['body_ids'],10000000.0);after=dict(before);after[c['owner']]-=c['removed_mm3']
+            report['construction_cuts'].append(dict(cut_id=c['cut_id'],owner=c['owner'],outcome='PASS',
+                before_mm3=before,after_mm3=after,ownership=dict(status='PASS',affected_bodies=[c['owner']],feature_parent=c['owner'])))
+        self.assertTrue(workflow.verified_arrangement(report,expected))
+        bad=copy.deepcopy(report);bad['construction_cuts']=[]
+        self.assertFalse(workflow.verified_arrangement(bad,expected))
+        bad=copy.deepcopy(report);c=bad['construction_cuts'][0]
+        mate=next(pid for pid in expected['body_ids'] if pid!=c['owner']);c['after_mm3'][mate]-=0.01
+        self.assertFalse(workflow.verified_arrangement(bad,expected))
+        for cid in expected['required_checks']:
+            bad=copy.deepcopy(report);bad['stages'][0]['checks']=[c for c in bad['stages'][0]['checks'] if c['check_id']!=cid]
+            self.assertFalse(workflow.verified_arrangement(bad,expected),cid)
+        bad=copy.deepcopy(report);bad['stages'][0]['bodies'][expected['body_ids'][0]]['volume_mm3']=123
+        self.assertFalse(workflow.verified_arrangement(bad,expected))
+        with self.assertRaises(PolicyError):self.run_cmd('run_approved_demo',args)
+        self.run_cmd('create_demo_design')
+        with open(self.report_path,'w') as fh:json.dump(report,fh)
+        module=NS(run_arrangement=Mock(return_value=self.report_path),arrangement_evidence=Mock(return_value=expected))
+        with patch.object(workflow,'modules',return_value=module):
+            self.assertEqual(self.run_cmd('run_approved_demo',args)['outcome'],'PASS')
+            with self.assertRaises(PolicyError):self.run_cmd('run_approved_demo',args)
+            with self.assertRaises(PolicyError):self.run_cmd('save_demo_design',self.args)
+        module.run_arrangement.assert_called_once();self.doc.saveAs.assert_not_called();self.protected.close.assert_not_called()
+
     def test_build_arrangement_acceptance_requires_complete_request_bound_evidence(self):
         _, expected, report = self.arrangement_case()
         verify = workflow.verified_arrangement
