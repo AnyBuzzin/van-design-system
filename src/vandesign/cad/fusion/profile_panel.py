@@ -92,11 +92,18 @@ def measure_profile_design(design,panels,guard,thickness):
     healthy=adsk.fusion.FeatureHealthStates.HealthyFeatureHealthState
     for item in panels:
         p=item.profile;comp=occ[p.panel_id][0].component;n=1+len(p.features)
+        observed=dict(expected_count=n,body_count=comp.bRepBodies.count,
+                      body_valid=comp.bRepBodies.item(0).isValid if comp.bRepBodies.count else None,
+                      body_solid=comp.bRepBodies.item(0).isSolid if comp.bRepBodies.count else None,
+                      feature_count=comp.features.count,extrusion_count=comp.features.extrudeFeatures.count,
+                      sketch_count=comp.sketches.count,extrusions=[],sketches=[])
         ok=(comp.bRepBodies.count==1 and comp.bRepBodies.item(0).isValid and comp.bRepBodies.item(0).isSolid
             and comp.features.count==n and comp.features.extrudeFeatures.count==n and comp.sketches.count==n)
         cuts={}
         for i in range(comp.features.extrudeFeatures.count):
             f=comp.features.extrudeFeatures.item(i)
+            observed['extrusions'].append(dict(index=i,health_state=int(f.healthState),
+                healthy=f.healthState==healthy,suppressed=f.isSuppressed,operation=int(f.operation)))
             ok=ok and f.healthState==healthy and not f.isSuppressed
             if f.operation==adsk.fusion.FeatureOperations.CutFeatureOperation:
                 attr=f.attributes.itemByName(ATTR_GROUP,ATTR_ID);cid=attr.value if attr else None
@@ -104,8 +111,11 @@ def measure_profile_design(design,panels,guard,thickness):
                 cuts[cid]=f
             elif f.operation!=adsk.fusion.FeatureOperations.NewBodyFeatureOperation:ok=False
         for i in range(comp.sketches.count):
-            s=comp.sketches.item(i);ok=ok and s.profiles.count==1 and s.healthState==healthy and s.isFullyConstrained
-        check(p.panel_id+'.features',ok)
+            s=comp.sketches.item(i)
+            observed['sketches'].append(dict(index=i,profile_count=s.profiles.count,health_state=int(s.healthState),
+                healthy=s.healthState==healthy,fully_constrained=s.isFullyConstrained))
+            ok=ok and s.profiles.count==1 and s.healthState==healthy and s.isFullyConstrained
+        check(p.panel_id+'.features',ok,observed=observed)
         expected={feature_id(p,i) for i in range(len(p.features))}
         if set(cuts)!=expected:raise RuntimeError('Unexpected profile cut identities')
         for cid in sorted(cuts):
