@@ -264,6 +264,10 @@ class LoopBinding:
 
 @dataclass(frozen=True)
 class FeatureBinding:
+    """A cut feature's Expr provenance. Hole bindings (kind "hole", loop None)
+    are OFFLINE provenance only: the native Fusion adapter builds loop features
+    and has no hole path, so they are not evidence that native hole editing
+    works in Fusion; that needs separately reviewed adapter work."""
     feature_id: str            # profile_fixture.feature_id: <panel_id>.cut.NNN
     kind: str                  # "through", "pocket" or "hole"
     face: str | None
