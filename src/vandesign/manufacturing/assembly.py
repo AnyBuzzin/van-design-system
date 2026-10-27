@@ -319,18 +319,27 @@ def assembly_profiles(assembly, values=None, *, tool_diameter=None, relief=True,
     return _assembly_profiles(assembly, values, tool_diameter, relief, extra_cuts, box_overrides, _resolve, None)
 
 
-def _assembly_profiles(assembly, values, tool_diameter, relief, extra_cuts, box_overrides, resolve, captures):
+def _assembly_profiles(assembly, values, tool_diameter, relief, extra_cuts, box_overrides, resolve, captures,
+                       cut_overrides=None):
     """``resolve`` turns a BoxExpr into a Box (plain, or ``tracked_box``);
-    ``captures`` (a dict, or None) receives each panel's capture by id."""
+    ``captures`` (a dict, or None) receives each panel's capture by id;
+    ``cut_overrides`` (operation id -> world Box) replaces a dado's cut, e.g.
+    a stopped dado."""
     env = assembly.parameters.resolve(values)
     boxes = {p.stable_id: resolve(p.box, env) for p in assembly.panels}
     for pid, box in (box_overrides or {}).items():
         if pid not in boxes or type(box) is not Box:
             raise ProfileError("Box override must name a known panel and a Box")
         boxes[pid] = box
+    cut_overrides = dict(cut_overrides or {})
     owned = {pid: [] for pid in boxes}
     for op in assembly.operations:
-        owned[op.target_panel_id].append(resolve(op.cut, env))
+        cut = cut_overrides.pop(op.operation_id, None)
+        if cut is not None and type(cut) is not Box:
+            raise ProfileError("Cut override must be a Box")
+        owned[op.target_panel_id].append(resolve(op.cut, env) if cut is None else cut)
+    if cut_overrides:
+        raise ProfileError("Cut override names an unknown operation: %s" % ", ".join(sorted(cut_overrides)))
     for pid, cut in extra_cuts:
         if pid not in owned or type(cut) is not Box:
             raise ProfileError("Extra cut must name a known panel and a Box")
