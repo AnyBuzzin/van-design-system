@@ -147,6 +147,13 @@ def _inside(inner, outer, tol=1e-9):
                for i_lo, i_hi, o_lo, o_hi in zip(inner.lo, inner.hi, outer.lo, outer.hi))
 
 
+def _housed(tongue, panel, housing):
+    """True when the part of ``tongue`` that enters ``panel`` exists and lies
+    entirely within ``housing`` (the material removed from ``panel``)."""
+    part = tongue.intersection(panel)
+    return part is not None and _inside(part, housing)
+
+
 def housings(assembly, boxes, joinery, env, resolve=_resolve):
     """ADR-0003 stopped dados and back rabbets (module frame).
 
@@ -178,8 +185,8 @@ def housings(assembly, boxes, joinery, env, resolve=_resolve):
         for side, s in sides.items():
             x = (s.hi[0] - rabbet, s.hi[0]) if side == "left" else (s.lo[0], s.lo[0] + rabbet)
             cut = Box((x[0], rear, back.lo[2] - c / 2), (x[1], s.hi[1], back.hi[2] + c / 2))
-            if not _inside(cut.intersection(tongue), cut):
-                raise ProfileError("Back tongue leaves its rabbet")
+            if not _housed(tongue, s, cut):
+                raise ProfileError("Back tongue leaves its %s rabbet" % side)
             cuts.append(("panel.%s.001" % side, cut))
     for op in assembly.operations:
         cut, shelf, side = resolve(op.cut, env), boxes[op.mating_panel_id], sides[op.side]
