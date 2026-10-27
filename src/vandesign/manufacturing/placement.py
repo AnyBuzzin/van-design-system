@@ -35,7 +35,7 @@ def place_frame(frame, k, w, d, position):
                       place_axis(frame.v, k), place_axis(frame.w, k))
 
 
-def _profiled_instance(arrangement, inst, env):
+def _profiled_instance(arrangement, inst, env, relief=True):
     builder, footprint = MODULES[inst.module]
     module = builder(_canonical(inst.spec))
     pre = inst.param_prefix + "_"
@@ -44,7 +44,7 @@ def _profiled_instance(arrangement, inst, env):
     w, d, _ = (e.eval(local) for e in footprint(Param))
     position = tuple(env[pre + "Pos_" + a] for a in "XYZ")
     _, joinery = tab_slot_parts(inst.spec)
-    profiles, results = cabinet_tab_slot_profiles(module, joinery, values)
+    profiles, results = cabinet_tab_slot_profiles(module, joinery, values, relief=relief)
     placed = {}
     for p in profiles:
         pid = make_id(inst.instance_id, p.panel_id)
@@ -53,11 +53,14 @@ def _profiled_instance(arrangement, inst, env):
     return placed, joinery, results
 
 
-def arrangement_profiles(arrangement, values=None, *, tool_diameter):
+def arrangement_profiles(arrangement, values=None, *, tool_diameter, relief=True):
     """Profiles (with world frames) for every furniture panel, in arrangement order.
 
     ``tool_diameter`` relieves box-model parts and must equal the joinery tool
     of every tab-and-slot instance (their relief is part of the joint geometry).
+    ``relief=False`` is the relief-free view (#95 Option B): same panels,
+    ids, frames and features without dog-bone arcs; ``tool_diameter`` must
+    still equal each joinery tool. Default relieved profiles are unchanged.
     Returns (profiles, {instance_id: joint results}).
     """
     asm = arrangement.assembly
@@ -65,7 +68,7 @@ def arrangement_profiles(arrangement, values=None, *, tool_diameter):
     placed, joints = {}, {}
     for inst in arrangement.instances:
         if inst.module in PROFILE_MODULES:
-            parts, joinery, results = _profiled_instance(arrangement, inst, env)
+            parts, joinery, results = _profiled_instance(arrangement, inst, env, relief)
             if abs(joinery.tool_diameter_mm - tool_diameter) > 1e-9:
                 raise ProfileError("%s joinery tool %.3f mm differs from the export tool %.3f mm"
                                    % (inst.instance_id, joinery.tool_diameter_mm, tool_diameter))
@@ -73,7 +76,7 @@ def arrangement_profiles(arrangement, values=None, *, tool_diameter):
             joints[inst.instance_id] = results
     profiled_ids = {pid for pid, owner in arrangement.owners.items()
                     if next(i for i in arrangement.instances if i.instance_id == owner).module in PROFILE_MODULES}
-    for p in assembly_profiles(asm, values, tool_diameter=tool_diameter):
+    for p in assembly_profiles(asm, values, tool_diameter=tool_diameter, relief=relief):
         if p.panel_id not in profiled_ids:
             placed[p.panel_id] = p
     order = [p.stable_id for p in asm.panels if p.material_ref != "reference_only"]
@@ -82,13 +85,15 @@ def arrangement_profiles(arrangement, values=None, *, tool_diameter):
     return tuple(placed[pid] for pid in order), joints
 
 
-def arrangement_width_bindings(arrangement, instance_id, values=None, *, interval=(1000.0, 1100.0)):
+def arrangement_width_bindings(arrangement, instance_id, values=None, *, interval=(1000.0, 1100.0), relief=True):
     """World-frame PanelBindings for one tab-and-slot cabinet's native width edit (#95).
 
     The module-frame bindings are renamed to the instance's parameters and
     placed with the same quarter-turn and position mapping as the profiles;
     the result is checked against ``arrangement_profiles`` at both interval
     ends. ``interval`` is a preflight bound, not a live-qualified range.
+    ``relief=False`` binds the relief-free view (lines only, same ids and Expr
+    vertices) and checks it against ``arrangement_profiles(relief=False)``.
     Returns {world panel id: PanelBinding}.
     """
     inst = next((i for i in arrangement.instances if i.instance_id == instance_id), None)
@@ -101,7 +106,7 @@ def arrangement_width_bindings(arrangement, instance_id, values=None, *, interva
     _, joinery = tab_slot_parts(inst.spec)
     local = cabinet_tab_slot_width_bindings(module, joinery, {p.name: env[pre + p.name]
                                                               for p in module.parameters.base()},
-                                            interval=interval)
+                                            interval=interval, relief=relief)
     names = {name: Param(pre + name) for name in module.parameters.names()}
 
     def rename(e):
@@ -124,7 +129,7 @@ def arrangement_width_bindings(arrangement, instance_id, values=None, *, interva
     base.update(values or {})
     for x in interval:
         at = dict(base, **{pre + WIDTH: float(x)})
-        profiles, _ = arrangement_profiles(arrangement, at, tool_diameter=joinery.tool_diameter_mm)
+        profiles, _ = arrangement_profiles(arrangement, at, tool_diameter=joinery.tool_diameter_mm, relief=relief)
         world_env = arrangement.assembly.parameters.resolve(at)
         for p in profiles:
             if p.panel_id in out:
