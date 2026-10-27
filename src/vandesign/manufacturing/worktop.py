@@ -1,7 +1,8 @@
 """One-piece L worktop profile: radiused corners, sink cut-out, hidden fixing pilots.
 
-The two box-model panels (modules.worktop) are cut as ONE part with the id of
-leg A; leg B's id is reported as merged into it. Visible corners are filleted,
+The box-model panels (modules.worktop: two legs and the conservative
+inside-fillet box) are cut as ONE part with the id of leg A; the others are
+reported as merged into it. Visible corners are filleted,
 never dog-boned: the two front corners by WT_Front_Radius, the inside corner by
 WT_Inside_Radius (at least the tool radius, so a round cutter can make it), the
 sink cut-out corners by WT_Sink_Radius. Fixing pilots are added at arrangement
@@ -11,7 +12,7 @@ from __future__ import annotations
 
 from .profile import PanelFrame, PanelProfile, ProfileError, ThroughCut, polygon_loop, rect_vertices
 
-PANEL, MERGED = "panel.worktop.001", ("panel.worktop.002",)
+PANEL, MERGED = "panel.worktop.001", ("panel.worktop.002", "panel.worktop.003")
 
 
 def worktop_profiles(assembly, values, tool_diameter):

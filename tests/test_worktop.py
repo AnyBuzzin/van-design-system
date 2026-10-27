@@ -6,12 +6,13 @@ import os
 import tempfile
 import unittest
 
-from vandesign.arrangement import MODULES, Instance, _canonical, build_arrangement, tab_slot_parts
+from vandesign.arrangement import MODULES, ArrangementError, Instance, _canonical, build_arrangement, tab_slot_parts
 from vandesign.arrangement_job import plan_request
 from vandesign.manufacturing.carcass import cabinet_tab_slot_width_bindings
 from vandesign.manufacturing.dxf import export_profiles, loop_areas, read_dxf
 from vandesign.manufacturing.placement import arrangement_profiles
-from vandesign.manufacturing.profile import Hole, ProfileError, ThroughCut, world_box
+from vandesign.manufacturing.profile import Hole, ProfileError, ThroughCut, contains_world_point, world_box
+from vandesign.schemas.storage_box_spec import MODULE as STORAGE_MODULE, SCHEMA as STORAGE_SCHEMA
 from vandesign.manufacturing.top import CarcassTop
 from vandesign.schemas.envelope_spec import EnvelopeSpec
 
@@ -34,12 +35,17 @@ def cab(width, **top):
             "joinery": dict(JOINERY, top=top)}
 
 
-def kitchen(worktop=WORKTOP, sink_rail=80, top_a=None):
+def kitchen_instances(worktop=WORKTOP, sink_rail=80, top_a=None, top_b=None):
     """Two inset-door base cabinets in an L (walls at x = 0 and y = 0) under one L worktop."""
-    return build_arrangement((
+    return (
         Instance("kitchen.a", "cabinet_tab_slot", "KA", cab(1100) if top_a is None else top_a, (D, 0, 0), 2),
-        Instance("kitchen.b", "cabinet_tab_slot", "KB", cab(800, sink_rail_mm=sink_rail), (0, D, 0), 1),
-        Instance("kitchen.top", "worktop_l", "WT", worktop, (0, 0, 850), 0)))
+        Instance("kitchen.b", "cabinet_tab_slot", "KB", cab(800, sink_rail_mm=sink_rail) if top_b is None else top_b,
+                 (0, D, 0), 1),
+        Instance("kitchen.top", "worktop_l", "WT", worktop, (0, 0, 850), 0))
+
+
+def kitchen(*args, **kw):
+    return build_arrangement(kitchen_instances(*args, **kw))
 
 
 def by_id(arr, values=None):
@@ -63,12 +69,31 @@ class Worktop(unittest.TestCase):
         self.assertEqual(len(sink), 1)
         self.assertAlmostEqual(sink[0].loop.area, 340 * 400 - 4 * k * 15 ** 2, places=6)
 
-    def test_box_model_is_the_exact_l(self):
+    def test_box_model_never_under_approximates_the_worktop(self):
+        """Review regression: the inside fillet ADDS material beyond the two legs."""
         arr = kitchen()
         env = arr.assembly.parameters.resolve()
-        legs = [q.box.resolve(env) for q in arr.assembly.panels if q.stable_id.startswith("kitchen.top.")]
-        self.assertAlmostEqual(sum(b.volume for b in legs), ((D + 1100) * (D + 20) + (D + 20) * (800 - 20)) * T,
-                               places=3)
+        boxes = [q.box.resolve(env) for q in arr.assembly.panels if q.stable_id.startswith("kitchen.top.")]
+        legs = ((D + 1100) * (D + 20) + (D + 20) * (800 - 20)) * T
+        self.assertAlmostEqual(sum(b.volume for b in boxes), legs + 25 * 25 * T, places=3)    # + fillet box
+        top = by_id(arr)["kitchen.top.panel.worktop.001"]
+        corner = D + 20                                                      # the inside corner (Db, Da)
+        for i in range(0, 41):
+            for j in range(0, 41):
+                p = (corner - 5 + i * 0.75, corner - 5 + j * 0.75, 850 + T / 2)
+                if contains_world_point(top, p):
+                    self.assertTrue(any(all(b.lo[k] - 1e-9 <= p[k] <= b.hi[k] + 1e-9 for k in range(3))
+                                        for b in boxes), p)
+        self.assertIs(contains_world_point(top, (corner + 2, corner + 2, 850 + T / 2)), True)   # fillet material
+
+    def test_an_obstruction_in_the_fillet_quadrant_collides(self):
+        box = Instance("box", "storage_box", "SB", {"schema_version": STORAGE_SCHEMA, "module": STORAGE_MODULE,
+                                                    "parameters": {"width_mm": 100, "length_mm": 100,
+                                                                   "height_mm": 250, "ply_mm": 18}},
+                       (D + 22, D + 22, 700), 0)                             # clear of both legs and cabinets
+        items = list(kitchen_instances()) + [box]
+        with self.assertRaisesRegex(ArrangementError, "worktop.003"):
+            build_arrangement(tuple(items))
 
     def test_hidden_fixings_line_up_through_the_carcass_tops(self):
         p = by_id(kitchen())
@@ -88,6 +113,11 @@ class Worktop(unittest.TestCase):
     def test_sink_needs_an_opening_in_the_cabinet_below(self):
         with self.assertRaisesRegex(ProfileError, "sink_rail_mm"):
             by_id(kitchen(sink_rail=None))
+        # Review regression: a cabinet with NO top settings at all still blocks the sink.
+        bare = cab(800)
+        del bare["joinery"]["top"]
+        with self.assertRaisesRegex(ProfileError, "without an opening"):
+            by_id(kitchen(top_b=bare))
         opening = [f for f in by_id(kitchen())["kitchen.b.panel.top.001"].features if isinstance(f, ThroughCut)]
         self.assertEqual(len(opening), 1)
 

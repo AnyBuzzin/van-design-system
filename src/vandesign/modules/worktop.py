@@ -3,9 +3,12 @@
 Module frame: the two back edges are x = 0 and y = 0 (against the walls).
 Leg A runs along X (length WT_A_Length, depth WT_A_Depth); leg B runs along
 Y (length WT_B_Length, depth WT_B_Depth); thickness is along Z. The box model
-is the exact union of two boxes (panel.worktop.001 = leg A, panel.worktop.002
-= the rest of leg B), so collision and envelope fit are exact. It is cut as
-ONE profile (manufacturing.worktop). An optional sink cut-out lies inside one
+is two boxes for the legs (panel.worktop.001 = leg A, panel.worktop.002 = the
+rest of leg B) plus panel.worktop.003, a WT_Inside_Radius square at the inside
+corner that encloses the material the inside fillet ADDS beyond the legs. It
+is therefore conservative, never under the real part: exact on the legs, a
+little larger at the fillet (the rounded front corners only remove material).
+It is cut as ONE profile (manufacturing.worktop). An optional sink cut-out lies inside one
 leg with at least WT_Sink_Margin of worktop all round. Geometry only: no
 load, heat or water qualification; the sink model is not chosen yet.
 """
@@ -69,7 +72,9 @@ def build_worktop(text):
     panels = (
         Panel("panel.worktop.001", "Worktop (leg A)", "worktop", spec["material_ref"], BoxExpr((z, z, z), (la, da, t))),
         Panel("panel.worktop.002", "Worktop (leg B)", "worktop", spec["material_ref"],
-              BoxExpr((z, da, z), (db, lb - da, t))))
+              BoxExpr((z, da, z), (db, lb - da, t))),
+        Panel("panel.worktop.003", "Worktop (inside fillet)", "worktop", spec["material_ref"],
+              BoxExpr((db, da, z), (ri, ri, t))))
     c = [Constraint("worktop.leg_a", "leg A longer than leg B is deep", la, ">", db + ri + rf),
          Constraint("worktop.leg_b", "leg B longer than leg A is deep", lb, ">", da + ri + rf),
          Constraint("worktop.thickness", "positive thickness", t, ">", Mm(0)),

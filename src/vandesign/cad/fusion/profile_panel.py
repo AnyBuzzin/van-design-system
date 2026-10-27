@@ -198,8 +198,28 @@ class ProfileAdapter(FusionAdapter):
                 center_point, point(segment.start[0] + ox, segment.start[1] + oy), segment.sweep)
             if arc is None:
                 raise RuntimeError('Native arc creation failed')
-            if arc.centerSketchPoint != center_point:
-                raise RuntimeError(f'{name}: arc {i} centre identity differs')
+            def check_center(p, driven=False):
+                g = p.geometry
+                xyz = (g.x * 10, g.y * 10, g.z * 10)
+                if (p.isValid is not True or p.isFixed is not False
+                        or (driven and p.isFullyConstrained is not True)
+                        or not all(math.isfinite(v) for v in xyz)
+                        or math.dist(xyz, (cx, cy, 0)) > 1e-6):
+                    raise RuntimeError('Native arc centre state/readback differs')
+            try:
+                check_center(center_point, driven=True)
+                actual_center = arc.centerSketchPoint
+                check_center(actual_center)
+                if actual_center != center_point:
+                    # SketchPoint.merge redirects the input's curve references
+                    # into this already Expr-driven point; never fix or redrive.
+                    if center_point.merge(actual_center) is not True:
+                        raise RuntimeError('Native arc centre merge failed')
+                if arc.centerSketchPoint != center_point:
+                    raise RuntimeError('Native arc centre identity differs after merge')
+                check_center(arc.centerSketchPoint, driven=True)
+            except Exception as exc:
+                raise RuntimeError(f'{name}: arc {i} centre binding: {exc}') from exc
             # Fusion normalises negative sweeps to CCW, reversing API endpoints:
             # fusion_SketchArcs_addByCenterStartSweep.htm in Autodesk's API docs.
             start, end = arc.startSketchPoint, arc.endSketchPoint
