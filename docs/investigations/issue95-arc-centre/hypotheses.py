@@ -1,129 +1,116 @@
-"""Issue #95 arc-centre failures: which Fusion behaviours explain all three live runs?
+"""Issue #95 arc-centre failures: which modelled behaviours fit the evidence?
 
 Standalone and offline (no adsk, no repository imports): python hypotheses.py
 
-A tiny sketch model is run through the control flow of the three live
-attempts under 24 SELECTED combinations of four behaviours the documentation
-leaves open (not every behaviour the API or solver could have), and each is
-checked against what the runs observed. It models API contracts, not Fusion's
-solver; a surviving combination is "consistent with the model and the three
-results", not "true". In this model attempt 1 can only fail through the
-already_constrained premise, so every survivor carries it by construction:
-that is not independent evidence of the root cause, which remains UNKNOWN.
+Revised after the owner-approved read-only diagnostic (report
+issue95_arc_centre_20261027T005918Z_5d67c05a.json, SHA-256 9068ba62...,
+status PARTIAL). The earlier version assumed every run failed on the first
+arc's first centre dimension; the snapshot contradicts that for run 1, so
+that premise and every conclusion drawn from it are withdrawn.
 
-Live observations (raw results preserved in the Runner queue):
-  O1 89b7a5a vd-20261026T230116-a29cc7: arc made from Point3D centre; the first
-     coordinate dimension on arc.centerSketchPoint -> VCS_SKETCH_OVER_CONSTRAINTS.
-  O2 8b98209 vd-20261026T231835-564aff: explicit SketchPoint takes both coordinate
-     dimensions; arc made with it as centre; arc.centerSketchPoint != it.
-  O3 6d4e87a vd-20261026T235800-d520bb: as O2, the arc's centre is valid, unfixed and
-     at the expected XYZ; driven.merge(arc centre) returns True; still !=.
-All three fail on the first arc of k.panel.left.001: a 3 mm dog-bone relief, an
-exact semicircle (sweep -pi), the only geometry in the sketch besides the fixed datum.
+This models only runs 2 and 3 (8b98209, 6d4e87a), which both log arc index 2
+of k.panel.left.001 (the loop's first arc). Run 1 is NOT modelled: its
+failing segment and axis were not logged, and its surviving sketch has a fully
+driven first arc and a second arc with one centre dimension. Why a dimension
+there over-constrained remains UNKNOWN.
+
+It checks 3 x 2 x 3 = 18 SELECTED combinations of three behaviours that the
+documentation leaves open (not every behaviour the API or solver could
+have) against two kinds of evidence:
+  live results  R2: arc centre != the driven point after creation;
+                R3: merge() returned True, centre still != driven point.
+  snapshot      S2 (run 2 fixture): driven point and arc centre are distinct, at one
+                   position, with no constraint or dimension on the arc centre;
+                S3 (run 3 fixture): still distinct, now joined by a CoincidentConstraint;
+                   arc centre fully constrained; two repeat reads of the centre compare
+                   equal (all four arcs).
+The snapshot is post-failure state: it cannot show creation-time state or replay
+merge(). Survivors are consistent with the model and the evidence, not proven,
+and say nothing about why run 1 conflicted. Root cause remains UNKNOWN.
 """
 from itertools import product
 
 AXES = {
-    # SketchArcs.addByCenterStartSweep given an existing SketchPoint centre ("can be an existing SketchPoint")
+    # SketchArcs.addByCenterStartSweep given an existing SketchPoint centre
     "centre_input": ("reuse", "copy_coincident", "copy_unlinked"),
-    # Python == on two wrappers of one sketch point (Autodesk help: == tests "the same Fusion object")
+    # Python == on two reads of one sketch point
     "equality": ("entity", "wrapper"),
-    # driven.merge(arc centre): documented = input deleted, the arc now references `driven`
-    "merge": ("documented", "keeps_arc_point"),
-    # adding a coordinate dimension to a free arc's own centre (Point3D-made arc)
-    "own_centre": ("free", "already_constrained"),
+    # driven.merge(arc centre): documented redirect, no effect, or a coincident link
+    "merge": ("documented", "keeps_arc_point", "adds_coincident"),
 }
 
 
-class OverConstrained(Exception):
-    pass
-
-
-class Model:
+class Sketch:
     def __init__(self, b):
-        self.b, self.next_id, self.dims, self.coincident = b, 0, {}, set()
+        self.b, self.points, self.coincident, self.reads = b, 0, set(), 0
 
     def point(self):
-        self.next_id += 1
-        self.dims[self.next_id] = 0
-        return self.next_id
+        self.points += 1
+        return self.points
 
-    def wrap(self, pid):
-        # Under "wrapper" equality every property read is a new object that compares unequal.
-        return ("w", pid, self.next_wrapper()) if self.b["equality"] == "wrapper" else ("w", pid)
+    def read(self, pid):
+        """A property read: a wrapper that compares by entity, or by read under 'wrapper'."""
+        self.reads += 1
+        return (pid,) if self.b["equality"] == "entity" else (pid, self.reads)
 
-    _n = 0
-
-    def next_wrapper(self):
-        Model._n += 1
-        return Model._n
-
-    def dimension(self, pid, owned_by_arc=False):
-        if owned_by_arc and self.b["own_centre"] == "already_constrained":
-            raise OverConstrained
-        self.dims[pid] += 1
-
-    def arc(self, centre_pid=None):
-        if centre_pid is None or self.b["centre_input"] != "reuse":
-            own = self.point()
-            if centre_pid is not None and self.b["centre_input"] == "copy_coincident":
-                self.coincident.add((own, centre_pid))
-            return {"centre": own}
-        return {"centre": centre_pid}
+    def arc(self, centre):
+        if self.b["centre_input"] == "reuse":
+            return {"centre": centre}
+        own = self.point()
+        if self.b["centre_input"] == "copy_coincident":
+            self.coincident.add(frozenset((own, centre)))
+        return {"centre": own}
 
     def merge(self, keep, other, arc):
         if keep == other:
-            return True                       # merging a point with itself: assume a True no-op
+            return True
         if self.b["merge"] == "documented":
             arc["centre"] = keep
+        elif self.b["merge"] == "adds_coincident":
+            self.coincident.add(frozenset((keep, other)))
         return True
 
 
-def attempt_1(m):
-    arc = m.arc(None)
-    try:
-        m.dimension(arc["centre"], owned_by_arc=True)
-        m.dimension(arc["centre"], owned_by_arc=True)
-    except OverConstrained:
-        return "over_constrained"
-    return "ok"
+def run_2(s):
+    driven = s.point()
+    arc = s.arc(driven)
+    live = "differs" if s.read(arc["centre"]) != s.read(driven) else "same"
+    distinct = arc["centre"] != driven
+    linked = frozenset((arc["centre"], driven)) in s.coincident
+    return live, distinct, linked
 
 
-def attempt_2(m):
-    driven = m.point()
-    m.dimension(driven); m.dimension(driven)
-    arc = m.arc(driven)
-    return "identity_differs" if m.wrap(arc["centre"]) != m.wrap(driven) else "ok"
+def run_3(s):
+    driven = s.point()
+    arc = s.arc(driven)
+    live = "same"
+    if s.read(arc["centre"]) != s.read(driven):
+        s.merge(driven, arc["centre"], arc)
+        live = "differs_after_merge" if s.read(arc["centre"]) != s.read(driven) else "same"
+    distinct = arc["centre"] != driven
+    linked = frozenset((arc["centre"], driven)) in s.coincident
+    repeat_equal = s.read(arc["centre"]) == s.read(arc["centre"])
+    return live, distinct, linked, repeat_equal
 
 
-def attempt_3(m):
-    driven = m.point()
-    m.dimension(driven); m.dimension(driven)
-    arc = m.arc(driven)
-    if m.wrap(arc["centre"]) != m.wrap(driven):
-        if m.merge(driven, arc["centre"], arc) is not True:
-            return "merge_failed"
-        if m.wrap(arc["centre"]) != m.wrap(driven):
-            return "identity_differs_after_merge"
-    return "ok"
-
-
-OBSERVED = ("over_constrained", "identity_differs", "identity_differs_after_merge")
+# (live result, distinct now, coincident link now[, repeat reads equal])
+OBSERVED_2 = ("differs", True, False)                       # R2 + S2
+OBSERVED_3 = ("differs_after_merge", True, True, True)      # R3 + S3
 
 
 def consistent():
     out = []
     for values in product(*AXES.values()):
         b = dict(zip(AXES, values))
-        got = (attempt_1(Model(b)), attempt_2(Model(b)), attempt_3(Model(b)))
-        if got == OBSERVED:
+        if run_2(Sketch(b)) == OBSERVED_2 and run_3(Sketch(b)) == OBSERVED_3:
             out.append(b)
     return out
 
 
 if __name__ == "__main__":
     survivors = consistent()
-    print("%d of %d selected model combinations reproduce all three live outcomes (consistency only):"
-          % (len(survivors), len(list(product(*AXES.values())))))
+    total = len(list(product(*AXES.values())))
+    print("%d of %d selected model combinations fit runs 2-3 and the post-failure snapshot "
+          "(consistency only; run 1 not modelled):" % (len(survivors), total))
     for b in survivors:
         print("  " + ", ".join("%s=%s" % kv for kv in b.items()))
