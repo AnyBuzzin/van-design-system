@@ -4,8 +4,11 @@ import tempfile
 import unittest
 
 from vandesign.arrangement import MODULES, Instance, _canonical, build_arrangement, tab_slot_parts
-from vandesign.manufacturing.carcass import (TabSlotJoinery, _features_apart, cabinet_tab_slot_profiles,
-                                             cabinet_tab_slot_width_bindings)
+from dataclasses import replace
+
+from vandesign.core.geometry import Box
+from vandesign.manufacturing.carcass import (TabSlotJoinery, _features_apart, _housed, cabinet_tab_slot_profiles,
+                                             cabinet_tab_slot_width_bindings, housings)
 from vandesign.manufacturing.dxf import export_profiles, loop_areas, pocket_layer, read_dxf
 from vandesign.manufacturing.placement import arrangement_profiles, arrangement_width_bindings
 from vandesign.manufacturing.profile import (PanelProfile, Pocket, ProfileError, contains_world_point,
@@ -87,6 +90,25 @@ class Geometry(unittest.TestCase):
         self.assertGreater(len(stop_only["panel.shelf.001"].outline.segments), 4)
         self.assertGreater(len(rabbet_only["panel.shelf.001"].outline.segments), 4)  # rear notches only
         self.assertEqual(stop_only["panel.back.001"].outline.bounds, plain["panel.back.001"].outline.bounds)
+
+
+class ContainmentProof(unittest.TestCase):
+    def test_the_entering_tongue_must_lie_inside_its_housing(self):
+        panel = Box((0.0, 0.0, 0.0), (17.6, 550.0, 850.0))
+        housing = Box((9.6, 540.0, 17.5), (17.6, 550.0, 832.5))
+        self.assertTrue(_housed(Box((9.7, 544.0, 17.6), (500.0, 550.0, 832.4)), panel, housing))
+        self.assertFalse(_housed(Box((9.5, 544.0, 17.6), (500.0, 550.0, 832.4)), panel, housing))   # too deep
+        self.assertFalse(_housed(Box((9.7, 539.0, 17.6), (500.0, 550.0, 832.4)), panel, housing))   # too wide
+        self.assertFalse(_housed(Box((20.0, 544.0, 17.6), (500.0, 550.0, 832.4)), panel, housing))  # never enters
+
+    def test_a_back_reaching_past_its_rabbet_is_refused(self):
+        asm, joinery, _, env = built()
+        boxes = {p.stable_id: p.box.resolve(env) for p in asm.panels}
+        housings(asm, boxes, joinery, env)                                   # the real geometry passes
+        b = boxes["panel.back.001"]
+        boxes["panel.back.001"] = replace(b, lo=(b.lo[0] - 1.0,) + b.lo[1:])  # 1 mm wider on the left
+        with self.assertRaisesRegex(ProfileError, "left rabbet"):
+            housings(asm, boxes, joinery, env)
 
 
 class EditableAndPlaced(unittest.TestCase):
