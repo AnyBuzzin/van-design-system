@@ -1,37 +1,68 @@
 """READ-ONLY Fusion diagnostic for Issue #95 (proposed; NOT run; needs owner approval).
 
-Run once as a Fusion script (Utilities > Scripts and Add-Ins) or as a reviewed
-read-only Runner command. It reads the failed native-profile sketches that the
-three failed live builds left in their open, unsaved fixtures and writes one
-JSON report. It never activates, edits, saves, closes or discards a document,
-sets no property and calls no creation, merge or delete method. Any read error
-is recorded and the script carries on.
+Run once as a Fusion script (Utilities > Scripts and Add-Ins). It reads the
+failed native-profile sketches that the three failed live builds left in
+their open, unsaved fixtures and writes one NEW JSON report (exclusive
+creation; an existing file is never overwritten). It never activates, edits,
+saves, closes or discards a document, sets no property and calls no
+creation, merge or delete method.
 
-What it settles (see hypotheses.py):
-  * was the semicircle arc's own centre already constrained at creation (O1)?
-  * did addByCenterStartSweep reuse the given SketchPoint, copy it with a
-    coincident constraint, or copy it unlinked (O2)?
-  * did merge() redirect the arc, keep the arc's own point, or remove the driven
-    point and its two coordinate dimensions (O3)?
-  * does == on two reads of one property compare equal (wrapper equality)?
+Every API read is recorded as either a value or an explicit error record.
+An equality comparison or index that could not be evaluated is "UNKNOWN",
+never a mismatch. The report states how many sketches were expected and
+found, and whether collection was complete, partial or errored.
+
+What it can show is the CURRENT post-failure state of each sketch: points,
+connectivity, constraints, dimensions, the arc centre's constraint state and
+whether == holds between two reads of the same property. It cannot prove the
+state at arc creation or replay what merge() did; any such reading is an
+inference, labelled as one.
 """
+import datetime
+import hashlib
 import json
 import os
 import traceback
+import uuid
 
 import adsk.core
 import adsk.fusion
 
 SKETCH = "k.panel.left.001 - native profile"
-OUT = os.path.join(os.path.expanduser("~"), "Documents", "VanDesign-Runner", "diagnostics",
-                   "issue95_arc_centre_inspection.json")
+EXPECTED_SKETCHES = 3                  # one per failed build: 89b7a5a, 8b98209, 6d4e87a
+OUT_DIR = os.path.join(os.path.expanduser("~"), "Documents", "VanDesign-Runner", "diagnostics")
+UNKNOWN = "UNKNOWN"
 
 
-def _safe(fn, default=None):
-    try:
-        return fn()
-    except Exception as exc:                           # record, never stop or recover
-        return {"error": "%s: %s" % (type(exc).__name__, exc)} if default is None else default
+class Read:
+    """Collects every read error so completeness is reported, not assumed."""
+
+    def __init__(self):
+        self.errors = 0
+
+    def __call__(self, fn):
+        try:
+            return {"value": fn()}
+        except Exception as exc:
+            self.errors += 1
+            return {"error": "%s: %s" % (type(exc).__name__, exc)}
+
+
+def _value(record):
+    return record.get("value") if "value" in record else None
+
+
+def _index(read, item, items):
+    """{"index": i} on an == match, {"index": None} when every comparison ran
+    and none matched, {"index": UNKNOWN, ...} when any comparison failed."""
+    failures = []
+    for i, other in enumerate(items):
+        r = read(lambda: other == item)
+        if "error" in r:
+            failures.append({"candidate": i, "error": r["error"]})
+        elif r["value"] is True:
+            return {"index": i}
+    return {"index": UNKNOWN, "comparison_errors": failures} if failures else {"index": None}
 
 
 def _mm(p):
@@ -39,94 +70,114 @@ def _mm(p):
     return [round(g.x * 10, 6), round(g.y * 10, 6), round(g.z * 10, 6)]
 
 
-def _index(item, items):
-    """Index of ``item`` in a read-only list by ==, else None."""
-    for i, other in enumerate(items):
-        if _safe(lambda: other == item, False):
-            return i
-    return None
+def _entity(read, e, points, curves):
+    kind = read(lambda: e.objectType)
+    if "SketchPoint" in str(_value(kind)):
+        return {"kind": kind, "point": _index(read, e, points), "at_mm": read(lambda: _mm(e))}
+    return {"kind": kind, "curve": _index(read, e, curves)}
 
 
-def _entity(e, points, curves):
-    kind = _safe(lambda: e.objectType, "?")
-    if "SketchPoint" in str(kind):
-        return {"point": _index(e, points), "at_mm": _safe(lambda: _mm(e))}
-    return {"curve": _index(e, curves), "type": kind}
+def _reference(read, obj, name, points, curves):
+    """The entity behind property ``name`` when the class has it; a failed read
+    is recorded (hasattr would call the API and could hide or raise errors)."""
+    if name not in dir(type(obj)):
+        return {}
+    target = read(lambda: getattr(obj, name))
+    return {name: target if "error" in target else _entity(read, target["value"], points, curves)}
 
 
-def inspect(sketch):
-    points = [sketch.sketchPoints.item(i) for i in range(sketch.sketchPoints.count)]
-    curves = [sketch.sketchCurves.item(i) for i in range(sketch.sketchCurves.count)]
-    out = {"isFullyConstrained": _safe(lambda: sketch.isFullyConstrained), "points": [], "arcs": [],
+def _items(read, collection_fn):
+    count = read(lambda: collection_fn().count)
+    if "error" in count:
+        return count, []
+    return count, [collection_fn().item(i) for i in range(count["value"])]
+
+
+def inspect(read, sketch):
+    _, points = _items(read, lambda: sketch.sketchPoints)
+    _, curves = _items(read, lambda: sketch.sketchCurves)
+    out = {"isFullyConstrained": read(lambda: sketch.isFullyConstrained), "points": [], "arcs": [],
            "constraints": [], "dimensions": []}
     for i, p in enumerate(points):
-        out["points"].append({
-            "index": i, "at_mm": _safe(lambda: _mm(p)), "isFixed": _safe(lambda: p.isFixed),
-            "isFullyConstrained": _safe(lambda: p.isFullyConstrained),
-            "isReference": _safe(lambda: p.isReference),
-            "connected": _safe(lambda: [_entity(p.connectedEntities.item(k), points, curves)
-                                        for k in range(p.connectedEntities.count)])})
-    arcs = sketch.sketchCurves.sketchArcs
-    for i in range(arcs.count):
-        a = arcs.item(i)
-        g = _safe(lambda: a.geometry)
+        connected = read(lambda: [_entity(read, p.connectedEntities.item(k), points, curves)
+                                  for k in range(p.connectedEntities.count)])
+        out["points"].append({"index": i, "at_mm": read(lambda: _mm(p)), "isFixed": read(lambda: p.isFixed),
+                              "isFullyConstrained": read(lambda: p.isFullyConstrained),
+                              "isReference": read(lambda: p.isReference), "connected": connected})
+    _, arcs = _items(read, lambda: sketch.sketchCurves.sketchArcs)
+    for a in arcs:
+        centre = lambda: a.centerSketchPoint  # noqa: E731  (a fresh read each call)
+        geometry = read(lambda: a.geometry)
         out["arcs"].append({
-            "curve": _index(a, curves), "radius_mm": _safe(lambda: a.radius * 10),
-            "sweep_rad": _safe(lambda: g.endAngle - g.startAngle),
-            "isFullyConstrained": _safe(lambda: a.isFullyConstrained),
-            "centre_point_by_eq": _safe(lambda: _index(a.centerSketchPoint, points)),
-            "centre_at_mm": _safe(lambda: _mm(a.centerSketchPoint)),
-            "centre_isFixed": _safe(lambda: a.centerSketchPoint.isFixed),
-            "centre_isFullyConstrained": _safe(lambda: a.centerSketchPoint.isFullyConstrained),
-            # Wrapper-equality test: two separate reads of the same property.
-            "centre_eq_itself": _safe(lambda: a.centerSketchPoint == a.centerSketchPoint),
-            "start_point_by_eq": _safe(lambda: _index(a.startSketchPoint, points)),
-            "end_point_by_eq": _safe(lambda: _index(a.endSketchPoint, points)),
-            "centre_constraints": _safe(lambda: [a.centerSketchPoint.geometricConstraints.item(k).objectType
-                                                 for k in range(a.centerSketchPoint.geometricConstraints.count)]),
-            "centre_dimensions": _safe(lambda: [a.centerSketchPoint.sketchDimensions.item(k).objectType
-                                                for k in range(a.centerSketchPoint.sketchDimensions.count)])})
-    for i in range(sketch.geometricConstraints.count):
-        c = sketch.geometricConstraints.item(i)
-        row = {"type": _safe(lambda: c.objectType)}
+            "curve": _index(read, a, curves), "radius_mm": read(lambda: a.radius * 10),
+            "sweep_rad": read(lambda: geometry["value"].endAngle - geometry["value"].startAngle),
+            "isFullyConstrained": read(lambda: a.isFullyConstrained),
+            "centre_point": _index(read, centre(), points), "centre_at_mm": read(lambda: _mm(centre())),
+            "centre_isFixed": read(lambda: centre().isFixed),
+            "centre_isFullyConstrained": read(lambda: centre().isFullyConstrained),
+            # Two separate reads of one property: tests wrapper equality directly.
+            "centre_eq_second_read": read(lambda: centre() == centre()),
+            "start_point": _index(read, a.startSketchPoint, points),
+            "end_point": _index(read, a.endSketchPoint, points),
+            "centre_constraints": read(lambda: [centre().geometricConstraints.item(k).objectType
+                                                for k in range(centre().geometricConstraints.count)]),
+            "centre_dimensions": read(lambda: [centre().sketchDimensions.item(k).objectType
+                                               for k in range(centre().sketchDimensions.count)])})
+    _, constraints = _items(read, lambda: sketch.geometricConstraints)
+    for c in constraints:
+        row = {"type": read(lambda: c.objectType)}
         for name in ("point", "entity", "lineOne", "lineTwo"):
-            if hasattr(c, name):
-                row[name] = _safe(lambda: _entity(getattr(c, name), points, curves))
+            row.update(_reference(read, c, name, points, curves))
         out["constraints"].append(row)
-    for i in range(sketch.sketchDimensions.count):
-        d = sketch.sketchDimensions.item(i)
-        row = {"type": _safe(lambda: d.objectType), "isDriving": _safe(lambda: d.isDriving),
-               "expression": _safe(lambda: d.parameter.expression), "value_mm": _safe(lambda: d.parameter.value * 10)}
+    _, dimensions = _items(read, lambda: sketch.sketchDimensions)
+    for d in dimensions:
+        row = {"type": read(lambda: d.objectType), "isDriving": read(lambda: d.isDriving),
+               "expression": read(lambda: d.parameter.expression), "value_mm": read(lambda: d.parameter.value * 10)}
         for name in ("entityOne", "entityTwo", "entity"):
-            if hasattr(d, name):
-                row[name] = _safe(lambda: _entity(getattr(d, name), points, curves))
+            row.update(_reference(read, d, name, points, curves))
         out["dimensions"].append(row)
     return out
 
 
 def run(context):
-    report = {"sketch_name": SKETCH, "documents": []}
+    read = Read()
+    stamp = datetime.datetime.now(datetime.timezone.utc).strftime("%Y%m%dT%H%M%SZ")
+    path = os.path.join(OUT_DIR, "issue95_arc_centre_%s_%s.json" % (stamp, uuid.uuid4().hex[:8]))
+    def source_sha256():
+        with open(__file__, "rb") as fh:
+            return hashlib.sha256(fh.read()).hexdigest()
+    report = {"sketch_name": SKETCH, "source_sha256": read(source_sha256), "started_utc": stamp,
+              "fusion_version": read(lambda: adsk.core.Application.get().version),
+              "documents": [], "document_errors": [], "status": "error"}
     try:
         app = adsk.core.Application.get()
-        docs = app.documents
-        for di in range(docs.count):
-            doc = docs.item(di)
-            design = _safe(lambda: adsk.fusion.Design.cast(doc.products.itemByProductType("DesignProductType")))
-            if not design or isinstance(design, dict):
+        count = read(lambda: app.documents.count)
+        report["open_documents"] = count
+        for di in range(_value(count) or 0):
+            doc = app.documents.item(di)
+            design = read(lambda: adsk.fusion.Design.cast(doc.products.itemByProductType("DesignProductType")))
+            if "error" in design or design["value"] is None:
+                report["document_errors"].append({"open_index": di, "design": design})
                 continue
             found = []
-            for ci in range(design.allComponents.count):
-                comp = design.allComponents.item(ci)
-                for si in range(comp.sketches.count):
-                    sketch = comp.sketches.item(si)
-                    if _safe(lambda: sketch.name) == SKETCH:
-                        found.append(inspect(sketch))
+            _, comps = _items(read, lambda: design["value"].allComponents)
+            for comp in comps:
+                _, sketches = _items(read, lambda: comp.sketches)
+                for sketch in sketches:
+                    if _value(read(lambda: sketch.name)) == SKETCH:
+                        found.append(inspect(read, sketch))
             if found:
                 # Document order and name only: no cloud, project or folder identifiers.
-                report["documents"].append({"open_index": di, "name": _safe(lambda: doc.name),
-                                            "isSaved": _safe(lambda: doc.isSaved), "sketches": found})
+                report["documents"].append({"open_index": di, "name": read(lambda: doc.name),
+                                            "isSaved": read(lambda: doc.isSaved), "sketches": found})
+        observed = sum(len(d["sketches"]) for d in report["documents"])
+        report["expected_sketches"], report["observed_sketches"] = EXPECTED_SKETCHES, observed
+        report["read_errors"] = read.errors
+        report["status"] = ("complete" if observed == EXPECTED_SKETCHES and read.errors == 0
+                            and not report["document_errors"] else "partial")
     except Exception:
         report["error"] = traceback.format_exc()
-    os.makedirs(os.path.dirname(OUT), exist_ok=True)
-    with open(OUT, "w", encoding="utf-8") as fh:
+        report["read_errors"] = read.errors
+    os.makedirs(OUT_DIR, exist_ok=True)
+    with open(path, "x", encoding="utf-8") as fh:          # exclusive: never overwrite evidence
         json.dump(report, fh, indent=2)

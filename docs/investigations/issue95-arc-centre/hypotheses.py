@@ -2,11 +2,14 @@
 
 Standalone and offline (no adsk, no repository imports): python hypotheses.py
 
-A tiny sketch model is run through the exact control flow of the three live
-attempts under every combination of the behaviours Autodesk's documentation
-leaves open, and each combination is checked against what the runs observed.
-It models API *contracts*, not Fusion's solver; a surviving combination is
-"consistent with the evidence", not "true".
+A tiny sketch model is run through the control flow of the three live
+attempts under 24 SELECTED combinations of four behaviours the documentation
+leaves open (not every behaviour the API or solver could have), and each is
+checked against what the runs observed. It models API contracts, not Fusion's
+solver; a surviving combination is "consistent with the model and the three
+results", not "true". In this model attempt 1 can only fail through the
+already_constrained premise, so every survivor carries it by construction:
+that is not independent evidence of the root cause, which remains UNKNOWN.
 
 Live observations (raw results preserved in the Runner queue):
   O1 89b7a5a vd-20261026T230116-a29cc7: arc made from Point3D centre; the first
@@ -120,7 +123,7 @@ def consistent():
 
 if __name__ == "__main__":
     survivors = consistent()
-    print("%d of %d behaviour combinations reproduce all three live outcomes:"
+    print("%d of %d selected model combinations reproduce all three live outcomes (consistency only):"
           % (len(survivors), len(list(product(*AXES.values())))))
     for b in survivors:
         print("  " + ", ".join("%s=%s" % kv for kv in b.items()))
