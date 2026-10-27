@@ -94,16 +94,20 @@ def cabinet_joints(boxes, joinery):
             for panel in TABBED for side, direction in SIDES]
 
 
-def cabinet_tab_slot_profiles(assembly, joinery, values=None):
+def cabinet_tab_slot_profiles(assembly, joinery, values=None, *, relief=True):
     """Module-frame profiles of a cabinet assembly with tab-and-slot carcass joints.
 
     The cabinet's Cab_Ply must equal the sheet's measured thickness.
+    ``relief=False`` gives the relief-free view (#95 Option B): identical
+    panels, ids, frames, joints and features, with no dog-bone arcs, so every
+    loop is lines only. The default relieved profiles stay the manufacturing
+    and DXF truth; ``relief_proof`` relates the two exactly.
     Returns (profiles, joint results).
     """
-    return _profiles(assembly, joinery, values, _resolve, None)
+    return _profiles(assembly, joinery, values, _resolve, None, relief)
 
 
-def _profiles(assembly, joinery, values, resolve, captures):
+def _profiles(assembly, joinery, values, resolve, captures, relief=True):
     env = assembly.parameters.resolve(values)
     if abs(env["Cab_Ply"] - joinery.sheet.measured_mm) > 1e-9:
         raise ProfileError("Cab_Ply %.3f mm must equal the measured sheet thickness %.3f mm"
@@ -115,7 +119,7 @@ def _profiles(assembly, joinery, values, resolve, captures):
     overrides, cuts, results = apply_joints(cabinet_joints(boxes, joinery), boxes)
     more_overrides, more_cuts, dados = housings(assembly, boxes, joinery, env, resolve)
     overrides.update(more_overrides)
-    profiles = _assembly_profiles(assembly, values, joinery.tool_diameter_mm, True, cuts + more_cuts, overrides,
+    profiles = _assembly_profiles(assembly, values, joinery.tool_diameter_mm, relief, cuts + more_cuts, overrides,
                                   resolve, captures, dados)
     for p in profiles:
         _features_apart(p)
@@ -326,7 +330,7 @@ def check_decisions(decisions, here, ends):
 
 
 def cabinet_tab_slot_width_bindings(assembly, joinery, values=None, *, parameter=WIDTH,
-                                    interval=(1000.0, 1100.0)):
+                                    interval=(1000.0, 1100.0), relief=True):
     """Module-frame PanelBindings for a native cabinet-width edit (#95).
 
     The numeric producer runs once on Tracked boxes, so every coordinate
@@ -347,8 +351,8 @@ def cabinet_tab_slot_width_bindings(assembly, joinery, values=None, *, parameter
         raise ProfileError("interval must be finite (lo, hi) with lo < hi containing the current width")
     captures = {}
     with recording_decisions() as decisions:
-        tracked, _ = _profiles(assembly, joinery, base, tracked_box, captures)
-    numeric, _ = cabinet_tab_slot_profiles(assembly, joinery, base)
+        tracked, _ = _profiles(assembly, joinery, base, tracked_box, captures, relief)
+    numeric, _ = cabinet_tab_slot_profiles(assembly, joinery, base, relief=relief)
     if tracked != numeric:
         raise ProfileError("Tracked producer differs from the numeric producer")
     out = {}
@@ -367,7 +371,7 @@ def cabinet_tab_slot_width_bindings(assembly, joinery, values=None, *, parameter
     envs = [assembly.parameters.resolve(dict(base, **{WIDTH: float(x)})) for x in interval]
     check_decisions(decisions, assembly.parameters.resolve(base), envs)
     for x, env in zip(interval, envs):
-        for p in cabinet_tab_slot_profiles(assembly, joinery, dict(base, **{WIDTH: float(x)}))[0]:
+        for p in cabinet_tab_slot_profiles(assembly, joinery, dict(base, **{WIDTH: float(x)}), relief=relief)[0]:
             problem = out[p.panel_id].mismatch(p, env)
             if problem:
                 raise ProfileError("%s binding differs at %s=%g: %s" % (p.panel_id, WIDTH, x, problem))

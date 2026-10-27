@@ -353,3 +353,60 @@ def _assembly_profiles(assembly, values, tool_diameter, relief, extra_cuts, box_
         out.append(_panel_profile(p, boxes[p.stable_id], owned[p.stable_id], tool_diameter, relief, radius,
                                   capture))
     return tuple(out)
+
+
+def relief_area(radius):
+    """Area one dog-bone changes: a semicircle of ``radius`` through the corner
+    replaces the two radius*sqrt(2) edge legs, r^2 (pi/2 - 1)."""
+    return radius * radius * (math.pi / 2 - 1)
+
+
+def _relief_count(loop, radius, panel_id):
+    arcs = [s for s in loop.segments if isinstance(s, Arc)]
+    if any(abs(a.radius - radius) > 1e-9 or abs(abs(a.sweep) - math.pi) > 1e-9 for a in arcs):
+        raise ProfileError("%s: an arc that is not a %.3f mm dog-bone relief" % (panel_id, radius))
+    return len(arcs)
+
+
+def relief_proof(relieved, relief_free, tool_diameter, tol=1e-6):
+    """Prove the relief-free view (#95 Option B CAD oracle) equals the relieved
+    manufacturing profiles (the DXF truth) apart from the dog-bones alone.
+
+    Per panel, in order: the same id, name, material, thickness, frame and
+    features (kind, face, depth); relief-free loops are lines only; every
+    relieved arc is a tool-radius semicircle; each loop's area differs by
+    exactly n * relief_area(r) for its n reliefs (removed from the outline,
+    added to every cut); the volumes differ by the matching amount. Returns
+    one record per panel; raises ProfileError on any difference.
+    """
+    r = tool_diameter / 2
+    d = relief_area(r)
+    if len(relieved) != len(relief_free):
+        raise ProfileError("Relieved and relief-free views have different panels")
+    out = []
+    for a, b in zip(relieved, relief_free):
+        if (a.panel_id, a.display_name, a.material_ref, a.thickness, a.frame) != (
+                b.panel_id, b.display_name, b.material_ref, b.thickness, b.frame) or len(a.features) != len(b.features):
+            raise ProfileError("%s: relief-free panel identity differs" % a.panel_id)
+        loops = [(a.outline, b.outline, -1, a.thickness)]
+        for fa, fb in zip(a.features, b.features):
+            if (type(fa), getattr(fa, "face", None), getattr(fa, "depth", None)) != (
+                    type(fb), getattr(fb, "face", None), getattr(fb, "depth", None)) or not hasattr(fa, "loop"):
+                raise ProfileError("%s: relief-free feature differs or is not a cut loop" % a.panel_id)
+            loops.append((fa.loop, fb.loop, 1, fa.depth if isinstance(fa, Pocket) else a.thickness))
+        reliefs, removed = 0, 0.0
+        for la, lb, sign, depth in loops:
+            if any(isinstance(s, Arc) for s in lb.segments):
+                raise ProfileError("%s: relief-free loop is not lines only" % a.panel_id)
+            n = _relief_count(la, r, a.panel_id)
+            if abs((la.area - lb.area) - sign * n * d) > tol * max(1.0, la.area):
+                raise ProfileError("%s: loop area differs by more than its %d relief(s)" % (a.panel_id, n))
+            reliefs += n
+            removed += n * d * depth                  # every relief removes material
+        if reliefs != a.reliefs or b.reliefs != 0:
+            raise ProfileError("%s: relief count differs" % a.panel_id)
+        if abs((b.volume_mm3 - a.volume_mm3) - removed) > tol * max(1.0, b.volume_mm3):
+            raise ProfileError("%s: volume differs by more than its reliefs" % a.panel_id)
+        out.append(dict(panel_id=a.panel_id, reliefs=reliefs, relief_area_mm2=d,
+                        removed_volume_mm3=removed))
+    return tuple(out)
