@@ -1,0 +1,157 @@
+{
+  "arrangement": {
+    "instances": [
+      {
+        "instance_id": "bed.rear",
+        "module": "bed",
+        "param_prefix": "Bed",
+        "position_mm": [
+          48,
+          5,
+          5
+        ],
+        "quarter_turns": 0,
+        "spec": {
+          "module": "bed-platform@1",
+          "parameters": {
+            "height_mm": 900.0,
+            "length_mm": 1400.0,
+            "ply_mm": 18.0,
+            "width_mm": 1700.0
+          },
+          "schema_version": "vandesign.bed-platform/1"
+        }
+      },
+      {
+        "instance_id": "storage.under_bed",
+        "module": "storage_box",
+        "param_prefix": "Box",
+        "position_mm": [
+          600,
+          300,
+          5
+        ],
+        "quarter_turns": 0,
+        "spec": {
+          "module": "storage-box@1",
+          "parameters": {
+            "height_mm": 250.0,
+            "length_mm": 800.0,
+            "ply_mm": 18.0,
+            "width_mm": 600.0
+          },
+          "schema_version": "vandesign.storage-box/1"
+        }
+      },
+      {
+        "instance_id": "kitchen.base",
+        "module": "cabinet_tab_slot",
+        "param_prefix": "K1",
+        "position_mm": [
+          1223.4,
+          2800,
+          5
+        ],
+        "quarter_turns": 3,
+        "spec": {
+          "cabinet": {
+            "module": "cabinet@1",
+            "parameters": {
+              "ply_mm": 17.6,
+              "width_mm": 1100
+            },
+            "profile_version": 1,
+            "schema_version": "0.2",
+            "variant": "base"
+          },
+          "joinery": {
+            "clearance_mm": 0.2,
+            "sheet": {
+              "measured_mm": 17.6,
+              "name": "birch ply 18",
+              "nominal_mm": 18
+            },
+            "tab_width_mm": null,
+            "tabs_per_edge": 2,
+            "tool_diameter_mm": 6
+          }
+        }
+      },
+      {
+        "instance_id": "kitchen.overhead",
+        "module": "cabinet_tab_slot",
+        "param_prefix": "O1",
+        "position_mm": [
+          1325.5,
+          2800,
+          1400
+        ],
+        "quarter_turns": 3,
+        "spec": {
+          "cabinet": {
+            "module": "cabinet@1",
+            "parameters": {
+              "ply_mm": 17.6,
+              "width_mm": 1100
+            },
+            "profile_version": 1,
+            "schema_version": "0.2",
+            "variant": "overhead"
+          },
+          "joinery": {
+            "clearance_mm": 0.2,
+            "sheet": {
+              "measured_mm": 17.6,
+              "name": "birch ply 18",
+              "nominal_mm": 18
+            },
+            "tab_width_mm": null,
+            "tabs_per_edge": 2,
+            "tool_diameter_mm": 6
+          }
+        }
+      }
+    ],
+    "schema_version": "vandesign.arrangement/1"
+  },
+  "edits": [],
+  "envelope": {
+    "parameters": {
+      "arch_height_mm": 300,
+      "arch_length_mm": 800,
+      "arch_y_mm": 2000,
+      "bare_between_arches_mm": 1380,
+      "bare_height_mm": 1961,
+      "bare_length_mm": 4606,
+      "bare_width_mm": 1832,
+      "ceiling_split_mm": null,
+      "keepouts": [
+        {
+          "kind": "door",
+          "name": "sliding_door",
+          "origin_mm": [
+            0,
+            2900,
+            0
+          ],
+          "size_mm": [
+            600,
+            1311,
+            1800
+          ]
+        }
+      ],
+      "lining_mm": 18,
+      "mounting_points": [],
+      "provenance": "EXAMPLE: published VW Crafter CR35 LWB maxi high roof; lining 18 mm, arches, door position and upper walls ASSUMED; UNMEASURED",
+      "second_bare_height_mm": null,
+      "tolerance_mm": 5,
+      "upper_left_break_mm": 1830,
+      "upper_left_inset_mm": 60,
+      "upper_right_break_mm": 1250,
+      "upper_right_inset_mm": 120
+    },
+    "schema_version": "vandesign.lined-envelope/2"
+  },
+  "tool_diameter_mm": 6
+}

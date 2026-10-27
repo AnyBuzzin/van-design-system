@@ -43,12 +43,15 @@ class Plan:
     envelope: object          # schemas.envelope_spec.EnvelopeSpec
     edits: tuple
     tool_diameter_mm: float | None
+    profile_bindings: dict | None = None  # trusted producer records, never request JSON
 
 
-def expected_inventory(assembly):
+def expected_inventory(assembly, profiles=None):
     """Design counts the compiled model must show: each panel adds an occurrence,
     a sketch and an extrude; each cut a sketch and an extrude."""
     panels, cuts = len(assembly.panels), len(assembly.operations)
+    if profiles is not None:
+        cuts = sum(len(p.features) for p in profiles)
     return dict(user_parameters=len(assembly.parameters.params), root_occurrences=panels,
                 all_components=panels + 1, timeline_items=3 * panels + 2 * cuts)
 
@@ -72,6 +75,9 @@ def expected_evidence(plan):
     finite observations. Stage labels, per-stage parameter values and body boxes
     follow the planned edits in order.
     """
+    if plan.profile_bindings is not None:
+        from .verification.profile_panel import oriented_evidence
+        return oriented_evidence(plan)
     from .verification.model_source import ModelGeometrySource
     from .verification.validate import validate
     asm = plan.arrangement.assembly
@@ -107,7 +113,7 @@ def expected_evidence(plan):
                 edits=[dict(parameter=e.parameter, value_mm=e.value_mm, expect=e.expect) for e in plan.edits])
 
 
-def preview_values(arrangement, envelope, values):
+def preview_values(arrangement, envelope, values, profile_bindings=None):
     """Offline verdict for base-parameter ``values``: PASS or REFUSED with reason."""
     from .modules.test_envelope import preview_lined_fit
     asm = arrangement.assembly
@@ -117,6 +123,27 @@ def preview_values(arrangement, envelope, values):
         if failed:
             return dict(outcome="REFUSED", reason="constraint violations: " + ", ".join(failed))
         boxes = {p.stable_id: p.box.resolve(env) for p in asm.panels}
+        if profile_bindings is not None:
+            from .manufacturing.placement import arrangement_profiles
+            from .manufacturing.profile import world_box
+            from .core.geometry import Box
+            from .arrangement import tab_slot_parts
+            parameter = next(iter(profile_bindings.values())).parameter
+            lo, hi = next(iter(profile_bindings.values())).interval
+            from .verification.readback import COORDINATE_READBACK_MM
+            if not lo-COORDINATE_READBACK_MM <= env[parameter] <= hi+COORDINATE_READBACK_MM:
+                raise ValueError('Width is outside the fixed-topology preflight interval')
+            if any(p.name != parameter and abs(env[p.name]-p.value_mm) > 1e-9 for p in asm.parameters.base()):
+                raise ValueError('Only the bound cabinet width may change')
+            _, joinery = tab_slot_parts(arrangement.instances[0].spec)
+            profiles, _ = arrangement_profiles(arrangement, values, tool_diameter=joinery.tool_diameter_mm)
+            if set(profile_bindings) != {p.panel_id for p in profiles}:
+                raise ValueError('Profile/binding identities differ')
+            for p in profiles:
+                problem = profile_bindings[p.panel_id].mismatch(p, env)
+                if problem:
+                    raise ValueError(p.panel_id + ' binding differs: ' + problem)
+                boxes[p.panel_id] = Box(*world_box(p))
         hits = collisions(asm, env, arrangement.owners)
         if hits:
             return dict(outcome="REFUSED", reason="instances share material: %s / %s" % hits[0])
@@ -124,6 +151,33 @@ def preview_values(arrangement, envelope, values):
     except (ValueError, ParameterError, ExprError) as exc:
         return dict(outcome="REFUSED", reason=str(exc))
     return dict(outcome="PASS", reason="constraints, collisions and envelope fit pass")
+
+
+def _native_profile_bindings(arrangement, tool):
+    """Only the agreed single base cabinet, fixed topology and width interval."""
+    from .arrangement import tab_slot_parts
+    from .manufacturing.placement import arrangement_width_bindings
+    if len(arrangement.instances) != 1 or arrangement.instances[0].module != 'cabinet_tab_slot':
+        raise ArrangementError('Oriented build supports one tab-and-slot base cabinet only')
+    instance = arrangement.instances[0]
+    cabinet, joinery = tab_slot_parts(instance.spec)
+    if cabinet.get('variant') != 'base':
+        raise ArrangementError('Oriented build supports the base variant only')
+    if tool is None or abs(tool-joinery.tool_diameter_mm) > 1e-9:
+        raise ArrangementError('Oriented profile Fusion builder requires the matching tool_diameter_mm')
+    base = arrangement.assembly.parameters.resolve()
+    if base[instance.param_prefix + '_Cab_Width'] != 1100:
+        raise ArrangementError('Oriented qualification starts at 1100 mm width')
+    return arrangement_width_bindings(arrangement, instance.instance_id)
+
+
+def preview_edit(arrangement, envelope, values, parameter, value, bindings=None):
+    """Command limits are exact; readback tolerance never permits a new edit."""
+    if bindings is not None:
+        b = next(iter(bindings.values()))
+        if parameter != b.parameter or not b.interval[0] <= value <= b.interval[1]:
+            return dict(outcome='REFUSED', reason='Only bound width edits within the preflight interval are supported')
+    return preview_values(arrangement, envelope, dict(values, **{parameter:value}), bindings)
 
 
 def plan_request(request, *, allow_profile_modules=False):
@@ -138,9 +192,6 @@ def plan_request(request, *, allow_profile_modules=False):
         raise ArrangementError("Request larger than 256 KiB")
     instances = load_arrangement(json.dumps(request["arrangement"]))
     profiled = sorted({i.module for i in instances} & PROFILE_MODULES)
-    if profiled and not allow_profile_modules:
-        raise ArrangementError("%s needs the oriented profile Fusion builder (#84 follow-up); "
-                               "plan offline with allow_profile_modules=True" % ", ".join(profiled))
     try:
         envelope = load_envelope_spec(json.dumps(request["envelope"]))
     except ValueError as exc:
@@ -149,6 +200,11 @@ def plan_request(request, *, allow_profile_modules=False):
     tool = request.get("tool_diameter_mm")
     if tool is not None and (type(tool) not in (int, float) or not math.isfinite(tool) or not 0 < tool <= 50):
         raise ArrangementError("tool_diameter_mm must be a finite number in (0, 50]")
+    bindings = _native_profile_bindings(arrangement, tool) if profiled and not allow_profile_modules else None
+    if bindings is not None:
+        baseline = preview_values(arrangement, envelope, {}, bindings)
+        if baseline['outcome'] != 'PASS':
+            raise ArrangementError('Profile baseline refused: ' + baseline['reason'])
     raw = request["edits"]
     if not isinstance(raw, list) or len(raw) > MAX_EDITS:
         raise ArrangementError("edits must be a list of at most %d" % MAX_EDITS)
@@ -166,9 +222,9 @@ def plan_request(request, *, allow_profile_modules=False):
             raise ArrangementError("Edit of %s does not change it" % name)
         if expect not in ("pass", "refused"):
             raise ArrangementError("Edit expect must be 'pass' or 'refused'")
-        preview = preview_values(arrangement, envelope, dict(base, **{name: float(value)}))
+        preview = preview_edit(arrangement, envelope, base, name, float(value), bindings)
         if (preview["outcome"] == "PASS") != (expect == "pass"):
             raise ArrangementError("Edit %s=%s expected %s but preview gives %s (%s)"
                                    % (name, value, expect, preview["outcome"], preview["reason"]))
         edits.append(Edit(name, float(value), expect, preview))
-    return Plan(arrangement, envelope, tuple(edits), None if tool is None else float(tool))
+    return Plan(arrangement, envelope, tuple(edits), None if tool is None else float(tool), bindings)

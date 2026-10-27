@@ -147,8 +147,8 @@ class Integration(unittest.TestCase):
             dict(instance_id="k", module="cabinet_tab_slot", param_prefix="K", spec={"cabinet": CAB, "joinery": JOINERY},
                  position_mm=[600, 1500, 5], quarter_turns=0)]},
             "envelope": json.loads(EnvelopeSpec().to_json()), "edits": []}
-        with self.assertRaisesRegex(ArrangementError, "oriented profile Fusion builder"):
-            plan_request(request)                                       # live builds refuse it
+        with self.assertRaisesRegex(ArrangementError, "requires the matching tool_diameter_mm"):
+            plan_request(request)  # bounded native path requires an explicit matching cutter
         self.assertEqual(plan_request(request, allow_profile_modules=True).arrangement.fit["outcome"], "PASS")
 
 

@@ -248,6 +248,60 @@ class DemoTests(TmpDirCase):
             with self.assertRaises(PolicyError):self.run_cmd('save_demo_design',self.args)
         module.run_arrangement.assert_called_once();self.doc.saveAs.assert_not_called();self.protected.close.assert_not_called()
 
+    def test_oriented_profiles_require_actual_probes_frames_and_stage_owners(self):
+        from vandesign.arrangement_job import expected_evidence, plan_request
+        path=os.path.join(AUTOMATION,'jobs','requests','arrangement_request_tab_slot.json')
+        with open(path,encoding='utf-8') as fh:request=json.load(fh)
+        expected=json.loads(json.dumps(expected_evidence(plan_request(request))))
+        stages=[]
+        owners={c['cut_id']+'.affected_body_ownership':c['owner'] for c in expected['construction_cuts']}
+        for stage in expected['stages']:
+            checks=[]
+            for cid in expected['required_checks']:
+                c=dict(check_id=cid,status='PASS',observed=stage['numeric'][cid][0] if cid in stage['numeric'] else None)
+                if cid in stage['point_checks']:
+                    c.update(stage['point_checks'][cid]);c['observed']=c['expected']
+                if cid in owners:c.update(affected_bodies=[owners[cid]],feature_parent=owners[cid])
+                checks.append(c)
+            stages.append(dict(label=stage['label'],outcome='PASS',parameters_mm=stage['parameters_mm'],
+                               counts=expected['inventory'],frames=stage['frames'],checks=checks,
+                               bodies={pid:dict(min=b[0],max=b[1],volume_mm3=stage['volumes'][pid])
+                                       for pid,b in stage['boxes'].items()}))
+        cuts=[]
+        for c in expected['construction_cuts']:
+            before=dict.fromkeys(expected['body_ids'],10000000.0);after=dict(before);after[c['owner']]-=c['removed_mm3']
+            cuts.append(dict(cut_id=c['cut_id'],owner=c['owner'],outcome='PASS',before_mm3=before,after_mm3=after,
+                             ownership=dict(status='PASS',affected_bodies=[c['owner']],feature_parent=c['owner'])))
+        report=dict(outcome='PASS',spec_hash=expected['spec_hash'],instances=expected['instances'],stages=stages,
+                    construction_cuts=cuts,planned_edits=expected['edits'],baseline_state={'s':0},final_state={'s':0},
+                    edits=[dict(e,outcome='PASS',preview={'outcome':'REFUSED' if e['expect']=='refused' else 'PASS'})
+                           for e in expected['edits']])
+        self.assertTrue(workflow.verified_arrangement(report,expected))
+        probe=next(iter(expected['stages'][0]['point_checks']))
+        owner=next(iter(owners))
+        def selected(r,cid):return next(c for c in r['stages'][0]['checks'] if c['check_id']==cid)
+        for mutate in (lambda r:selected(r,probe).update(observed=None),
+                       lambda r:selected(r,probe).update(observed=not selected(r,probe)['expected']),
+                       lambda r:selected(r,probe).update(point_mm=[0,0,0]),
+                       lambda r:selected(r,probe).update(object_ids=['wrong']),
+                       lambda r:selected(r,owner).update(affected_bodies=['wrong']),
+                       lambda r:r['stages'][0].update(frames={}),
+                       lambda r:r['stages'][0]['frames'][next(iter(r['stages'][0]['frames']))].update(origin_mm=[1,0,0]),
+                       lambda r:r['stages'][1].update(bodies=copy.deepcopy(r['stages'][0]['bodies'])),
+                       lambda r:r.update(construction_cuts=[])):
+            bad=copy.deepcopy(report);mutate(bad)
+            self.assertFalse(workflow.verified_arrangement(bad,expected))
+        args=dict(demo_id='demo-001',entry_point='BuildArrangement',request=request)
+        validate_job(job('run_approved_demo',args,target=None))
+        with self.assertRaises(PolicyError):self.run_cmd('run_approved_demo',args)
+        self.run_cmd('create_demo_design')
+        with open(self.report_path,'w',encoding='utf-8') as fh:json.dump(report,fh)
+        module=NS(run_arrangement=Mock(return_value=self.report_path),arrangement_evidence=Mock(return_value=expected))
+        with patch.object(workflow,'modules',return_value=module):
+            self.assertEqual(self.run_cmd('run_approved_demo',args)['outcome'],'PASS')
+            with self.assertRaises(PolicyError):self.run_cmd('run_approved_demo',args)
+        self.doc.saveAs.assert_not_called();self.protected.close.assert_not_called()
+
     def test_build_arrangement_acceptance_requires_complete_request_bound_evidence(self):
         _, expected, report = self.arrangement_case()
         verify = workflow.verified_arrangement
