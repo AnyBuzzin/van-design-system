@@ -1,6 +1,6 @@
 # VanDesign current status
 
-**26 October 2026.** M1 and bounded M2.1 profile qualification accepted; reviewed Runner/runtime `a6d3b2f` installed. Adopted strategy: design to a plywood-lined interior ([ADR-0002](docs/decisions/ADR-0002-lined-interior-envelope.md)); reference van is the published VW Crafter CR35 LWB maxi, high roof, until the target van is acquired. `main` is unchanged. Rules: [AGENTS.md](AGENTS.md). Next roadmap area: [M2 joinery](docs/ROADMAP.md); no new live work authorised.
+**26 October 2026.** M1 and bounded M2.1 profile qualification accepted; reviewed Runner/runtime `a6d3b2f` installed. Adopted strategy: design to a plywood-lined interior ([ADR-0002](docs/decisions/ADR-0002-lined-interior-envelope.md)); reference van is the published VW Crafter CR35 LWB maxi, high roof, until the target van is acquired. Joinery and finish: traditional CNC joinery, no visible hardware, exposed ply edges ([ADR-0003](docs/decisions/ADR-0003-joinery-and-finish.md)). `main` is unchanged. Rules: [AGENTS.md](AGENTS.md). Next roadmap area: [M2 joinery](docs/ROADMAP.md); no new live work authorised.
 
 ## Works today
 
