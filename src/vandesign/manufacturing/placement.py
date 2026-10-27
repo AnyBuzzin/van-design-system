@@ -17,7 +17,7 @@ from ..components.ids import make_id
 from ..core.expr import Param, substitute
 from .assembly import assembly_profiles
 from .carcass import WIDTH, cabinet_tab_slot_profiles, cabinet_tab_slot_width_bindings
-from .profile import Hole, PanelFrame, ProfileError, ThroughCut, contains_point
+from .profile import Hole, PanelFrame, ProfileError, ThroughCut, contains_point, world_box
 from .corner import SIDES
 from .worktop import worktop_profiles
 
@@ -99,7 +99,8 @@ def arrangement_profiles(arrangement, values=None, *, tool_diameter):
     for inst in arrangement.instances:
         if inst.module == "worktop_l":
             pid = make_id(inst.instance_id, "panel.worktop.001")
-            placed[pid] = _fix_worktop(placed[pid], {t: (placed[t], spec) for t, spec in tops.items()})
+            placed[pid] = _fix_worktop(placed[pid], {t: (placed[t], spec) for t, spec in tops.items()},
+                                       [placed[q] for q in order if q != pid])
     _check_corners([placed[pid] for pid in corners])
     return tuple(placed[pid] for pid in order), joints
 
@@ -126,22 +127,28 @@ def _world_rect(profile, loop):
     return (min(p[0], q[0]), min(p[1], q[1])), (max(p[0], q[0]), max(p[1], q[1]))
 
 
-def _fix_worktop(worktop, tops):
-    """Pilot holes under each carcass-top fixing hole the worktop rests on;
-    refuse a sink cut-out over a solid carcass top."""
+def _fix_worktop(worktop, tops, panels):
+    """Refuse a sink cut-out over ANY panel whose top touches the worktop
+    underside (a solid carcass top, a side's top edge, a divider) unless the
+    panel lies flat and has a through opening containing the sink; then add
+    pilot holes under each carcass-top fixing hole the worktop rests on."""
     underside = worktop.frame.to_world(0.0, 0.0, 0.0)[2]
     sinks = [_world_rect(worktop, f.loop) for f in worktop.features if isinstance(f, ThroughCut)]
+    for panel in panels:
+        (px0, py0, _), (px1, py1, pz1) = world_box(panel)
+        if abs(pz1 - underside) > 1e-6:
+            continue                                      # not directly under this worktop
+        flat = abs(panel.frame.w[2]) == 1.0
+        openings = [_world_rect(panel, f.loop) for f in panel.features if isinstance(f, ThroughCut)] if flat else []
+        for (sx0, sy0), (sx1, sy1) in sinks:
+            if min(sx1, px1) > max(sx0, px0) and min(sy1, py1) > max(sy0, py0) and not any(
+                    ox0 <= sx0 and oy0 <= sy0 and sx1 <= ox1 and sy1 <= oy1 for (ox0, oy0), (ox1, oy1) in openings):
+                raise ProfileError("%s: the sink cut-out sits over %s without an opening (for a carcass top, "
+                                   "set top.sink_rail_mm)" % (worktop.panel_id, panel.panel_id))
     pilots = []
     for top, spec in tops.values():
         if abs(top.frame.to_world(0.0, 0.0, top.thickness)[2] - underside) > 1e-6:
             continue                                      # not directly under this worktop
-        (tx0, ty0), (tx1, ty1) = _world_rect(top, top.outline)
-        openings = [_world_rect(top, f.loop) for f in top.features if isinstance(f, ThroughCut)]
-        for (sx0, sy0), (sx1, sy1) in sinks:
-            if min(sx1, tx1) > max(sx0, tx0) and min(sy1, ty1) > max(sy0, ty0) and not any(
-                    ox0 <= sx0 and oy0 <= sy0 and sx1 <= ox1 and sy1 <= oy1 for (ox0, oy0), (ox1, oy1) in openings):
-                raise ProfileError("%s: the sink cut-out sits over %s without an opening; set that cabinet's "
-                                   "top.sink_rail_mm" % (worktop.panel_id, top.panel_id))
         for h in top.features:
             if isinstance(h, Hole) and h.depth is None:
                 x, y, _ = top.frame.to_world(h.center[0], h.center[1], top.thickness)
