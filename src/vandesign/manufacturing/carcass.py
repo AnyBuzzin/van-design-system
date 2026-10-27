@@ -29,8 +29,14 @@ class TabSlotJoinery:
     clearance_mm: float = 0.2
     tabs_per_edge: int = 2
     tab_width_mm: float | None = None
+    # ADR-0003: slots stop this deep inside the sides (None = through slots).
+    blind_slot_depth_mm: float | None = None
 
     def __post_init__(self):
+        b = self.blind_slot_depth_mm
+        if b is not None and (type(b) not in (int, float) or not math.isfinite(b)
+                              or b <= self.clearance_mm / 2):
+            raise ProfileError("blind_slot_depth_mm must be a number greater than clearance_mm / 2")
         if type(self.sheet) is not Sheet:
             raise ProfileError("Joinery needs a Sheet")
         for name in ("tool_diameter_mm", "clearance_mm"):
@@ -49,14 +55,17 @@ class TabSlotJoinery:
 
     @classmethod
     def from_json(cls, data):
-        """Strict: exact keys (tab_width_mm may be null)."""
-        if not isinstance(data, dict) or set(data) != _JOINERY_KEYS:
-            raise ProfileError("joinery needs exactly: " + ", ".join(sorted(_JOINERY_KEYS)))
+        """Strict: exact keys (tab_width_mm may be null), plus optional
+        blind_slot_depth_mm."""
+        if not isinstance(data, dict) or not _JOINERY_KEYS <= set(data) <= _JOINERY_KEYS | {"blind_slot_depth_mm"}:
+            raise ProfileError("joinery needs exactly: " + ", ".join(sorted(_JOINERY_KEYS))
+                               + " (and optionally blind_slot_depth_mm)")
         sheet = data["sheet"]
         if not isinstance(sheet, dict) or set(sheet) != _SHEET_KEYS:
             raise ProfileError("sheet needs exactly: " + ", ".join(sorted(_SHEET_KEYS)))
         return cls(Sheet(sheet["name"], sheet["nominal_mm"], sheet["measured_mm"]), data["tool_diameter_mm"],
-                   data["clearance_mm"], data["tabs_per_edge"], data["tab_width_mm"])
+                   data["clearance_mm"], data["tabs_per_edge"], data["tab_width_mm"],
+                   data.get("blind_slot_depth_mm"))
 
 
 def cabinet_joints(boxes, joinery):
@@ -66,8 +75,10 @@ def cabinet_joints(boxes, joinery):
     width = joinery.tab_width_mm if joinery.tab_width_mm is not None else min(120.0, depth / (2 * n))
     width = width if isinstance(width, Tracked) else float(width)   # keep depth provenance
     tabs = tuple(((k + 0.5) * depth / n - width / 2, width) for k in range(n))
-    t = joinery.sheet.measured_mm
-    return [TabSlot(panel, side, direction, tabs, t, joinery.clearance_mm)
+    blind = joinery.blind_slot_depth_mm
+    # Through: tabs flush with the outer face. Blind: tab tips stop clearance / 2 short of the slot floor.
+    e = joinery.sheet.measured_mm if blind is None else blind - joinery.clearance_mm / 2
+    return [TabSlot(panel, side, direction, tabs, e, joinery.clearance_mm, blind is not None)
             for panel in TABBED for side, direction in SIDES]
 
 
@@ -102,6 +113,9 @@ def _profiles(assembly, joinery, values, resolve, captures):
 
 WIDTH = "Cab_Width"
 _TOL = 1e-9
+# Ties are float noise (about 1e-12 mm here); decisions against the producer's own
+# 1e-9 thresholds must not land on this tolerance.
+_DECISION_TOL = 1e-10
 
 
 def _point(p, q, tol):
@@ -199,12 +213,12 @@ def _loop_binding(captured):
 
 
 def _sign(x):
-    return 0 if abs(x) <= _TOL else (1 if x > 0 else -1)
+    return 0 if abs(x) <= _DECISION_TOL else (1 if x > 0 else -1)
 
 
 def check_decisions(decisions, here, ends):
     """Refuse unless every logged (Expr, Expr) comparison has the same sign
-    (<, = or >, within 1e-9 mm) at ``here`` and at each env in ``ends``.
+    (<, = or >, within 1e-10 mm) at ``here`` and at each env in ``ends``.
     The Exprs are affine, so equal signs at both ends hold in between."""
     for a, b in decisions:
         d = _sign(a.eval(here) - b.eval(here))

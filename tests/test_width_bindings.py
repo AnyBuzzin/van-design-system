@@ -15,8 +15,10 @@ from vandesign.manufacturing.placement import arrangement_profiles, arrangement_
 from vandesign.manufacturing.profile import ProfileError
 
 ROOT = os.path.join(os.path.dirname(os.path.abspath(__file__)), "..")
-# Computed on develop df52642 before #95 bindings: numeric outputs must not change.
-BASELINE_SHA = "1744f99cc1f713602bfdb9a0fe566a803a1160ada93652d5ecfbebb4b83c516f"
+# Profiles plus joint geometry and proofs (not the joint spec's repr, which gains
+# fields such as ``blind``). Computed on develop b0ca80b (identical to df52642 before
+# the #95 bindings): numeric outputs must not change.
+BASELINE_SHA = "7079703586c0ab8912fae221145cbd0ef451064677566868e1465642aab69bba"
 CAB = {"schema_version": "0.2", "module": "cabinet@1", "variant": "base", "profile_version": 1,
        "parameters": {"width_mm": 1100, "ply_mm": 17.6}}
 JOINERY = {"sheet": {"name": "birch", "nominal_mm": 18, "measured_mm": 17.6}, "clearance_mm": 0.2,
@@ -32,6 +34,12 @@ def spec(variant="base", width=1100):
 def module(s):
     _, joinery = tab_slot_parts(s)
     return MODULES["cabinet_tab_slot"][0](_canonical(s)), joinery
+
+
+def digest(out):
+    profiles, joints = out
+    geometry = {k: [(r.inserter_box, r.cuts, r.tabs, r.slots, r.proof) for r in v] for k, v in joints.items()}
+    return (repr(profiles) + repr(geometry)).encode()
 
 
 def refs(binding):
@@ -52,14 +60,14 @@ class NumericOutputsUnchanged(unittest.TestCase):
                 for w in ((1100, 1000) if variant != "tall" else (800, 700)):
                     arr = build_arrangement((Instance("k", "cabinet_tab_slot", "K", spec(variant, w),
                                                       (1000, 1000, 0), k),))
-                    h.update(repr(arrangement_profiles(arr, tool_diameter=6)).encode())
+                    h.update(digest(arrangement_profiles(arr, tool_diameter=6)))
                 box = dict(CAB, variant=variant, parameters={"width_mm": 900})
                 arr = build_arrangement((Instance("c", "cabinet", "C", box, (1000, 1000, 0), k),))
-                h.update(repr(arrangement_profiles(arr, tool_diameter=6)).encode())
+                h.update(digest(arrangement_profiles(arr, tool_diameter=6)))
         with open(os.path.join(ROOT, "automation", "jobs", "requests", "arrangement_request_crafter.json"),
                   encoding="utf-8") as fh:
             request = json.load(fh)
-        h.update(repr(arrangement_profiles(plan_request(request).arrangement, tool_diameter=6)).encode())
+        h.update(digest(arrangement_profiles(plan_request(request).arrangement, tool_diameter=6)))
         self.assertEqual(h.hexdigest(), BASELINE_SHA)
 
 

@@ -19,6 +19,7 @@ from .assembly import Tracked
 from .profile import Arc, Line, ProfileError, boundary_distance, CLOSURE_TOL_MM
 
 NOMINAL_THICKNESSES_MM = (5, 10, 12, 15, 18)
+MIN_SKIN_MM = 4.0          # material left on the visible face behind a blind slot
 _EPS = 1e-9
 _AXES = {"x": 0, "y": 1, "z": 2}
 
@@ -59,6 +60,10 @@ class TabSlot:
 
     ``tabs`` are (offset, width) pairs along the joint axis, measured from the
     inserter blank's low end on that axis.
+
+    ``blind`` (ADR-0003): the slot is a pocket from the receiver's inner face,
+    ``engagement + clearance / 2`` deep, so the outer face stays clean and
+    keeps a skin of at least ``MIN_SKIN_MM``. Otherwise slots go through.
     """
     inserter: str
     receiver: str
@@ -66,8 +71,11 @@ class TabSlot:
     tabs: tuple
     engagement_mm: float
     clearance_mm: float
+    blind: bool = False
 
     def __post_init__(self):
+        if type(self.blind) is not bool:
+            raise ProfileError("blind must be True or False")
         if (not isinstance(self.direction, str) or len(self.direction) != 2
                 or self.direction[0] not in "+-" or self.direction[1] not in _AXES):
             raise ProfileError("direction must be one of +x, -x, +y, -y, +z, -z")
@@ -95,7 +103,7 @@ class TabSlot:
 class JointResult:
     joint: TabSlot
     inserter_box: Box          # blank extended by the tab depth
-    cuts: tuple                # (panel id, world Box) through-cuts: notches and slots
+    cuts: tuple                # (panel id, world Box): notches and slots (through or blind)
     tabs: tuple                # world Boxes of the tabs
     slots: tuple               # world Boxes of the slots
     proof: dict
@@ -128,6 +136,14 @@ def apply_tab_slot(joint, inserter_box, receiver_box):
     e, c = joint.engagement_mm, joint.clearance_mm
     if e > receiver_box.size[d] + CLOSURE_TOL_MM:
         raise ProfileError("Engagement exceeds the receiver thickness")
+    if joint.blind:
+        depth = e + c / 2                       # end gap at the slot floor = face clearance
+        if receiver_box.size[d] - depth < MIN_SKIN_MM - _EPS:
+            raise ProfileError("Blind slot %.3f mm deep leaves less than %g mm of the receiver's outer face"
+                               % (depth, MIN_SKIN_MM))
+        through = (face - depth, face) if sign < 0 else (face, face + depth)
+    else:
+        through = (receiver_box.lo[d], receiver_box.hi[d])
     strip = (face - e, face) if sign < 0 else (face, face + e)
     lo_j, hi_j = inserter_box.lo[j], inserter_box.hi[j]
     if joint.tabs[-1][0] + joint.tabs[-1][1] > hi_j - lo_j + _EPS:
@@ -142,8 +158,7 @@ def apply_tab_slot(joint, inserter_box, receiver_box):
         if a > cursor + _EPS:
             cuts.append((joint.inserter, _box(_ranges(j, (cursor, a), ti, thick, d, strip))))
         tab = _box(_ranges(j, (a, b), ti, thick, d, strip))
-        slot = _box(_ranges(j, (a - c / 2, b + c / 2), ti, (thick[0] - c / 2, thick[1] + c / 2),
-                            d, (receiver_box.lo[d], receiver_box.hi[d])))
+        slot = _box(_ranges(j, (a - c / 2, b + c / 2), ti, (thick[0] - c / 2, thick[1] + c / 2), d, through))
         if any(tab.lo[k] < receiver_box.lo[k] - _EPS or tab.hi[k] > receiver_box.hi[k] + _EPS for k in (j, ti)):
             raise ProfileError("Tab at offset %g lies outside the receiver" % offset)
         tabs.append(tab)
@@ -152,7 +167,7 @@ def apply_tab_slot(joint, inserter_box, receiver_box):
         cursor = b
     if hi_j > cursor + _EPS:
         cuts.append((joint.inserter, _box(_ranges(j, (cursor, hi_j), ti, thick, d, strip))))
-    proof = _prove(joint, tabs, slots, receiver_box, j, ti, d)
+    proof = _prove(joint, tabs, slots, receiver_box, j, ti, d, sign)
     return JointResult(joint, _box(ext), tuple(cuts), tuple(tabs), tuple(slots), proof)
 
 
@@ -162,23 +177,33 @@ def _ranges(a1, r1, a2, r2, a3, r3):
     return out
 
 
-def _prove(joint, tabs, slots, receiver_box, j, ti, d):
-    """Clearance on both faces, full-depth slots and no assembled material overlap."""
+def _prove(joint, tabs, slots, receiver_box, j, ti, d, sign):
+    """Clearance on both faces, slot depth (through, or blind with its end gap
+    and outer skin) and no assembled material overlap."""
     c = joint.clearance_mm
-    gaps = []
+    gaps, skins = [], []
     for tab, slot in zip(tabs, slots):
         for k in (j, ti):
             gaps += [tab.lo[k] - slot.lo[k], slot.hi[k] - tab.hi[k]]
-        if slot.lo[d] > receiver_box.lo[d] + _EPS or slot.hi[d] < receiver_box.hi[d] - _EPS:
+        if joint.blind:
+            # Tab tip to slot floor, and slot floor to the receiver's outer face.
+            gaps.append(tab.lo[d] - slot.lo[d] if sign < 0 else slot.hi[d] - tab.hi[d])
+            skins.append(slot.lo[d] - receiver_box.lo[d] if sign < 0 else receiver_box.hi[d] - slot.hi[d])
+        elif slot.lo[d] > receiver_box.lo[d] + _EPS or slot.hi[d] < receiver_box.hi[d] - _EPS:
             raise ProfileError("Slot does not pass through the receiver")
     if any(abs(g - c / 2) > 1e-9 for g in gaps):
         raise ProfileError("Clearance per face differs from clearance / 2")
+    if any(s < MIN_SKIN_MM - 1e-9 for s in skins):
+        raise ProfileError("Blind slot skin is thinner than %g mm" % MIN_SKIN_MM)
     # Receiver material in the joint = receiver box minus slots; tabs lie inside slots.
     overlap = sum(receiver_box.overlap_volume(t) - slot.overlap_volume(t) for t, slot in zip(tabs, slots))
     if overlap > 1e-6:
         raise ProfileError("Assembled tabs overlap receiver material")
-    return dict(clearance_per_face_mm=c / 2, tabs=len(tabs), assembled_overlap_mm3=overlap,
-                engagement_mm=joint.engagement_mm)
+    proof = dict(clearance_per_face_mm=c / 2, tabs=len(tabs), assembled_overlap_mm3=overlap,
+                 engagement_mm=joint.engagement_mm)
+    if joint.blind:
+        proof.update(blind=True, end_gap_mm=c / 2, min_skin_mm=min(skins))
+    return proof
 
 
 def apply_joints(joints, boxes):
