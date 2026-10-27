@@ -16,6 +16,7 @@ class Point:
         self.geometry = NS(x=xyz[0], y=xyz[1], z=xyz[2])
         self.isFixed = False
         self.isFullyConstrained = True
+        self.isValid = True
 
 
 class Sketch:
@@ -40,11 +41,13 @@ class Sketch:
         return line
 
     def arc(self, c, start, sweep):
+        center = c if isinstance(c, Point) else self.point(c)
+        c = center.xyz
         r = math.dist(c, start); angle = math.atan2(start[1]-c[1], start[0]-c[0])
         end = (c[0]+r*math.cos(angle+sweep), c[1]+r*math.sin(angle+sweep), 0)
         if sweep < 0:
             start, end = end, start  # Autodesk always returns a CCW arc.
-        a = NS(centerSketchPoint=self.point(c), startSketchPoint=self.point(start),
+        a = NS(centerSketchPoint=center, startSketchPoint=self.point(start),
                endSketchPoint=self.point(end), sweep=sweep, isFixed=False)
         self.arcs.append(a)
         return a
@@ -167,6 +170,161 @@ class BoundProfile(unittest.TestCase):
         s = Sketch(); s.geometricConstraints.addParallel = Mock(return_value=None)
         with self.assertRaises(RuntimeError):
             self.compile(loop, sketch=s)
+
+    def test_arc_centres_are_driven_before_becoming_curve_owned(self):
+        # A boundary fake, NOT a reproduction of Fusion's unidentified solver
+        # constraint: reject all post-arc centre dimensioning explicitly.
+        s = Sketch()
+        original_distance, original_arc = s.distance, s.arc
+        def distance(anchor, p, axis, text):
+            if any(a.centerSketchPoint is p for a in s.arcs):
+                raise RuntimeError('post-arc centre dimension rejected')
+            return original_distance(anchor, p, axis, text)
+        def arc(center, start, sweep):
+            self.assertIsInstance(center, Point)
+            dims = [d for d in s.dimensions if d.point is center]
+            self.assertEqual({d.axis for d in dims}, {0, 1})
+            self.assertEqual(len(dims), 2)
+            self.assertTrue(all(d.parameter.expression for d in dims))
+            self.assertFalse(center.isFixed)
+            return original_arc(center, start, sweep)
+        s.sketchDimensions.addDistanceDimension = distance
+        s.sketchCurves.sketchArcs.addByCenterStartSweep = arc
+        self.compile(self.bindings['panel.bottom.001'].outline, sketch=s)
+        self.assertTrue(s.arcs)
+
+    def test_arc_centre_substitution_refuses_before_radius_or_lines(self):
+        s = Sketch(); original = s.arc
+        def substitute(center, start, sweep):
+            arc = original(center, start, sweep)
+            arc.centerSketchPoint = s.point(arc.centerSketchPoint.xyz)
+            center.merge = Mock(return_value=True)  # Claims success but leaves the arc unbound.
+            return arc
+        s.sketchCurves.sketchArcs.addByCenterStartSweep = substitute
+        with self.assertRaisesRegex(RuntimeError, 'centre identity'):
+            self.compile(self.bindings['panel.bottom.001'].outline, sketch=s)
+        self.assertFalse(s.lines)
+        self.assertTrue(all(not hasattr(a, 'radial') for a in s.arcs))
+
+    def copied_centres(self, result=True, damage=None, bound_damage=None, after_merge=None):
+        """Documented merge contract fake; not evidence of Fusion solver behaviour."""
+        s = Sketch(); original = s.arc; s.merges = []
+        def copied(center, start, sweep):
+            arc = original(center, start, sweep)
+            other = s.point(center.xyz)
+            arc.centerSketchPoint = other
+            if damage: damage(other)
+            if bound_damage: bound_damage(center)
+            def merge(point):
+                self.assertIs(point, other)
+                s.merges.append((center, other))
+                if isinstance(result, Exception): raise result
+                if result is True:
+                    arc.centerSketchPoint = center
+                    other.isValid = False
+                    s.points.remove(other)
+                    if after_merge: after_merge(center)
+                return result
+            center.merge = merge
+            return arc
+        s.sketchCurves.sketchArcs.addByCenterStartSweep = copied
+        return s
+
+    def test_copied_centres_merge_into_driven_points_and_keep_width_bindings(self):
+        for b in self.bindings.values():
+            for loop in [b.outline] + [f.loop for f in b.features]:
+                s = self.copied_centres()
+                self.compile(loop, sketch=s)
+                self.assertEqual(len(s.merges), len(s.arcs))
+                for arc, (center, retired) in zip(s.arcs, s.merges):
+                    self.assertIs(arc.centerSketchPoint, center)
+                    self.assertFalse(retired.isValid)
+                    self.assertNotIn(retired, s.points)
+                    self.assertFalse(center.isFixed)
+                    dims = {d.axis:d for d in s.dimensions if d.point is center}
+                    self.assertEqual(set(dims), {0, 1})
+                    source = next(v for v in loop.sources if v[0]=='arc' and
+                                  all(abs((loop.vertices[v[1][0]][j].eval(self.env)+v[1][1][j]
+                                           +(-1500, -1100)[j])-center.xyz[j]*10)<1e-6 for j in (0,1)))
+                    i, delta = source[1]
+                    for width in (1000, 1050, 1100, 1000, 1100):
+                        env = self.asm.parameters.resolve({'Cab_Width': width})
+                        expected = [loop.vertices[i][j].eval(env)+delta[j]+(-1500,-width)[j] for j in (0,1)]
+                        actual = [dims[j].anchor.xyz[j]*10+self.value(dims[j].parameter.expression,env) for j in (0,1)]
+                        for a,e in zip(actual,expected):self.assertAlmostEqual(a,e)
+
+    def test_centre_merge_failures_and_bad_readback_refuse(self):
+        loop = self.bindings['panel.bottom.001'].outline
+        for result in (False, None, 1, 'true', RuntimeError('merge rejected')):
+            s = self.copied_centres(result)
+            with self.assertRaises(RuntimeError):self.compile(loop, sketch=s)
+            self.assertEqual(len(s.merges), 1)
+            self.assertFalse(s.lines)
+        for damage in (lambda p:setattr(p.geometry,'x',p.geometry.x+1),
+                       lambda p:setattr(p.geometry,'z',1),
+                       lambda p:setattr(p.geometry,'x',float('nan')),
+                       lambda p:setattr(p.geometry,'x',float('inf')),
+                       lambda p:setattr(p,'geometry',None),
+                       lambda p:setattr(p,'isValid',False),
+                       lambda p:setattr(p,'isFixed',True)):
+            s=self.copied_centres(damage=damage)
+            with self.assertRaises(RuntimeError):self.compile(loop,sketch=s)
+            self.assertFalse(s.merges)
+            self.assertFalse(s.lines)
+
+    def test_bound_centre_state_is_required_before_and_after_merge(self):
+        loop=self.bindings['panel.bottom.001'].outline
+        for damage in (lambda p:setattr(p.geometry,'x',p.geometry.x+1),
+                       lambda p:setattr(p,'geometry',None),
+                       lambda p:setattr(p,'isValid',None),
+                       lambda p:setattr(p,'isFixed',True),
+                       lambda p:setattr(p,'isFullyConstrained',False),
+                       lambda p:setattr(p,'isFullyConstrained',None)):
+            for phase in ('bound_damage','after_merge'):
+                s=self.copied_centres(**{phase:damage})
+                with self.assertRaisesRegex(RuntimeError,'centre binding'):
+                    self.compile(loop,sketch=s)
+                self.assertEqual(len(s.merges),int(phase=='after_merge'))
+                self.assertFalse(s.lines)
+                self.assertTrue(all(not hasattr(a,'radial') for a in s.arcs))
+
+    def test_centre_creation_and_driving_failures_stop_before_arc(self):
+        loop = self.bindings['panel.bottom.001'].outline
+        s = Sketch(); original = s.point
+        s.sketchPoints.add = lambda xyz: original(xyz) if not s.points else None
+        with self.assertRaisesRegex(RuntimeError, 'centre creation failed'):
+            self.compile(loop, sketch=s)
+        self.assertFalse(s.arcs)
+        for axis in (0, 1):
+            for null in (False, True):
+                s = Sketch(); original = s.distance
+                error = RuntimeError('VCS_SKETCH_OVER_CONSTRAINTS')
+                def dimension(a, p, direction, text):
+                    if direction == axis:
+                        if null: return None
+                        raise error
+                    return original(a, p, direction, text)
+                s.sketchDimensions.addDistanceDimension = dimension
+                with self.assertRaisesRegex(RuntimeError, f'test: arc .* centre {"XY"[axis]} coordinate') as caught:
+                    self.compile(loop, sketch=s)
+                if not null:
+                    self.assertIs(caught.exception.__cause__, error)
+                self.assertFalse(s.arcs)
+                self.assertTrue(all(not d.point.isFixed for d in s.dimensions))
+
+    def test_centre_equality_accepts_another_wrapper_for_same_entity(self):
+        class Wrapper(Point):
+            def __init__(self, point): self.point = point
+            def __eq__(self, other): return self.point is other
+            def __getattr__(self, name): return getattr(self.point, name)
+        s = Sketch(); original = s.arc
+        def wrapped(center, start, sweep):
+            arc = original(center, start, sweep)
+            arc.centerSketchPoint = Wrapper(center)
+            return arc
+        s.sketchCurves.sketchArcs.addByCenterStartSweep = wrapped
+        self.compile(self.bindings['panel.bottom.001'].outline, sketch=s)
+        self.assertTrue(s.arcs)
 
     def test_clockwise_arc_api_normalisation_and_missing_readback(self):
         loop = self.bindings['panel.bottom.001'].outline

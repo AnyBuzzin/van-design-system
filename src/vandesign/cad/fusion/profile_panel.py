@@ -168,12 +168,15 @@ class ProfileAdapter(FusionAdapter):
         dims, constraints = sketch.sketchDimensions, sketch.geometricConstraints
         orientations = (adsk.fusion.DimensionOrientations.HorizontalDimensionOrientation,
                         adsk.fusion.DimensionOrientations.VerticalDimensionOrientation)
-        def coordinate(p, xy):
-            for e, orientation in zip(xy, orientations):
-                d = dims.addDistanceDimension(anchor, p, orientation, point(datum - 10, datum - 10))
-                if d is None:
-                    raise RuntimeError('Native coordinate dimension failed')
-                d.parameter.expression = (e - Mm(datum)).render()
+        def coordinate(p, xy, context):
+            for axis, e, orientation in zip(('X', 'Y'), xy, orientations):
+                try:
+                    d = dims.addDistanceDimension(anchor, p, orientation, point(datum - 10, datum - 10))
+                    if d is None:
+                        raise RuntimeError('Native coordinate dimension failed')
+                    d.parameter.expression = (e - Mm(datum)).render()
+                except Exception as exc:
+                    raise RuntimeError(f'{name}: {context} {axis} coordinate: {exc}') from exc
 
         # Each loop junction has exactly one SketchPoint. Arcs own their two
         # endpoint junctions; lines reuse those API objects directly.
@@ -184,10 +187,39 @@ class ProfileAdapter(FusionAdapter):
             guard()
             center = at(s[1]); cx, cy = (e.eval(env) for e in center)
             ox, oy = (e.eval(env) for e in offset)
+            # Bind an explicit point before it belongs to a curve. The API
+            # accepts SketchPoint centres; do not dimension an implicit centre
+            # after arc creation or silently skip a rejected driving constraint.
+            center_point = sketch.sketchPoints.add(point(cx, cy))
+            if center_point is None:
+                raise RuntimeError(f'{name}: arc {i} centre creation failed')
+            coordinate(center_point, center, f'arc {i} centre')
             arc = sketch.sketchCurves.sketchArcs.addByCenterStartSweep(
-                point(cx, cy), point(segment.start[0] + ox, segment.start[1] + oy), segment.sweep)
+                center_point, point(segment.start[0] + ox, segment.start[1] + oy), segment.sweep)
             if arc is None:
                 raise RuntimeError('Native arc creation failed')
+            def check_center(p, driven=False):
+                g = p.geometry
+                xyz = (g.x * 10, g.y * 10, g.z * 10)
+                if (p.isValid is not True or p.isFixed is not False
+                        or (driven and p.isFullyConstrained is not True)
+                        or not all(math.isfinite(v) for v in xyz)
+                        or math.dist(xyz, (cx, cy, 0)) > 1e-6):
+                    raise RuntimeError('Native arc centre state/readback differs')
+            try:
+                check_center(center_point, driven=True)
+                actual_center = arc.centerSketchPoint
+                check_center(actual_center)
+                if actual_center != center_point:
+                    # SketchPoint.merge redirects the input's curve references
+                    # into this already Expr-driven point; never fix or redrive.
+                    if center_point.merge(actual_center) is not True:
+                        raise RuntimeError('Native arc centre merge failed')
+                if arc.centerSketchPoint != center_point:
+                    raise RuntimeError('Native arc centre identity differs after merge')
+                check_center(arc.centerSketchPoint, driven=True)
+            except Exception as exc:
+                raise RuntimeError(f'{name}: arc {i} centre binding: {exc}') from exc
             # Fusion normalises negative sweeps to CCW, reversing API endpoints:
             # fusion_SketchArcs_addByCenterStartSweep.htm in Autodesk's API docs.
             start, end = arc.startSketchPoint, arc.endSketchPoint
@@ -199,7 +231,6 @@ class ProfileAdapter(FusionAdapter):
                 target = (expected[0] + ox, expected[1] + oy, 0)
                 if not all(math.isfinite(v) for v in actual) or math.dist(actual, target) > 1e-6:
                     raise RuntimeError('Native arc endpoint/sweep readback differs')
-            coordinate(arc.centerSketchPoint, center)
             radial = dims.addRadialDimension(arc, point(cx + segment.radius, cy + segment.radius))
             if radial is None:
                 raise RuntimeError('Native radius dimension failed')
@@ -233,7 +264,7 @@ class ProfileAdapter(FusionAdapter):
                     p = sketch.sketchPoints.add(point(*(e.eval(env) for e in xy)))
                     if p is None:
                         raise RuntimeError('Native endpoint creation failed')
-                    coordinate(p, xy)
+                    coordinate(p, xy, f'junction {j}')
                     junctions[j] = p
                 points.append(junctions[j])
             if sketch.sketchCurves.sketchLines.addByTwoPoints(*points) is None:
