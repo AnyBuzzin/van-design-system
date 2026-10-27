@@ -1,5 +1,6 @@
 """#95 Option B producer: relief-free CAD oracle, exact relation to the relieved DXF truth."""
 from dataclasses import replace
+import math
 import os
 import tempfile
 import unittest
@@ -9,8 +10,8 @@ from vandesign.manufacturing.assembly import relief_area, relief_proof
 from vandesign.manufacturing.carcass import cabinet_tab_slot_profiles, cabinet_tab_slot_width_bindings
 from vandesign.manufacturing.dxf import export_profiles, loop_areas, pocket_layer, read_dxf
 from vandesign.manufacturing.placement import arrangement_profiles, arrangement_width_bindings
-from vandesign.manufacturing.profile import (Arc, PanelFrame, PanelProfile, Pocket, ProfileError,
-                                             rounded_corner_outline)
+from vandesign.manufacturing.profile import (Arc, Line, Loop, PanelFrame, PanelProfile, Pocket, ProfileError,
+                                             polygon_loop, rect_vertices, rounded_corner_outline)
 
 CAB = {"schema_version": "0.2", "module": "cabinet@1", "variant": "base", "profile_version": 1,
        "parameters": {"width_mm": 1100, "ply_mm": 17.6}}
@@ -72,6 +73,50 @@ class ReliefFreeView(unittest.TestCase):
         rounded = PanelProfile("r", "r", "ply", 18.0, rounded_corner_outline(200, 120, 20), frame=frame)
         with self.assertRaisesRegex(ProfileError, "not lines only|not a .* dog-bone"):
             relief_proof((rounded,), (rounded,), 6)
+
+    def test_proof_refuses_equal_area_geometry_changes(self):
+        arr = arrangement()
+        relieved, _ = arrangement_profiles(arr, tool_diameter=6)
+        free, _ = arrangement_profiles(arr, tool_diameter=6, relief=False)
+
+        def swap(i, p):
+            out = list(free)
+            out[i] = p
+            return tuple(out)
+
+        def shifted(loop, dx):
+            return Loop(tuple(Line((s.start[0] + dx, s.start[1]), (s.end[0] + dx, s.end[1])) for s in loop.segments))
+
+        door = next(i for i, p in enumerate(free) if p.panel_id == "k.panel.door.001")
+        p = free[door]
+        with self.assertRaisesRegex(ProfileError, "geometry differs"):           # Jack's +1 mm outline
+            relief_proof(relieved, swap(door, replace(p, outline=shifted(p.outline, 1.0))), 6)
+        (x0, y0), (x1, y1) = p.outline.bounds
+        w, h = x1 - x0, y1 - y0
+        same_area = polygon_loop(rect_vertices(x0, y0, x0 + w + 10, y0 + w * h / (w + 10)), waste_inside=False)
+        self.assertAlmostEqual(same_area.area, p.outline.area, places=6)
+        with self.assertRaisesRegex(ProfileError, "geometry differs"):           # equal-area deformation
+            relief_proof(relieved, swap(door, replace(p, outline=same_area)), 6)
+        side = next(i for i, p in enumerate(free) if p.features)
+        p = free[side]
+        f = p.features[0]
+        moved = swap(side, replace(p, features=(replace(f, loop=shifted(f.loop, 0.5)),) + p.features[1:]))
+        with self.assertRaisesRegex(ProfileError, "geometry differs"):           # relocated cut
+            relief_proof(relieved, moved, 6)
+        self.assertEqual(len(relief_proof(relieved, free, 6)), len(free))         # valid views still pass
+
+    def test_proof_requires_finite_positive_inputs(self):
+        arr = arrangement()
+        relieved, _ = arrangement_profiles(arr, tool_diameter=6)
+        free, _ = arrangement_profiles(arr, tool_diameter=6, relief=False)
+        for bad in (float("nan"), float("inf"), -float("inf"), 0, 0.0, -6, True, "6", None):
+            with self.assertRaisesRegex(ProfileError, "finite positive tool diameter"):
+                relief_proof(relieved, free, bad)
+        for bad in (float("nan"), float("inf"), 0, -1e-6, True, None):
+            with self.assertRaisesRegex(ProfileError, "finite positive tolerance"):
+                relief_proof(relieved, free, 6, tol=bad)
+        for r in relief_proof(relieved, free, 6):
+            self.assertTrue(all(math.isfinite(r[k]) for k in ("relief_area_mm2", "removed_volume_mm3")))
 
     def test_relieved_dxf_rereads_to_the_relief_free_oracle_plus_exact_reliefs(self):
         arr = arrangement()

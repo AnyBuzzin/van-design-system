@@ -368,17 +368,69 @@ def _relief_count(loop, radius, panel_id):
     return len(arcs)
 
 
+def _unit(line):
+    (ax, ay), (bx, by) = line.start, line.end
+    length = math.hypot(bx - ax, by - ay)
+    return ((bx - ax) / length, (by - ay) / length)
+
+
+def _relief_geometry(relieved, free, radius, waste_inside, tol, panel_id):
+    """The relieved loop is the relief-free loop with dog-bones at its corners.
+
+    Every relieved line, extended back through an adjacent relief by
+    r*sqrt(2) along its own direction, must equal the matching relief-free
+    line (same order, both end points within ``tol``); each arc must be the
+    relief of that corner: centred r from it on the waste bisector, bulging
+    into material, at a corner whose waste is the narrow 90-degree wedge. A
+    loop without reliefs must match line for line.
+    """
+    segs, reach = relieved.segments, radius * math.sqrt(2)
+    lines = [i for i, s in enumerate(segs) if not isinstance(s, Arc)]
+    if len(lines) != len(free.segments) or any(
+            isinstance(segs[i - 1], Arc) and isinstance(segs[i], Arc) for i in range(len(segs))):
+        raise ProfileError("%s: relieved loop does not follow the relief-free corners" % panel_id)
+    # Relief-free line k runs from corner k to k+1; the relieved loop starts at
+    # corner 0 too (its relief, if any, comes first), so lines align in order.
+    for k, i in enumerate(lines):
+        line, ref = segs[i], free.segments[k]
+        u = _unit(line)
+        start, end = line.start, line.end
+        if isinstance(segs[i - 1], Arc):
+            start = (start[0] - reach * u[0], start[1] - reach * u[1])
+        if isinstance(segs[(i + 1) % len(segs)], Arc):
+            end = (end[0] + reach * u[0], end[1] + reach * u[1])
+        if math.dist(start, ref.start) > tol or math.dist(end, ref.end) > tol:
+            raise ProfileError("%s: loop geometry differs from the relief-free view" % panel_id)
+    for i, arc in enumerate(segs):
+        if not isinstance(arc, Arc):
+            continue
+        u1, u2 = _unit(segs[i - 1]), _unit(segs[(i + 1) % len(segs)])
+        corner = (segs[i - 1].end[0] + reach * u1[0], segs[i - 1].end[1] + reach * u1[1])
+        turn = u1[0] * u2[1] - u1[1] * u2[0]
+        centre = (corner[0] + radius * (u2[0] - u1[0]) / math.sqrt(2),
+                  corner[1] + radius * (u2[1] - u1[1]) / math.sqrt(2))
+        if (abs(abs(turn) - 1) > 1e-9 or (turn > 0) != waste_inside or (arc.sweep > 0) != waste_inside
+                or math.dist(arc.center, centre) > tol):
+            raise ProfileError("%s: an arc is not the relief of a relief-free corner" % panel_id)
+
+
 def relief_proof(relieved, relief_free, tool_diameter, tol=1e-6):
     """Prove the relief-free view (#95 Option B CAD oracle) equals the relieved
     manufacturing profiles (the DXF truth) apart from the dog-bones alone.
 
     Per panel, in order: the same id, name, material, thickness, frame and
     features (kind, face, depth); relief-free loops are lines only; every
-    relieved arc is a tool-radius semicircle; each loop's area differs by
-    exactly n * relief_area(r) for its n reliefs (removed from the outline,
-    added to every cut); the volumes differ by the matching amount. Returns
-    one record per panel; raises ProfileError on any difference.
+    relieved arc is a tool-radius semicircle; each relieved loop is the
+    relief-free loop with reliefs at its corners only (``_relief_geometry``);
+    each loop's area differs by exactly n * relief_area(r) for its n reliefs
+    (removed from the outline, added to every cut); the volumes differ by the
+    matching amount. ``tool_diameter`` and ``tol`` must be finite and
+    positive. Returns one record per panel; raises ProfileError on any
+    difference.
     """
+    for name, x in (("tool diameter", tool_diameter), ("tolerance", tol)):
+        if type(x) not in (int, float) or not math.isfinite(x) or x <= 0:
+            raise ProfileError("Relief proof needs a finite positive %s, got %r" % (name, x))
     r = tool_diameter / 2
     d = relief_area(r)
     if len(relieved) != len(relief_free):
@@ -399,6 +451,7 @@ def relief_proof(relieved, relief_free, tool_diameter, tol=1e-6):
             if any(isinstance(s, Arc) for s in lb.segments):
                 raise ProfileError("%s: relief-free loop is not lines only" % a.panel_id)
             n = _relief_count(la, r, a.panel_id)
+            _relief_geometry(la, lb, r, sign > 0, tol, a.panel_id)
             if abs((la.area - lb.area) - sign * n * d) > tol * max(1.0, la.area):
                 raise ProfileError("%s: loop area differs by more than its %d relief(s)" % (a.panel_id, n))
             reliefs += n
@@ -407,6 +460,8 @@ def relief_proof(relieved, relief_free, tool_diameter, tol=1e-6):
             raise ProfileError("%s: relief count differs" % a.panel_id)
         if abs((b.volume_mm3 - a.volume_mm3) - removed) > tol * max(1.0, b.volume_mm3):
             raise ProfileError("%s: volume differs by more than its reliefs" % a.panel_id)
+        if not all(math.isfinite(x) for x in (d, removed, a.volume_mm3, b.volume_mm3)):
+            raise ProfileError("%s: relief proof quantities are not finite" % a.panel_id)
         out.append(dict(panel_id=a.panel_id, reliefs=reliefs, relief_area_mm2=d,
                         removed_volume_mm3=removed))
     return tuple(out)
